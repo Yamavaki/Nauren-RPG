@@ -2027,10 +2027,20 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
    * re-render, e sem isso a rolagem sempre voltava pro topo, atrapalhando
    * mexer em várias opções seguidas.
    */
-  /** 0.93.2: a ficha abre mais alta, aproveitando a tela (Full HD: ~920 px), em vez de 700 fixos. */
+  /**
+   * 0.94.29: a ficha abre num tamanho que cabe o conteúdo inteiro (cabeçalho e abas sem cortar) e respeita telas pequenas:
+   * largura 860 (monstro 900), mas nunca maior que a tela; altura = tela − 80 (até 980); centralizada.
+   * Se a pessoa redimensionar, vale o tamanho dela enquanto a janela estiver aberta.
+   */
   _initializeApplicationOptions(options) {
     const o = super._initializeApplicationOptions?.(options) ?? options;
-    if (!options?.position?.height && o?.position) o.position.height = Math.max(700, Math.min(980, (globalThis.innerHeight || 900) - 90));
+    if (!o?.position) return o;
+    const telaL = globalThis.innerWidth || 1400, telaA = globalThis.innerHeight || 900;
+    const npc = (options?.document ?? this.document)?.type === "npc";
+    if (!options?.position?.width) o.position.width = Math.max(560, Math.min(npc ? 900 : 860, telaL - 40));
+    if (!options?.position?.height) o.position.height = Math.max(480, Math.min(980, telaA - 80));
+    if (options?.position?.left === undefined) o.position.left = Math.max(10, Math.round((telaL - o.position.width) / 2));
+    if (options?.position?.top === undefined) o.position.top = Math.max(10, Math.round((telaA - o.position.height) / 2));
     return o;
   }
 
