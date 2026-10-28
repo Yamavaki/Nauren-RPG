@@ -66,3 +66,78 @@ especial a Lei nº 9.610/1998 (Direitos Autorais) e a Lei nº 9.609/1998
 8. CONTATO
 
 Pedidos de autorização: https://github.com/Yamavaki/Nauren-RPG/issues
+
+
+================================================================================
+ENGLISH TRANSLATION (for convenience only; in case of any conflict, the
+Portuguese text above prevails)
+================================================================================
+
+USE LICENSE — NAUREN RPG SYSTEM FOR FOUNDRY VTT
+
+Copyright (c) 2026 Gustavo Yamavaki. All rights reserved.
+
+1. SCOPE
+
+This license applies only to the "Nauren RPG" system for Foundry Virtual
+Tabletop, that is, the contents of this repository and the package distributed
+from it (code, interface templates, styles, compendiums, data, images and
+documentation), hereinafter "the System".
+
+This license does not cover the Nauren RPG rulebook or the "Nauren" brand,
+and grants no rights over them.
+
+2. WHAT IS PERMITTED
+
+You may, free of charge:
+  a) download and install the System in Foundry Virtual Tabletop, including on
+     hosted servers (such as The Forge);
+  b) use the System to play, at personal or community tables, provided you do
+     not charge for access to the System itself;
+  c) create, within your own Foundry world, characters, creatures, items and
+     other game content using the System.
+
+3. WHAT IS NOT PERMITTED WITHOUT THE AUTHOR'S WRITTEN AUTHORIZATION
+
+  a) copying, redistributing, republishing or making the System available, in
+     whole or in part, by any means (other repositories, websites, packages,
+     download servers, mods or modules), except for the installation described
+     in section 2;
+  b) selling, renting, sublicensing or using the System, in whole or in part,
+     in any paid product or service;
+  c) modifying the System and distributing or publishing the modified version,
+     or creating and publishing derivative works of it;
+  d) extracting and reusing the System's code, compendiums, texts, images or
+     data in another system, module or product;
+  e) removing or altering authorship and copyright notices.
+
+The technical ability to download, view or fork the repository on GitHub does
+not authorize any of the uses above.
+
+4. THIRD-PARTY CONTENT
+
+The System may reference third-party content that is not distributed here
+(for example, Foundry VTT's own icons, JB2A animations and modules such as
+Sequencer and Automated Animations). Such content is subject to the licenses
+of its respective authors.
+
+5. NO WARRANTY
+
+The System is provided "as is", without warranty of any kind, express or
+implied. The author is not liable for data loss, damages or problems arising
+from the use of the System.
+
+6. TERMINATION
+
+Any breach of this license automatically terminates the permission granted
+in section 2.
+
+7. GOVERNING LAW
+
+This license is governed by the laws of the Federative Republic of Brazil, in
+particular Law No. 9,610/1998 (Copyright) and Law No. 9,609/1998 (Computer
+Programs).
+
+8. CONTACT
+
+Authorization requests: https://github.com/Yamavaki/Nauren-RPG/issues
