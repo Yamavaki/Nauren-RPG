@@ -1,6 +1,6 @@
 {
- "sobre": "Catálogo de itens da Torre Infinita (Nauren RPG). A chave identifica o item e vai em flags.nauren.torre.chave.",
- "novidades": "0.94.27: Refinados retirados (lista em 'retirados'); 0.94.25: Óleos de Lâmina; mágicos Bronze e Prata sem atributo permanente; 0.94.24: Leva 1 com 40 itens mágicos.",
+ "sobre": "Catálogo de itens da Torre Infinita (Nauren RPG). A chave identifica o item e vai em flags.nauren.torre.chave. A raridade \"magico\" aparece para o jogador como \"Item Pigmentado\" (o valor interno continua \"magico\").",
+ "novidades": "Sistema Nauren 0.94.28: os 40 Itens Pigmentados antigos (antes chamados \"itens mágicos\") foram refeitos com os módulos genéricos (Ações só com Estamina, graus por tier, passivas iguais às da Leva 1); chave, nome, tier, pigmento e preço não mudaram, só a descrição. O nome \"item mágico\" passa a ser \"Item Pigmentado\" em todo lugar que o jogador vê. Anterior: 0.94.24: Leva 1 (+40 itens) e Óleos de Lâmina.",
  "seedParaChave": {
   "armadura-robe-simples": "robe-simples",
   "armadura-couro-simples": "couro-simples",
@@ -1301,7 +1301,7 @@
    "raridade": "magico",
    "preco": 600,
    "loja": "galeria",
-   "descricao": "Centelha — 1 Mana, 1/cena: o próximo ataque causa +1d4 de dano.",
+   "descricao": "Brinco. Centelha (1 Estamina, 1 por cena): o próximo ataque causa +1d6 de dano.",
    "flags": {
     "nauren": {
      "torre": {
@@ -1328,7 +1328,7 @@
    "raridade": "magico",
    "preco": 1200,
    "loja": "galeria",
-   "descricao": "1d6. Sangria — 2 Mana, 1/rodada: se o próximo ataque acertar, aplica 1 Sangramento.",
+   "descricao": "Arma Média 1d6. Sangria (1 Estamina, 1 por cena): o próximo acerto aplica 1 Sangramento. Passiva: seus críticos causam +2d6 de dano.",
    "flags": {
     "nauren": {
      "torre": {
@@ -1355,7 +1355,7 @@
    "raridade": "magico",
    "preco": 2250,
    "loja": "galeria",
-   "descricao": "1d10. +2 Força, +1 Estamina. Fúria — 2 Estamina + 2 Mana, 1/cena: por 2 rodadas, +2 de dano e −2 de Defesa.",
+   "descricao": "Arma Pesada 1d10. +2 Força, +1 Estamina. Fúria (1 Estamina, 1 por cena): o próximo ataque causa +3d6 de dano. Passiva: +3 de dano no seu primeiro ataque de cada turno.",
    "flags": {
     "nauren": {
      "torre": {
@@ -1382,7 +1382,7 @@
    "raridade": "magico",
    "preco": 3750,
    "loja": "galeria",
-   "descricao": "+1 Força, +1 Inteligência, +1 Estamina. Incendiar — 3 Mana, 1/cena: o próximo ataque ou magia que acertar aplica 2 Queimando.",
+   "descricao": "Anel. +1 Força, +1 Inteligência, +1 Estamina. Incendiar (1 Estamina, 1 por cena): o próximo acerto aplica 2 Queimando. Passivas: +2 de acerto; +8 de Espírito.",
    "flags": {
     "nauren": {
      "torre": {
@@ -1409,7 +1409,7 @@
    "raridade": "magico",
    "preco": 6000,
    "loja": "galeria",
-   "descricao": "2d6. +2 Força, +1 Destino. Corte Escarlate — 3 Estamina + 4 Mana, 1/cena: o próximo ataque causa dano máximo nos dados.",
+   "descricao": "Arma Média 2d6. +2 Força, +1 Destino. Corte Escarlate (1 Estamina, 1 por cena): o próximo ataque causa +5d6 de dano. Passivas: +5 de dano no seu primeiro ataque de cada turno; seus críticos causam +5d6 de dano.",
    "flags": {
     "nauren": {
      "torre": {
@@ -1436,7 +1436,7 @@
    "raridade": "magico",
    "preco": 600,
    "loja": "galeria",
-   "descricao": "Gota Serena — 1 Estamina, 1/cena: recupera 1d4 de Mana.",
+   "descricao": "Anel. Gota Serena (1 Estamina, 1 por cena): você recupera 1d4 de Mana.",
    "flags": {
     "nauren": {
      "torre": {
@@ -1463,7 +1463,7 @@
    "raridade": "magico",
    "preco": 1200,
    "loja": "galeria",
-   "descricao": "Gariart 1d6. Fôlego Arcano — 2 Estamina, 1/cena: a próxima magia custa 2 de Mana a menos (mín. 1).",
+   "descricao": "Catalisador (Gariart 1d6). Fôlego Arcano (1 Estamina, 1 por cena): você recupera 2d4 de Mana. Passiva: +4 de Espírito.",
    "flags": {
     "nauren": {
      "torre": {
@@ -1490,7 +1490,7 @@
    "raridade": "magico",
    "preco": 2250,
    "loja": "galeria",
-   "descricao": "Manto Cerimonial (+3 Defesa). +2 Inteligência. Maré Gélida — 3 Mana, 1/cena: ataque mágico a 6 m, 2d6 + PdM e 2 Congelando.",
+   "descricao": "Manto Cerimonial (+3 Defesa). +2 Inteligência, +1 Agilidade. Maré Gélida (1 Estamina, 1 por cena): o próximo acerto aplica 2 Congelando. Passiva: −2 em cada dano sofrido (não vale contra dano verdadeiro).",
    "flags": {
     "nauren": {
      "torre": {
@@ -1517,7 +1517,7 @@
    "raridade": "magico",
    "preco": 3750,
    "loja": "galeria",
-   "descricao": "+1 Inteligência, +1 Agilidade, +1 Destino. Bolha Abissal — 4 Mana, 1/cena, em Prioridade: escudo de 3d6 + PdM até o fim da rodada.",
+   "descricao": "Amuleto. +1 Inteligência, +1 Agilidade, +1 Destino. Bolha Abissal (1 Estamina, 1 por cena, também na sua Prioridade): você ou 1 aliado a até 6 m ganha escudo de 4d6 até o início do seu próximo turno. Passivas: +8 de Espírito; +12 de Vida máxima.",
    "flags": {
     "nauren": {
      "torre": {
@@ -1544,7 +1544,7 @@
    "raridade": "magico",
    "preco": 6000,
    "loja": "galeria",
-   "descricao": "+2 Inteligência, +1 Estamina. Lua Cheia — 5 Mana, 1/cena: a próxima magia não custa Mana e tem Facilidade.",
+   "descricao": "Brinco. +2 Inteligência, +1 Estamina. Lua Cheia (1 Estamina, 1 por cena): você recupera 5d4 de Mana. Passivas: +10 de Espírito; +3 de acerto.",
    "flags": {
     "nauren": {
      "torre": {
@@ -1571,7 +1571,7 @@
    "raridade": "magico",
    "preco": 600,
    "loja": "galeria",
-   "descricao": "Brotar — 1 Estamina + 1 Mana, 1/cena: cura 1d6 + PdM em si ou aliado adjacente.",
+   "descricao": "Brinco. Brotar (1 Estamina, 1 por cena): você ou 1 aliado a até 6 m recupera 1d6 de Vida.",
    "flags": {
     "nauren": {
      "torre": {
@@ -1598,7 +1598,7 @@
    "raridade": "magico",
    "preco": 1200,
    "loja": "galeria",
-   "descricao": "1d6, 2 m. Enraizar — 2 Mana, 1/cena: se o próximo ataque acertar, o alvo fica Preso.",
+   "descricao": "Arma de Alcance 1d6, 2 m. Enraizar (1 Estamina, 1 por cena): o próximo ataque tem +2 de acerto e, se acertar, o alvo fica Preso. Passiva: +1 de acerto.",
    "flags": {
     "nauren": {
      "torre": {
@@ -1625,7 +1625,7 @@
    "raridade": "magico",
    "preco": 2250,
    "loja": "galeria",
-   "descricao": "Cota Simples (+6 Defesa). +1 Força, +2 Estamina. Seiva — 3 Mana, 1/cena: no início dos próximos 3 turnos, recupera 1d6 de Vida.",
+   "descricao": "Cota Simples (+6 Defesa). +2 Força, +1 Estamina. Seiva (1 Estamina, 1 por cena): você recupera 3d6 de Vida. Passiva: +9 de Vida máxima.",
    "flags": {
     "nauren": {
      "torre": {
@@ -1652,7 +1652,7 @@
    "raridade": "magico",
    "preco": 3750,
    "loja": "galeria",
-   "descricao": "Gariart 1d6. +2 Inteligência, +1 Estamina. Clareira — 4 Mana, 1/cena: você e aliados num raio de 3 m recuperam 2d8 + PdM.",
+   "descricao": "Catalisador (Gariart 1d6). +2 Inteligência, +1 Estamina. Clareira (2 Estamina, 1 por cena): você e os aliados a até 3 m recuperam 4d4 de Vida. Passivas: +8 de Espírito; +12 de Vida máxima.",
    "flags": {
     "nauren": {
      "torre": {
@@ -1679,7 +1679,7 @@
    "raridade": "magico",
    "preco": 6000,
    "loja": "galeria",
-   "descricao": "+1 Força, +1 Estamina, +1 Destino. Primavera — 3 Estamina + 4 Mana, 1/cena: você e aliados num raio de 6 m recuperam 3d8.",
+   "descricao": "Amuleto. +1 Força, +1 Estamina, +1 Destino. Primavera (2 Estamina, 1 por cena): você e os aliados a até 3 m recuperam 5d4 de Vida. Passivas: 1 vez por turno, quem te acerta corpo a corpo sofre 5 de dano; +15 de Vida máxima.",
    "flags": {
     "nauren": {
      "torre": {
@@ -1706,7 +1706,7 @@
    "raridade": "magico",
    "preco": 600,
    "loja": "galeria",
-   "descricao": "Estudar — 1 Estamina, 1/cena: o próximo ataque tem +2 de acerto.",
+   "descricao": "Anel. Estudar (1 Estamina, 1 por cena): você ou 1 aliado a até 6 m ganha +2 de acerto no próximo ataque.",
    "flags": {
     "nauren": {
      "torre": {
@@ -1733,7 +1733,7 @@
    "raridade": "magico",
    "preco": 1200,
    "loja": "galeria",
-   "descricao": "1d4. Golpe Furtivo — 2 Mana, 1/rodada: o próximo ataque não gera Prioridade.",
+   "descricao": "Arma Leve 1d4. Golpe Furtivo (1 Estamina, 1 por cena): o próximo ataque causa +2d6 de dano. Passiva: crítico a partir do 19.",
    "flags": {
     "nauren": {
      "torre": {
@@ -1760,7 +1760,7 @@
    "raridade": "magico",
    "preco": 2250,
    "loja": "galeria",
-   "descricao": "+2 Agilidade, +1 Inteligência. Sussurro — 2 Estamina + 2 Mana, 1/cena: ataque de condição a 6 m; acerto = Amedrontado.",
+   "descricao": "Brinco. +2 Agilidade, +1 Inteligência. Sussurro (1 Estamina, 1 por cena): ataque de Condição contra 1 inimigo a até 9 m (1d20 + o maior Poder + 3); no acerto, ele fica Amedrontado. Passiva: +3 de Esquiva.",
    "flags": {
     "nauren": {
      "torre": {
@@ -1787,7 +1787,7 @@
    "raridade": "magico",
    "preco": 3750,
    "loja": "galeria",
-   "descricao": "1d6, 9 m. +2 Agilidade, +1 Inteligência. Passiva: crítico com 19 ou 20 com esta arma.",
+   "descricao": "Besta 1d6, 9 m. +2 Agilidade, +1 Inteligência. Ponto Cego (1 Estamina, 1 por cena): o próximo ataque causa +4d6 de dano. Passivas: crítico a partir do 19; seus críticos causam +4d6 de dano.",
    "flags": {
     "nauren": {
      "torre": {
@@ -1814,7 +1814,7 @@
    "raridade": "magico",
    "preco": 6000,
    "loja": "galeria",
-   "descricao": "Gariart 1d8. +2 Inteligência, +1 Destino. Labirinto — 2 Estamina + 4 Mana, 1/cena: ataque mágico a 9 m; acerto = Atordoado.",
+   "descricao": "Catalisador (Gariart 1d8). +2 Inteligência, +1 Destino. Labirinto (1 Estamina, 1 por cena): o próximo ataque tem +5 de acerto e, se acertar, o alvo fica Atordoado. Passivas: +10 de Espírito; +3 de acerto.",
    "flags": {
     "nauren": {
      "torre": {
@@ -1841,7 +1841,7 @@
    "raridade": "magico",
    "preco": 600,
    "loja": "galeria",
-   "descricao": "Engolir o Golpe — 1 Mana, 1/cena, em Prioridade: o próximo dano sofrido diminui 3.",
+   "descricao": "Brinco. Engolir o Golpe (1 Estamina, 1 por cena, também na sua Prioridade): você ganha escudo de 1d6 até o início do seu próximo turno.",
    "flags": {
     "nauren": {
      "torre": {
@@ -1868,7 +1868,7 @@
    "raridade": "magico",
    "preco": 1200,
    "loja": "galeria",
-   "descricao": "Escudo Médio (+2 Defesa). Eclipse — 2 Estamina, 1/cena, em Prioridade: +3 de Bloqueio até o fim da rodada.",
+   "descricao": "Escudo Médio (+2 Defesa). Eclipse (1 Estamina, 1 por cena, também na sua Prioridade): +3 de Bloqueio contra o ataque que vem agora. Passiva: +2 de Bloqueio.",
    "flags": {
     "nauren": {
      "torre": {
@@ -1895,7 +1895,7 @@
    "raridade": "magico",
    "preco": 2250,
    "loja": "galeria",
-   "descricao": "Capa Reforçada (+2 Defesa). +1 Agilidade, +2 Estamina. Penumbra — 3 Mana, 1/cena: por 1 rodada, ataques contra você têm Dificuldade.",
+   "descricao": "Capa Reforçada (+2 Defesa). +2 Agilidade, +1 Estamina. Penumbra (1 Estamina, 1 por cena, também na sua Prioridade): +4 de Esquiva contra o ataque que vem agora. Passiva: +3 de Esquiva.",
    "flags": {
     "nauren": {
      "torre": {
@@ -1922,7 +1922,7 @@
    "raridade": "magico",
    "preco": 3750,
    "loja": "galeria",
-   "descricao": "Placa Reforçada (+10 Defesa). +2 Força, +1 Estamina. Passiva: todo dano sofrido diminui 1.",
+   "descricao": "Placa Reforçada (+10 Defesa). +2 Força, +1 Estamina. Abismo (1 Estamina, 1 por cena, também na sua Prioridade): você ganha escudo de 4d6 até o início do seu próximo turno. Passivas: −2 em cada dano sofrido (não vale contra dano verdadeiro); +12 de Vida máxima.",
    "flags": {
     "nauren": {
      "torre": {
@@ -1949,7 +1949,7 @@
    "raridade": "magico",
    "preco": 6000,
    "loja": "galeria",
-   "descricao": "+1 Força, +1 Estamina, +1 Destino. Silêncio — 2 Estamina + 3 Mana, 1/cena, em Prioridade: dano de um ataque recebido pela metade, sem gastar Estresse.",
+   "descricao": "Anel. +1 Força, +1 Estamina, +1 Destino. Silêncio (1 Estamina, 1 por cena, também na sua Prioridade): você ganha escudo de 5d6 até o início do seu próximo turno. Passivas: −3 em cada dano sofrido (não vale contra dano verdadeiro); +15 de Vida máxima.",
    "flags": {
     "nauren": {
      "torre": {
@@ -1976,7 +1976,7 @@
    "raridade": "magico",
    "preco": 600,
    "loja": "galeria",
-   "descricao": "Juramento — 1 Estamina, 1/cena: +2 de Defesa até o início do seu próximo turno.",
+   "descricao": "Amuleto. Juramento (1 Estamina, 1 por cena, também na sua Prioridade): você ou 1 aliado a até 6 m ganha +2 de Defesa até o início do seu próximo turno.",
    "flags": {
     "nauren": {
      "torre": {
@@ -2003,7 +2003,7 @@
    "raridade": "magico",
    "preco": 1200,
    "loja": "galeria",
-   "descricao": "1d10. Sentença — 2 Mana, 1/cena: se o próximo Ataque Pesado acertar, o alvo fica Caído.",
+   "descricao": "Arma Pesada 1d10. Sentença (1 Estamina, 1 por cena): o próximo ataque tem +2 de acerto e, se acertar, o alvo fica Caído. Passiva: +2 de dano no seu primeiro ataque de cada turno.",
    "flags": {
     "nauren": {
      "torre": {
@@ -2030,7 +2030,7 @@
    "raridade": "magico",
    "preco": 2250,
    "loja": "galeria",
-   "descricao": "Grevas Reforçadas (+2 Defesa). +1 Força, +1 Estamina, +1 Destino. Passiva: +1 de Limiar de Deflexão.",
+   "descricao": "Grevas Reforçadas (+2 Defesa). +1 Força, +1 Estamina, +1 Destino. Passo Firme (1 Estamina, 1 por cena): você se move até 6 m sem dar Prioridade (escolhe o ponto no mapa). Passiva: +1 no Limiar de Deflexão.",
    "flags": {
     "nauren": {
      "torre": {
@@ -2057,7 +2057,7 @@
    "raridade": "magico",
    "preco": 3750,
    "loja": "galeria",
-   "descricao": "Escudo Grande (+3 Defesa, Força 4). +2 Força, +1 Estamina. Guardião — 3 Estamina, 1/cena, em Prioridade: aliado adjacente ganha escudo de 2d8.",
+   "descricao": "Escudo Grande (+3 Defesa, Força 4). +2 Força, +1 Estamina. Guardião (1 Estamina, 1 por cena, também na sua Prioridade): você ou 1 aliado a até 6 m ganha escudo de 4d6 até o início do seu próximo turno. Passivas: +4 de Bloqueio; −2 em cada dano sofrido (não vale contra dano verdadeiro).",
    "flags": {
     "nauren": {
      "torre": {
@@ -2084,7 +2084,7 @@
    "raridade": "magico",
    "preco": 6000,
    "loja": "galeria",
-   "descricao": "+1 Inteligência, +1 Estamina, +1 Destino. Lei Alva — 5 Mana, 1/cena: você e aliados num raio de 3 m ganham +2 Defesa e +2 Bloqueio por 2 rodadas.",
+   "descricao": "Amuleto. +1 Inteligência, +1 Estamina, +1 Destino. Lei Alva (2 Estamina, 1 por cena): você e os aliados a até 3 m ganham +3 de Defesa até o início do seu próximo turno. Passivas: +3 de Defesa; +15 de Vida máxima.",
    "flags": {
     "nauren": {
      "torre": {
@@ -2111,7 +2111,7 @@
    "raridade": "magico",
    "preco": 600,
    "loja": "galeria",
-   "descricao": "Incentivo — 1 Estamina, 1/cena: um aliado a até 6 m tem +2 de acerto no próximo ataque.",
+   "descricao": "Anel. Incentivo (1 Estamina, 1 por cena): você ou 1 aliado a até 6 m ganha +2 de acerto no próximo ataque.",
    "flags": {
     "nauren": {
      "torre": {
@@ -2138,7 +2138,7 @@
    "raridade": "magico",
    "preco": 1200,
    "loja": "galeria",
-   "descricao": "1d6, 9 m. Flecha Lânguida — 2 Mana, 1/cena: se o próximo ataque acertar, aplica 2 Lerdeza.",
+   "descricao": "Arco 1d6, 9 m. Flecha Lânguida (1 Estamina, 1 por cena): o próximo acerto aplica 1 Lerdeza. Passiva: +1 m de movimento.",
    "flags": {
     "nauren": {
      "torre": {
@@ -2165,7 +2165,7 @@
    "raridade": "magico",
    "preco": 2250,
    "loja": "galeria",
-   "descricao": "+1 Agilidade, +1 Estamina, +1 Destino. Mãos Dadas — 2 Estamina, 1/cena: você e um aliado adjacente ganham +2 Defesa e +2 movimento por 2 rodadas.",
+   "descricao": "Amuleto. +1 Agilidade, +1 Estamina, +1 Destino. Mãos Dadas (2 Estamina, 1 por cena): você e os aliados a até 3 m ganham +2 de Defesa até o início do seu próximo turno. Passiva: +2 m de movimento.",
    "flags": {
     "nauren": {
      "torre": {
@@ -2192,7 +2192,7 @@
    "raridade": "magico",
    "preco": 3750,
    "loja": "galeria",
-   "descricao": "Grevas Reforçadas (+2 Defesa). +2 Agilidade, +1 Destino. Passiva: +2 de movimento e +1 na Esquiva.",
+   "descricao": "Grevas Reforçadas (+2 Defesa). +2 Agilidade, +1 Destino. Valsa (1 Estamina, 1 por cena): você se move até 8 m sem dar Prioridade (escolhe o ponto no mapa). Passivas: +2 m de movimento; +4 de Esquiva.",
    "flags": {
     "nauren": {
      "torre": {
@@ -2219,7 +2219,7 @@
    "raridade": "magico",
    "preco": 6000,
    "loja": "galeria",
-   "descricao": "+1 Agilidade, +1 Estamina, +1 Destino. Coração Aberto — 2 Estamina + 3 Mana, 1/cena: aliados num raio de 6 m recuperam 2d6 e têm +2 de acerto no próximo ataque.",
+   "descricao": "Brinco. +1 Agilidade, +1 Estamina, +1 Destino. Coração Aberto (2 Estamina, 1 por cena): você e os aliados a até 3 m recuperam 5d4 de Vida. Passivas: +15 de Vida máxima; +3 m de movimento.",
    "flags": {
     "nauren": {
      "torre": {
@@ -2246,7 +2246,7 @@
    "raridade": "magico",
    "preco": 600,
    "loja": "galeria",
-   "descricao": "Cara ou Coroa — 1 Mana, 1/cena: +1 dado de Destino até o fim do combate.",
+   "descricao": "Amuleto. Cara ou Coroa (1 Estamina, 1 por cena): você ou 1 aliado a até 6 m ganha +2 de acerto no próximo ataque.",
    "flags": {
     "nauren": {
      "torre": {
@@ -2273,7 +2273,7 @@
    "raridade": "magico",
    "preco": 1200,
    "loja": "galeria",
-   "descricao": "1d6. Proclamação — 2 Mana, 1/rodada: o próximo ataque causa +1d6 de dano verdadeiro.",
+   "descricao": "Arma Média 1d6. Proclamação (1 Estamina, 1 por cena): o próximo ataque causa +2d6 de dano. Passiva: +1 de acerto.",
    "flags": {
     "nauren": {
      "torre": {
@@ -2300,7 +2300,7 @@
    "raridade": "magico",
    "preco": 2250,
    "loja": "galeria",
-   "descricao": "+1 Inteligência, +2 Destino. Bênção — 1 Estamina + 2 Mana, 1/cena: um aliado adjacente recupera 1 dado de Destino.",
+   "descricao": "Amuleto. +2 Inteligência, +1 Destino. Bênção (1 Estamina, 1 por cena): você ou 1 aliado a até 6 m ganha +4 de acerto no próximo ataque. Passiva: +6 de Espírito.",
    "flags": {
     "nauren": {
      "torre": {
@@ -2327,7 +2327,7 @@
    "raridade": "magico",
    "preco": 3750,
    "loja": "galeria",
-   "descricao": "1d6, 2 m. +2 Força, +1 Destino. Juízo — 2 Estamina + 3 Mana, 1/cena: o próximo ataque tem Facilidade e +2d6 de dano.",
+   "descricao": "Arma de Alcance 1d6, 2 m. +2 Força, +1 Destino. Juízo (1 Estamina, 1 por cena): o próximo ataque causa +4d6 de dano. Passivas: +2 de acerto; seus críticos causam +4d6 de dano.",
    "flags": {
     "nauren": {
      "torre": {
@@ -2354,7 +2354,7 @@
    "raridade": "magico",
    "preco": 6000,
    "loja": "galeria",
-   "descricao": "+1 Força, +1 Inteligência, +1 Destino. Pigmento Vivo — 2 Estamina + 4 Mana, 1/cena: você e aliados num raio de 6 m recuperam 1 dado de Destino.",
+   "descricao": "Anel. +1 Força, +1 Inteligência, +1 Destino. Pigmento Vivo (2 Estamina, 1 por cena): você e os aliados a até 3 m ganham +3 de acerto até o início do seu próximo turno. Passivas: +10 de Espírito; +3 de acerto.",
    "flags": {
     "nauren": {
      "torre": {
@@ -3735,5 +3735,11 @@
    "tier": "Ouro",
    "pigmento": "Dourado"
   }
- ]
+ ],
+ "rotulosRaridade": {
+  "basico": "Básico (comum)",
+  "consumivel": "Consumível",
+  "magico": "Item Pigmentado",
+  "falsario": "Falsário"
+ }
 }
