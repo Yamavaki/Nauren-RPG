@@ -1,0 +1,62 @@
+{
+  "id": "nauren",
+  "title": "Nauren RPG",
+  "description": "Um mundo pintado e abandonado, onde o Acaso mancha as bordas da realidade e os personagens resistem usando Estamina, Prioridade e o poder do Grande Prisma.",
+  "version": "0.94.27",
+  "compatibility": {
+    "minimum": 13,
+    "verified": 14
+  },
+  "authors": [
+    {
+      "name": "Gustavo Yamavaki"
+    }
+  ],
+  "url": "https://github.com/Yamavaki/Nauren-RPG",
+  "manifest": "https://raw.githubusercontent.com/Yamavaki/Nauren-RPG/main/system.json",
+  "download": "https://raw.githubusercontent.com/Yamavaki/Nauren-RPG/main/dist/nauren.zip",
+  "readme": "https://github.com/Yamavaki/Nauren-RPG#readme",
+  "bugs": "https://github.com/Yamavaki/Nauren-RPG/issues",
+  "esmodules": [
+    "nauren.mjs"
+  ],
+  "styles": [
+    "styles/nauren.css"
+  ],
+  "packs": [],
+  "languages": [
+    {
+      "lang": "pt-BR",
+      "name": "Português (Brasil)",
+      "path": "lang/pt-BR.json"
+    }
+  ],
+  "documentTypes": {
+    "Actor": {
+      "personagem": {},
+      "npc": {}
+    },
+    "Item": {
+      "arma": {},
+      "armadura": {},
+      "consumivel": {},
+      "habilidade": {},
+      "magia": {},
+      "efeito": {},
+      "cor": {},
+      "condicao": {},
+      "grupo": {},
+      "classe": {},
+      "subclasse": {},
+      "peculiaridade": {}
+    }
+  },
+  "initiative": "@atributosTotais.agilidade + (1d20 * 0.01)",
+  "grid": {
+    "distance": 1,
+    "units": "m"
+  },
+  "primaryTokenAttribute": "vida",
+  "secondaryTokenAttribute": "estaminaCombate",
+  "socket": true
+}

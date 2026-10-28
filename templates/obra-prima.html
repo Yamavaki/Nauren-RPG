@@ -1,0 +1,46 @@
+<div class="nop-raiz">
+  <div class="nop-topo">
+    <div class="nop-titulo">{{titulo}}</div>
+    <div class="nop-sub">{{sub}}</div>
+  </div>
+
+  <div class="nop-cabeca">
+    <div class="nop-retrato">
+      <svg viewBox="0 0 96 130" fill="none" role="img" aria-label="Autômato de pigmento">
+        <rect x="32" y="8" width="32" height="26" rx="6"></rect><circle class="olho" cx="42" cy="21" r="3"></circle><circle class="olho" cx="54" cy="21" r="3"></circle>
+        <path d="M48 34v6"></path><rect x="24" y="40" width="48" height="44" rx="8"></rect><circle cx="48" cy="60" r="8"></circle><circle cx="48" cy="60" r="3"></circle>
+        <path d="M24 46l-14 22 4 16M72 46l14 22-4 16"></path><circle cx="10" cy="68" r="3"></circle><circle cx="86" cy="68" r="3"></circle>
+        <path d="M36 84l-4 36M60 84l4 36M26 120h12M58 120h12"></path>
+      </svg>
+    </div>
+    <div class="nop-stats">
+      {{#each stats}}<div class="nop-stat {{#if largo}}largo{{/if}}" {{#if dica}}title="{{dica}}"{{/if}}><span>{{rotulo}}</span><b>{{valor}}</b></div>{{/each}}
+    </div>
+  </div>
+
+  <div class="nop-meio">
+    <input type="text" class="nop-nome" name="nome" value="{{nome}}" placeholder="{{placeholder}}" aria-label="Nome da Obra Prima">
+    <div class="nop-linha-titulo">
+      <span class="nop-secao">Atributos</span>
+      <span class="nop-gasto">{{sigla}} investidos: <b>{{gasto}}</b> · restam <b>{{disponivel}}</b></span>
+    </div>
+    {{#each atributos}}
+    <div class="nop-atr {{#if mexido}}mexido{{/if}} {{#if travado}}travado{{/if}}">
+      <div class="nop-atr-nome">{{nome}}</div>
+      <div class="nop-barras">{{#each barras}}<span class="{{classe}}"></span>{{/each}}</div>
+      {{#if travado}}<div class="nop-nao">não aumenta</div>{{else}}
+      <div class="nop-ctl">
+        <button type="button" class="nop-menos" data-action="menos" data-id="{{id}}" {{#if semMenos}}disabled{{/if}} aria-label="Tirar de {{nome}}">−</button>
+        <span class="nop-valor">{{valor}}</span>
+        <button type="button" class="nop-mais" data-action="mais" data-id="{{id}}" {{#if semMais}}disabled{{/if}} aria-label="Pôr em {{nome}}">+</button>
+      </div>{{/if}}
+    </div>
+    {{/each}}
+  </div>
+
+  <div class="nop-pe">
+    {{#each passivas}}<div class="nop-passiva"><span class="nop-selo">Passiva</span><div><b>{{nome}}:</b> {{texto}}</div></div>{{/each}}
+    {{#if aviso}}<div class="nop-aviso">{{aviso}}</div>{{/if}}
+    <button type="button" class="nop-criar" data-action="criar" {{#if semCriar}}disabled{{/if}}>Dar vida à Obra Prima</button>
+  </div>
+</div>

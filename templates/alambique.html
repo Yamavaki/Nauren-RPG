@@ -1,0 +1,91 @@
+<div class="nbc-raiz nal-raiz">
+  <div class="nbc-topo">
+    <svg class="nbc-engrenagem" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6M10 3v5l-5 9a3 3 0 0 0 2.6 4.5h8.8A3 3 0 0 0 19 17l-5-9V3"></path><path d="M7.5 14h9"></path></svg>
+    <div class="nbc-topo-titulo">Alambique</div>
+    <div class="nbc-topo-sub">Preparar Frasco · descanso ou Exercício Teórico</div>
+    <div class="nbc-espaco"></div>
+    {{#if aviso}}<div class="nbc-aviso">{{aviso}}</div>{{/if}}
+    {{#if preparos}}<div class="nal-preparos">Preparos: <b>{{preparos}}</b></div>{{/if}}
+  </div>
+
+  <div class="nal-corpo">
+    <aside class="nal-esquerda">
+      <div class="nal-vitrine" style="--nal-liquido: {{liquido}}; --nal-nivel: {{nivelLiquido}}%">
+        <svg viewBox="0 0 180 250" class="nal-frasco" role="img" aria-label="{{rotuloFrasco}}">
+          <defs><clipPath id="nal-corpo-clip"><path d="M70 30h40v70l46 104a18 18 0 0 1-16 26H40a18 18 0 0 1-16-26l46-104z"></path></clipPath></defs>
+          <g clip-path="url(#nal-corpo-clip)">
+            <rect class="nal-fundo" x="0" y="0" width="180" height="250"></rect>
+            {{#each camadas}}<rect class="nal-camada {{#if nova}}nova{{/if}}" x="0" y="{{y}}" width="180" height="{{h}}" fill="{{cor}}"></rect>{{/each}}
+            {{#if camadas.length}}<circle class="nal-bolha" cx="70" cy="{{bolhaY}}" r="5"></circle><circle class="nal-bolha b2" cx="104" cy="{{bolhaY2}}" r="3.5"></circle>{{/if}}
+          </g>
+          <path class="nal-vidro" d="M70 30h40v70l46 104a18 18 0 0 1-16 26H40a18 18 0 0 1-16-26l46-104z"></path>
+          <rect class="nal-rolha" x="62" y="14" width="56" height="18" rx="4"></rect>
+          <path class="nal-marcas" d="M40 140h22M36 160h16M32 180h20"></path>
+        </svg>
+        <input type="text" class="nbc-nome nal-nome" name="nome" value="{{nomeItem}}" placeholder="{{rotuloFrasco}}" aria-label="Nome do Frasco">
+      </div>
+
+      <div class="nal-caixa">
+        <div class="nal-caixa-topo"><span class="nal-titulo">{{recursoNome}}</span><b>{{usados}} / {{orcamento}}</b></div>
+        <div class="nal-barra {{#if passou}}passou{{/if}}"><span style="width: {{barraPct}}%"></span></div>
+        <div class="nal-nota">{{restaTexto}}. Cada benefício pode entrar até 2 vezes.</div>
+        {{#if saldoTexto}}<div class="nal-nota">{{saldoTexto}}</div>{{/if}}
+      </div>
+
+      {{#if daSubclasse.length}}
+      <div class="nal-caixa">
+        <div class="nal-titulo">Da sua Subclasse</div>
+        {{#each daSubclasse}}<div class="nal-subclasse"><b>{{nome}}</b>{{#if texto}}<span>{{texto}}</span>{{/if}}</div>{{/each}}
+      </div>
+      {{/if}}
+    </aside>
+
+    <section class="nal-direita">
+      <div class="nal-tabela">
+        <div class="nal-cabecalho"><span>Benefício · e o colateral da mesma linha da tabela</span><span>Custo</span><span>Quantos</span></div>
+        <div class="nal-linhas">
+          {{#each beneficios}}
+          <div class="nal-linha {{#if escolhida}}escolhida{{/if}}" style="--nal-cor: {{cor}}" data-linha="{{id}}">
+            <div class="nal-ben">
+              <span class="nal-gota" aria-hidden="true"></span>
+              <div class="nal-ben-texto">
+                <div class="nal-ben-nome">{{nome}}</div>
+                <div class="nal-ben-colateral">Colateral {{efeito}}</div>
+              </div>
+              {{#if origem}}<span class="nal-origem">{{origem}}</span>{{/if}}
+            </div>
+            <div class="nal-custo">{{custo}}</div>
+            <div class="nal-quantos">
+              <button type="button" class="nbc-botao menos" data-action="menos" data-id="{{id}}" {{#if semMenos}}disabled{{/if}} aria-label="Tirar {{nome}}">−</button>
+              <span class="nal-n">{{n}}</span>
+              <button type="button" class="nbc-botao mais" data-action="mais" data-id="{{id}}" {{#if semMais}}disabled{{/if}} aria-label="Pôr {{nome}}">+</button>
+            </div>
+          </div>
+          {{/each}}
+        </div>
+      </div>
+
+      <div class="nal-risco">
+        <div class="nal-risco-texto">
+          <div class="nal-titulo">Risco de colateral</div>
+          <div class="nal-risco-valor">{{riscoTexto}}</div>
+          <div class="nal-nota">{{riscoNota}}</div>
+        </div>
+        <div class="nal-faces">
+          {{#each faces}}<div class="nal-face {{#if risco}}risco{{/if}}" aria-label="Face {{n}}: {{rotulo}}">{{n}}</div>{{/each}}
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="nbc-rodape">
+    <i class="fas fa-flask" aria-hidden="true"></i>
+    <span class="nbc-rodape-texto">{{rodape}}</span>
+    <span class="nbc-espaco"></span>
+    <button type="button" class="nbc-secundario" data-action="limpar">{{rotuloLimpar}}</button>
+    <button type="button" class="nbc-principal" data-action="forjar" {{#if semForjar}}disabled{{/if}}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6M10 3v5l-5 9a3 3 0 0 0 2.6 4.5h8.8A3 3 0 0 0 19 17l-5-9V3"></path></svg>
+      {{rotuloForjar}}
+    </button>
+  </div>
+</div>

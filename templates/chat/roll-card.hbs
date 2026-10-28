@@ -1,0 +1,200 @@
+<div class="nauren-roll-card" style="border-color: {{playerColor}};">
+
+  <header class="nrc-toggle {{#unless hasDetails}}nrc-no-details{{/unless}}" style="border-left: 4px solid {{playerColor}};">
+    <img class="nrc-icon" src="{{#if icon}}{{icon}}{{else}}icons/svg/d20-highlight.svg{{/if}}" alt="{{title}}">
+    <div class="nrc-title-block">
+      <span class="nrc-title">{{title}}</span>
+      <span class="nrc-actor">{{actorName}} <span class="nrc-player" style="color: color-mix(in srgb, {{playerColor}} 60%, #ffffff);">· {{playerName}}</span></span>
+      {{#if fonte}}<span class="nrc-fonte">{{fonte}}</span>{{/if}}
+      {{#if custoVisivel}}<span class="nrc-custo-visivel" title="Custo pago"><i class="fas fa-coins"></i> {{custoVisivel}}</span>{{/if}}
+    </div>
+    {{#if prioridade.sigla}}<span class="nrc-prio-sigla nrc-prio-{{prioridade.indicador}}" title="{{prioridade.rotulo}}">{{prioridade.sigla}}</span>{{/if}}
+    {{#if hasDetails}}<i class="fas fa-chevron-down nrc-chevron"></i>{{/if}}
+  </header>
+
+  {{#if descricaoDireta}}
+  <div class="nrc-description nrc-description-direta">{{{description}}}</div>
+  {{/if}}
+
+  {{#if hasD20}}
+  <div class="nrc-dice-row {{#if isAdvDis}}nrc-dual{{/if}}">
+    {{#each d20Boxes}}
+    <div class="nrc-die-box {{this.cssClass}}">
+      {{#if this.isCrit}}<i class="fas fa-star nrc-die-icon"></i>{{/if}}
+      {{#if this.isFumble}}<i class="fas fa-skull nrc-die-icon"></i>{{/if}}
+      <span class="nrc-die-label">{{this.label}}</span>
+      <span class="nrc-die-total">{{this.total}}</span>
+      {{#if this.breakdown}}<span class="nrc-die-raw">{{this.breakdown}}</span>{{/if}}
+    </div>
+    {{/each}}
+  </div>
+  {{/if}}
+
+  {{#if secondaryLines.length}}
+  <div class="nrc-secondary">
+    {{#each secondaryLines}}
+    <div class="nrc-secondary-line">
+      <span class="nrc-sec-label">{{this.label}}</span>
+      <span class="nrc-sec-value">
+        {{this.value}}
+        {{#if this.breakdown}}<span class="nrc-sec-breakdown">({{this.breakdown}})</span>{{/if}}
+      </span>
+    </div>
+    {{/each}}
+  </div>
+  {{/if}}
+
+  {{#if breakdownAlvos.length}}
+  <div class="nrc-resultado-alvos">
+    {{#each breakdownAlvos}}
+    <div class="nrc-res-alvo">
+      <span class="nrc-res-nome">{{this.value}}</span>
+      {{#if this.itens}}<span class="nrc-res-texto nrc-res-lista">{{#each this.itens}}<span>{{this}}</span>{{/each}}</span>{{else}}<span class="nrc-res-texto">{{this.label}}</span>{{/if}}
+    </div>
+    {{/each}}
+  </div>
+  {{/if}}
+
+  {{#if entidade}}
+  <div class="nrc-entidade">
+    {{#if entidade.ativa}}
+      {{#if entidade.podeInteragir}}<a class="nrc-ent-btn nrc-ent-interagir" data-ent="interagir" title="Selecione o token do seu personagem antes"><i class="fas fa-hand-sparkles"></i> Interagir</a>{{/if}}
+      {{#if entidade.temVida}}<a class="nrc-ent-btn" data-ent="dano"><i class="fas fa-burst"></i> Causar dano</a>{{/if}}
+      <a class="nrc-ent-btn nrc-ent-encerrar" data-ent="encerrar"><i class="fas fa-xmark"></i> Encerrar</a>
+    {{else}}
+      <span class="nrc-ent-encerrada"><i class="fas fa-circle-stop"></i> Encerrada</span>
+    {{/if}}
+  </div>
+  {{/if}}
+  {{#if prioridade}}
+  <div class="nrc-prioridade nrc-prio-{{prioridade.indicador}}">
+    {{#if prioridade.selecao}}
+    <details class="nrc-prio-selecao" data-limite="{{prioridade.selecao.limite}}" {{#if prioridade.selecao.aberta}}open{{/if}}>
+      <summary>
+        <i class="fas fa-hand-point-right"></i> {{prioridade.texto}}
+        <span class="nrc-prio-contador">{{prioridade.selecao.rotuloContador}}</span>
+      </summary>
+      {{#if prioridade.selecao.abas}}
+      <div class="nrc-prio-abas">
+        <a class="nrc-prio-aba ativa" data-lado="todos">Todos</a>
+        <a class="nrc-prio-aba" data-lado="aliado">Aliados</a>
+        <a class="nrc-prio-aba" data-lado="inimigo">Inimigos</a>
+      </div>
+      {{/if}}
+      <div class="nrc-prio-lista">
+        {{#each prioridade.selecao.candidatos}}
+        <label class="nrc-prio-item nrc-prio-lado-{{this.lado}}{{#if this.bloqueado}} nrc-prio-bloqueado{{/if}}" data-lado="{{this.lado}}" {{#if this.bloqueado}}title="Já recebeu 2 Prioridades suas neste turno"{{/if}}>
+          <input type="checkbox" value="{{this.uuid}}" {{#if this.marcado}}checked{{/if}} {{#if this.bloqueado}}disabled{{/if}}><span class="nrc-prio-nome" title="{{this.nome}}">{{this.nome}}{{#if this.bloqueado}} (2/2){{/if}}</span>
+        </label>
+        {{/each}}
+      </div>
+      <div class="nrc-prio-acoes">
+        <a class="nrc-prio-confirmar"><i class="fas fa-check"></i> Confirmar</a>
+        <a class="nrc-prio-dispensar">Nenhum</a>
+      </div>
+    </details>
+    {{else}}
+    <span class="nrc-prio-texto"><i class="fas fa-hand-point-right"></i> {{prioridade.texto}}</span>
+    {{#if prioridade.tomar.length}}
+    <div class="nrc-prio-tomar">
+      {{#each prioridade.tomar}}<a class="nrc-prio-tomar-btn" data-ladrao="{{this.ladraoUuid}}" data-item="{{this.itemId}}" data-para="{{this.paraUuid}}" title="{{this.itemNome}}"><i class="fas fa-hand-sparkles"></i> {{this.ladraoNome}}: tomar de {{this.paraNome}}</a>{{/each}}
+    </div>
+    {{/if}}
+    {{/if}}
+  </div>
+  {{/if}}
+
+  {{#each extras}}
+  <div class="nrc-extra" style="border-color: {{../playerColor}};">
+    <div class="nrc-extra-divider">
+      <span class="nrc-extra-line" style="background: {{../playerColor}};"></span>
+      <span class="nrc-extra-label" style="color: color-mix(in srgb, {{../playerColor}} 60%, #ffffff);">{{this.titulo}}</span>
+      <span class="nrc-extra-line" style="background: {{../playerColor}};"></span>
+    </div>
+
+    {{#if this.hasD20}}
+    <div class="nrc-dice-row {{#if this.isAdvDis}}nrc-dual{{/if}}">
+      {{#each this.d20Boxes}}
+      <div class="nrc-die-box {{this.cssClass}}">
+        {{#if this.isCrit}}<i class="fas fa-star nrc-die-icon"></i>{{/if}}
+        {{#if this.isFumble}}<i class="fas fa-skull nrc-die-icon"></i>{{/if}}
+        <span class="nrc-die-label">{{this.label}}</span>
+        <span class="nrc-die-total">{{this.total}}</span>
+        {{#if this.breakdown}}<span class="nrc-die-raw">{{this.breakdown}}</span>{{/if}}
+      </div>
+      {{/each}}
+    </div>
+    {{/if}}
+
+    {{#if this.secondaryLines.length}}
+    <div class="nrc-secondary">
+      {{#each this.secondaryLines}}
+      <div class="nrc-secondary-line">
+        <span class="nrc-sec-label">{{this.label}}</span>
+        <span class="nrc-sec-value">
+          {{this.value}}
+          {{#if this.breakdown}}<span class="nrc-sec-breakdown">({{this.breakdown}})</span>{{/if}}
+        </span>
+      </div>
+      {{/each}}
+    </div>
+    {{/if}}
+  </div>
+  {{/each}}
+
+  {{#if descricaoRegra}}
+  <details class="nrc-regra" open>
+    <summary><i class="fas fa-book-open"></i> Descrição</summary>
+    <div class="nrc-description">{{{descricaoRegra}}}</div>
+  </details>
+  {{/if}}
+
+  {{#if hasDetails}}
+  <div class="nrc-details" style="display: none;">
+    {{#if breakdown.length}}
+    <div class="nrc-breakdown">
+      {{#each breakdown}}
+      <div class="nrc-breakdown-row">
+        <span class="nrc-bd-label">{{this.label}}</span>
+        <span class="nrc-bd-value">{{this.value}}</span>
+      </div>
+      {{/each}}
+    </div>
+    {{/if}}
+
+    {{#each extras}}
+    {{#if this.breakdown.length}}
+    <div class="nrc-breakdown-group">
+      <div class="nrc-breakdown-group-title">{{this.titulo}}</div>
+      {{#each this.breakdown}}
+      <div class="nrc-breakdown-row">
+        <span class="nrc-bd-label">{{this.label}}</span>
+        <span class="nrc-bd-value">{{this.value}}</span>
+      </div>
+      {{/each}}
+    </div>
+    {{/if}}
+    {{/each}}
+
+    {{#if botoesManuais.length}}
+    <div class="nrc-manual-row">
+      {{#each botoesManuais}}
+      <a class="nrc-manual-btn" data-nrc-acao="{{this.acao}}" data-nrc-valor="{{this.valor}}" title="{{this.valor}}">{{this.label}}</a>
+      {{/each}}
+    </div>
+    {{/if}}
+    {{#if botoesRecurso.length}}
+    <div class="nrc-manual-row">
+      {{#each botoesRecurso}}
+      <a class="nrc-manual-btn nrc-manual-btn-recurso" data-nrc-acao="recurso" data-nrc-recurso="{{this.recurso}}" data-nrc-valor="{{this.valor}}" title="{{this.valor}}">{{this.label}}</a>
+      {{/each}}
+    </div>
+    {{/if}}
+
+    {{#if description}}{{#unless descricaoDireta}}
+    <div class="nrc-description">{{{description}}}</div>
+    {{/unless}}{{/if}}
+  </div>
+  {{/if}}
+
+</div>

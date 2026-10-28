@@ -1,0 +1,3739 @@
+{
+ "sobre": "Catálogo de itens da Torre Infinita (Nauren RPG). Fonte: bot O Curador v0.21.1. A chave é o identificador do item no bot e deve ir em flags.nauren.torre.chave.",
+ "novidades": "Sistema Nauren 0.94.27: os 16 Refinados saíram do catálogo (lista em 'retirados'); as descrições do Foundry não mostram mais preço (o preço é do bot). Sistema Nauren 0.94.24: +40 itens mágicos da Leva 1 (módulos genéricos); +5 Óleos de Lâmina (consumíveis, +1d4 por tier por 1 rodada); os mágicos Bronze e Prata deixaram de dar atributo permanente (descrição atualizada). Anterior: v0.21.1: Besta (besta) e Arma de Fogo (arma-de-fogo) entraram como itens básicos separados; a Munição passa a ser flechas, virotes ou balas.",
+ "seedParaChave": {
+  "armadura-robe-simples": "robe-simples",
+  "armadura-couro-simples": "couro-simples",
+  "armadura-cota-simples": "cota-simples",
+  "armadura-capa-simples": "capa-simples",
+  "armadura-botas-simples": "botas-simples",
+  "escudo-simples": "escudo-simples",
+  "arma-leve": "adaga",
+  "arma-media": "espada",
+  "arma-alcance": "lanca",
+  "arma-pesada": "martelo-de-guerra",
+  "arma-distancia-arco": "arco",
+  "arma-distancia-besta": "besta",
+  "arma-distancia-arma-de-fogo": "arma-de-fogo",
+  "arma-catalisador-gariart": "varinha"
+ },
+ "total": 134,
+ "itens": [
+  {
+   "chave": "robe-simples",
+   "nome": "Robe Simples",
+   "pasta": "Equipamento básico",
+   "tipoFoundry": "armadura",
+   "categoria": "armadura",
+   "subtipo": "Tecido",
+   "pontosAtaque": 0,
+   "tier": null,
+   "pigmento": null,
+   "raridade": "basico",
+   "preco": 200,
+   "loja": "galeria",
+   "descricao": "+2 de Defesa.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "robe-simples",
+      "tier": null,
+      "raridade": "basico",
+      "preco": 200,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "manto-cerimonial",
+   "nome": "Manto Cerimonial",
+   "pasta": "Equipamento básico",
+   "tipoFoundry": "armadura",
+   "categoria": "armadura",
+   "subtipo": "Tecido",
+   "pontosAtaque": 0,
+   "tier": null,
+   "pigmento": null,
+   "raridade": "basico",
+   "preco": 400,
+   "loja": "galeria",
+   "descricao": "+3 de Defesa.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "manto-cerimonial",
+      "tier": null,
+      "raridade": "basico",
+      "preco": 400,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "couro-simples",
+   "nome": "Couro Simples",
+   "pasta": "Equipamento básico",
+   "tipoFoundry": "armadura",
+   "categoria": "armadura",
+   "subtipo": "Couro",
+   "pontosAtaque": 0,
+   "tier": null,
+   "pigmento": null,
+   "raridade": "basico",
+   "preco": 300,
+   "loja": "galeria",
+   "descricao": "+4 de Defesa.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "couro-simples",
+      "tier": null,
+      "raridade": "basico",
+      "preco": 300,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "couro-reforcado",
+   "nome": "Couro Reforçado",
+   "pasta": "Equipamento básico",
+   "tipoFoundry": "armadura",
+   "categoria": "armadura",
+   "subtipo": "Couro",
+   "pontosAtaque": 0,
+   "tier": null,
+   "pigmento": null,
+   "raridade": "basico",
+   "preco": 500,
+   "loja": "galeria",
+   "descricao": "+5 de Defesa.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "couro-reforcado",
+      "tier": null,
+      "raridade": "basico",
+      "preco": 500,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "cota-simples",
+   "nome": "Cota Simples",
+   "pasta": "Equipamento básico",
+   "tipoFoundry": "armadura",
+   "categoria": "armadura",
+   "subtipo": "Malha",
+   "pontosAtaque": 0,
+   "tier": null,
+   "pigmento": null,
+   "raridade": "basico",
+   "preco": 400,
+   "loja": "galeria",
+   "descricao": "+6 de Defesa.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "cota-simples",
+      "tier": null,
+      "raridade": "basico",
+      "preco": 400,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "cota-reforcada",
+   "nome": "Cota Reforçada",
+   "pasta": "Equipamento básico",
+   "tipoFoundry": "armadura",
+   "categoria": "armadura",
+   "subtipo": "Malha",
+   "pontosAtaque": 0,
+   "tier": null,
+   "pigmento": null,
+   "raridade": "basico",
+   "preco": 600,
+   "loja": "galeria",
+   "descricao": "+7 de Defesa.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "cota-reforcada",
+      "tier": null,
+      "raridade": "basico",
+      "preco": 600,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "placa-simples",
+   "nome": "Placa Simples",
+   "pasta": "Equipamento básico",
+   "tipoFoundry": "armadura",
+   "categoria": "armadura",
+   "subtipo": "Placa",
+   "pontosAtaque": 0,
+   "tier": null,
+   "pigmento": null,
+   "raridade": "basico",
+   "preco": 600,
+   "loja": "galeria",
+   "descricao": "+8 de Defesa.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "placa-simples",
+      "tier": null,
+      "raridade": "basico",
+      "preco": 600,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "placa-reforcada",
+   "nome": "Placa Reforçada",
+   "pasta": "Equipamento básico",
+   "tipoFoundry": "armadura",
+   "categoria": "armadura",
+   "subtipo": "Placa",
+   "pontosAtaque": 0,
+   "tier": null,
+   "pigmento": null,
+   "raridade": "basico",
+   "preco": 1000,
+   "loja": "galeria",
+   "descricao": "+10 de Defesa.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "placa-reforcada",
+      "tier": null,
+      "raridade": "basico",
+      "preco": 1000,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "capa-simples",
+   "nome": "Capa Simples",
+   "pasta": "Equipamento básico",
+   "tipoFoundry": "armadura",
+   "categoria": "capa",
+   "subtipo": "Capa",
+   "pontosAtaque": 0,
+   "tier": null,
+   "pigmento": null,
+   "raridade": "basico",
+   "preco": 150,
+   "loja": "galeria",
+   "descricao": "+1 de Defesa.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "capa-simples",
+      "tier": null,
+      "raridade": "basico",
+      "preco": 150,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "capa-reforcada",
+   "nome": "Capa Reforçada",
+   "pasta": "Equipamento básico",
+   "tipoFoundry": "armadura",
+   "categoria": "capa",
+   "subtipo": "Capa",
+   "pontosAtaque": 0,
+   "tier": null,
+   "pigmento": null,
+   "raridade": "basico",
+   "preco": 300,
+   "loja": "galeria",
+   "descricao": "+2 de Defesa.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "capa-reforcada",
+      "tier": null,
+      "raridade": "basico",
+      "preco": 300,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "botas-simples",
+   "nome": "Botas Simples",
+   "pasta": "Equipamento básico",
+   "tipoFoundry": "armadura",
+   "categoria": "botas",
+   "subtipo": "Botas",
+   "pontosAtaque": 0,
+   "tier": null,
+   "pigmento": null,
+   "raridade": "basico",
+   "preco": 150,
+   "loja": "galeria",
+   "descricao": "+1 de Defesa.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "botas-simples",
+      "tier": null,
+      "raridade": "basico",
+      "preco": 150,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "grevas-reforcadas",
+   "nome": "Grevas Reforçadas",
+   "pasta": "Equipamento básico",
+   "tipoFoundry": "armadura",
+   "categoria": "botas",
+   "subtipo": "Botas",
+   "pontosAtaque": 0,
+   "tier": null,
+   "pigmento": null,
+   "raridade": "basico",
+   "preco": 300,
+   "loja": "galeria",
+   "descricao": "+2 de Defesa.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "grevas-reforcadas",
+      "tier": null,
+      "raridade": "basico",
+      "preco": 300,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "adaga",
+   "nome": "Adaga",
+   "pasta": "Equipamento básico",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Leve",
+   "pontosAtaque": 1,
+   "tier": null,
+   "pigmento": null,
+   "raridade": "basico",
+   "preco": 5,
+   "loja": "galeria",
+   "descricao": "1d4. Arremesso até 4 m; bloqueada, causa 0 de dano.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "adaga",
+      "tier": null,
+      "raridade": "basico",
+      "preco": 5,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "espada",
+   "nome": "Espada",
+   "pasta": "Equipamento básico",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Média",
+   "pontosAtaque": 2,
+   "tier": null,
+   "pigmento": null,
+   "raridade": "basico",
+   "preco": 50,
+   "loja": "galeria",
+   "descricao": "1d6. Uma ou duas mãos.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "espada",
+      "tier": null,
+      "raridade": "basico",
+      "preco": 50,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "lanca",
+   "nome": "Lança",
+   "pasta": "Equipamento básico",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Alcance",
+   "pontosAtaque": 2,
+   "tier": null,
+   "pigmento": null,
+   "raridade": "basico",
+   "preco": 50,
+   "loja": "galeria",
+   "descricao": "1d6. Alcance 2 m; uma ou duas mãos.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "lanca",
+      "tier": null,
+      "raridade": "basico",
+      "preco": 50,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "martelo-de-guerra",
+   "nome": "Martelo de Guerra",
+   "pasta": "Equipamento básico",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Pesada",
+   "pontosAtaque": 3,
+   "tier": null,
+   "pigmento": null,
+   "raridade": "basico",
+   "preco": 100,
+   "loja": "galeria",
+   "descricao": "1d10. Duas mãos; +1 Estamina por ataque; bloqueada, ainda causa PdA + mínimo dos dados.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "martelo-de-guerra",
+      "tier": null,
+      "raridade": "basico",
+      "preco": 100,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "arco",
+   "nome": "Arco",
+   "pasta": "Equipamento básico",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Distância",
+   "pontosAtaque": 2,
+   "tier": null,
+   "pigmento": null,
+   "raridade": "basico",
+   "preco": 50,
+   "loja": "galeria",
+   "descricao": "1d6. Alcance 9 m; usa munição.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "arco",
+      "tier": null,
+      "raridade": "basico",
+      "preco": 50,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "besta",
+   "nome": "Besta",
+   "pasta": "Equipamento básico",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Distância",
+   "pontosAtaque": 2,
+   "tier": null,
+   "pigmento": null,
+   "raridade": "basico",
+   "preco": 50,
+   "loja": "galeria",
+   "descricao": "1d6. Alcance 9 m; usa munição (virotes).",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "besta",
+      "tier": null,
+      "raridade": "basico",
+      "preco": 50,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "arma-de-fogo",
+   "nome": "Arma de Fogo",
+   "pasta": "Equipamento básico",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Distância",
+   "pontosAtaque": 2,
+   "tier": null,
+   "pigmento": null,
+   "raridade": "basico",
+   "preco": 50,
+   "loja": "galeria",
+   "descricao": "1d6. Alcance 9 m; usa munição (balas).",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "arma-de-fogo",
+      "tier": null,
+      "raridade": "basico",
+      "preco": 50,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "varinha",
+   "nome": "Varinha",
+   "pasta": "Equipamento básico",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Catalisador",
+   "pontosAtaque": 1,
+   "tier": null,
+   "pigmento": null,
+   "raridade": "basico",
+   "preco": 50,
+   "loja": "galeria",
+   "descricao": "Gariart (6 m, 1 Estamina, 1d4 + PdM) ou Excesso de Magia (sem mana: recupera 1d4 de Mana).",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "varinha",
+      "tier": null,
+      "raridade": "basico",
+      "preco": 50,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "municao",
+   "nome": "Munição (20 unid.)",
+   "pasta": "Consumíveis",
+   "tipoFoundry": "consumivel",
+   "categoria": "municao",
+   "subtipo": "Munição",
+   "pontosAtaque": 0,
+   "tier": null,
+   "pigmento": null,
+   "raridade": "basico",
+   "preco": 1,
+   "loja": "galeria",
+   "descricao": "Flechas, virotes ou balas.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "municao",
+      "tier": null,
+      "raridade": "basico",
+      "preco": 1,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "escudo-simples",
+   "nome": "Escudo Simples",
+   "pasta": "Equipamento básico",
+   "tipoFoundry": "arma",
+   "categoria": "escudo",
+   "subtipo": "Leve",
+   "pontosAtaque": 1,
+   "tier": null,
+   "pigmento": null,
+   "raridade": "basico",
+   "preco": 50,
+   "loja": "galeria",
+   "descricao": "+1 de Defesa. Golpe com escudo: 1d4.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "escudo-simples",
+      "tier": null,
+      "raridade": "basico",
+      "preco": 50,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "escudo-medio",
+   "nome": "Escudo Médio",
+   "pasta": "Equipamento básico",
+   "tipoFoundry": "arma",
+   "categoria": "escudo",
+   "subtipo": "Médio",
+   "pontosAtaque": 2,
+   "tier": null,
+   "pigmento": null,
+   "raridade": "basico",
+   "preco": 100,
+   "loja": "galeria",
+   "descricao": "+2 de Defesa. Golpe com escudo: 1d4.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "escudo-medio",
+      "tier": null,
+      "raridade": "basico",
+      "preco": 100,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "escudo-grande",
+   "nome": "Escudo Grande",
+   "pasta": "Equipamento básico",
+   "tipoFoundry": "arma",
+   "categoria": "escudo",
+   "subtipo": "Pesado",
+   "pontosAtaque": 3,
+   "tier": null,
+   "pigmento": null,
+   "raridade": "basico",
+   "preco": 200,
+   "loja": "galeria",
+   "descricao": "+3 de Defesa. Requisito: Força 4. Golpe com escudo: 1d4.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "escudo-grande",
+      "tier": null,
+      "raridade": "basico",
+      "preco": 200,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "pocao-vida-menor",
+   "nome": "Poção de Vida Menor",
+   "pasta": "Consumíveis",
+   "tipoFoundry": "consumivel",
+   "categoria": "consumivel",
+   "subtipo": "Poção",
+   "pontosAtaque": 0,
+   "tier": "Bronze",
+   "pigmento": null,
+   "raridade": "consumivel",
+   "preco": 20,
+   "loja": "galeria",
+   "descricao": "Recupera 2d4+2 de Vida.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "pocao-vida-menor",
+      "tier": "Bronze",
+      "raridade": "consumivel",
+      "preco": 20,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "pocao-vida",
+   "nome": "Poção de Vida",
+   "pasta": "Consumíveis",
+   "tipoFoundry": "consumivel",
+   "categoria": "consumivel",
+   "subtipo": "Poção",
+   "pontosAtaque": 0,
+   "tier": "Prata",
+   "pigmento": null,
+   "raridade": "consumivel",
+   "preco": 40,
+   "loja": "galeria",
+   "descricao": "Recupera 4d4+4 de Vida.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "pocao-vida",
+      "tier": "Prata",
+      "raridade": "consumivel",
+      "preco": 40,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "pocao-vida-maior",
+   "nome": "Poção de Vida Maior",
+   "pasta": "Consumíveis",
+   "tipoFoundry": "consumivel",
+   "categoria": "consumivel",
+   "subtipo": "Poção",
+   "pontosAtaque": 0,
+   "tier": "Ouro",
+   "pigmento": null,
+   "raridade": "consumivel",
+   "preco": 75,
+   "loja": "galeria",
+   "descricao": "Recupera 6d4+6 de Vida.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "pocao-vida-maior",
+      "tier": "Ouro",
+      "raridade": "consumivel",
+      "preco": 75,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "pocao-vida-suprema",
+   "nome": "Poção de Vida Suprema",
+   "pasta": "Consumíveis",
+   "tipoFoundry": "consumivel",
+   "categoria": "consumivel",
+   "subtipo": "Poção",
+   "pontosAtaque": 0,
+   "tier": "Diamante",
+   "pigmento": null,
+   "raridade": "consumivel",
+   "preco": 125,
+   "loja": "galeria",
+   "descricao": "Recupera 8d4+8 de Vida.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "pocao-vida-suprema",
+      "tier": "Diamante",
+      "raridade": "consumivel",
+      "preco": 125,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "essencia-mana-menor",
+   "nome": "Essência de Mana Menor",
+   "pasta": "Consumíveis",
+   "tipoFoundry": "consumivel",
+   "categoria": "consumivel",
+   "subtipo": "Poção",
+   "pontosAtaque": 0,
+   "tier": "Bronze",
+   "pigmento": null,
+   "raridade": "consumivel",
+   "preco": 20,
+   "loja": "galeria",
+   "descricao": "Recupera 1d4+1 de Mana.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "essencia-mana-menor",
+      "tier": "Bronze",
+      "raridade": "consumivel",
+      "preco": 20,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "essencia-mana",
+   "nome": "Essência de Mana",
+   "pasta": "Consumíveis",
+   "tipoFoundry": "consumivel",
+   "categoria": "consumivel",
+   "subtipo": "Poção",
+   "pontosAtaque": 0,
+   "tier": "Prata",
+   "pigmento": null,
+   "raridade": "consumivel",
+   "preco": 40,
+   "loja": "galeria",
+   "descricao": "Recupera 2d4+2 de Mana.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "essencia-mana",
+      "tier": "Prata",
+      "raridade": "consumivel",
+      "preco": 40,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "essencia-mana-maior",
+   "nome": "Essência de Mana Maior",
+   "pasta": "Consumíveis",
+   "tipoFoundry": "consumivel",
+   "categoria": "consumivel",
+   "subtipo": "Poção",
+   "pontosAtaque": 0,
+   "tier": "Ouro",
+   "pigmento": null,
+   "raridade": "consumivel",
+   "preco": 75,
+   "loja": "galeria",
+   "descricao": "Recupera 3d4+3 de Mana.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "essencia-mana-maior",
+      "tier": "Ouro",
+      "raridade": "consumivel",
+      "preco": 75,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "tonico-estamina",
+   "nome": "Tônico de Estamina",
+   "pasta": "Consumíveis",
+   "tipoFoundry": "consumivel",
+   "categoria": "consumivel",
+   "subtipo": "Tônico",
+   "pontosAtaque": 0,
+   "tier": "Prata",
+   "pigmento": null,
+   "raridade": "consumivel",
+   "preco": 80,
+   "loja": "galeria",
+   "descricao": "Recupera 3 de Estamina (saldo +2). Máximo 1 Tônico por rodada.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "tonico-estamina",
+      "tier": "Prata",
+      "raridade": "consumivel",
+      "preco": 80,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "tonico-concentrado",
+   "nome": "Tônico Concentrado",
+   "pasta": "Consumíveis",
+   "tipoFoundry": "consumivel",
+   "categoria": "consumivel",
+   "subtipo": "Tônico",
+   "pontosAtaque": 0,
+   "tier": "Diamante",
+   "pigmento": null,
+   "raridade": "consumivel",
+   "preco": 250,
+   "loja": "galeria",
+   "descricao": "Recupera 4 de Estamina (saldo +3). Máximo 1 Tônico por rodada.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "tonico-concentrado",
+      "tier": "Diamante",
+      "raridade": "consumivel",
+      "preco": 250,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "veneno-serpente-palida",
+   "nome": "Veneno de Serpente Pálida",
+   "pasta": "Consumíveis",
+   "tipoFoundry": "consumivel",
+   "categoria": "consumivel",
+   "subtipo": "Veneno",
+   "pontosAtaque": 0,
+   "tier": null,
+   "pigmento": null,
+   "raridade": "consumivel",
+   "preco": 25,
+   "loja": "galeria",
+   "descricao": "Aplicar na arma. Por acúmulo: 1 de dano de veneno.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "veneno-serpente-palida",
+      "tier": null,
+      "raridade": "consumivel",
+      "preco": 25,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "sangue-negro",
+   "nome": "Sangue-Negro",
+   "pasta": "Consumíveis",
+   "tipoFoundry": "consumivel",
+   "categoria": "consumivel",
+   "subtipo": "Veneno",
+   "pontosAtaque": 0,
+   "tier": null,
+   "pigmento": null,
+   "raridade": "consumivel",
+   "preco": 30,
+   "loja": "galeria",
+   "descricao": "Aplicar na arma. Por acúmulo: 1 de dano de veneno e −1 de Defesa.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "sangue-negro",
+      "tier": null,
+      "raridade": "consumivel",
+      "preco": 30,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "lotus-sombrio",
+   "nome": "Lótus Sombrio",
+   "pasta": "Consumíveis",
+   "tipoFoundry": "consumivel",
+   "categoria": "consumivel",
+   "subtipo": "Veneno",
+   "pontosAtaque": 0,
+   "tier": null,
+   "pigmento": null,
+   "raridade": "consumivel",
+   "preco": 35,
+   "loja": "galeria",
+   "descricao": "Aplicar na arma. Por acúmulo: 1 de dano e −1 de deslocamento.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "lotus-sombrio",
+      "tier": null,
+      "raridade": "consumivel",
+      "preco": 35,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "icor-acido",
+   "nome": "Icor Ácido",
+   "pasta": "Consumíveis",
+   "tipoFoundry": "consumivel",
+   "categoria": "consumivel",
+   "subtipo": "Veneno",
+   "pontosAtaque": 0,
+   "tier": null,
+   "pigmento": null,
+   "raridade": "consumivel",
+   "preco": 40,
+   "loja": "galeria",
+   "descricao": "Aplicar na arma. Por acúmulo: 1 de dano e perde 1 de Mana.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "icor-acido",
+      "tier": null,
+      "raridade": "consumivel",
+      "preco": 40,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "fel-de-quimera",
+   "nome": "Fel de Quimera",
+   "pasta": "Consumíveis",
+   "tipoFoundry": "consumivel",
+   "categoria": "consumivel",
+   "subtipo": "Veneno",
+   "pontosAtaque": 0,
+   "tier": null,
+   "pigmento": null,
+   "raridade": "consumivel",
+   "preco": 50,
+   "loja": "galeria",
+   "descricao": "Aplicar na arma. Por acúmulo: 1 de dano; com 5 acúmulos, paralisado por 1 rodada.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "fel-de-quimera",
+      "tier": null,
+      "raridade": "consumivel",
+      "preco": 50,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "tinta-do-vazio",
+   "nome": "Tinta do Vazio",
+   "pasta": "Consumíveis",
+   "tipoFoundry": "consumivel",
+   "categoria": "consumivel",
+   "subtipo": "Veneno",
+   "pontosAtaque": 0,
+   "tier": null,
+   "pigmento": null,
+   "raridade": "consumivel",
+   "preco": 60,
+   "loja": "galeria",
+   "descricao": "Aplicar na arma. Por acúmulo: 1 de dano e o alvo perde uma de suas cores.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "tinta-do-vazio",
+      "tier": null,
+      "raridade": "consumivel",
+      "preco": 60,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "tinta-rubra",
+   "nome": "Tinta Rubra",
+   "pasta": "Poções pigmentadas",
+   "tipoFoundry": "consumivel",
+   "categoria": "consumivel",
+   "subtipo": "Poção pigmentada",
+   "pontosAtaque": 0,
+   "tier": null,
+   "pigmento": "Vermelho",
+   "raridade": "consumivel",
+   "preco": 60,
+   "loja": "galeria",
+   "descricao": "Até o fim do combate: +1 em PdA ou PdM (escolha ao beber).",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "tinta-rubra",
+      "tier": null,
+      "raridade": "consumivel",
+      "preco": 60,
+      "pigmento": "Vermelho",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "tinta-anil",
+   "nome": "Tinta Anil",
+   "pasta": "Poções pigmentadas",
+   "tipoFoundry": "consumivel",
+   "categoria": "consumivel",
+   "subtipo": "Poção pigmentada",
+   "pontosAtaque": 0,
+   "tier": null,
+   "pigmento": "Azul",
+   "raridade": "consumivel",
+   "preco": 60,
+   "loja": "galeria",
+   "descricao": "Até o fim do combate: +2 de Espírito; a Mana atual sobe junto.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "tinta-anil",
+      "tier": null,
+      "raridade": "consumivel",
+      "preco": 60,
+      "pigmento": "Azul",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "tinta-verdejante",
+   "nome": "Tinta Verdejante",
+   "pasta": "Poções pigmentadas",
+   "tipoFoundry": "consumivel",
+   "categoria": "consumivel",
+   "subtipo": "Poção pigmentada",
+   "pontosAtaque": 0,
+   "tier": null,
+   "pigmento": "Verde",
+   "raridade": "consumivel",
+   "preco": 60,
+   "loja": "galeria",
+   "descricao": "Até o fim do combate: +1 de Vitalidade; a Vida atual sobe junto.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "tinta-verdejante",
+      "tier": null,
+      "raridade": "consumivel",
+      "preco": 60,
+      "pigmento": "Verde",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "tinta-violeta",
+   "nome": "Tinta Violeta",
+   "pasta": "Poções pigmentadas",
+   "tipoFoundry": "consumivel",
+   "categoria": "consumivel",
+   "subtipo": "Poção pigmentada",
+   "pontosAtaque": 0,
+   "tier": null,
+   "pigmento": "Roxo",
+   "raridade": "consumivel",
+   "preco": 60,
+   "loja": "galeria",
+   "descricao": "Até o fim do combate: +1 no menor atributo.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "tinta-violeta",
+      "tier": null,
+      "raridade": "consumivel",
+      "preco": 60,
+      "pigmento": "Roxo",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "tinta-negra",
+   "nome": "Tinta Negra",
+   "pasta": "Poções pigmentadas",
+   "tipoFoundry": "consumivel",
+   "categoria": "consumivel",
+   "subtipo": "Poção pigmentada",
+   "pontosAtaque": 0,
+   "tier": null,
+   "pigmento": "Preto",
+   "raridade": "consumivel",
+   "preco": 60,
+   "loja": "galeria",
+   "descricao": "Até o fim do combate: +1 de Estresse máximo.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "tinta-negra",
+      "tier": null,
+      "raridade": "consumivel",
+      "preco": 60,
+      "pigmento": "Preto",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "tinta-alva",
+   "nome": "Tinta Alva",
+   "pasta": "Poções pigmentadas",
+   "tipoFoundry": "consumivel",
+   "categoria": "consumivel",
+   "subtipo": "Poção pigmentada",
+   "pontosAtaque": 0,
+   "tier": null,
+   "pigmento": "Branco",
+   "raridade": "consumivel",
+   "preco": 60,
+   "loja": "galeria",
+   "descricao": "Até o fim do combate: +1 em um meta-atributo (escolha ao beber).",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "tinta-alva",
+      "tier": null,
+      "raridade": "consumivel",
+      "preco": 60,
+      "pigmento": "Branco",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "tinta-rosea",
+   "nome": "Tinta Rósea",
+   "pasta": "Poções pigmentadas",
+   "tipoFoundry": "consumivel",
+   "categoria": "consumivel",
+   "subtipo": "Poção pigmentada",
+   "pontosAtaque": 0,
+   "tier": null,
+   "pigmento": "Rosa",
+   "raridade": "consumivel",
+   "preco": 60,
+   "loja": "galeria",
+   "descricao": "Até o fim do combate: +1 de movimento.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "tinta-rosea",
+      "tier": null,
+      "raridade": "consumivel",
+      "preco": 60,
+      "pigmento": "Rosa",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "tinta-aurea",
+   "nome": "Tinta Áurea",
+   "pasta": "Poções pigmentadas",
+   "tipoFoundry": "consumivel",
+   "categoria": "consumivel",
+   "subtipo": "Poção pigmentada",
+   "pontosAtaque": 0,
+   "tier": null,
+   "pigmento": "Dourado",
+   "raridade": "consumivel",
+   "preco": 60,
+   "loja": "galeria",
+   "descricao": "Até o fim do combate: +1 de Destino (+1 dado de Destino).",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "tinta-aurea",
+      "tier": null,
+      "raridade": "consumivel",
+      "preco": 60,
+      "pigmento": "Dourado",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "brinco-da-centelha",
+   "nome": "Brinco da Centelha",
+   "pasta": "Pigmento Vermelho",
+   "tipoFoundry": "armadura",
+   "categoria": "acessorio",
+   "subtipo": "Brinco",
+   "pontosAtaque": 0,
+   "tier": "Bronze",
+   "pigmento": "Vermelho",
+   "raridade": "magico",
+   "preco": 600,
+   "loja": "galeria",
+   "descricao": "Centelha — 1 Mana, 1/cena: o próximo ataque causa +1d4 de dano.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "brinco-da-centelha",
+      "tier": "Bronze",
+      "raridade": "magico",
+      "preco": 600,
+      "pigmento": "Vermelho",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "lamina-sangria",
+   "nome": "Lâmina Sangria",
+   "pasta": "Pigmento Vermelho",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Média",
+   "pontosAtaque": 2,
+   "tier": "Prata",
+   "pigmento": "Vermelho",
+   "raridade": "magico",
+   "preco": 1200,
+   "loja": "galeria",
+   "descricao": "1d6. Sangria — 2 Mana, 1/rodada: se o próximo ataque acertar, aplica 1 Sangramento.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "lamina-sangria",
+      "tier": "Prata",
+      "raridade": "magico",
+      "preco": 1200,
+      "pigmento": "Vermelho",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "machado-furia-rubra",
+   "nome": "Machado da Fúria Rubra",
+   "pasta": "Pigmento Vermelho",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Pesada",
+   "pontosAtaque": 3,
+   "tier": "Ouro",
+   "pigmento": "Vermelho",
+   "raridade": "magico",
+   "preco": 2250,
+   "loja": "galeria",
+   "descricao": "1d10. +2 Força, +1 Estamina. Fúria — 2 Estamina + 2 Mana, 1/cena: por 2 rodadas, +2 de dano e −2 de Defesa.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "machado-furia-rubra",
+      "tier": "Ouro",
+      "raridade": "magico",
+      "preco": 2250,
+      "pigmento": "Vermelho",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "anel-coracao-em-chamas",
+   "nome": "Anel do Coração em Chamas",
+   "pasta": "Pigmento Vermelho",
+   "tipoFoundry": "armadura",
+   "categoria": "acessorio",
+   "subtipo": "Anel",
+   "pontosAtaque": 0,
+   "tier": "Diamante",
+   "pigmento": "Vermelho",
+   "raridade": "magico",
+   "preco": 3750,
+   "loja": "galeria",
+   "descricao": "+1 Força, +1 Inteligência, +1 Estamina. Incendiar — 3 Mana, 1/cena: o próximo ataque ou magia que acertar aplica 2 Queimando.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "anel-coracao-em-chamas",
+      "tier": "Diamante",
+      "raridade": "magico",
+      "preco": 3750,
+      "pigmento": "Vermelho",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "gladio-ultimo-vermelho",
+   "nome": "Gládio do Último Vermelho",
+   "pasta": "Pigmento Vermelho",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Média",
+   "pontosAtaque": 2,
+   "tier": "Prismático",
+   "pigmento": "Vermelho",
+   "raridade": "magico",
+   "preco": 6000,
+   "loja": "galeria",
+   "descricao": "2d6. +2 Força, +1 Destino. Corte Escarlate — 3 Estamina + 4 Mana, 1/cena: o próximo ataque causa dano máximo nos dados.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "gladio-ultimo-vermelho",
+      "tier": "Prismatico",
+      "raridade": "magico",
+      "preco": 6000,
+      "pigmento": "Vermelho",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "anel-gota-serena",
+   "nome": "Anel da Gota Serena",
+   "pasta": "Pigmento Azul",
+   "tipoFoundry": "armadura",
+   "categoria": "acessorio",
+   "subtipo": "Anel",
+   "pontosAtaque": 0,
+   "tier": "Bronze",
+   "pigmento": "Azul",
+   "raridade": "magico",
+   "preco": 600,
+   "loja": "galeria",
+   "descricao": "Gota Serena — 1 Estamina, 1/cena: recupera 1d4 de Mana.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "anel-gota-serena",
+      "tier": "Bronze",
+      "raridade": "magico",
+      "preco": 600,
+      "pigmento": "Azul",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "cajado-horizonte-calmo",
+   "nome": "Cajado do Horizonte Calmo",
+   "pasta": "Pigmento Azul",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Catalisador",
+   "pontosAtaque": 1,
+   "tier": "Prata",
+   "pigmento": "Azul",
+   "raridade": "magico",
+   "preco": 1200,
+   "loja": "galeria",
+   "descricao": "Gariart 1d6. Fôlego Arcano — 2 Estamina, 1/cena: a próxima magia custa 2 de Mana a menos (mín. 1).",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "cajado-horizonte-calmo",
+      "tier": "Prata",
+      "raridade": "magico",
+      "preco": 1200,
+      "pigmento": "Azul",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "manto-correntes-frias",
+   "nome": "Manto das Correntes Frias",
+   "pasta": "Pigmento Azul",
+   "tipoFoundry": "armadura",
+   "categoria": "armadura",
+   "subtipo": "Tecido",
+   "pontosAtaque": 0,
+   "tier": "Ouro",
+   "pigmento": "Azul",
+   "raridade": "magico",
+   "preco": 2250,
+   "loja": "galeria",
+   "descricao": "Manto Cerimonial (+3 Defesa). +2 Inteligência. Maré Gélida — 3 Mana, 1/cena: ataque mágico a 6 m, 2d6 + PdM e 2 Congelando.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "manto-correntes-frias",
+      "tier": "Ouro",
+      "raridade": "magico",
+      "preco": 2250,
+      "pigmento": "Azul",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "amuleto-olho-do-oceano",
+   "nome": "Amuleto do Olho do Oceano",
+   "pasta": "Pigmento Azul",
+   "tipoFoundry": "armadura",
+   "categoria": "acessorio",
+   "subtipo": "Amuleto",
+   "pontosAtaque": 0,
+   "tier": "Diamante",
+   "pigmento": "Azul",
+   "raridade": "magico",
+   "preco": 3750,
+   "loja": "galeria",
+   "descricao": "+1 Inteligência, +1 Agilidade, +1 Destino. Bolha Abissal — 4 Mana, 1/cena, em Prioridade: escudo de 3d6 + PdM até o fim da rodada.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "amuleto-olho-do-oceano",
+      "tier": "Diamante",
+      "raridade": "magico",
+      "preco": 3750,
+      "pigmento": "Azul",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "brinco-lua-afogada",
+   "nome": "Brinco da Lua Afogada",
+   "pasta": "Pigmento Azul",
+   "tipoFoundry": "armadura",
+   "categoria": "acessorio",
+   "subtipo": "Brinco",
+   "pontosAtaque": 0,
+   "tier": "Prismático",
+   "pigmento": "Azul",
+   "raridade": "magico",
+   "preco": 6000,
+   "loja": "galeria",
+   "descricao": "+2 Inteligência, +1 Estamina. Lua Cheia — 5 Mana, 1/cena: a próxima magia não custa Mana e tem Facilidade.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "brinco-lua-afogada",
+      "tier": "Prismatico",
+      "raridade": "magico",
+      "preco": 6000,
+      "pigmento": "Azul",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "brinco-de-semente",
+   "nome": "Brinco de Semente",
+   "pasta": "Pigmento Verde",
+   "tipoFoundry": "armadura",
+   "categoria": "acessorio",
+   "subtipo": "Brinco",
+   "pontosAtaque": 0,
+   "tier": "Bronze",
+   "pigmento": "Verde",
+   "raridade": "magico",
+   "preco": 600,
+   "loja": "galeria",
+   "descricao": "Brotar — 1 Estamina + 1 Mana, 1/cena: cura 1d6 + PdM em si ou aliado adjacente.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "brinco-de-semente",
+      "tier": "Bronze",
+      "raridade": "magico",
+      "preco": 600,
+      "pigmento": "Verde",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "lanca-do-broto",
+   "nome": "Lança do Broto",
+   "pasta": "Pigmento Verde",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Alcance",
+   "pontosAtaque": 2,
+   "tier": "Prata",
+   "pigmento": "Verde",
+   "raridade": "magico",
+   "preco": 1200,
+   "loja": "galeria",
+   "descricao": "1d6, 2 m. Enraizar — 2 Mana, 1/cena: se o próximo ataque acertar, o alvo fica Preso.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "lanca-do-broto",
+      "tier": "Prata",
+      "raridade": "magico",
+      "preco": 1200,
+      "pigmento": "Verde",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "cota-casca-antiga",
+   "nome": "Cota da Casca Antiga",
+   "pasta": "Pigmento Verde",
+   "tipoFoundry": "armadura",
+   "categoria": "armadura",
+   "subtipo": "Malha",
+   "pontosAtaque": 0,
+   "tier": "Ouro",
+   "pigmento": "Verde",
+   "raridade": "magico",
+   "preco": 2250,
+   "loja": "galeria",
+   "descricao": "Cota Simples (+6 Defesa). +1 Força, +2 Estamina. Seiva — 3 Mana, 1/cena: no início dos próximos 3 turnos, recupera 1d6 de Vida.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "cota-casca-antiga",
+      "tier": "Ouro",
+      "raridade": "magico",
+      "preco": 2250,
+      "pigmento": "Verde",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "cajado-bosque-desperto",
+   "nome": "Cajado do Bosque Desperto",
+   "pasta": "Pigmento Verde",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Catalisador",
+   "pontosAtaque": 1,
+   "tier": "Diamante",
+   "pigmento": "Verde",
+   "raridade": "magico",
+   "preco": 3750,
+   "loja": "galeria",
+   "descricao": "Gariart 1d6. +2 Inteligência, +1 Estamina. Clareira — 4 Mana, 1/cena: você e aliados num raio de 3 m recuperam 2d8 + PdM.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "cajado-bosque-desperto",
+      "tier": "Diamante",
+      "raridade": "magico",
+      "preco": 3750,
+      "pigmento": "Verde",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "amuleto-espinhos-floridos",
+   "nome": "Amuleto dos Espinhos Floridos",
+   "pasta": "Pigmento Verde",
+   "tipoFoundry": "armadura",
+   "categoria": "acessorio",
+   "subtipo": "Amuleto",
+   "pontosAtaque": 0,
+   "tier": "Prismático",
+   "pigmento": "Verde",
+   "raridade": "magico",
+   "preco": 6000,
+   "loja": "galeria",
+   "descricao": "+1 Força, +1 Estamina, +1 Destino. Primavera — 3 Estamina + 4 Mana, 1/cena: você e aliados num raio de 6 m recuperam 3d8.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "amuleto-espinhos-floridos",
+      "tier": "Prismatico",
+      "raridade": "magico",
+      "preco": 6000,
+      "pigmento": "Verde",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "anel-olhar-curioso",
+   "nome": "Anel do Olhar Curioso",
+   "pasta": "Pigmento Roxo",
+   "tipoFoundry": "armadura",
+   "categoria": "acessorio",
+   "subtipo": "Anel",
+   "pontosAtaque": 0,
+   "tier": "Bronze",
+   "pigmento": "Roxo",
+   "raridade": "magico",
+   "preco": 600,
+   "loja": "galeria",
+   "descricao": "Estudar — 1 Estamina, 1/cena: o próximo ataque tem +2 de acerto.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "anel-olhar-curioso",
+      "tier": "Bronze",
+      "raridade": "magico",
+      "preco": 600,
+      "pigmento": "Roxo",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "adaga-lingua-bifida",
+   "nome": "Adaga da Língua Bífida",
+   "pasta": "Pigmento Roxo",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Leve",
+   "pontosAtaque": 1,
+   "tier": "Prata",
+   "pigmento": "Roxo",
+   "raridade": "magico",
+   "preco": 1200,
+   "loja": "galeria",
+   "descricao": "1d4. Golpe Furtivo — 2 Mana, 1/rodada: o próximo ataque não gera Prioridade.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "adaga-lingua-bifida",
+      "tier": "Prata",
+      "raridade": "magico",
+      "preco": 1200,
+      "pigmento": "Roxo",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "brinco-sussurro-purpura",
+   "nome": "Brinco do Sussurro Púrpura",
+   "pasta": "Pigmento Roxo",
+   "tipoFoundry": "armadura",
+   "categoria": "acessorio",
+   "subtipo": "Brinco",
+   "pontosAtaque": 0,
+   "tier": "Ouro",
+   "pigmento": "Roxo",
+   "raridade": "magico",
+   "preco": 2250,
+   "loja": "galeria",
+   "descricao": "+2 Agilidade, +1 Inteligência. Sussurro — 2 Estamina + 2 Mana, 1/cena: ataque de condição a 6 m; acerto = Amedrontado.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "brinco-sussurro-purpura",
+      "tier": "Ouro",
+      "raridade": "magico",
+      "preco": 2250,
+      "pigmento": "Roxo",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "besta-ponto-cego",
+   "nome": "Besta do Ponto Cego",
+   "pasta": "Pigmento Roxo",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Distância",
+   "pontosAtaque": 2,
+   "tier": "Diamante",
+   "pigmento": "Roxo",
+   "raridade": "magico",
+   "preco": 3750,
+   "loja": "galeria",
+   "descricao": "1d6, 9 m. +2 Agilidade, +1 Inteligência. Passiva: crítico com 19 ou 20 com esta arma.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "besta-ponto-cego",
+      "tier": "Diamante",
+      "raridade": "magico",
+      "preco": 3750,
+      "pigmento": "Roxo",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "grimorio-do-labirinto",
+   "nome": "Grimório do Labirinto",
+   "pasta": "Pigmento Roxo",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Catalisador",
+   "pontosAtaque": 1,
+   "tier": "Prismático",
+   "pigmento": "Roxo",
+   "raridade": "magico",
+   "preco": 6000,
+   "loja": "galeria",
+   "descricao": "Gariart 1d8. +2 Inteligência, +1 Destino. Labirinto — 2 Estamina + 4 Mana, 1/cena: ataque mágico a 9 m; acerto = Atordoado.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "grimorio-do-labirinto",
+      "tier": "Prismatico",
+      "raridade": "magico",
+      "preco": 6000,
+      "pigmento": "Roxo",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "brinco-do-vazio",
+   "nome": "Brinco do Vazio",
+   "pasta": "Pigmento Preto",
+   "tipoFoundry": "armadura",
+   "categoria": "acessorio",
+   "subtipo": "Brinco",
+   "pontosAtaque": 0,
+   "tier": "Bronze",
+   "pigmento": "Preto",
+   "raridade": "magico",
+   "preco": 600,
+   "loja": "galeria",
+   "descricao": "Engolir o Golpe — 1 Mana, 1/cena, em Prioridade: o próximo dano sofrido diminui 3.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "brinco-do-vazio",
+      "tier": "Bronze",
+      "raridade": "magico",
+      "preco": 600,
+      "pigmento": "Preto",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "escudo-do-eclipse",
+   "nome": "Escudo do Eclipse",
+   "pasta": "Pigmento Preto",
+   "tipoFoundry": "arma",
+   "categoria": "escudo",
+   "subtipo": "Médio",
+   "pontosAtaque": 2,
+   "tier": "Prata",
+   "pigmento": "Preto",
+   "raridade": "magico",
+   "preco": 1200,
+   "loja": "galeria",
+   "descricao": "Escudo Médio (+2 Defesa). Eclipse — 2 Estamina, 1/cena, em Prioridade: +3 de Bloqueio até o fim da rodada.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "escudo-do-eclipse",
+      "tier": "Prata",
+      "raridade": "magico",
+      "preco": 1200,
+      "pigmento": "Preto",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "manto-sombra-paciente",
+   "nome": "Manto da Sombra Paciente",
+   "pasta": "Pigmento Preto",
+   "tipoFoundry": "armadura",
+   "categoria": "capa",
+   "subtipo": "Capa",
+   "pontosAtaque": 0,
+   "tier": "Ouro",
+   "pigmento": "Preto",
+   "raridade": "magico",
+   "preco": 2250,
+   "loja": "galeria",
+   "descricao": "Capa Reforçada (+2 Defesa). +1 Agilidade, +2 Estamina. Penumbra — 3 Mana, 1/cena: por 1 rodada, ataques contra você têm Dificuldade.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "manto-sombra-paciente",
+      "tier": "Ouro",
+      "raridade": "magico",
+      "preco": 2250,
+      "pigmento": "Preto",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "couraca-do-abismo",
+   "nome": "Couraça do Abismo",
+   "pasta": "Pigmento Preto",
+   "tipoFoundry": "armadura",
+   "categoria": "armadura",
+   "subtipo": "Placa",
+   "pontosAtaque": 0,
+   "tier": "Diamante",
+   "pigmento": "Preto",
+   "raridade": "magico",
+   "preco": 3750,
+   "loja": "galeria",
+   "descricao": "Placa Reforçada (+10 Defesa). +2 Força, +1 Estamina. Passiva: todo dano sofrido diminui 1.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "couraca-do-abismo",
+      "tier": "Diamante",
+      "raridade": "magico",
+      "preco": 3750,
+      "pigmento": "Preto",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "anel-silencio-final",
+   "nome": "Anel do Silêncio Final",
+   "pasta": "Pigmento Preto",
+   "tipoFoundry": "armadura",
+   "categoria": "acessorio",
+   "subtipo": "Anel",
+   "pontosAtaque": 0,
+   "tier": "Prismático",
+   "pigmento": "Preto",
+   "raridade": "magico",
+   "preco": 6000,
+   "loja": "galeria",
+   "descricao": "+1 Força, +1 Estamina, +1 Destino. Silêncio — 2 Estamina + 3 Mana, 1/cena, em Prioridade: dano de um ataque recebido pela metade, sem gastar Estresse.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "anel-silencio-final",
+      "tier": "Prismatico",
+      "raridade": "magico",
+      "preco": 6000,
+      "pigmento": "Preto",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "amuleto-do-juramento",
+   "nome": "Amuleto do Juramento",
+   "pasta": "Pigmento Branco",
+   "tipoFoundry": "armadura",
+   "categoria": "acessorio",
+   "subtipo": "Amuleto",
+   "pontosAtaque": 0,
+   "tier": "Bronze",
+   "pigmento": "Branco",
+   "raridade": "magico",
+   "preco": 600,
+   "loja": "galeria",
+   "descricao": "Juramento — 1 Estamina, 1/cena: +2 de Defesa até o início do seu próximo turno.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "amuleto-do-juramento",
+      "tier": "Bronze",
+      "raridade": "magico",
+      "preco": 600,
+      "pigmento": "Branco",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "martelo-da-sentenca",
+   "nome": "Martelo da Sentença",
+   "pasta": "Pigmento Branco",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Pesada",
+   "pontosAtaque": 3,
+   "tier": "Prata",
+   "pigmento": "Branco",
+   "raridade": "magico",
+   "preco": 1200,
+   "loja": "galeria",
+   "descricao": "1d10. Sentença — 2 Mana, 1/cena: se o próximo Ataque Pesado acertar, o alvo fica Caído.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "martelo-da-sentenca",
+      "tier": "Prata",
+      "raridade": "magico",
+      "preco": 1200,
+      "pigmento": "Branco",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "grevas-passo-firme",
+   "nome": "Grevas do Passo Firme",
+   "pasta": "Pigmento Branco",
+   "tipoFoundry": "armadura",
+   "categoria": "botas",
+   "subtipo": "Botas",
+   "pontosAtaque": 0,
+   "tier": "Ouro",
+   "pigmento": "Branco",
+   "raridade": "magico",
+   "preco": 2250,
+   "loja": "galeria",
+   "descricao": "Grevas Reforçadas (+2 Defesa). +1 Força, +1 Estamina, +1 Destino. Passiva: +1 de Limiar de Deflexão.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "grevas-passo-firme",
+      "tier": "Ouro",
+      "raridade": "magico",
+      "preco": 2250,
+      "pigmento": "Branco",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "egide-imaculada",
+   "nome": "Égide Imaculada",
+   "pasta": "Pigmento Branco",
+   "tipoFoundry": "arma",
+   "categoria": "escudo",
+   "subtipo": "Pesado",
+   "pontosAtaque": 3,
+   "tier": "Diamante",
+   "pigmento": "Branco",
+   "raridade": "magico",
+   "preco": 3750,
+   "loja": "galeria",
+   "descricao": "Escudo Grande (+3 Defesa, Força 4). +2 Força, +1 Estamina. Guardião — 3 Estamina, 1/cena, em Prioridade: aliado adjacente ganha escudo de 2d8.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "egide-imaculada",
+      "tier": "Diamante",
+      "raridade": "magico",
+      "preco": 3750,
+      "pigmento": "Branco",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "amuleto-lei-alva",
+   "nome": "Amuleto da Lei Alva",
+   "pasta": "Pigmento Branco",
+   "tipoFoundry": "armadura",
+   "categoria": "acessorio",
+   "subtipo": "Amuleto",
+   "pontosAtaque": 0,
+   "tier": "Prismático",
+   "pigmento": "Branco",
+   "raridade": "magico",
+   "preco": 6000,
+   "loja": "galeria",
+   "descricao": "+1 Inteligência, +1 Estamina, +1 Destino. Lei Alva — 5 Mana, 1/cena: você e aliados num raio de 3 m ganham +2 Defesa e +2 Bloqueio por 2 rodadas.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "amuleto-lei-alva",
+      "tier": "Prismatico",
+      "raridade": "magico",
+      "preco": 6000,
+      "pigmento": "Branco",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "anel-primeiro-afeto",
+   "nome": "Anel do Primeiro Afeto",
+   "pasta": "Pigmento Rosa",
+   "tipoFoundry": "armadura",
+   "categoria": "acessorio",
+   "subtipo": "Anel",
+   "pontosAtaque": 0,
+   "tier": "Bronze",
+   "pigmento": "Rosa",
+   "raridade": "magico",
+   "preco": 600,
+   "loja": "galeria",
+   "descricao": "Incentivo — 1 Estamina, 1/cena: um aliado a até 6 m tem +2 de acerto no próximo ataque.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "anel-primeiro-afeto",
+      "tier": "Bronze",
+      "raridade": "magico",
+      "preco": 600,
+      "pigmento": "Rosa",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "arco-do-suspiro",
+   "nome": "Arco do Suspiro",
+   "pasta": "Pigmento Rosa",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Distância",
+   "pontosAtaque": 2,
+   "tier": "Prata",
+   "pigmento": "Rosa",
+   "raridade": "magico",
+   "preco": 1200,
+   "loja": "galeria",
+   "descricao": "1d6, 9 m. Flecha Lânguida — 2 Mana, 1/cena: se o próximo ataque acertar, aplica 2 Lerdeza.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "arco-do-suspiro",
+      "tier": "Prata",
+      "raridade": "magico",
+      "preco": 1200,
+      "pigmento": "Rosa",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "amuleto-maos-dadas",
+   "nome": "Amuleto das Mãos Dadas",
+   "pasta": "Pigmento Rosa",
+   "tipoFoundry": "armadura",
+   "categoria": "acessorio",
+   "subtipo": "Amuleto",
+   "pontosAtaque": 0,
+   "tier": "Ouro",
+   "pigmento": "Rosa",
+   "raridade": "magico",
+   "preco": 2250,
+   "loja": "galeria",
+   "descricao": "+1 Agilidade, +1 Estamina, +1 Destino. Mãos Dadas — 2 Estamina, 1/cena: você e um aliado adjacente ganham +2 Defesa e +2 movimento por 2 rodadas.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "amuleto-maos-dadas",
+      "tier": "Ouro",
+      "raridade": "magico",
+      "preco": 2250,
+      "pigmento": "Rosa",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "botas-valsa-eterna",
+   "nome": "Botas da Valsa Eterna",
+   "pasta": "Pigmento Rosa",
+   "tipoFoundry": "armadura",
+   "categoria": "botas",
+   "subtipo": "Botas",
+   "pontosAtaque": 0,
+   "tier": "Diamante",
+   "pigmento": "Rosa",
+   "raridade": "magico",
+   "preco": 3750,
+   "loja": "galeria",
+   "descricao": "Grevas Reforçadas (+2 Defesa). +2 Agilidade, +1 Destino. Passiva: +2 de movimento e +1 na Esquiva.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "botas-valsa-eterna",
+      "tier": "Diamante",
+      "raridade": "magico",
+      "preco": 3750,
+      "pigmento": "Rosa",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "brinco-quartzo-rosa",
+   "nome": "Brinco de Quartzo Rosa",
+   "pasta": "Pigmento Rosa",
+   "tipoFoundry": "armadura",
+   "categoria": "acessorio",
+   "subtipo": "Brinco",
+   "pontosAtaque": 0,
+   "tier": "Prismático",
+   "pigmento": "Rosa",
+   "raridade": "magico",
+   "preco": 6000,
+   "loja": "galeria",
+   "descricao": "+1 Agilidade, +1 Estamina, +1 Destino. Coração Aberto — 2 Estamina + 3 Mana, 1/cena: aliados num raio de 6 m recuperam 2d6 e têm +2 de acerto no próximo ataque.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "brinco-quartzo-rosa",
+      "tier": "Prismatico",
+      "raridade": "magico",
+      "preco": 6000,
+      "pigmento": "Rosa",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "amuleto-moeda-torta",
+   "nome": "Amuleto da Moeda Torta",
+   "pasta": "Pigmento Dourado",
+   "tipoFoundry": "armadura",
+   "categoria": "acessorio",
+   "subtipo": "Amuleto",
+   "pontosAtaque": 0,
+   "tier": "Bronze",
+   "pigmento": "Dourado",
+   "raridade": "magico",
+   "preco": 600,
+   "loja": "galeria",
+   "descricao": "Cara ou Coroa — 1 Mana, 1/cena: +1 dado de Destino até o fim do combate.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "amuleto-moeda-torta",
+      "tier": "Bronze",
+      "raridade": "magico",
+      "preco": 600,
+      "pigmento": "Dourado",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "maca-do-arauto",
+   "nome": "Maça do Arauto",
+   "pasta": "Pigmento Dourado",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Média",
+   "pontosAtaque": 2,
+   "tier": "Prata",
+   "pigmento": "Dourado",
+   "raridade": "magico",
+   "preco": 1200,
+   "loja": "galeria",
+   "descricao": "1d6. Proclamação — 2 Mana, 1/rodada: o próximo ataque causa +1d6 de dano verdadeiro.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "maca-do-arauto",
+      "tier": "Prata",
+      "raridade": "magico",
+      "preco": 1200,
+      "pigmento": "Dourado",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "amuleto-prisma-menor",
+   "nome": "Amuleto do Prisma Menor",
+   "pasta": "Pigmento Dourado",
+   "tipoFoundry": "armadura",
+   "categoria": "acessorio",
+   "subtipo": "Amuleto",
+   "pontosAtaque": 0,
+   "tier": "Ouro",
+   "pigmento": "Dourado",
+   "raridade": "magico",
+   "preco": 2250,
+   "loja": "galeria",
+   "descricao": "+1 Inteligência, +2 Destino. Bênção — 1 Estamina + 2 Mana, 1/cena: um aliado adjacente recupera 1 dado de Destino.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "amuleto-prisma-menor",
+      "tier": "Ouro",
+      "raridade": "magico",
+      "preco": 2250,
+      "pigmento": "Dourado",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "lanca-juizo-dourado",
+   "nome": "Lança do Juízo Dourado",
+   "pasta": "Pigmento Dourado",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Alcance",
+   "pontosAtaque": 2,
+   "tier": "Diamante",
+   "pigmento": "Dourado",
+   "raridade": "magico",
+   "preco": 3750,
+   "loja": "galeria",
+   "descricao": "1d6, 2 m. +2 Força, +1 Destino. Juízo — 2 Estamina + 3 Mana, 1/cena: o próximo ataque tem Facilidade e +2d6 de dano.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "lanca-juizo-dourado",
+      "tier": "Diamante",
+      "raridade": "magico",
+      "preco": 3750,
+      "pigmento": "Dourado",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "anel-pigmento-vivo",
+   "nome": "Anel do Pigmento Vivo",
+   "pasta": "Pigmento Dourado",
+   "tipoFoundry": "armadura",
+   "categoria": "acessorio",
+   "subtipo": "Anel",
+   "pontosAtaque": 0,
+   "tier": "Prismático",
+   "pigmento": "Dourado",
+   "raridade": "magico",
+   "preco": 6000,
+   "loja": "galeria",
+   "descricao": "+1 Força, +1 Inteligência, +1 Destino. Pigmento Vivo — 2 Estamina + 4 Mana, 1/cena: você e aliados num raio de 6 m recuperam 1 dado de Destino.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "anel-pigmento-vivo",
+      "tier": "Prismatico",
+      "raridade": "magico",
+      "preco": 6000,
+      "pigmento": "Dourado",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "pigmento-falso",
+   "nome": "Pigmento Falso",
+   "pasta": "Mercado dos Falsários",
+   "tipoFoundry": "consumivel",
+   "categoria": "consumivel",
+   "subtipo": "Falsário",
+   "pontosAtaque": 0,
+   "tier": null,
+   "pigmento": null,
+   "raridade": "falsario",
+   "preco": 25,
+   "loja": "falsarios",
+   "descricao": "Tinta falsificada de qualquer cor: mesmo efeito da poção pigmentada, mas rola 1d4 ao beber; com 1, não faz efeito.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "pigmento-falso",
+      "tier": null,
+      "raridade": "falsario",
+      "preco": 25,
+      "pigmento": null,
+      "loja": "falsarios"
+     }
+    }
+   }
+  },
+  {
+   "chave": "bomba-de-tinta",
+   "nome": "Bomba de Tinta",
+   "pasta": "Mercado dos Falsários",
+   "tipoFoundry": "consumivel",
+   "categoria": "consumivel",
+   "subtipo": "Falsário",
+   "pontosAtaque": 0,
+   "tier": null,
+   "pigmento": null,
+   "raridade": "falsario",
+   "preco": 60,
+   "loja": "falsarios",
+   "descricao": "Arremesso a até 6 m, raio de 2 m: 1d20 + PdA contra a Defesa de cada alvo; atingidos ficam Cegos por 1 rodada.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "bomba-de-tinta",
+      "tier": null,
+      "raridade": "falsario",
+      "preco": 60,
+      "pigmento": null,
+      "loja": "falsarios"
+     }
+    }
+   }
+  },
+  {
+   "chave": "soqueira-do-primeiro-soco",
+   "nome": "Soqueira do Primeiro Soco",
+   "pasta": "Pigmento Vermelho",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Leve",
+   "pontosAtaque": 1,
+   "tier": "Bronze",
+   "pigmento": "Vermelho",
+   "raridade": "magico",
+   "preco": 600,
+   "loja": "galeria",
+   "descricao": "Arma Leve 1d4. Abrir Espaço (1 Estamina, 1 por cena): o próximo acerto empurra o alvo 1 m.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "soqueira-do-primeiro-soco",
+      "tier": "Bronze",
+      "raridade": "magico",
+      "preco": 600,
+      "pigmento": "Vermelho",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "machadinha-do-acougueiro-ruivo",
+   "nome": "Machadinha do Açougueiro Ruivo",
+   "pasta": "Pigmento Vermelho",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Média",
+   "pontosAtaque": 2,
+   "tier": "Prata",
+   "pigmento": "Vermelho",
+   "raridade": "magico",
+   "preco": 1200,
+   "loja": "galeria",
+   "descricao": "Arma Média 1d6. Talho Faminto (1 Estamina, 1 por cena): o próximo ataque causa +2d6 de dano e, se acertar, você recupera a metade desse dado em Vida. Passiva: 1 vez por turno, ao acertar um ataque, você recupera 2 de Vida.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "machadinha-do-acougueiro-ruivo",
+      "tier": "Prata",
+      "raridade": "magico",
+      "preco": 1200,
+      "pigmento": "Vermelho",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "marreta-do-ariete",
+   "nome": "Marreta do Aríete",
+   "pasta": "Pigmento Vermelho",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Pesada",
+   "pontosAtaque": 3,
+   "tier": "Ouro",
+   "pigmento": "Vermelho",
+   "raridade": "magico",
+   "preco": 2250,
+   "loja": "galeria",
+   "descricao": "Arma Pesada 1d10. +2 Força, +1 Estamina. Aríete (1 Estamina, 1 por cena): o próximo acerto empurra o alvo 3 m. Passiva: +3 de dano no seu primeiro ataque de cada turno.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "marreta-do-ariete",
+      "tier": "Ouro",
+      "raridade": "magico",
+      "preco": 2250,
+      "pigmento": "Vermelho",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "corrente-do-carrasco-rubro",
+   "nome": "Corrente do Carrasco Rubro",
+   "pasta": "Pigmento Vermelho",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Alcance",
+   "pontosAtaque": 2,
+   "tier": "Diamante",
+   "pigmento": "Vermelho",
+   "raridade": "magico",
+   "preco": 3750,
+   "loja": "galeria",
+   "descricao": "Arma de Alcance 1d6, 2 m. +2 Força, +1 Destino. Laço do Carrasco (1 Estamina, 1 por cena): ataque de Condição contra 1 inimigo a até 9 m (1d20 + o maior Poder); no acerto, ele é puxado 4 m para perto de você (pode usar a Prioridade ou 1 Estamina para resistir). Passivas: +4 de dano no seu primeiro ataque de cada turno; +2 de acerto.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "corrente-do-carrasco-rubro",
+      "tier": "Diamante",
+      "raridade": "magico",
+      "preco": 3750,
+      "pigmento": "Vermelho",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "coracao-de-brasa-do-fronte",
+   "nome": "Coração de Brasa do Fronte",
+   "pasta": "Pigmento Vermelho",
+   "tipoFoundry": "armadura",
+   "categoria": "acessorio",
+   "subtipo": "Amuleto",
+   "pontosAtaque": 0,
+   "tier": "Prismatico",
+   "pigmento": "Vermelho",
+   "raridade": "magico",
+   "preco": 6000,
+   "loja": "galeria",
+   "descricao": "Amuleto. +1 Força, +1 Inteligência, +1 Estamina. Estouro de Brasas (2 Estamina, 1 por cena): raio de 2 m num ponto a até 9 m: 5d6 de dano em cada inimigo (Ação Anunciada: cada um pode reagir). Passivas: 1 vez por turno, quem te acerta corpo a corpo sofre 5 de dano; +15 de Vida máxima.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "coracao-de-brasa-do-fronte",
+      "tier": "Prismatico",
+      "raridade": "magico",
+      "preco": 6000,
+      "pigmento": "Vermelho",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "concha-da-mare-baixa",
+   "nome": "Concha da Maré Baixa",
+   "pasta": "Pigmento Azul",
+   "tipoFoundry": "armadura",
+   "categoria": "acessorio",
+   "subtipo": "Brinco",
+   "pontosAtaque": 0,
+   "tier": "Bronze",
+   "pigmento": "Azul",
+   "raridade": "magico",
+   "preco": 600,
+   "loja": "galeria",
+   "descricao": "Brinco. Maré Baixa (1 Estamina, 1 por cena): você recupera 1d4 de Mana.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "concha-da-mare-baixa",
+      "tier": "Bronze",
+      "raridade": "magico",
+      "preco": 600,
+      "pigmento": "Azul",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "arpao-do-pescador-cego",
+   "nome": "Arpão do Pescador Cego",
+   "pasta": "Pigmento Azul",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Alcance",
+   "pontosAtaque": 2,
+   "tier": "Prata",
+   "pigmento": "Azul",
+   "raridade": "magico",
+   "preco": 1200,
+   "loja": "galeria",
+   "descricao": "Arma de Alcance 1d6, 2 m. Fisgar (1 Estamina, 1 por cena): ataque de Condição contra 1 inimigo a até 9 m (1d20 + o maior Poder); no acerto, ele é puxado 2 m para perto de você (pode usar a Prioridade ou 1 Estamina para resistir). Passiva: +1 de acerto.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "arpao-do-pescador-cego",
+      "tier": "Prata",
+      "raridade": "magico",
+      "preco": 1200,
+      "pigmento": "Azul",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "escudo-da-ressaca",
+   "nome": "Escudo da Ressaca",
+   "pasta": "Pigmento Azul",
+   "tipoFoundry": "armadura",
+   "categoria": "escudo",
+   "subtipo": "Médio",
+   "pontosAtaque": 0,
+   "tier": "Ouro",
+   "pigmento": "Azul",
+   "raridade": "magico",
+   "preco": 2250,
+   "loja": "galeria",
+   "descricao": "Escudo Médio (+2 Defesa). +2 Força, +1 Estamina. Ressaca (1 Estamina, 1 por cena, também na sua Prioridade): +4 de Bloqueio contra o ataque que vem agora. Passiva: 1 vez por turno, quem te acerta corpo a corpo sofre 3 de dano.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "escudo-da-ressaca",
+      "tier": "Ouro",
+      "raridade": "magico",
+      "preco": 2250,
+      "pigmento": "Azul",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "cajado-do-redemoinho",
+   "nome": "Cajado do Redemoinho",
+   "pasta": "Pigmento Azul",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Catalisador",
+   "pontosAtaque": 1,
+   "tier": "Diamante",
+   "pigmento": "Azul",
+   "raridade": "magico",
+   "preco": 3750,
+   "loja": "galeria",
+   "descricao": "Catalisador (Gariart 1d6). +2 Inteligência, +1 Destino. Redemoinho (2 Estamina, 1 por cena): raio de 2 m num ponto a até 9 m: 4d6 de dano em cada inimigo (Ação Anunciada: cada um pode reagir). Passivas: +8 de Espírito; +2 de acerto.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "cajado-do-redemoinho",
+      "tier": "Diamante",
+      "raridade": "magico",
+      "preco": 3750,
+      "pigmento": "Azul",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "manto-do-abismo-calmo",
+   "nome": "Manto do Abismo Calmo",
+   "pasta": "Pigmento Azul",
+   "tipoFoundry": "armadura",
+   "categoria": "capa",
+   "subtipo": "Capa",
+   "pontosAtaque": 0,
+   "tier": "Prismatico",
+   "pigmento": "Azul",
+   "raridade": "magico",
+   "preco": 6000,
+   "loja": "galeria",
+   "descricao": "Capa Reforçada (+2 Defesa). +1 Inteligência, +1 Agilidade, +1 Destino. Abraço do Abismo (1 Estamina, 1 por cena, também na sua Prioridade): você ou 1 aliado a até 6 m ganha escudo de 5d6 até o início do seu próximo turno. Passivas: −3 em cada dano sofrido (não vale contra dano verdadeiro); +5 de Esquiva.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "manto-do-abismo-calmo",
+      "tier": "Prismatico",
+      "raridade": "magico",
+      "preco": 6000,
+      "pigmento": "Azul",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "raiz-de-bolso",
+   "nome": "Raiz de Bolso",
+   "pasta": "Pigmento Verde",
+   "tipoFoundry": "armadura",
+   "categoria": "acessorio",
+   "subtipo": "Amuleto",
+   "pontosAtaque": 0,
+   "tier": "Bronze",
+   "pigmento": "Verde",
+   "raridade": "magico",
+   "preco": 600,
+   "loja": "galeria",
+   "descricao": "Amuleto. Broto de Bolso (1 Estamina, 1 por cena): você ou 1 aliado a até 6 m recupera 1d6 de Vida.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "raiz-de-bolso",
+      "tier": "Bronze",
+      "raridade": "magico",
+      "preco": 600,
+      "pigmento": "Verde",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "foice-do-jardineiro",
+   "nome": "Foice do Jardineiro",
+   "pasta": "Pigmento Verde",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Média",
+   "pontosAtaque": 2,
+   "tier": "Prata",
+   "pigmento": "Verde",
+   "raridade": "magico",
+   "preco": 1200,
+   "loja": "galeria",
+   "descricao": "Arma Média 1d6. Poda Venenosa (1 Estamina, 1 por cena): o próximo acerto aplica 1 Envenenamento. Passiva: seus críticos causam +2d6 de dano.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "foice-do-jardineiro",
+      "tier": "Prata",
+      "raridade": "magico",
+      "preco": 1200,
+      "pigmento": "Verde",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "chicote-de-hera",
+   "nome": "Chicote de Hera",
+   "pasta": "Pigmento Verde",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Alcance",
+   "pontosAtaque": 2,
+   "tier": "Ouro",
+   "pigmento": "Verde",
+   "raridade": "magico",
+   "preco": 2250,
+   "loja": "galeria",
+   "descricao": "Arma de Alcance 1d6, 2 m. +2 Agilidade, +1 Inteligência. Laço de Hera (1 Estamina, 1 por cena): ataque de Condição contra 1 inimigo a até 9 m (1d20 + o maior Poder); no acerto, ele é puxado 3 m para perto de você (pode usar a Prioridade ou 1 Estamina para resistir). Passiva: 1 vez por turno, ao acertar um ataque, você recupera 3 de Vida.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "chicote-de-hera",
+      "tier": "Ouro",
+      "raridade": "magico",
+      "preco": 2250,
+      "pigmento": "Verde",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "couraca-do-velho-carvalho",
+   "nome": "Couraça do Velho Carvalho",
+   "pasta": "Pigmento Verde",
+   "tipoFoundry": "armadura",
+   "categoria": "armadura",
+   "subtipo": "Malha",
+   "pontosAtaque": 0,
+   "tier": "Diamante",
+   "pigmento": "Verde",
+   "raridade": "magico",
+   "preco": 3750,
+   "loja": "galeria",
+   "descricao": "Cota Simples (+6 Defesa). +2 Força, +1 Estamina. Sombra do Carvalho (2 Estamina, 1 por cena): você e os aliados a até 3 m recuperam 4d4 de Vida. Passivas: +12 de Vida máxima; 1 vez por turno, quem te acerta corpo a corpo sofre 4 de dano.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "couraca-do-velho-carvalho",
+      "tier": "Diamante",
+      "raridade": "magico",
+      "preco": 3750,
+      "pigmento": "Verde",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "seiva-da-primeira-arvore",
+   "nome": "Seiva da Primeira Árvore",
+   "pasta": "Pigmento Verde",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Catalisador",
+   "pontosAtaque": 1,
+   "tier": "Prismatico",
+   "pigmento": "Verde",
+   "raridade": "magico",
+   "preco": 6000,
+   "loja": "galeria",
+   "descricao": "Catalisador (Gariart 1d8). +2 Inteligência, +1 Estamina. Beber a Seiva (1 Estamina, 1 por cena): o próximo ataque causa +5d6 de dano e, se acertar, você recupera a metade desse dado em Vida. Passivas: +15 de Vida máxima; +10 de Espírito.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "seiva-da-primeira-arvore",
+      "tier": "Prismatico",
+      "raridade": "magico",
+      "preco": 6000,
+      "pigmento": "Verde",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "lente-do-curioso",
+   "nome": "Lente do Curioso",
+   "pasta": "Pigmento Roxo",
+   "tipoFoundry": "armadura",
+   "categoria": "acessorio",
+   "subtipo": "Anel",
+   "pontosAtaque": 0,
+   "tier": "Bronze",
+   "pigmento": "Roxo",
+   "raridade": "magico",
+   "preco": 600,
+   "loja": "galeria",
+   "descricao": "Anel. Ponto Fraco (1 Estamina, 1 por cena): 1 inimigo a até 9 m fica marcado: você e os aliados têm +1 de acerto contra ele até o início do seu próximo turno.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "lente-do-curioso",
+      "tier": "Bronze",
+      "raridade": "magico",
+      "preco": 600,
+      "pigmento": "Roxo",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "estilete-de-ametista",
+   "nome": "Estilete de Ametista",
+   "pasta": "Pigmento Roxo",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Leve",
+   "pontosAtaque": 1,
+   "tier": "Prata",
+   "pigmento": "Roxo",
+   "raridade": "magico",
+   "preco": 1200,
+   "loja": "galeria",
+   "descricao": "Arma Leve 1d4. Fresta (1 Estamina, 1 por cena): o próximo ataque causa +2d6 de dano. Passiva: crítico a partir do 19.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "estilete-de-ametista",
+      "tier": "Prata",
+      "raridade": "magico",
+      "preco": 1200,
+      "pigmento": "Roxo",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "mascara-das-mil-caras",
+   "nome": "Máscara das Mil Caras",
+   "pasta": "Pigmento Roxo",
+   "tipoFoundry": "armadura",
+   "categoria": "acessorio",
+   "subtipo": "Amuleto",
+   "pontosAtaque": 0,
+   "tier": "Ouro",
+   "pigmento": "Roxo",
+   "raridade": "magico",
+   "preco": 2250,
+   "loja": "galeria",
+   "descricao": "Amuleto. +2 Agilidade, +1 Inteligência. Mil Caras (1 Estamina, 1 por cena): ataque de Condição contra 1 inimigo a até 9 m (1d20 + o maior Poder + 3); no acerto, ele fica Cego. Passiva: +3 de Esquiva.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "mascara-das-mil-caras",
+      "tier": "Ouro",
+      "raridade": "magico",
+      "preco": 2250,
+      "pigmento": "Roxo",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "besta-do-cacador-de-sombras",
+   "nome": "Besta do Caçador de Sombras",
+   "pasta": "Pigmento Roxo",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Distância",
+   "pontosAtaque": 2,
+   "tier": "Diamante",
+   "pigmento": "Roxo",
+   "raridade": "magico",
+   "preco": 3750,
+   "loja": "galeria",
+   "descricao": "Besta. +2 Agilidade, +1 Inteligência. Marcar a Presa (1 Estamina, 1 por cena): 1 inimigo a até 9 m fica marcado: você e os aliados têm +4 de acerto contra ele até o início do seu próximo turno. Passivas: seus críticos causam +4d6 de dano; +2 de acerto.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "besta-do-cacador-de-sombras",
+      "tier": "Diamante",
+      "raridade": "magico",
+      "preco": 3750,
+      "pigmento": "Roxo",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "anel-do-espelho-partido",
+   "nome": "Anel do Espelho Partido",
+   "pasta": "Pigmento Roxo",
+   "tipoFoundry": "armadura",
+   "categoria": "acessorio",
+   "subtipo": "Anel",
+   "pontosAtaque": 0,
+   "tier": "Prismatico",
+   "pigmento": "Roxo",
+   "raridade": "magico",
+   "preco": 6000,
+   "loja": "galeria",
+   "descricao": "Anel. +1 Agilidade, +1 Inteligência, +1 Destino. Reflexo Partido (1 Estamina, 1 por cena, também na sua Prioridade): +6 de Esquiva contra o ataque que vem agora. Passivas: +5 de Esquiva; +3 m de movimento.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "anel-do-espelho-partido",
+      "tier": "Prismatico",
+      "raridade": "magico",
+      "preco": 6000,
+      "pigmento": "Roxo",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "gargantilha-de-pregos",
+   "nome": "Gargantilha de Pregos",
+   "pasta": "Pigmento Preto",
+   "tipoFoundry": "armadura",
+   "categoria": "acessorio",
+   "subtipo": "Amuleto",
+   "pontosAtaque": 0,
+   "tier": "Bronze",
+   "pigmento": "Preto",
+   "raridade": "magico",
+   "preco": 600,
+   "loja": "galeria",
+   "descricao": "Amuleto. Passiva: 1 vez por turno, quem te acerta corpo a corpo sofre 1 de dano.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "gargantilha-de-pregos",
+      "tier": "Bronze",
+      "raridade": "magico",
+      "preco": 600,
+      "pigmento": "Preto",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "escudo-da-viuva",
+   "nome": "Escudo da Viúva",
+   "pasta": "Pigmento Preto",
+   "tipoFoundry": "armadura",
+   "categoria": "escudo",
+   "subtipo": "Médio",
+   "pontosAtaque": 0,
+   "tier": "Prata",
+   "pigmento": "Preto",
+   "raridade": "magico",
+   "preco": 1200,
+   "loja": "galeria",
+   "descricao": "Escudo Médio (+2 Defesa). Luto Erguido (1 Estamina, 1 por cena, também na sua Prioridade): +3 de Bloqueio contra o ataque que vem agora. Passiva: 1 vez por turno, quem te acerta corpo a corpo sofre 2 de dano.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "escudo-da-viuva",
+      "tier": "Prata",
+      "raridade": "magico",
+      "preco": 1200,
+      "pigmento": "Preto",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "gibao-do-sobrevivente",
+   "nome": "Gibão do Sobrevivente",
+   "pasta": "Pigmento Preto",
+   "tipoFoundry": "armadura",
+   "categoria": "armadura",
+   "subtipo": "Couro",
+   "pontosAtaque": 0,
+   "tier": "Ouro",
+   "pigmento": "Preto",
+   "raridade": "magico",
+   "preco": 2250,
+   "loja": "galeria",
+   "descricao": "Couro Simples (+4 Defesa). +2 Agilidade, +1 Estamina. Mais Uma Vez (1 Estamina, 1 por cena, também na sua Prioridade): você ganha escudo de 3d6 até o início do seu próximo turno. Passiva: −2 em cada dano sofrido (não vale contra dano verdadeiro).",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "gibao-do-sobrevivente",
+      "tier": "Ouro",
+      "raridade": "magico",
+      "preco": 2250,
+      "pigmento": "Preto",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "lamina-da-ultima-ceia",
+   "nome": "Lâmina da Última Ceia",
+   "pasta": "Pigmento Preto",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Média",
+   "pontosAtaque": 2,
+   "tier": "Diamante",
+   "pigmento": "Preto",
+   "raridade": "magico",
+   "preco": 3750,
+   "loja": "galeria",
+   "descricao": "Arma Média 1d6. +2 Força, +1 Estamina. Última Ceia (1 Estamina, 1 por cena): o próximo ataque causa +4d6 de dano e, se acertar, você recupera a metade desse dado em Vida. Passivas: 1 vez por turno, ao acertar um ataque, você recupera 4 de Vida; +4 de dano no seu primeiro ataque de cada turno.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "lamina-da-ultima-ceia",
+      "tier": "Diamante",
+      "raridade": "magico",
+      "preco": 3750,
+      "pigmento": "Preto",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "ancora-do-naufragio",
+   "nome": "Âncora do Naufrágio",
+   "pasta": "Pigmento Preto",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Pesada",
+   "pontosAtaque": 3,
+   "tier": "Prismatico",
+   "pigmento": "Preto",
+   "raridade": "magico",
+   "preco": 6000,
+   "loja": "galeria",
+   "descricao": "Arma Pesada 1d10. +2 Força, +1 Estamina. Naufrágio (1 Estamina, 1 por cena): ataque de Condição contra 1 inimigo a até 9 m (1d20 + o maior Poder); no acerto, ele é puxado 5 m para perto de você (pode usar a Prioridade ou 1 Estamina para resistir). Passivas: +5 de Bloqueio; −3 em cada dano sofrido (não vale contra dano verdadeiro).",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "ancora-do-naufragio",
+      "tier": "Prismatico",
+      "raridade": "magico",
+      "preco": 6000,
+      "pigmento": "Preto",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "apito-do-vigia",
+   "nome": "Apito do Vigia",
+   "pasta": "Pigmento Branco",
+   "tipoFoundry": "armadura",
+   "categoria": "acessorio",
+   "subtipo": "Brinco",
+   "pontosAtaque": 0,
+   "tier": "Bronze",
+   "pigmento": "Branco",
+   "raridade": "magico",
+   "preco": 600,
+   "loja": "galeria",
+   "descricao": "Brinco. Aviso (1 Estamina, 1 por cena, também na sua Prioridade): você ou 1 aliado a até 6 m ganha +2 de Defesa até o início do seu próximo turno.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "apito-do-vigia",
+      "tier": "Bronze",
+      "raridade": "magico",
+      "preco": 600,
+      "pigmento": "Branco",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "escudo-do-escudeiro",
+   "nome": "Escudo do Escudeiro",
+   "pasta": "Pigmento Branco",
+   "tipoFoundry": "armadura",
+   "categoria": "escudo",
+   "subtipo": "Leve",
+   "pontosAtaque": 0,
+   "tier": "Prata",
+   "pigmento": "Branco",
+   "raridade": "magico",
+   "preco": 1200,
+   "loja": "galeria",
+   "descricao": "Escudo Simples (+1 Defesa). À Frente (1 Estamina, 1 por cena, também na sua Prioridade): você ou 1 aliado a até 6 m ganha escudo de 2d6 até o início do seu próximo turno. Passiva: +2 de Bloqueio.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "escudo-do-escudeiro",
+      "tier": "Prata",
+      "raridade": "magico",
+      "preco": 1200,
+      "pigmento": "Branco",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "lanca-da-guarda-alva",
+   "nome": "Lança da Guarda Alva",
+   "pasta": "Pigmento Branco",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Alcance",
+   "pontosAtaque": 2,
+   "tier": "Ouro",
+   "pigmento": "Branco",
+   "raridade": "magico",
+   "preco": 2250,
+   "loja": "galeria",
+   "descricao": "Arma de Alcance 1d6, 2 m. +2 Força, +1 Destino. Ninguém Passa (1 Estamina, 1 por cena): o próximo ataque tem +3 de acerto e, se acertar, o alvo fica Caído. Passiva: +1 no Limiar de Deflexão.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "lanca-da-guarda-alva",
+      "tier": "Ouro",
+      "raridade": "magico",
+      "preco": 2250,
+      "pigmento": "Branco",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "estandarte-da-vigilia",
+   "nome": "Estandarte da Vigília",
+   "pasta": "Pigmento Branco",
+   "tipoFoundry": "armadura",
+   "categoria": "acessorio",
+   "subtipo": "Amuleto",
+   "pontosAtaque": 0,
+   "tier": "Diamante",
+   "pigmento": "Branco",
+   "raridade": "magico",
+   "preco": 3750,
+   "loja": "galeria",
+   "descricao": "Amuleto. +2 Inteligência, +1 Estamina. Vigília (2 Estamina, 1 por cena): você e os aliados a até 3 m ganham +2 de Defesa até o início do seu próximo turno. Passivas: +2 de Defesa; imune a Amedrontado.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "estandarte-da-vigilia",
+      "tier": "Diamante",
+      "raridade": "magico",
+      "preco": 3750,
+      "pigmento": "Branco",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "martelo-do-veredito",
+   "nome": "Martelo do Veredito",
+   "pasta": "Pigmento Branco",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Pesada",
+   "pontosAtaque": 3,
+   "tier": "Prismatico",
+   "pigmento": "Branco",
+   "raridade": "magico",
+   "preco": 6000,
+   "loja": "galeria",
+   "descricao": "Arma Pesada 1d10. +2 Força, +1 Destino. Veredito (1 Estamina, 1 por cena): 1 inimigo a até 9 m fica marcado: você e os aliados têm +5 de acerto contra ele até o início do seu próximo turno. Passivas: +5 de dano no seu primeiro ataque de cada turno; +3 de acerto.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "martelo-do-veredito",
+      "tier": "Prismatico",
+      "raridade": "magico",
+      "preco": 6000,
+      "pigmento": "Branco",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "fita-de-seda-voadora",
+   "nome": "Fita de Seda Voadora",
+   "pasta": "Pigmento Rosa",
+   "tipoFoundry": "armadura",
+   "categoria": "acessorio",
+   "subtipo": "Anel",
+   "pontosAtaque": 0,
+   "tier": "Bronze",
+   "pigmento": "Rosa",
+   "raridade": "magico",
+   "preco": 600,
+   "loja": "galeria",
+   "descricao": "Anel. Passo de Seda (1 Estamina, 1 por cena): você se move até 2 m sem dar Prioridade (escolhe o ponto no mapa).",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "fita-de-seda-voadora",
+      "tier": "Bronze",
+      "raridade": "magico",
+      "preco": 600,
+      "pigmento": "Rosa",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "leque-do-vendaval",
+   "nome": "Leque do Vendaval",
+   "pasta": "Pigmento Rosa",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Leve",
+   "pontosAtaque": 1,
+   "tier": "Prata",
+   "pigmento": "Rosa",
+   "raridade": "magico",
+   "preco": 1200,
+   "loja": "galeria",
+   "descricao": "Arma Leve 1d4. Vendaval (1 Estamina, 1 por cena): o próximo acerto empurra o alvo 2 m. Passiva: +1 m de movimento.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "leque-do-vendaval",
+      "tier": "Prata",
+      "raridade": "magico",
+      "preco": 1200,
+      "pigmento": "Rosa",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "botas-do-mensageiro-alado",
+   "nome": "Botas do Mensageiro Alado",
+   "pasta": "Pigmento Rosa",
+   "tipoFoundry": "armadura",
+   "categoria": "botas",
+   "subtipo": "Botas",
+   "pontosAtaque": 0,
+   "tier": "Ouro",
+   "pigmento": "Rosa",
+   "raridade": "magico",
+   "preco": 2250,
+   "loja": "galeria",
+   "descricao": "Grevas Reforçadas (+2 Defesa). +2 Agilidade, +1 Estamina. Mensagem Urgente (1 Estamina, 1 por cena): você se move até 6 m sem dar Prioridade (escolhe o ponto no mapa). Passiva: +3 de Esquiva.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "botas-do-mensageiro-alado",
+      "tier": "Ouro",
+      "raridade": "magico",
+      "preco": 2250,
+      "pigmento": "Rosa",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "pingente-do-reencontro",
+   "nome": "Pingente do Reencontro",
+   "pasta": "Pigmento Rosa",
+   "tipoFoundry": "armadura",
+   "categoria": "acessorio",
+   "subtipo": "Amuleto",
+   "pontosAtaque": 0,
+   "tier": "Diamante",
+   "pigmento": "Rosa",
+   "raridade": "magico",
+   "preco": 3750,
+   "loja": "galeria",
+   "descricao": "Amuleto. +1 Agilidade, +1 Inteligência, +1 Destino. Reencontro (1 Estamina, 1 por cena): você ou 1 aliado a até 6 m recupera 4d6 de Vida. Passivas: +2 m de movimento; +12 de Vida máxima.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "pingente-do-reencontro",
+      "tier": "Diamante",
+      "raridade": "magico",
+      "preco": 3750,
+      "pigmento": "Rosa",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "asas-de-petala",
+   "nome": "Asas de Pétala",
+   "pasta": "Pigmento Rosa",
+   "tipoFoundry": "armadura",
+   "categoria": "capa",
+   "subtipo": "Capa",
+   "pontosAtaque": 0,
+   "tier": "Prismatico",
+   "pigmento": "Rosa",
+   "raridade": "magico",
+   "preco": 6000,
+   "loja": "galeria",
+   "descricao": "Capa Reforçada (+2 Defesa). +2 Agilidade, +1 Destino. Voo de Pétala (1 Estamina, 1 por cena): você se move até 10 m sem dar Prioridade (escolhe o ponto no mapa). Passivas: +3 m de movimento; +5 de Esquiva.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "asas-de-petala",
+      "tier": "Prismatico",
+      "raridade": "magico",
+      "preco": 6000,
+      "pigmento": "Rosa",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "moeda-do-apostador",
+   "nome": "Moeda do Apostador",
+   "pasta": "Pigmento Dourado",
+   "tipoFoundry": "armadura",
+   "categoria": "acessorio",
+   "subtipo": "Anel",
+   "pontosAtaque": 0,
+   "tier": "Bronze",
+   "pigmento": "Dourado",
+   "raridade": "magico",
+   "preco": 600,
+   "loja": "galeria",
+   "descricao": "Anel. Aposta (1 Estamina, 1 por cena): o próximo ataque causa +1d6 de dano.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "moeda-do-apostador",
+      "tier": "Bronze",
+      "raridade": "magico",
+      "preco": 600,
+      "pigmento": "Dourado",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "pistola-do-relampago",
+   "nome": "Pistola do Relâmpago",
+   "pasta": "Pigmento Dourado",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Distância",
+   "pontosAtaque": 2,
+   "tier": "Prata",
+   "pigmento": "Dourado",
+   "raridade": "magico",
+   "preco": 1200,
+   "loja": "galeria",
+   "descricao": "Arma de Fogo. Tiro Relâmpago (2 Estamina, 1 por cena): raio de 2 m num ponto a até 9 m: 2d6 de dano em cada inimigo (Ação Anunciada: cada um pode reagir). Passiva: +1 de acerto.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "pistola-do-relampago",
+      "tier": "Prata",
+      "raridade": "magico",
+      "preco": 1200,
+      "pigmento": "Dourado",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "lanca-do-trovao",
+   "nome": "Lança do Trovão",
+   "pasta": "Pigmento Dourado",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Alcance",
+   "pontosAtaque": 2,
+   "tier": "Ouro",
+   "pigmento": "Dourado",
+   "raridade": "magico",
+   "preco": 2250,
+   "loja": "galeria",
+   "descricao": "Arma de Alcance 1d6, 2 m. +2 Força, +1 Destino. Trovão (1 Estamina, 1 por cena): o próximo acerto empurra o alvo 3 m. Passiva: seus críticos causam +3d6 de dano.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "lanca-do-trovao",
+      "tier": "Ouro",
+      "raridade": "magico",
+      "preco": 2250,
+      "pigmento": "Dourado",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "coroa-da-boa-estrela",
+   "nome": "Coroa da Boa Estrela",
+   "pasta": "Pigmento Dourado",
+   "tipoFoundry": "armadura",
+   "categoria": "acessorio",
+   "subtipo": "Amuleto",
+   "pontosAtaque": 0,
+   "tier": "Diamante",
+   "pigmento": "Dourado",
+   "raridade": "magico",
+   "preco": 3750,
+   "loja": "galeria",
+   "descricao": "Amuleto. +2 Inteligência, +1 Destino. Boa Estrela (1 Estamina, 1 por cena): você ou 1 aliado a até 6 m ganha +5 de acerto no próximo ataque. Passivas: +8 de Espírito; +2 de acerto.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "coroa-da-boa-estrela",
+      "tier": "Diamante",
+      "raridade": "magico",
+      "preco": 3750,
+      "pigmento": "Dourado",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "cetro-das-sete-tempestades",
+   "nome": "Cetro das Sete Tempestades",
+   "pasta": "Pigmento Dourado",
+   "tipoFoundry": "arma",
+   "categoria": "arma",
+   "subtipo": "Catalisador",
+   "pontosAtaque": 1,
+   "tier": "Prismatico",
+   "pigmento": "Dourado",
+   "raridade": "magico",
+   "preco": 6000,
+   "loja": "galeria",
+   "descricao": "Catalisador (Gariart 1d8). +2 Inteligência, +1 Destino. Sete Tempestades (2 Estamina, 1 por cena): raio de 2 m num ponto a até 9 m: 5d6 de dano em cada inimigo (Ação Anunciada: cada um pode reagir). Passivas: +10 de Espírito; +3 de acerto.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "cetro-das-sete-tempestades",
+      "tier": "Prismatico",
+      "raridade": "magico",
+      "preco": 6000,
+      "pigmento": "Dourado",
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "oleo-de-lamina-simples",
+   "nome": "Óleo de Lâmina Simples",
+   "pasta": "Consumíveis",
+   "tipoFoundry": "consumivel",
+   "categoria": "consumivel",
+   "subtipo": "Óleo",
+   "pontosAtaque": 0,
+   "tier": "Bronze",
+   "pigmento": null,
+   "raridade": "consumivel",
+   "preco": 0,
+   "loja": "galeria",
+   "descricao": "Passar na arma (1 Estamina): por 1 rodada, todos os seus ataques com arma causam +1d4 de dano. Passar outro óleo troca o anterior.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "oleo-de-lamina-simples",
+      "tier": "Bronze",
+      "raridade": "consumivel",
+      "preco": 0,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "oleo-de-lamina",
+   "nome": "Óleo de Lâmina",
+   "pasta": "Consumíveis",
+   "tipoFoundry": "consumivel",
+   "categoria": "consumivel",
+   "subtipo": "Óleo",
+   "pontosAtaque": 0,
+   "tier": "Prata",
+   "pigmento": null,
+   "raridade": "consumivel",
+   "preco": 0,
+   "loja": "galeria",
+   "descricao": "Passar na arma (1 Estamina): por 1 rodada, todos os seus ataques com arma causam +2d4 de dano. Passar outro óleo troca o anterior.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "oleo-de-lamina",
+      "tier": "Prata",
+      "raridade": "consumivel",
+      "preco": 0,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "oleo-de-lamina-refinado",
+   "nome": "Óleo de Lâmina Refinado",
+   "pasta": "Consumíveis",
+   "tipoFoundry": "consumivel",
+   "categoria": "consumivel",
+   "subtipo": "Óleo",
+   "pontosAtaque": 0,
+   "tier": "Ouro",
+   "pigmento": null,
+   "raridade": "consumivel",
+   "preco": 0,
+   "loja": "galeria",
+   "descricao": "Passar na arma (1 Estamina): por 1 rodada, todos os seus ataques com arma causam +3d4 de dano. Passar outro óleo troca o anterior.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "oleo-de-lamina-refinado",
+      "tier": "Ouro",
+      "raridade": "consumivel",
+      "preco": 0,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "oleo-de-lamina-superior",
+   "nome": "Óleo de Lâmina Superior",
+   "pasta": "Consumíveis",
+   "tipoFoundry": "consumivel",
+   "categoria": "consumivel",
+   "subtipo": "Óleo",
+   "pontosAtaque": 0,
+   "tier": "Diamante",
+   "pigmento": null,
+   "raridade": "consumivel",
+   "preco": 0,
+   "loja": "galeria",
+   "descricao": "Passar na arma (1 Estamina): por 1 rodada, todos os seus ataques com arma causam +4d4 de dano. Passar outro óleo troca o anterior.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "oleo-de-lamina-superior",
+      "tier": "Diamante",
+      "raridade": "consumivel",
+      "preco": 0,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  },
+  {
+   "chave": "oleo-de-lamina-prismatico",
+   "nome": "Óleo de Lâmina Prismático",
+   "pasta": "Consumíveis",
+   "tipoFoundry": "consumivel",
+   "categoria": "consumivel",
+   "subtipo": "Óleo",
+   "pontosAtaque": 0,
+   "tier": "Prismatico",
+   "pigmento": null,
+   "raridade": "consumivel",
+   "preco": 0,
+   "loja": "galeria",
+   "descricao": "Passar na arma (1 Estamina): por 1 rodada, todos os seus ataques com arma causam +5d4 de dano. Passar outro óleo troca o anterior.",
+   "flags": {
+    "nauren": {
+     "torre": {
+      "chave": "oleo-de-lamina-prismatico",
+      "tier": "Prismatico",
+      "raridade": "consumivel",
+      "preco": 0,
+      "pigmento": null,
+      "loja": "galeria"
+     }
+    }
+   }
+  }
+ ],
+ "retirados": [
+  {
+   "chave": "adaga-carmim",
+   "nome": "Adaga Carmim",
+   "tier": "Bronze",
+   "pigmento": "Vermelho"
+  },
+  {
+   "chave": "martelo-brasa-viva",
+   "nome": "Martelo Brasa-Viva",
+   "tier": "Ouro",
+   "pigmento": "Vermelho"
+  },
+  {
+   "chave": "robe-mare-mansa",
+   "nome": "Robe da Maré Mansa",
+   "tier": "Bronze",
+   "pigmento": "Azul"
+  },
+  {
+   "chave": "varinha-abissal",
+   "nome": "Varinha Abissal",
+   "tier": "Ouro",
+   "pigmento": "Azul"
+  },
+  {
+   "chave": "couro-de-musgo",
+   "nome": "Couro de Musgo",
+   "tier": "Bronze",
+   "pigmento": "Verde"
+  },
+  {
+   "chave": "escudo-raiz-mae",
+   "nome": "Escudo da Raiz-Mãe",
+   "tier": "Ouro",
+   "pigmento": "Verde"
+  },
+  {
+   "chave": "botas-gato-violeta",
+   "nome": "Botas do Gato Violeta",
+   "tier": "Bronze",
+   "pigmento": "Roxo"
+  },
+  {
+   "chave": "capa-do-enigma",
+   "nome": "Capa do Enigma",
+   "tier": "Ouro",
+   "pigmento": "Roxo"
+  },
+  {
+   "chave": "gibao-fuliginoso",
+   "nome": "Gibão Fuliginoso",
+   "tier": "Bronze",
+   "pigmento": "Preto"
+  },
+  {
+   "chave": "placa-de-breu",
+   "nome": "Placa de Breu",
+   "tier": "Ouro",
+   "pigmento": "Preto"
+  },
+  {
+   "chave": "escudo-ordem-alva",
+   "nome": "Escudo da Ordem Alva",
+   "tier": "Bronze",
+   "pigmento": "Branco"
+  },
+  {
+   "chave": "cota-aurora-alva",
+   "nome": "Cota da Aurora Alva",
+   "tier": "Ouro",
+   "pigmento": "Branco"
+  },
+  {
+   "chave": "sapatilhas-de-petala",
+   "nome": "Sapatilhas de Pétala",
+   "tier": "Bronze",
+   "pigmento": "Rosa"
+  },
+  {
+   "chave": "capa-brisa-rosada",
+   "nome": "Capa da Brisa Rosada",
+   "tier": "Ouro",
+   "pigmento": "Rosa"
+  },
+  {
+   "chave": "robe-peregrino-aureo",
+   "nome": "Robe do Peregrino Áureo",
+   "tier": "Bronze",
+   "pigmento": "Dourado"
+  },
+  {
+   "chave": "manto-sol-poente",
+   "nome": "Manto do Sol Poente",
+   "tier": "Ouro",
+   "pigmento": "Dourado"
+  }
+ ]
+}

@@ -1,0 +1,24 @@
+{
+  "TYPES": {
+    "Actor": {
+      "personagem": "Personagem",
+      "npc": "PNJ"
+    },
+    "Item": {
+      "arma": "Arma",
+      "armadura": "Armadura",
+      "consumivel": "Consumível",
+      "habilidade": "Habilidade",
+      "magia": "Magia",
+      "efeito": "Efeito",
+      "cor": "Pigmento",
+      "condicao": "Condição",
+      "grupo": "Grupo de Jogadores",
+      "classe": "Classe",
+      "subclasse": "Subclasse"
+    }
+  },
+  "NAUREN": {
+    "SystemName": "Nauren RPG"
+  }
+}

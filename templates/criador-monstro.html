@@ -1,0 +1,202 @@
+<div class="nmc-corpo">
+  <div class="nmc-principal">
+    <div class="nmc-progresso">
+      <div class="nmc-trilha"><div class="nmc-preenchido" data-ref="prog" style="width:10%"></div></div>
+      <div class="nmc-marcos">
+        <span class="nmc-marco ativo" data-ir="0">1. Identidade</span>
+        <span class="nmc-marco" data-ir="1">2. Nível e Categoria</span>
+        <span class="nmc-marco" data-ir="2">3. Características</span>
+        <span class="nmc-marco" data-ir="3">4. Habilidades</span>
+        <span class="nmc-marco" data-ir="4">5. Revisar e criar</span>
+      </div>
+    </div>
+
+    <!-- 1 · Identidade -->
+    <section class="nmc-etapa ativa" data-etapa="0">
+      <h3 class="nmc-titulo"><i class="fas fa-signature"></i> Quem é a criatura?</h3>
+      <p class="nmc-dica">Igual ao Criador de Personagem: nome, retrato e token. O resto da ficha nasce das próximas etapas.</p>
+      <div class="nmc-caixa">
+        <label class="nmc-rot" for="nmc-nome">Nome da criatura</label>
+        <input type="text" id="nmc-nome" name="nome" placeholder="Ex.: Caçador do Brejo" autocomplete="off">
+      </div>
+      <div class="nmc-imagens">
+        <div class="nmc-imagem">
+          <img data-previa="retrato" alt="Retrato">
+          <div>
+            <b>Imagem da criatura</b>
+            <p>Aparece na ficha e no diretório de atores.</p>
+            <button type="button" data-action="escolherImagem" data-alvo="retrato"><i class="fas fa-image"></i> Escolher imagem</button>
+            <input type="text" class="nmc-link" data-alvo="retrato" placeholder="ou cole o link da imagem (.png, .jpg, .webp…)" autocomplete="off">
+            <p class="nmc-mini">Link direto de uma imagem já enviada a um site (ex.: Imgur). Precisa terminar em .png, .jpg, .jpeg, .webp ou .gif.</p>
+          </div>
+        </div>
+        <div class="nmc-imagem">
+          <img data-previa="token" alt="Token" class="nmc-token">
+          <div>
+            <b>Imagem do token</b>
+            <p>Por padrão usa a mesma imagem do retrato.</p>
+            <button type="button" data-action="escolherImagem" data-alvo="token"><i class="fas fa-image"></i> Escolher imagem</button>
+            <input type="text" class="nmc-link" data-alvo="token" placeholder="ou cole o link da imagem do token" autocomplete="off">
+            <label class="nmc-check"><input type="checkbox" name="mesmaImagem" checked> Mesma imagem do retrato</label>
+            <label class="nmc-check" title="Ao criar, abre a janela da borda do Foundry para enquadrar a imagem e escolher as cores."><input type="checkbox" name="usarBorda"> Usar borda do token (abre ao criar)</label>
+          </div>
+        </div>
+      </div>
+      <div class="nmc-caixa">
+        <h4>Tipo de ficha</h4>
+        <div class="nmc-grade nmc-g2">
+          <label class="nmc-cartao sel" data-tipo="monstro"><b>Monstro</b><small>Usa Categoria (dado de dano, Vida ×Categoria, Estamina extra por ataque) e os tetos por nível do Codex.</small></label>
+          <label class="nmc-cartao" data-tipo="npc"><b>NPC comum</b><small>Mesma ficha e o mesmo catálogo, sem Categoria: Vida = Vitalidade × nível e o dano vem das armas e habilidades.</small></label>
+        </div>
+      </div>
+      <div class="nmc-rodape"><span></span><button type="button" class="nmc-btn ouro" data-prox="1">Nível e Categoria <i class="fas fa-arrow-right"></i></button></div>
+    </section>
+
+    <!-- 2 · Nível, Função e Categoria -->
+    <section class="nmc-etapa" data-etapa="1">
+      <h3 class="nmc-titulo"><i class="fas fa-layer-group"></i> Nível, Função e Categoria</h3>
+      <p class="nmc-dica">Tudo à direita se recalcula na hora. Os números seguem o Codex Bestiariun; o que passar do teto fica em amarelo.</p>
+      <div class="nmc-grade nmc-g3">
+        <div class="nmc-caixa">
+          <h4>Nível <span class="r" data-ref="rVB">Valor Base 3</span></h4>
+          <input type="number" name="nivel" min="1" max="30" value="1">
+          <p class="nmc-nota">1-5 · 6-10 · 11-15 · 16-18 · 19-20 · 21-23 · 24-26 · 27-29 · 30 mudam o Valor Base.</p>
+        </div>
+        <div class="nmc-caixa">
+          <h4>Função</h4>
+          <div class="nmc-grade" style="gap:6px">
+            <label class="nmc-cartao sel" data-func="Atacante"><b>Atacante</b><small>Agilidade alta (+bônus), +1 no teto de Poder de Ataque. Bate forte, aguenta menos.</small></label>
+            <label class="nmc-cartao" data-func="Defensor"><b>Defensor</b><small>Força e Estamina altas (+bônus): muito mais Vida, +1 Defesa.</small></label>
+            <label class="nmc-cartao" data-func="Suporte"><b>Suporte</b><small>Inteligência e Destino altos (+bônus): Poder de Magia e Mana. Menos Vida.</small></label>
+          </div>
+        </div>
+        <div class="nmc-caixa" data-ref="caixaCategoria">
+          <h4>Categoria</h4>
+          <div class="nmc-pills">
+            <div class="nmc-pill sel" data-cat="1"><b>1</b><small>1d6 · ×1</small></div>
+            <div class="nmc-pill" data-cat="2"><b>2</b><small>2d8 · ×2</small></div>
+            <div class="nmc-pill" data-cat="3"><b>3</b><small>3d10 · ×3</small></div>
+            <div class="nmc-pill" data-cat="4"><b>4</b><small>4d12 · ×4</small></div>
+          </div>
+          <div style="margin-top:10px">
+            <label class="nmc-rot" for="nmc-token">Tamanho do token</label>
+            <select name="tokenTam" id="nmc-token"><option value="auto">Seguir a Categoria (1×1)</option><option value="1">1×1</option><option value="2">2×2</option><option value="3">3×3</option><option value="4">4×4</option></select>
+            <p class="nmc-nota">Um monstro de Categoria 4 pode ser pequeno no mapa. Mudar a Categoria só altera o token enquanto estiver em "Seguir".</p>
+          </div>
+          <label class="nmc-check" style="margin-top:8px"><input type="checkbox" name="chefe"> <b>Chefe</b> <small>Vida ×1,5, +1 Defesa, 1 ataque a mais por rodada (Estamina), +1 Habilidade</small></label>
+          <div style="margin-top:10px">
+            <label class="nmc-rot" for="nmc-bando">Bando de lacaios <small>(0 = não)</small></label>
+            <input type="number" name="bando" id="nmc-bando" min="0" max="12" value="0" style="width:70px">
+            <p class="nmc-nota">Divide este monstro em N lacaios que agem juntos: cada um com Vida ÷ N, o dano das Ações escala com quantos estão no alcance (todos juntos = o golpe inteiro do monstro), cada lacaio que ataca gasta 1 Estamina e a Estamina é uma só para o grupo. Coloque os tokens na cena <b>não vinculados</b>.</p>
+          </div>
+        </div>
+      </div>
+      <div class="nmc-caixa">
+        <h4>Atributos <span class="r" data-ref="pontosTxt"></span></h4>
+        <div class="nmc-atributos" data-ref="atributos"></div>
+        <p class="nmc-nota">Pontos = Valor Base × 5 + nível, distribuídos pelos pesos da Função; ao subir de nível, nenhum atributo diminui. Cada atributo tem um teto pela Função (mostrado embaixo do número): o principal sobe acima do teto da faixa do Codex, os secundários ficam nele e os fracos bem abaixo. A Estamina nunca passa do teto da faixa (é o quanto a criatura age). Por cima vem o bônus de Função (+1 no nível 1-5, +2 no 6-15, +3 no 16-20, +4 no 21-30) e depois os Pigmentos, que passam de qualquer teto. Use − / + para ajustar.</p>
+      </div>
+      <div class="nmc-rodape"><button type="button" class="nmc-btn" data-prox="0"><i class="fas fa-arrow-left"></i> Identidade</button><button type="button" class="nmc-btn ouro" data-prox="2">Características <i class="fas fa-arrow-right"></i></button></div>
+    </section>
+
+    <!-- 3 · Características -->
+    <section class="nmc-etapa" data-etapa="2">
+      <h3 class="nmc-titulo"><i class="fas fa-star"></i> Características e ajustes</h3>
+      <p class="nmc-dica">Tudo aqui é opcional. O padrão já é uma criatura válida do Codex.</p>
+      <div class="nmc-grade nmc-g2">
+        <div class="nmc-caixa">
+          <h4>Peculiaridades de monstro <span class="r" data-ref="pecCont">0 de 1</span></h4>
+          <p class="nmc-nota" style="margin:0 0 8px">Entram como item descritivo <b>e</b> são aplicadas nos ataques das habilidades escolhidas (o card mostra de onde veio cada efeito).</p>
+          <div class="nmc-grade" style="gap:6px" data-ref="pecs"></div>
+        </div>
+        <div class="nmc-caixa">
+          <h4>Ponto Fraco</h4>
+          <div class="nmc-grade" style="gap:8px">
+            <div><label class="nmc-rot">Número e parte do corpo</label><div style="display:flex;gap:6px"><input type="number" name="pontoFraco" min="0" max="10" value="0" style="width:70px"><input type="text" name="pontoFracoOnde" placeholder="onde (ex.: Cabeça)"></div></div>
+            <p class="nmc-nota">Regra narrativa do Codex: o jogador declara o alvo antes de rolar e o Mestre soma o número à Defesa daquele ataque. Vira a Habilidade descritiva "Ponto Fraco". Deixe 0 para não ter.</p>
+          </div>
+          <h4 style="margin-top:12px">Bônus livres</h4>
+          <div class="nmc-grade nmc-g2">
+            <div><label class="nmc-rot">Vida extra</label><input type="number" name="bVida" value="0" min="-200" max="999"></div>
+            <div><label class="nmc-rot">Estresse máximo extra</label><input type="number" name="bEst" value="0" min="-2" max="6"></div>
+            <div><label class="nmc-rot">Deslocamento (vazio = 6)</label><input type="number" name="bMov" min="0" max="40"></div>
+            <div><label class="nmc-rot">Defesa extra</label><input type="number" name="bDef" value="0" min="-5" max="10"></div>
+          </div>
+        </div>
+      </div>
+      <div class="nmc-caixa">
+        <h4>Pigmentos <span class="r">2 ou mais (Codex: "Cores são sempre 2 ou mais"); 2 já vêm marcados</span></h4>
+        <div class="nmc-pigs" data-ref="pigs"></div>
+      </div>
+      <div class="nmc-rodape"><button type="button" class="nmc-btn" data-prox="1"><i class="fas fa-arrow-left"></i> Nível e Categoria</button><button type="button" class="nmc-btn ouro" data-prox="3">Habilidades <i class="fas fa-arrow-right"></i></button></div>
+    </section>
+
+    <!-- 4 · Habilidades -->
+    <section class="nmc-etapa" data-etapa="3">
+      <h3 class="nmc-titulo"><i class="fas fa-khanda"></i> Habilidades e armas</h3>
+      <p class="nmc-dica">As mesmas pastas do compêndio "Habilidades de Monstros", mais as armas comuns. ◆ marca as que combinam com a Função; o nível mínimo é só sugestão. Clique no nome para ler a descrição completa e escolher em quais ataques as Peculiaridades entram.</p>
+      <div class="nmc-caixa nmc-caixa-catalogo">
+        <div class="nmc-filtros">
+          <input type="text" name="busca" placeholder="Buscar por nome ou efeito…" autocomplete="off">
+          <label class="nmc-check"><input type="checkbox" name="soFunc" checked> só da Função</label>
+          <label class="nmc-check"><input type="checkbox" name="soNivel" checked> até o meu nível</label>
+          <span class="nmc-contador" data-ref="habCont"></span>
+        </div>
+        <div class="nmc-catalogo">
+          <div class="nmc-pastas" data-ref="pastas"></div>
+          <div class="nmc-lista" data-ref="lista"><p class="nmc-nota">Carregando o compêndio…</p></div>
+        </div>
+      </div>
+      <div class="nmc-rodape"><button type="button" class="nmc-btn" data-prox="2"><i class="fas fa-arrow-left"></i> Características</button><button type="button" class="nmc-btn ouro" data-prox="4">Revisar <i class="fas fa-arrow-right"></i></button></div>
+    </section>
+
+    <!-- 5 · Revisar e criar -->
+    <section class="nmc-etapa" data-etapa="4">
+      <h3 class="nmc-titulo"><i class="fas fa-check"></i> Revisar e criar</h3>
+      <p class="nmc-dica">Ajuste o que quiser aqui. Nada é gravado até clicar em Criar; depois a ficha é normal e dá para editar tudo.</p>
+      <div class="nmc-caixa">
+        <h4>Ajuste fino <span class="r">o que você mudar aqui vale sobre o cálculo</span></h4>
+        <div class="nmc-atributos" data-ref="atributosFinal"></div>
+        <div class="nmc-grade nmc-g5" style="margin-top:10px">
+          <div><label class="nmc-rot">Vida máxima</label><input type="number" name="fVida" min="1"></div>
+          <div><label class="nmc-rot">Estamina máxima</label><input type="number" name="fEst" min="0"></div>
+          <div><label class="nmc-rot">Estresse máximo</label><input type="number" name="fStress" min="1"></div>
+          <div><label class="nmc-rot">Defesa</label><input type="number" name="fDef" min="0"></div>
+          <div><label class="nmc-rot">Movimento</label><input type="number" name="fMov" min="0"></div>
+        </div>
+        <p class="nmc-nota">Em branco = usa o valor calculado (mostrado ao lado). Vida, Estamina e Estresse viram um item "Ajustes do Criador" na ficha, para você ver (e desfazer) o que mudou.</p>
+      </div>
+      <div class="nmc-resumo-grid">
+        <div class="nmc-caixa"><h4>O que vai nascer na ficha</h4><ul class="nmc-lim" data-ref="resumoFicha"></ul></div>
+        <div class="nmc-caixa"><h4>Itens que serão criados</h4><ul class="nmc-lim" data-ref="resumoItens"></ul></div>
+      </div>
+      <div class="nmc-caixa" data-ref="avisosFinais"></div>
+      <div class="nmc-rodape">
+        <button type="button" class="nmc-btn" data-prox="3"><i class="fas fa-arrow-left"></i> Habilidades</button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button type="button" class="nmc-btn" data-action="criar" data-destino="bestiario"><i class="fas fa-book"></i> Criar no Bestiário</button>
+          <button type="button" class="nmc-btn ouro" data-action="criar" data-destino="mundo"><i class="fas fa-check"></i> Criar ator</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <aside class="nmc-lateral">
+    <div class="nmc-ficha">
+      <div class="nmc-cab"><img data-previa="mini" alt=""><div><b data-ref="fNome">Sem nome</b><small data-ref="fSub"></small></div></div>
+      <div class="nmc-recursos" data-ref="recursos"></div>
+      <div class="nmc-linha"><span>Defesa</span><b data-ref="fDef"></b></div>
+      <div class="nmc-linha"><span>Movimento</span><b data-ref="fMov"></b></div>
+      <div class="nmc-linha" data-ref="linhaDano"><span>Dano da Categoria</span><b data-ref="fDano"></b></div>
+      <div class="nmc-linha" data-ref="linhaEstCat"><span>Estamina extra por ataque</span><b data-ref="fEstCat"></b></div>
+      <div class="nmc-linha"><span>Token</span><b data-ref="fTok"></b></div>
+      <div class="nmc-linha" title="Regra do Codex: o nível máximo que os jogadores podem enfrentar é o nível do inimigo ÷ 2 (combate quase sempre mortal)."><span>Grupo (limite mortal)</span><b data-ref="fGrupo"></b></div>
+      <div class="nmc-linha"><span>Habilidades</span><b data-ref="fHabs"></b></div>
+      <div class="nmc-linha"><span>Peculiaridades</span><b data-ref="fPecs"></b></div>
+      <details class="nmc-calc" open><summary>Como foi calculado</summary><div data-ref="calc"></div></details>
+      <div data-ref="avisos"></div>
+      <div class="nmc-chips" data-ref="chipsHab"></div>
+    </div>
+    <p class="nmc-nota" style="margin-top:auto">Padrão do Codex por nível: 4 habilidades nos níveis 1-5, +1 por faixa até 9 no 26-30 (Chefe +1). Passar do limite só avisa, não bloqueia.</p>
+  </aside>
+</div>

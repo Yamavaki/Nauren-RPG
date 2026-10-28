@@ -1,0 +1,297 @@
+<div class="nauren-criador-corpo">
+
+  <!-- Barra de progresso: 5 marcos, o atual destacado - sempre simétrica
+       (largura igual entre marcos), sem depender do texto de cada nome. -->
+  <div class="nauren-criador-progresso">
+    <div class="nauren-criador-progresso-trilha">
+      <div class="nauren-criador-progresso-preenchido" style="width: {{progressoPct}}%;"></div>
+    </div>
+    <div class="nauren-criador-progresso-marcos">
+      <span class="nauren-criador-marco {{#if marcoAtivo0}}ativo{{/if}} {{#if marcoFeito0}}feito{{/if}}" {{#if marcoFeito0}}data-action="irParaEtapa" data-etapa="0" title="Voltar para Atributos"{{/if}}>1. Atributos</span>
+      <span class="nauren-criador-marco {{#if marcoAtivo1}}ativo{{/if}} {{#if marcoFeito1}}feito{{/if}}" {{#if marcoFeito1}}data-action="irParaEtapa" data-etapa="1" title="Voltar para Peculiaridades"{{/if}}>2. Peculiaridades</span>
+      <span class="nauren-criador-marco {{#if marcoAtivo2}}ativo{{/if}} {{#if marcoFeito2}}feito{{/if}}" {{#if marcoFeito2}}data-action="irParaEtapa" data-etapa="2" title="Voltar para Pigmentos"{{/if}}>3. Pigmentos</span>
+      <span class="nauren-criador-marco {{#if marcoAtivo3}}ativo{{/if}} {{#if marcoFeito3}}feito{{/if}}" {{#if marcoFeito3}}data-action="irParaEtapa" data-etapa="3" title="Voltar para Classe"{{/if}}>4. Classe</span>
+      <span class="nauren-criador-marco {{#if marcoAtivo4}}ativo{{/if}} {{#if marcoFeito4}}feito{{/if}}" {{#if marcoFeito4}}data-action="irParaEtapa" data-etapa="4" title="Voltar para Equipamento"{{/if}}>5. Equipamento</span>
+    </div>
+  </div>
+
+  {{#if estaNaEtapa0}}
+  <div class="nauren-criador-etapa">
+    <div class="nauren-criador-nome">
+      <label for="nauren-criador-nome"><i class="fas fa-signature"></i> Nome do personagem</label>
+      <input type="text" id="nauren-criador-nome" name="nomePersonagem" value="{{nomePersonagem}}" placeholder="Como seu personagem se chama?" autocomplete="off">
+    </div>
+    <div class="nauren-criador-imagens">
+      <div class="nauren-criador-imagem">
+        <img src="{{imgRetrato}}" data-previa="retrato" alt="Retrato">
+        <div>
+          <label>Imagem do personagem</label>
+          <p class="item-meta-hint">Aparece na ficha e no diretório de atores.</p>
+          <button type="button" data-action="escolherImagemCriador" data-alvo="retrato"><i class="fas fa-image"></i> Escolher imagem</button>
+          <button type="button" data-action="enquadrarRetratoCriador"><i class="fas fa-crop-simple"></i> Enquadrar</button>
+          <input type="text" class="nauren-criador-link" data-alvo="retrato" placeholder="ou cole o link da imagem (.png, .jpg, .webp…)" title="Link direto de uma imagem já enviada a um site (ex.: Imgur). Precisa terminar em .png, .jpg, .jpeg, .webp ou .gif." autocomplete="off">
+          <input type="hidden" name="imgRetrato" value="{{imgRetrato}}">
+        </div>
+      </div>
+      <div class="nauren-criador-imagem">
+        <img src="{{imgToken}}" data-previa="token" alt="Token" class="nauren-criador-token">
+        <div>
+          <label>Imagem do token</label>
+          <p class="item-meta-hint">A que aparece no mapa. Se não escolher, usa a do personagem.</p>
+          <button type="button" data-action="escolherImagemCriador" data-alvo="token"><i class="fas fa-circle-user"></i> Escolher token</button>
+          <button type="button" data-action="bordaTokenCriador" class="nauren-criador-borda{{#if bordaAtiva}} ativa{{/if}}" title="Opcional: recorta a imagem num círculo com a borda do Foundry, nas cores que quiser. Ela pisca ao tomar dano ou ser curado."><i class="fas fa-circle-dot"></i> Borda do token</button>
+          <input type="text" class="nauren-criador-link" data-alvo="token" placeholder="ou cole o link da imagem (.png, .jpg, .webp…)" autocomplete="off">
+          <input type="hidden" name="imgToken" value="{{imgToken}}">
+        </div>
+      </div>
+    </div>
+    <h2 class="nauren-criador-titulo"><i class="fas fa-dice-d6"></i> Seus atributos</h2>
+    {{#if semModo}}
+    <p class="item-meta-hint" style="text-align: center; margin-bottom: 12px;">Como você quer gerar seus 5 valores?</p>
+    <div class="nauren-criador-modos">
+      <a class="nauren-criador-modo" data-action="modoAtributos" data-modo="rolar">
+        <i class="fas fa-dice"></i><b>Rolar 5 dados (D6)</b><span>Deixe o Prisma decidir. Os 5 resultados viram os valores para distribuir.</span>
+      </a>
+      <a class="nauren-criador-modo" data-action="modoAtributos" data-modo="fixo">
+        <i class="fas fa-scale-balanced"></i><b>Valores fixos</b><span>Sem depender do acaso: <b>{{valoresFixosTexto}}</b>.</span>
+      </a>
+    </div>
+    <p class="item-meta-hint" style="text-align: center; margin: 10px 0 14px;">Ou digite os valores direto nos atributos abaixo.</p>
+    {{else}}
+    <div class="nauren-criador-modo-barra">
+      <span class="nauren-criador-modo-chip {{#if modoRolar}}ativo{{/if}}" {{#unless modoRolar}}data-action="modoAtributos" data-modo="rolar"{{/unless}}><i class="fas fa-dice"></i> Rolar 5d6</span>
+      <span class="nauren-criador-modo-chip {{#if modoFixo}}ativo{{/if}}" {{#unless modoFixo}}data-action="modoAtributos" data-modo="fixo"{{/unless}}><i class="fas fa-scale-balanced"></i> Valores fixos</span>
+      <a class="nauren-criador-modo-limpar" data-action="limparAtributos" title="Zera os 5 atributos para recomeçar"><i class="fas fa-eraser"></i> Limpar</a>
+    </div>
+    {{#if modoRolar}}{{#unless dadosAtributosCompletos}}
+    <div class="nauren-criador-dados">
+      <p class="item-meta-hint" style="text-align: center; margin: 0 0 8px;">Clique em cada dado (ou em <b>Rolar todos</b>). Cada dado rola uma vez só.</p>
+      <div class="nauren-criador-dados-linha">
+        {{#each dadosAtributos as |d|}}
+        <div class="nauren-criador-dado {{#if d.rolado}}rolado{{/if}}" {{#unless d.rolado}}data-action="rolarDadoAtributo"{{/unless}} data-indice="{{d.indice}}" title="{{#if d.rolado}}Já rolado{{else}}Clique para rolar 1d6{{/if}}">
+          {{#if d.rolado}}<span class="nauren-criador-dado-valor">{{d.valor}}</span>{{else}}<i class="fas fa-dice-d6 nauren-criador-dado-icone"></i><span class="nauren-criador-dado-rotulo">d6</span>{{/if}}
+        </div>
+        {{/each}}
+        <a class="btn-add nauren-criador-rolar-todos" data-action="rolarTodosDadosAtributo"><i class="fas fa-dice"></i> Rolar todos</a>
+      </div>
+    </div>
+    {{/unless}}{{/if}}
+    {{#if temPool}}
+    <div class="nauren-criador-pool">
+      <span class="nauren-criador-pool-rotulo">{{#if modoRolar}}Seus dados{{else}}Valores{{/if}}:</span>
+      {{#each pool as |p|}}<span class="nauren-criador-ficha-valor" draggable="true" data-valor="{{p.valor}}" title="Clique e depois clique num atributo (ou arraste)">{{p.valor}}</span>{{/each}}
+      <span class="nauren-criador-pool-aviso"></span>
+    </div>
+    <p class="item-meta-hint" style="text-align: center; margin: 4px 0 12px;">Clique num valor e depois no atributo (ou arraste). Também dá para digitar.</p>
+    {{/if}}
+    {{/if}}
+    <div class="nauren-criador-atributos-grid principal">
+      {{#each atributosCards as |a|}}
+      <div class="nauren-criador-atributo-campo" data-atributo="{{a.chave}}">
+        <span class="nauren-criador-atributo-icone"><i class="fas {{a.icone}}"></i></span>
+        <label for="nauren-atr-{{a.chave}}">{{a.nome}}</label>
+        <div class="nauren-criador-atributo-valor">
+          <button type="button" data-action="ajustarAtributo" data-passo="-1" title="−1">−</button>
+          <input type="number" id="nauren-atr-{{a.chave}}" name="atributo_{{a.chave}}" value="{{a.valor}}" min="0">
+          <button type="button" data-action="ajustarAtributo" data-passo="1" title="+1">+</button>
+        </div>
+        <span class="nauren-criador-atributo-desc">{{a.desc}}</span>
+      </div>
+      {{/each}}
+    </div>
+    <div class="nauren-criador-previa" title="Calculado do mesmo jeito que a ficha. Pigmentos, Peculiaridades e Classe ainda vão mudar alguns valores.">
+      <span class="nauren-criador-previa-titulo"><i class="fas fa-eye"></i> Prévia</span>
+      <span><small>Vida</small><b data-previa-valor="vida">—</b></span>
+      <span><small>Mana</small><b data-previa-valor="mana">—</b></span>
+      <span><small>Estamina</small><b data-previa-valor="estaminaCombate">—</b></span>
+      <span><small>Poder de Ataque</small><b data-previa-valor="poderAtaque">—</b></span>
+      <span><small>Poder de Magia</small><b data-previa-valor="poderMagia">—</b></span>
+      <span><small>Dados de Destino</small><b data-previa-valor="dadosDestino">—</b></span>
+      <span><small>Itens iniciais</small><b data-previa-valor="itens">—</b></span>
+    </div>
+  </div>
+  <div class="nauren-criador-rodape">
+    <span></span>
+    <a class="btn-add nauren-criador-btn-avancar" data-action="confirmarAtributos">Confirmar e continuar <i class="fas fa-arrow-right"></i></a>
+  </div>
+  {{/if}}
+
+  {{#if estaNaEtapa1}}
+  <div class="nauren-criador-etapa">
+    <h2 class="nauren-criador-titulo"><i class="fas fa-dna"></i> Peculiaridades</h2>
+    <p class="item-meta-hint" style="text-align: center; margin-bottom: 12px;">
+      Escolha de <b>0 a 3</b> pares. Para cada par: escolha um lado (Benefício ou Fardo) e <b>role o D10</b> para o outro (ou vice-versa). Só é possível ter a mesma Peculiaridade 2 vezes.
+    </p>
+    <div class="nauren-criador-sorteio">
+      <a class="nauren-criador-sorteio-btn beneficio" data-action="rolarPeculiaridade" data-tipo="beneficio"><i class="fas fa-dice-d20"></i> Rolar Benefício <small>d10</small></a>
+      <a class="nauren-criador-sorteio-btn fardo" data-action="rolarPeculiaridade" data-tipo="fardo"><i class="fas fa-dice-d20"></i> Rolar Fardo <small>d10</small></a>
+    </div>
+    {{#if sorteioPeculiaridade}}
+    <div class="nauren-criador-sorteio-resultado">
+      <span class="nauren-criador-sorteio-face">{{sorteioPeculiaridade.face}}</span>
+      <div><small>{{sorteioPeculiaridade.tipo}} sorteado no d10</small><b>{{sorteioPeculiaridade.nome}}</b><em>{{sorteioPeculiaridade.situacao}}</em></div>
+    </div>
+    {{/if}}
+    <div class="nauren-criador-cards-grid">
+      {{#each peculiaridades as |p|}}
+      <div class="nauren-criador-card {{#if p.selecionado}}selecionado{{/if}} {{#if p.bloqueado}}bloqueado{{/if}} {{#if p.sorteado}}sorteado{{/if}}" data-action="toggleCardPeculiaridade" data-uuid="{{p.uuid}}">
+        <img src="{{p.img}}">
+        <span class="nauren-criador-card-tag {{#if p.ehFardo}}fardo{{else}}beneficio{{/if}}">{{#if p.ehFardo}}Fardo{{else}}Benefício{{/if}}</span>
+        <span class="nauren-criador-card-nome">{{p.nome}}</span>
+        <span class="nauren-criador-card-resumo">{{p.resumo}}</span>
+        {{#if p.duas}}<span class="nauren-criador-card-copias" title="Escolhida 2 vezes (efeitos somados)">×2</span>{{/if}}
+        {{#if p.selecionado}}<a class="nauren-criador-card-menos" data-action="removerUmaPeculiaridade" data-uuid="{{p.uuid}}" title="Tirar uma"><i class="fas fa-minus"></i></a>{{/if}}
+      </div>
+      {{/each}}
+    </div>
+  </div>
+  <p class="nauren-criador-contador">Selecionados: <b>{{peculiaridadesContagem}}</b> / 6 (máximo 3 pares) · clique de novo num cartão escolhido para ter <b>×2</b></p>
+  <div class="nauren-criador-rodape">
+    <a class="btn-add" data-action="voltarEtapa"><i class="fas fa-arrow-left"></i> Voltar</a>
+    <a class="btn-add nauren-criador-btn-avancar" data-action="avancarDePeculiaridades">Continuar <i class="fas fa-arrow-right"></i></a>
+  </div>
+  {{/if}}
+
+  {{#if estaNaEtapa2}}
+  <div class="nauren-criador-etapa">
+    <h2 class="nauren-criador-titulo"><i class="fas fa-palette"></i> Pigmentos</h2>
+    <p class="item-meta-hint" style="text-align: center; margin-bottom: 12px;">
+      Escolha exatamente <b>2</b> - suas duas cores favoritas.
+    </p>
+    <div class="nauren-criador-cards-grid">
+      {{#each pigmentos as |p|}}
+      <div class="nauren-criador-card {{#if p.selecionado}}selecionado{{/if}} {{#if p.bloqueado}}bloqueado{{/if}}" data-action="toggleCardPigmento" data-uuid="{{p.uuid}}">
+        <span class="nauren-criador-card-swatch" style="background: {{p.corHex}};"></span>
+        <span class="nauren-criador-card-nome">{{p.nome}}</span>
+        <span class="nauren-criador-card-resumo">{{p.resumo}}</span>
+      </div>
+      {{/each}}
+    </div>
+  </div>
+  <p class="nauren-criador-contador">Selecionados: <b>{{pigmentosContagem}}</b> / 2</p>
+  <div class="nauren-criador-rodape">
+    <a class="btn-add" data-action="voltarEtapa"><i class="fas fa-arrow-left"></i> Voltar</a>
+    <a class="btn-add nauren-criador-btn-avancar" data-action="avancarDePigmentos">Continuar <i class="fas fa-arrow-right"></i></a>
+  </div>
+  {{/if}}
+
+  {{#if estaNaEtapa3}}
+  <div class="nauren-criador-etapa">
+    <h2 class="nauren-criador-titulo"><i class="fas fa-hat-wizard"></i> Classe</h2>
+    {{#if temClasse}}
+    <p class="item-meta-hint" style="text-align: center; margin-bottom: 12px;">
+      Sua Classe já está definida: <b>{{classeAtualNome}}</b>. Continue para revisar o Equipamento.
+    </p>
+    {{else}}
+    <p class="item-meta-hint" style="text-align: center; margin-bottom: 12px;">
+      Escolha 1 Classe. No próximo passo, o Equipamento mostra primeiro o que ela usa. A Classe só é gravada quando você concluir, então dá para voltar e trocar.
+    </p>
+    <div class="nauren-criador-cards-grid nauren-criador-grade-classes">
+      {{#each classes as |c|}}
+      <div class="nauren-criador-card {{#if c.selecionado}}selecionado{{/if}}" data-action="escolherClasse" data-uuid="{{c.uuid}}" title="{{c.textoCompleto}}">
+        <img src="{{c.img}}">
+        <span class="nauren-criador-card-nome">{{c.nome}}</span>
+        <span class="nauren-criador-card-resumo">{{c.resumo}}</span>
+      </div>
+      {{/each}}
+    </div>
+    {{#if classeSelecionada}}
+    <div class="nauren-criador-classe-detalhe">
+      <img src="{{classeSelecionada.img}}">
+      <div>
+        <b class="nauren-criador-classe-detalhe-nome">{{classeSelecionada.nome}}</b>
+        <p>{{classeSelecionada.descricao}}</p>
+        {{#if classeSelecionada.dica}}<p class="nauren-criador-equip-dica"><i class="fas fa-shield-halved"></i> {{classeSelecionada.dica}}</p>{{/if}}
+      </div>
+    </div>
+    {{/if}}
+    {{/if}}
+  </div>
+  <div class="nauren-criador-rodape">
+    <a class="btn-add" data-action="voltarEtapa"><i class="fas fa-arrow-left"></i> Voltar</a>
+    {{#if temClasse}}
+    <a class="btn-add nauren-criador-btn-avancar" data-action="avancarDeClasse">Continuar <i class="fas fa-arrow-right"></i></a>
+    {{else}}{{#if temSelecao}}
+    <a class="btn-add nauren-criador-btn-avancar" data-action="avancarDeClasse">Continuar com {{classeSelecionada.nome}} <i class="fas fa-arrow-right"></i></a>
+    {{else}}
+    <span class="item-meta-hint">Escolha uma classe acima</span>
+    {{/if}}{{/if}}
+  </div>
+  {{/if}}
+
+  {{#if estaNaEtapa4}}
+  <div class="nauren-criador-etapa">
+    <h2 class="nauren-criador-titulo"><i class="fas fa-shield-alt"></i> Equipamento</h2>
+    <p class="item-meta-hint" style="text-align: center; margin-bottom: 12px;">
+      Escolha até <b>{{equipamentoMax}}</b> {{#if limiteUm}}item{{else}}itens{{/if}} - a quantidade depende do seu Destino (1-2 → 1 item, 3-4 → 2, 5-6 → 3, 7-8 → 4).{{#if limiteUm}} Clicar em outro troca a escolha.{{/if}}
+    </p>
+    {{#if temRecomendados}}
+    <div class="nauren-criador-equip-grupo recomendado">
+      <div class="nauren-criador-equip-cabecalho">
+        <i class="fas fa-star"></i> Recomendado para {{classeNome}}
+      </div>
+      {{#if dicaClasse}}<p class="nauren-criador-equip-dica"><i class="fas fa-lightbulb"></i> {{dicaClasse}}</p>{{/if}}
+      <div class="nauren-criador-cards-grid">
+        {{#each equipRecomendados as |e|}}
+        <div class="nauren-criador-card nauren-criador-card-recomendado {{#if e.selecionado}}selecionado{{/if}} {{#if e.bloqueado}}bloqueado{{/if}}" data-action="toggleCardEquipamento" data-uuid="{{e.uuid}}" title="{{e.textoCompleto}}">
+          <span class="nauren-criador-selo-recomendado"><i class="fas fa-star"></i> {{../classeNome}}</span>
+          <img src="{{e.img}}">
+          <span class="nauren-criador-card-nome">{{e.nome}}</span>
+          <span class="nauren-criador-card-tipo">{{e.tipoRotulo}}</span>
+          <span class="nauren-criador-card-resumo">{{e.resumo}}</span>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+    {{else}}
+    {{#unless temClasseEscolhida}}
+    <p class="nauren-criador-equip-dica"><i class="fas fa-circle-info"></i> Sem Classe escolhida: volte um passo para ver o equipamento recomendado para ela.</p>
+    {{/unless}}
+    {{/if}}
+    <div class="nauren-criador-equip-grupo">
+      {{#if temRecomendados}}
+      <div class="nauren-criador-equip-cabecalho outros">Outros equipamentos</div>
+      <p class="item-meta-hint" style="margin: 0 0 8px;">Fora da lista da sua Classe. Você pode escolher mesmo assim (combine com o Mestre).</p>
+      {{/if}}
+      <div class="nauren-criador-cards-grid">
+        {{#each equipOutros as |e|}}
+        <div class="nauren-criador-card {{#if e.selecionado}}selecionado{{/if}} {{#if e.bloqueado}}bloqueado{{/if}}" data-action="toggleCardEquipamento" data-uuid="{{e.uuid}}" title="{{e.textoCompleto}}">
+          <img src="{{e.img}}">
+          <span class="nauren-criador-card-nome">{{e.nome}}</span>
+          <span class="nauren-criador-card-tipo">{{e.tipoRotulo}}</span>
+          <span class="nauren-criador-card-resumo">{{e.resumo}}</span>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+  </div>
+  <p class="nauren-criador-contador">Selecionados: <b>{{equipamentoContagem}}</b> / {{equipamentoMax}}{{#if equipamentoRestante}} · ainda pode escolher {{equipamentoRestante}}{{/if}}{{#if foraDaClasseEscolhidos}} · <span class="nauren-criador-aviso-fora">fora da Classe: {{foraDaClasseEscolhidos}}</span>{{/if}}</p>
+  <div class="nauren-criador-rodape">
+    <a class="btn-add" data-action="voltarEtapa"><i class="fas fa-arrow-left"></i> Voltar</a>
+    <a class="btn-add nauren-criador-btn-avancar" data-action="confirmarClasse">Concluir personagem <i class="fas fa-check"></i></a>
+  </div>
+  {{/if}}
+
+  {{#if estaNoResumo}}
+  <div class="nauren-criador-etapa nauren-criador-conclusao">
+    <i class="fas fa-check-circle"></i>
+    <h2 class="nauren-criador-titulo">Personagem pronto!</h2>
+    <div class="nauren-criador-resumo">
+      <div class="nauren-criador-resumo-topo"><img src="{{resumo.img}}"><div><b>{{resumo.nome}}</b><span>{{resumo.classe}}</span></div></div>
+      <div class="nauren-criador-resumo-atributos">
+        {{#each resumo.atributos as |a|}}<span><small>{{a.nome}}</small><b>{{a.valor}}</b></span>{{/each}}
+      </div>
+      <p><b>Peculiaridades:</b> {{resumo.peculiaridades}}</p>
+      <p><b>Pigmentos:</b> {{resumo.pigmentos}}</p>
+      <p><b>Equipamento:</b> {{resumo.equipamento}}</p>
+      {{#if resumo.concedidos}}<p><b>Da Classe (nível 1):</b> {{resumo.concedidos}}</p>{{/if}}
+    </div>
+    <p class="item-meta-hint" style="text-align: center;">Concluir fecha o assistente e abre a escolha das barras do token.</p>
+  </div>
+  <div class="nauren-criador-rodape">
+    <a class="btn-add" data-action="voltarEtapa"><i class="fas fa-arrow-left"></i> Voltar ao Equipamento</a>
+    <a class="btn-add nauren-criador-btn-avancar" data-action="concluirCriador">Concluir <i class="fas fa-check"></i></a>
+  </div>
+  {{/if}}
+
+</div>

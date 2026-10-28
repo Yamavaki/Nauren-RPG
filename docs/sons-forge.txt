@@ -1,0 +1,265 @@
+# Sons do Nauren (Forge) - usados no menu do Automated Animations e no guia de animações da IA.
+# Cada linha: nome do arquivo  |  endereço completo (é o que vai em primary.sound.file).
+# Base: https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/
+
+Bola de Fogo 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Bola%20de%20Fogo%201.ogg
+Bola de Fogo 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Bola%20de%20Fogo%202.ogg
+Bola de Fogo 3.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Bola%20de%20Fogo%203.ogg
+Bola de Fogo 4.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Bola%20de%20Fogo%204.ogg
+Breath Ácido 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Breath%20%C3%81cido%201.ogg
+Breath Ácido 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Breath%20%C3%81cido%202.ogg
+Breath Elétrico 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Breath%20El%C3%A9trico%201.ogg
+Breath Elétrico 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Breath%20El%C3%A9trico%202.ogg
+Breath Fogo 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Breath%20Fogo%202.ogg
+Breath Fogo.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Breath%20Fogo.ogg
+Breath Gelo 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Breath%20Gelo%201.ogg
+Breath Gelo 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Breath%20Gelo%202.ogg
+Breath Veneno 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Breath%20Veneno%202.ogg
+Breath Veneno.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Breath%20Veneno.ogg
+Buff - Escudo da Fé.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Buff%20-%20Escudo%20da%20F%C3%A9.ogg
+Buff 10 - Inspiração Bárdica.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Buff%2010%20-%20Inspira%C3%A7%C3%A3o%20B%C3%A1rdica.ogg
+Buff 11 - Inspiração Bárdica.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Buff%2011%20-%20Inspira%C3%A7%C3%A3o%20B%C3%A1rdica.ogg
+Buff 2 - Escudo da Fé.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Buff%202%20-%20Escudo%20da%20F%C3%A9.ogg
+Buff 3 - Guidance.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Buff%203%20-%20Guidance.ogg
+Buff 4 - Guidance.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Buff%204%20-%20Guidance.ogg
+Buff 5 - Bless.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Buff%205%20-%20Bless.ogg
+Buff 6 - Bless.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Buff%206%20-%20Bless.ogg
+Buff 7 - Bless.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Buff%207%20-%20Bless.ogg
+Buff 8 - Proteção.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Buff%208%20-%20Prote%C3%A7%C3%A3o.ogg
+Buff 9 - Inspiração Bárdica.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Buff%209%20-%20Inspira%C3%A7%C3%A3o%20B%C3%A1rdica.ogg
+Chamar Relâmpagos 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Chamar%20Rel%C3%A2mpagos%202.ogg
+Chamar Relâmpagos.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Chamar%20Rel%C3%A2mpagos.ogg
+Cone de Gelo 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Cone%20de%20Gelo%201.ogg
+Cone de Gelo 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Cone%20de%20Gelo%202.ogg
+Cone de Gelo 3.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Cone%20de%20Gelo%203.ogg
+Cone de Gelo 4.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Cone%20de%20Gelo%204.ogg
+Contundente 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Contundente%201.ogg
+Contundente 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Contundente%202.ogg
+Contundente 3.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Contundente%203.ogg
+Contundente 4.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Contundente%204.ogg
+Cortante 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Cortante%201.ogg
+Cortante 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Cortante%202.ogg
+Cortante 3.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Cortante%203.ogg
+Cortante 4.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Cortante%204.ogg
+Cura 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Cura%201.ogg
+Cura 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Cura%202.ogg
+Cura 3.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Cura%203.ogg
+Cura 4.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Cura%204.ogg
+Cura 5.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Cura%205.ogg
+Cura 6.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Cura%206.ogg
+Cura 7.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Cura%207.ogg
+Debuff 1 - Amaldiçoar.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Debuff%201%20-%20Amaldi%C3%A7oar.ogg
+Debuff 10 - Silencio.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Debuff%2010%20-%20Silencio.ogg
+Debuff 2 - Amaldiçoar.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Debuff%202%20-%20Amaldi%C3%A7oar.ogg
+Debuff 3 - Amaldiçoar.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Debuff%203%20-%20Amaldi%C3%A7oar.ogg
+Debuff 4 - Hex.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Debuff%204%20-%20Hex.ogg
+Debuff 5 - Hex.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Debuff%205%20-%20Hex.ogg
+Debuff 6 - Hex.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Debuff%206%20-%20Hex.ogg
+Debuff 7 - Cegueira.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Debuff%207%20-%20Cegueira.ogg
+Debuff 8.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Debuff%208.ogg
+Debuff 9.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Debuff%209.ogg
+Elétrico 3.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/El%C3%A9trico%203.ogg
+Elétrico 4.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/El%C3%A9trico%204.ogg
+Elétrico Menor 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/El%C3%A9trico%20Menor%202.ogg
+Elétrico Menor.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/El%C3%A9trico%20Menor.ogg
+Força - Arma Espiritual.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/For%C3%A7a%20-%20Arma%20Espiritual.ogg
+Força - Desintegrar 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/For%C3%A7a%20-%20Desintegrar%201.ogg
+Força - Desintegrar 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/For%C3%A7a%20-%20Desintegrar%202.ogg
+Força - Desintegrar 3.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/For%C3%A7a%20-%20Desintegrar%203.ogg
+Força - Mísseis Mágicos 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/For%C3%A7a%20-%20M%C3%ADsseis%20M%C3%A1gicos%201.ogg
+Força - Mísseis Mágicos 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/For%C3%A7a%20-%20M%C3%ADsseis%20M%C3%A1gicos%202.ogg
+Força - Mísseis Mágicos 3.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/For%C3%A7a%20-%20M%C3%ADsseis%20M%C3%A1gicos%203.ogg
+Força - Rajada Mística 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/For%C3%A7a%20-%20Rajada%20M%C3%ADstica%202.ogg
+Força - Rajada Mística 3.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/For%C3%A7a%20-%20Rajada%20M%C3%ADstica%203.ogg
+Força - Rajada Mística.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/For%C3%A7a%20-%20Rajada%20M%C3%ADstica.ogg
+Gelo 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Gelo%201.ogg
+Gelo 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Gelo%202.ogg
+Gelo 3.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Gelo%203.ogg
+Gelo 4.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Gelo%204.ogg
+Gelo 5.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Gelo%205.ogg
+Impacto Ácido Maior.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Impacto%20%C3%81cido%20Maior.ogg
+Impacto Ácido Menor.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Impacto%20%C3%81cido%20Menor.ogg
+Impacto Genérico.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Impacto%20Gen%C3%A9rico.ogg
+Necrótico 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Necr%C3%B3tico%201.ogg
+Necrótico 10 - Circulo da Morte.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Necr%C3%B3tico%2010%20-%20Circulo%20da%20Morte.ogg
+Necrótico 11 - Circulo da Morte.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Necr%C3%B3tico%2011%20-%20Circulo%20da%20Morte.ogg
+Necrótico 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Necr%C3%B3tico%202.ogg
+Necrótico 3 - Toque chocante.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Necr%C3%B3tico%203%20-%20Toque%20chocante.ogg
+Necrótico 4 - Toque chocante.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Necr%C3%B3tico%204%20-%20Toque%20chocante.ogg
+Necrótico 5 - Toque chocante.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Necr%C3%B3tico%205%20-%20Toque%20chocante.ogg
+Necrótico 6 - Arms of Hadar.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Necr%C3%B3tico%206%20-%20Arms%20of%20Hadar.ogg
+Necrótico 7 - Arms of Hadar.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Necr%C3%B3tico%207%20-%20Arms%20of%20Hadar.ogg
+Necrótico 8 - Circulo da Morte.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Necr%C3%B3tico%208%20-%20Circulo%20da%20Morte.ogg
+Necrótico 9 - Circulo da Morte.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Necr%C3%B3tico%209%20-%20Circulo%20da%20Morte.ogg
+Nuvem de Adagas Sumonar.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Nuvem%20de%20Adagas%20Sumonar.ogg
+Parede de Fogo 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Parede%20de%20Fogo%201.ogg
+Parede de Fogo 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Parede%20de%20Fogo%202.ogg
+Parede de Gelo 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Parede%20de%20Gelo%201.ogg
+Parede de Gelo 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Parede%20de%20Gelo%202.ogg
+Perfurante 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Perfurante%201.ogg
+Perfurante 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Perfurante%202.ogg
+Perfurante 3.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Perfurante%203.ogg
+Preparando/Ácido 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/%C3%81cido%201.ogg
+Preparando/Buff 1 - Trevoso.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Buff%201%20-%20Trevoso.ogg
+Preparando/Buff 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Buff%202.ogg
+Preparando/Buff 3.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Buff%203.ogg
+Preparando/Buff 4.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Buff%204.ogg
+Preparando/Buff ou Debuff.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Buff%20ou%20Debuff.ogg
+Preparando/Cura 1 - Aura de vitalidade.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Cura%201%20-%20Aura%20de%20vitalidade.ogg
+Preparando/Cura 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Cura%201.ogg
+Preparando/Debuff 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Debuff%201.ogg
+Preparando/Debuff 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Debuff%202.ogg
+Preparando/Debuff 3.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Debuff%203.ogg
+Preparando/Elétrico.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/El%C3%A9trico.ogg
+Preparando/Feitiçaria.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Feiti%C3%A7aria.ogg
+Preparando/Físico 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/F%C3%ADsico%201.ogg
+Preparando/Fogo 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Fogo%201.ogg
+Preparando/Força 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/For%C3%A7a%201.ogg
+Preparando/Força 2 - Smite Banidouro.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/For%C3%A7a%202%20-%20Smite%20Banidouro.ogg
+Preparando/Força 3.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/For%C3%A7a%203.ogg
+Preparando/Gelo 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Gelo%201.ogg
+Preparando/Genérico 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Gen%C3%A9rico%201.ogg
+Preparando/Genérico 2 - Melhor de todos.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Gen%C3%A9rico%202%20-%20Melhor%20de%20todos.ogg
+Preparando/Genérico 3.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Gen%C3%A9rico%203.ogg
+Preparando/Necrótico 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Necr%C3%B3tico%201.ogg
+Preparando/Necrótico 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Necr%C3%B3tico%202.ogg
+Preparando/Necrótico 3.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Necr%C3%B3tico%203.ogg
+Preparando/Psíquico - Power World Kill.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Ps%C3%ADquico%20-%20Power%20World%20Kill.ogg
+Preparando/Psíquico 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Ps%C3%ADquico%202.ogg
+Preparando/Radiante 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Radiante%201.ogg
+Preparando/Trovejante 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Trovejante%201.ogg
+Preparando/Utilidade 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Utilidade%201.ogg
+Preparando/Veneno 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Veneno%201.ogg
+Psíquico 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Ps%C3%ADquico%201.ogg
+Psíquico 10 - Zombaria Vicíosa.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Ps%C3%ADquico%2010%20-%20Zombaria%20Vic%C3%ADosa.ogg
+Psíquico 11 - Força Fantasmagórica.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Ps%C3%ADquico%2011%20-%20For%C3%A7a%20Fantasmag%C3%B3rica.ogg
+Psíquico 12 - Força Fantasmagórica.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Ps%C3%ADquico%2012%20-%20For%C3%A7a%20Fantasmag%C3%B3rica.ogg
+Psíquico 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Ps%C3%ADquico%202.ogg
+Psíquico 3.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Ps%C3%ADquico%203.ogg
+Psíquico 4 - Sussurros.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Ps%C3%ADquico%204%20-%20Sussurros.ogg
+Psíquico 5 - Sussurros.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Ps%C3%ADquico%205%20-%20Sussurros.ogg
+Psíquico 6 - Sussurros.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Ps%C3%ADquico%206%20-%20Sussurros.ogg
+Psíquico 7 - Sussurros.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Ps%C3%ADquico%207%20-%20Sussurros.ogg
+Psíquico 7 - Zombaria Vicíosa.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Ps%C3%ADquico%207%20-%20Zombaria%20Vic%C3%ADosa.ogg
+Psíquico 8 - Zombaria Vicíosa.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Ps%C3%ADquico%208%20-%20Zombaria%20Vic%C3%ADosa.ogg
+Psíquico 9 - Zombaria Vicíosa.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Ps%C3%ADquico%209%20-%20Zombaria%20Vic%C3%ADosa.ogg
+Radiante 1 - Smite.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Radiante%201%20-%20Smite.ogg
+Radiante 10 - Raio Guiador.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Radiante%2010%20-%20Raio%20Guiador.ogg
+Radiante 11 - Raio Guiador.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Radiante%2011%20-%20Raio%20Guiador.ogg
+Radiante 12 - Raio Guiador.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Radiante%2012%20-%20Raio%20Guiador.ogg
+Radiante 2 - Smite.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Radiante%202%20-%20Smite.ogg
+Radiante 3 - Smite.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Radiante%203%20-%20Smite.ogg
+Radiante 4 - Espíritos Guardiões.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Radiante%204%20-%20Esp%C3%ADritos%20Guardi%C3%B5es.ogg
+Radiante 5 - Espíritos Guardiões.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Radiante%205%20-%20Esp%C3%ADritos%20Guardi%C3%B5es.ogg
+Radiante 6 - Espíritos Guardiões.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Radiante%206%20-%20Esp%C3%ADritos%20Guardi%C3%B5es.ogg
+Radiante 7 - Chama Sagrada.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Radiante%207%20-%20Chama%20Sagrada.ogg
+Radiante 8 - Onda Destrutiva.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Radiante%208%20-%20Onda%20Destrutiva.ogg
+Radiante 9 - Onda Destrutiva.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Radiante%209%20-%20Onda%20Destrutiva.ogg
+Raio de Fogo 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Raio%20de%20Fogo%201.ogg
+Raio de Fogo 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Raio%20de%20Fogo%202.ogg
+Raio de Gelo 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Raio%20de%20Gelo%201.ogg
+Raio de Gelo 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Raio%20de%20Gelo%202.ogg
+Relâmpago.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Rel%C3%A2mpago.ogg
+robo.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/robo.ogg
+Spells/Generic_SpellAction_Projectile_Stop 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Generic_SpellAction_Projectile_Stop%201.ogg
+Spells/Necrotic/Destructive Wave Necrotic Cast.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Necrotic/Destructive%20Wave%20Necrotic%20Cast.ogg
+Spells/Necrotic/Impact Vampiric Touch.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Necrotic/Impact%20Vampiric%20Touch.ogg
+Spells/Necrotic/Infflict Wounds Impact.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Necrotic/Infflict%20Wounds%20Impact.ogg
+Spells/Necrotic/Necrotic Impact 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Necrotic/Necrotic%20Impact%202.ogg
+Spells/Necrotic/Necrotic Impact.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Necrotic/Necrotic%20Impact.ogg
+Spells/Necrotic/Necrotic Prepare 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Necrotic/Necrotic%20Prepare%201.ogg
+Spells/Necrotic/Necrotic Prepare 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Necrotic/Necrotic%20Prepare%202.ogg
+Spells/Necrotic/Necrotic Wave Impact.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Necrotic/Necrotic%20Wave%20Impact.ogg
+Spells/Nova pasta/Circle of death Impact.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Nova%20pasta/Circle%20of%20death%20Impact.ogg
+Spells/Nova pasta/Ice Breath Background.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Nova%20pasta/Ice%20Breath%20Background.ogg
+Spells/Nova pasta/Ice Breath Impact 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Nova%20pasta/Ice%20Breath%20Impact%202.ogg
+Spells/Nova pasta/Ice Breath Impact.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Nova%20pasta/Ice%20Breath%20Impact.ogg
+Spells/Nova pasta/Lightning Breath Skeleton Cast.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Nova%20pasta/Lightning%20Breath%20Skeleton%20Cast.ogg
+Spells/Nova pasta/Lightning Breath Skeleton.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Nova%20pasta/Lightning%20Breath%20Skeleton.ogg
+Spells/Nova pasta/Malogro Impact.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Nova%20pasta/Malogro%20Impact.ogg
+Spells/Nova pasta/Necrotic Cast.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Nova%20pasta/Necrotic%20Cast.ogg
+Spells/Nova pasta/WallofIce Cast.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Nova%20pasta/WallofIce%20Cast.ogg
+Spells/Nova pasta/WallofIce Impact 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Nova%20pasta/WallofIce%20Impact%202.ogg
+Spells/Nova pasta/WallofIce Impact.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Nova%20pasta/WallofIce%20Impact.ogg
+Spells/Nova pasta/Winter Breath.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Nova%20pasta/Winter%20Breath.ogg
+Spells/Spell_Cast_Damage_BrandingSmiteMelee 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Cast_Damage_BrandingSmiteMelee%201.ogg
+Spells/Spell_Cast_Damage_DistractingStrikeRanged 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Cast_Damage_DistractingStrikeRanged%201.ogg
+Spells/Spell_Cast_Damage_Fireball 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Cast_Damage_Fireball%201.ogg
+Spells/Spell_Cast_Damage_Fireball 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Cast_Damage_Fireball%202.ogg
+Spells/Spell_Cast_Damage_Force_MagicMissile 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Cast_Damage_Force_MagicMissile%201.ogg
+Spells/Spell_Cast_Damage_Force_MagicMissile 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Cast_Damage_Force_MagicMissile%202.ogg
+Spells/Spell_Cast_Damage_Force_MagicMissile 3.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Cast_Damage_Force_MagicMissile%203.ogg
+Spells/Spell_Cast_Damage_Force_MagicMissile 4.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Cast_Damage_Force_MagicMissile%204.ogg
+Spells/Spell_Cast_Damage_Ice_ChromaticOrbIce 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Cast_Damage_Ice_ChromaticOrbIce%201.ogg
+Spells/Spell_Cast_Damage_Ice_RayOfFrost 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Cast_Damage_Ice_RayOfFrost%201.ogg
+Spells/Spell_Cast_Damage_Radiant_DivineSmite 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Cast_Damage_Radiant_DivineSmite%201.ogg
+Spells/Spell_Cast_Damage_Radiant_SacredFlame 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Cast_Damage_Radiant_SacredFlame%201.ogg
+Spells/Spell_Cast_Damage_Thunder_Thunderwave 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Cast_Damage_Thunder_Thunderwave%201.ogg
+Spells/Spell_Cast_Debuff_FaerieFire_L1to3.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Cast_Debuff_FaerieFire_L1to3.ogg
+Spells/Spell_Impact_Buff_ArmorOfAgathys 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Impact_Buff_ArmorOfAgathys%201.ogg
+Spells/Spell_Impact_Control_PlantGrowth 4.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Impact_Control_PlantGrowth%204.ogg
+Spells/Spell_Impact_Control_SleetStorm 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Impact_Control_SleetStorm%201.ogg
+Spells/Spell_Impact_Control_SleetStorm 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Impact_Control_SleetStorm%202.ogg
+Spells/Spell_Impact_Control_SleetStorm 3.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Impact_Control_SleetStorm%203.ogg
+Spells/Spell_Impact_Damage_Acid_MelfsAcidArrow 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Impact_Damage_Acid_MelfsAcidArrow%201.ogg
+Spells/Spell_Impact_Damage_BrandingSmiteRanged 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Impact_Damage_BrandingSmiteRanged%201.ogg
+Spells/Spell_Impact_Damage_Disintegrate 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Impact_Damage_Disintegrate%201.ogg
+Spells/Spell_Impact_Damage_Fire_ScorchingRay 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Impact_Damage_Fire_ScorchingRay%201.ogg
+Spells/Spell_Impact_Damage_GuidingBolt.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Impact_Damage_GuidingBolt.ogg
+Spells/Spell_Impact_Damage_Ice_ConeOfCold 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Impact_Damage_Ice_ConeOfCold%201.ogg
+Spells/Spell_Impact_Damage_Ice_ConeOfCold 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Impact_Damage_Ice_ConeOfCold%202.ogg
+Spells/Spell_Impact_Damage_Ice_RayOfFrost 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Impact_Damage_Ice_RayOfFrost%201.ogg
+Spells/Spell_Impact_Damage_Lightning_ChainLightning 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Impact_Damage_Lightning_ChainLightning%201.ogg
+Spells/Spell_Impact_Damage_Lightning_ShockingGrasp 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Impact_Damage_Lightning_ShockingGrasp%201.ogg
+Spells/Spell_Impact_Damage_Physical_CloudOfDaggers 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Impact_Damage_Physical_CloudOfDaggers%201.ogg
+Spells/Spell_Impact_Damage_Physical_HailOfThorns 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Impact_Damage_Physical_HailOfThorns%201.ogg
+Spells/Spell_Impact_Damage_Physical_HailOfThorns 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Impact_Damage_Physical_HailOfThorns%202.ogg
+Spells/Spell_Impact_Damage_Psychic_DissonantWhispers 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Impact_Damage_Psychic_DissonantWhispers%201.ogg
+Spells/Spell_Impact_Damage_Radiant_DivineSmite 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Impact_Damage_Radiant_DivineSmite%201.ogg
+Spells/Spell_Impact_Damage_Radiant_DivineSmite 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Impact_Damage_Radiant_DivineSmite%202.ogg
+Spells/Spell_Impact_Damage_Radiant_DivineSmite 3.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Impact_Damage_Radiant_DivineSmite%203.ogg
+Spells/Spell_Impact_Damage_Radiant_SpiritGuardian 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Impact_Damage_Radiant_SpiritGuardian%201.ogg
+Spells/Spell_Impact_Damage_RayOfFrost 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Impact_Damage_RayOfFrost%201.ogg
+Spells/Spell_Impact_Damage_RayOfFrost 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Impact_Damage_RayOfFrost%202.ogg
+Spells/Spell_Impact_Damage_ShockingGrasp 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Impact_Damage_ShockingGrasp%201.ogg
+Spells/Spell_Impact_Damage_WallOfFire 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Impact_Damage_WallOfFire%201.ogg
+Spells/Spell_Impact_Utility_DimensionDoor 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Impact_Utility_DimensionDoor%201.ogg
+Spells/Spell_Impact_Utility_DispelMagic 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Impact_Utility_DispelMagic%201.ogg
+Spells/Spell_Impact_Wizard_WallOfIce 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Impact_Wizard_WallOfIce%201.ogg
+Spells/Spell_Impact_Wizard_WallOfIce 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Impact_Wizard_WallOfIce%202.ogg
+Spells/Spell_Loop_Buff_Gen 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Loop_Buff_Gen%201.ogg
+Spells/Spell_Prepare_Damage_Fire_Gen 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Prepare_Damage_Fire_Gen%201.ogg
+Spells/Spell_Prepare_Damage_Fire_Gen 2 top.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Prepare_Damage_Fire_Gen%202%20top.ogg
+Spells/Spell_Prepare_Damage_Fire_Gen 3 genérica.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Prepare_Damage_Fire_Gen%203%20gen%C3%A9rica.ogg
+Spells/Spell_Prepare_Damage_Fireball 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Prepare_Damage_Fireball%201.ogg
+Spells/Spell_Prepare_Damage_Fireball 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Prepare_Damage_Fireball%202.ogg
+Spells/Spell_Prepare_Damage_Fireball 3.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Prepare_Damage_Fireball%203.ogg
+Spells/Spell_Prepare_Damage_Fireball 4.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Prepare_Damage_Fireball%204.ogg
+Spells/Spell_Prepare_Damage_Fireball 5 loop.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Prepare_Damage_Fireball%205%20loop.ogg
+Spells/Spell_Prepare_Damage_Radiant_Gen 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Prepare_Damage_Radiant_Gen%201.ogg
+Spells/Spell_Projectile_Damage_Fire_ChromaticOrbFire 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Projectile_Damage_Fire_ChromaticOrbFire%201.ogg
+Spells/Spell_Projectile_Damage_Fire_FireBolt 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Projectile_Damage_Fire_FireBolt%201.ogg
+Spells/Spell_Projectile_Damage_Ice_ChromaticOrbIce 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Projectile_Damage_Ice_ChromaticOrbIce%201.ogg
+Spells/Spell_Projectile_Damage_Ice_ChromaticOrbIce 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Projectile_Damage_Ice_ChromaticOrbIce%202.ogg
+Spells/Spell_Projectile_Damage_Ice_ChromaticOrbIce 3.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Projectile_Damage_Ice_ChromaticOrbIce%203.ogg
+Spells/Spell_Projectile_Damage_Ice_ChromaticOrbIce 4.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Projectile_Damage_Ice_ChromaticOrbIce%204.ogg
+Spells/Spell_Projectile_Damage_Lightning_ChromaticOrbLightning 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Projectile_Damage_Lightning_ChromaticOrbLightning%201.ogg
+Spells/Spell_Projectile_Damage_Lightning_ChromaticOrbLightning 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Projectile_Damage_Lightning_ChromaticOrbLightning%202.ogg
+Tempestade de Gelo 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Tempestade%20de%20Gelo%201.ogg
+Tempestade de Gelo 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Tempestade%20de%20Gelo%202.ogg
+Tempestade de Gelo 3.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Tempestade%20de%20Gelo%203.ogg
+Trovejante 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Trovejante%201.ogg
+Trovejante 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Trovejante%202.ogg
+Trovejante 3 - Despedaçar.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Trovejante%203%20-%20Despeda%C3%A7ar.ogg
+Trovejante 4 - Despedaçar.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Trovejante%204%20-%20Despeda%C3%A7ar.ogg
+Trovejante 5 - Despedaçar.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Trovejante%205%20-%20Despeda%C3%A7ar.ogg
+Trovejante 6 - Despedaçar.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Trovejante%206%20-%20Despeda%C3%A7ar.ogg
+Veneno 1.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Veneno%201.ogg
+Veneno 2.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Veneno%202.ogg
+Veneno 3.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Veneno%203.ogg
+Veneno 4 - Nuvem de Veneno.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Veneno%204%20-%20Nuvem%20de%20Veneno.ogg
+Veneno 5 - Nuvem de Veneno.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Veneno%205%20-%20Nuvem%20de%20Veneno.ogg
+Veneno 6 - Nuvem de Veneno.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Veneno%206%20-%20Nuvem%20de%20Veneno.ogg
+Veneno 7 - Raio de Envenenamento.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Veneno%207%20-%20Raio%20de%20Envenenamento.ogg
+Veneno 8 - Raio de Envenenamento.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Veneno%208%20-%20Raio%20de%20Envenenamento.ogg
+Veneno 9 - Raio de Envenenamento.ogg  |  https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Veneno%209%20-%20Raio%20de%20Envenenamento.ogg

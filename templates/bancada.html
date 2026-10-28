@@ -1,0 +1,116 @@
+<div class="nbc-raiz">
+  <div class="nbc-topo">
+    <svg class="nbc-engrenagem" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"></circle><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"></path><circle cx="12" cy="12" r="6.5"></circle></svg>
+    <div class="nbc-topo-titulo">{{titulo}}</div>
+    <div class="nbc-topo-sub">{{subtitulo}}</div>
+    <div class="nbc-espaco"></div>
+    {{#if aviso}}<div class="nbc-aviso">{{aviso}}</div>{{/if}}
+  </div>
+
+  <div class="nbc-corpo">
+    <aside class="nbc-esquerda">
+      <div class="nbc-passo">1 · Fórmula</div>
+      <div class="nbc-formulas">
+        {{#each formulas}}
+        <button type="button" class="nbc-placa {{#if ativa}}ativa{{/if}} {{#if travada}}travada{{/if}}" data-action="formula" data-id="{{id}}" {{#if bloqueada}}disabled{{/if}} aria-pressed="{{#if ativa}}true{{else}}false{{/if}}" title="{{dica}}">
+          <span class="nbc-placa-icone">{{{icone}}}</span>
+          <span class="nbc-placa-texto">
+            <span class="nbc-placa-nome">{{nome}}</span>
+            <span class="nbc-placa-sub">{{sub}}</span>
+            {{#if selo}}<span class="nbc-selo">{{selo}}</span>{{/if}}
+          </span>
+        </button>
+        {{/each}}
+      </div>
+
+      <div class="nbc-medidor">
+        <div class="nbc-passo">{{recursoNome}}</div>
+        <svg viewBox="0 0 180 112" role="img" aria-label="{{recursoNome}}: {{usados}} de {{orcamento}}">
+          <path d="M20 100 A70 70 0 0 1 160 100" class="nbc-arco-fundo"></path>
+          <path d="M20 100 A70 70 0 0 1 160 100" class="nbc-arco {{#if passou}}passou{{/if}}" stroke-dasharray="{{arco}}"></path>
+          <g class="nbc-marcas"><line x1="90" y1="22" x2="90" y2="30"></line><line x1="28" y1="64" x2="35" y2="68"></line><line x1="152" y1="64" x2="145" y2="68"></line></g>
+          <line x1="90" y1="100" x2="90" y2="44" class="nbc-agulha" transform="rotate({{agulha}} 90 100)"></line>
+          <circle cx="90" cy="100" r="7" class="nbc-eixo"></circle><circle cx="90" cy="100" r="2.5" class="nbc-eixo-miolo"></circle>
+        </svg>
+        <div class="nbc-numero"><b>{{usados}}</b> <span>de {{orcamento}} usados</span></div>
+        <div class="nbc-resta {{restaClasse}}">{{restaTexto}}</div>
+        {{#if saldoTexto}}<div class="nbc-saldo">{{saldoTexto}}</div>{{/if}}
+      </div>
+
+      {{#if melhoriaTexto}}
+      <div class="nbc-nota">
+        <b>{{melhoriaTitulo}}</b>
+        <span>{{melhoriaTexto}}</span>
+      </div>
+      {{/if}}
+    </aside>
+
+    <section class="nbc-centro">
+      <div class="nbc-centro-topo">
+        <div class="nbc-passo">2 · Características</div>
+        <div class="nbc-dica">{{dicaLinhas}}</div>
+      </div>
+      <div class="nbc-categorias">
+        {{#each categorias}}
+        <div class="nbc-categoria" style="--nbc-cor: {{cor}}">
+          <div class="nbc-categoria-topo">
+            <span class="nbc-pastilha"></span>
+            <span class="nbc-categoria-nome">{{nome}}</span>
+            <span class="nbc-espaco"></span>
+            {{#if total}}<span class="nbc-categoria-total" title="{{totalTexto}}" aria-label="{{totalTexto}}">{{total}}</span>{{/if}}
+          </div>
+          <div class="nbc-lista">
+            {{#each linhas}}
+            <div class="nbc-cartao {{#if escolhida}}escolhida{{/if}} {{#if bloqueada}}bloqueada{{/if}}" data-linha="{{id}}">
+              <div class="nbc-cartao-cima">
+                <div class="nbc-cartao-texto">
+                  <div class="nbc-cartao-nome">{{nome}}</div>
+                  <div class="nbc-cartao-efeito">{{efeito}}</div>
+                </div>
+                <div class="nbc-custo">{{custo}} {{../../siglaRecurso}}</div>
+              </div>
+              {{#if escolhas}}
+              <select class="nbc-escolha" data-linha="{{id}}" aria-label="Escolha de {{nome}}" {{#unless n}}disabled{{/unless}}>
+                {{#each escolhas}}<option value="{{valor}}" {{#if marcada}}selected{{/if}}>{{rotulo}}</option>{{/each}}
+              </select>
+              {{/if}}
+              <div class="nbc-cartao-baixo">
+                {{#each pips}}<span class="nbc-pip {{#if cheio}}cheio{{/if}}"></span>{{/each}}
+                <span class="nbc-contagem" title="{{n}} de {{max}} escolhas">{{n}}/{{max}}</span>
+                <span class="nbc-espaco"></span>
+                <button type="button" class="nbc-botao menos" data-action="menos" data-id="{{id}}" {{#if semMenos}}disabled{{/if}} aria-label="Tirar {{nome}}">−</button>
+                <button type="button" class="nbc-botao mais" data-action="mais" data-id="{{id}}" {{#if semMais}}disabled{{/if}} aria-label="Pôr {{nome}}">+</button>
+              </div>
+            </div>
+            {{/each}}
+          </div>
+        </div>
+        {{/each}}
+      </div>
+    </section>
+
+    <aside class="nbc-direita">
+      <div class="nbc-passo">3 · Protótipo</div>
+      <div class="nbc-esboco">{{{esboco}}}</div>
+      <div class="nbc-ficha">
+        <input type="text" class="nbc-nome" name="nome" value="{{nomeItem}}" placeholder="Nome da invenção" aria-label="Nome da invenção">
+        <div class="nbc-ficha-sub">{{formulaNome}} · {{formulaTipo}}</div>
+        {{#each resultado}}
+        <div class="nbc-linha"><span class="nbc-rotulo">{{rotulo}}</span><span class="nbc-valor {{classe}}">{{valor}}</span></div>
+        {{/each}}
+        {{#if notaRegra}}<div class="nbc-regra">{{notaRegra}}</div>{{/if}}
+      </div>
+    </aside>
+  </div>
+
+  <div class="nbc-rodape">
+    <i class="fas fa-comment-dots" aria-hidden="true"></i>
+    <span class="nbc-rodape-texto">{{rodape}}</span>
+    <span class="nbc-espaco"></span>
+    <button type="button" class="nbc-secundario" data-action="limpar">{{rotuloLimpar}}</button>
+    <button type="button" class="nbc-principal" data-action="forjar" {{#if semForjar}}disabled{{/if}}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21l7-7M14 4l6 6-4 4-6-6z"></path><path d="M10 8l-3 3"></path></svg>
+      {{rotuloForjar}}
+    </button>
+  </div>
+</div>

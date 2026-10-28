@@ -1,0 +1,351 @@
+<div class="nauren-sheet nauren-subclasse-sheet-body">
+
+  <!-- TOPO: nome, zoom (nos dois modos), identificadores + botões (só em Modo Edição), pontos disponíveis -->
+  <div class="nauren-subclasse-topo">
+    <div class="nauren-subclasse-topo-linha">
+      <input class="nauren-subclasse-nome" name="name" type="text" value="{{item.name}}" placeholder="Nome da Subclasse">
+      <span class="nauren-subclasse-zoom" title="Segure Ctrl e role o mouse sobre a árvore pra dar zoom">
+        <i class="fas fa-magnifying-glass"></i>
+        <input type="range" name="system.zoomFundo" value="{{zoomFundo}}" min="20" max="400" step="10">
+        <span class="nauren-subclasse-zoom-valor">{{zoomFundo}}%</span>
+      </span>
+    </div>
+
+    {{#if pontosDisponiveis}}
+    <span class="nauren-badge-pontos nauren-subclasse-badge-pontos">● {{pontosDisponiveis}} ponto(s) disponível(is)</span>
+    {{/if}}
+
+    {{#if modoEdicao}}
+    <div class="nauren-subclasse-topo-edicao">
+      <div class="field-grid cols-2">
+        <div class="field"><label>Identificador (slug)</label><input type="text" name="system.identifier" value="{{system.identifier}}" placeholder="ex: defensor"></div>
+        <div class="field"><label>Classe (identifier)</label><input type="text" name="system.classeIdentifier" value="{{system.classeIdentifier}}" placeholder="ex: guerreiro"></div>
+      </div>
+      <div class="nauren-subclasse-topo-botoes">
+        <a class="btn-add" data-action="editBackground">
+          <i class="fas fa-image"></i> {{#if system.imagemFundo}}Trocar{{else}}Escolher{{/if}} imagem de fundo
+        </a>
+        <a class="btn-add" data-action="addNo">
+          <i class="fas fa-plus"></i> Adicionar Nó
+        </a>
+      </div>
+      <p class="item-meta-hint" style="margin-top: 6px;">
+        Arraste um item (Habilidade, Arma, Magia...) direto pra cima da árvore abaixo pra criar um nó automaticamente com ele já vinculado. Com um nó selecionado, Ctrl+C / Ctrl+V copia ele e já liga a cópia como dependente do original. Segure Ctrl e role o mouse pra dar zoom; clique e arraste o fundo (fora de um nó) pra mover a visão.
+      </p>
+
+      <div class="nauren-subclasse-recursos">
+        <div class="nauren-subclasse-recursos-header">
+          <h4 style="margin: 0;"><i class="fas fa-star"></i> Recursos Próprios da Subclasse</h4>
+          <a class="btn-add" data-action="addRecurso"><i class="fas fa-plus"></i> Recurso</a>
+        </div>
+        <p class="item-meta-hint" style="margin: 4px 0 8px;">
+          Recursos como Determinação, Ofuscação ou Energia, próprios desta Subclasse (diferentes de Vida/Mana/Estamina/Destino). Ao equipar esta Subclasse, cada um vira uma barra própria na ficha do personagem. "ID" precisa ser uma palavra só, sem espaço ou acento (ex: "determinacao") - é usado pra referenciar em fórmulas como <b>@recurso_determinacao</b>.
+        </p>
+        {{#each recursosDeclaradosView as |r index|}}
+        <div class="nauren-subclasse-recurso-linha" data-recurso-index="{{index}}">
+          <input type="text" data-recurso-field="icone" value="{{r.icone}}" class="nauren-subclasse-recurso-icone-input" title="Classe do ícone (FontAwesome), ex: fa-star">
+          <i class="fas {{r.icone}}" style="color: {{r.cor2}};"></i>
+          <input type="text" data-recurso-field="id" value="{{r.id}}" placeholder="id (ex: determinacao)" class="nauren-subclasse-recurso-id">
+          <input type="text" data-recurso-field="nome" value="{{r.nome}}" placeholder="Nome exibido" class="nauren-subclasse-recurso-nome">
+          <input type="text" data-recurso-field="maxFormula" value="{{r.maxFormula}}" placeholder="Máximo (ex: 5, @nivel)" class="nauren-subclasse-recurso-max">
+          <input type="color" data-recurso-field="cor1" value="{{r.cor1}}" title="Cor 1 (barra vazia)">
+          <input type="color" data-recurso-field="cor2" value="{{r.cor2}}" title="Cor 2 (barra cheia)">
+          <a data-action="removeRecurso" data-index="{{index}}" title="Remover"><i class="fas fa-trash"></i></a>
+        </div>
+        <div class="nauren-subclasse-recurso-linha-extra" data-recurso-index="{{index}}">
+          <span>Ao atingir o máximo, aplica e remove ao sair dele (opcional):</span>
+          <input type="text" class="nauren-uuid-input nauren-subclasse-recurso-condicao" data-recurso-field="condicaoAoAtingirMax" value="{{r.condicaoAoAtingirMax}}" placeholder="Arraste uma Condição, ex: Profusão Ousada">
+          {{#if r.condicaoAoAtingirMaxNome}}<span class="nauren-uuid-resolved-inline">→ {{r.condicaoAoAtingirMaxNome}}</span>{{/if}}
+        </div>
+        <div class="nauren-subclasse-recurso-linha-extra" data-recurso-index="{{index}}">
+          <span>Ao chegar no máximo, TRAVA este outro recurso (id, opcional):</span>
+          <input type="text" data-recurso-field="travaRecursoId" value="{{r.travaRecursoId}}" placeholder="id do recurso a travar" class="nauren-subclasse-recurso-id">
+        </div>
+        <div class="nauren-subclasse-recurso-linha-extra" data-recurso-index="{{index}}">
+          <label style="display: block; margin-bottom: 4px;">Zera o valor atual (não a barra) automaticamente:</label>
+          <select data-recurso-field="resetarNoEscopo">
+            {{selectOptions ../resetarNoEscopoOpcoes selected=r.resetarNoEscopo}}
+          </select>
+        </div>
+        <div class="nauren-subclasse-recurso-linha-extra" data-recurso-index="{{index}}">
+          <label class="item-meta-toggle" title="Só afeta a criação da barra - sincronizações seguintes sempre preservam o valor atual, nunca reenchem. Deixe desligado pra CONTADORES que se acumulam ao longo do jogo (o padrão, ex: Determinação/Ofuscação).">
+            <input type="checkbox" data-recurso-field="nasceCheio" {{checked r.nasceCheio}}>
+            Nasce cheio (em vez de vazio)
+          </label>
+        </div>
+        {{/each}}
+        {{#unless recursosDeclaradosView.length}}
+        <p class="item-meta-hint" style="margin: 0;">Nenhum recurso próprio declarado ainda.</p>
+        {{/unless}}
+      </div>
+    </div>
+    {{else}}
+    {{#if temAtor}}
+    <a class="btn-add nauren-subclasse-btn-reset" data-action="resetarSubclasse">
+      <i class="fas fa-rotate-left"></i> Resetar esta Subclasse
+    </a>
+    {{/if}}
+    {{/if}}
+  </div>
+
+  <!-- CANVAS: imagem de fundo (tamanho natural, com zoom) + nós posicionados em % + SVG de conexões. Tabindex pra poder receber foco e captar Ctrl+C/Ctrl+V. -->
+  <div class="nauren-subclasse-canvas-wrap">
+    <div class="nauren-subclasse-canvas" tabindex="-1" style="width: {{zoomFundo}}%;">
+
+      {{#if system.imagemFundo}}
+      <img class="nauren-subclasse-imagem-fundo" src="{{system.imagemFundo}}" alt="">
+      {{else}}
+      <div class="nauren-subclasse-imagem-vazia"></div>
+      {{/if}}
+
+      <svg class="nauren-subclasse-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+        {{#each conexoes as |c|}}
+        <line x1="{{c.x1}}" y1="{{c.y1}}" x2="{{c.x2}}" y2="{{c.y2}}" class="nauren-subclasse-linha" style="stroke: {{c.cor}};"></line>
+        {{/each}}
+      </svg>
+
+      {{#each nos as |no|}}
+      <div class="nauren-subclasse-no {{#if no.selecionado}}selecionado{{/if}} {{#if no.travado}}travado{{/if}}"
+           data-no-id="{{no.id}}"
+           style="left: {{no.x}}%; top: {{no.y}}%; width: {{no.largura}}%; height: {{no.altura}}%; border-color: {{no.corBordaEfetiva}}; border-radius: {{no.curvaturaBorda}}px;{{#if no.sombra}} box-shadow: 0 3px 8px rgba(0,0,0,0.6);{{/if}}{{#if no.corPreenchimento}} background-color: {{no.corPreenchimento}};{{/if}}{{#if no.mostrarImagemEfetiva}} background-image: url('{{no.imagemPropria}}');{{/if}}"
+           title="{{no.nome}} — {{no.tipo}}">
+        {{#if no.rankMax}}<span class="nauren-subclasse-no-rank" style="color: {{no.corTextoRank}}; border-color: {{no.corBordaEfetiva}};">{{no.rankAtual}}/{{no.rankMax}}</span>{{/if}}
+        {{#if no.mostrarNome}}<span class="nauren-subclasse-no-nome">{{no.nome}}</span>{{/if}}
+        {{#if ../modoEdicao}}<div class="nauren-subclasse-resize-handle"></div>{{/if}}
+      </div>
+      {{/each}}
+
+      {{#unless nos.length}}
+      <p class="nauren-subclasse-vazio">
+        {{#if modoEdicao}}Clique em "+ Adicionar Nó", ou arraste um item aqui, pra começar a montar a árvore.{{else}}Esta Subclasse ainda não tem nenhum nó configurado.{{/if}}
+      </p>
+      {{/unless}}
+    </div>
+  </div>
+
+  <!-- PAINEL de propriedades do nó selecionado (só em Modo Edição) -->
+  {{#if noSelecionado}}
+  <div class="nauren-subclasse-painel">
+    <div class="nauren-subclasse-painel-header">
+      <h4><i class="fas fa-sliders"></i> {{noSelecionado.nome}}</h4>
+      <div>
+        <a data-action="deleteNo" title="Apagar este nó" class="nauren-subclasse-painel-del"><i class="fas fa-trash"></i></a>
+        <a data-action="fecharPainel" title="Fechar"><i class="fas fa-xmark"></i></a>
+      </div>
+    </div>
+
+    <div class="field-grid cols-2">
+      <div class="field"><label>Nome</label><input type="text" data-node-field="nome" value="{{noSelecionado.nome}}"></div>
+      <div class="field"><label>Tipo</label><input type="text" data-node-field="tipo" value="{{noSelecionado.tipo}}" placeholder="ex: Habilidade Passiva"></div>
+    </div>
+
+    <div class="field" style="margin-top: 8px;">
+      <label>Item concedido</label>
+      <input type="text" class="nauren-uuid-input" data-node-field="itemUuid" value="{{noSelecionado.itemUuid}}" placeholder="Cole o UUID ou arraste o item aqui">
+      {{#if noSelecionado.nomeItemVinculado}}<div class="nauren-uuid-resolved">→ {{noSelecionado.nomeItemVinculado}}</div>{{/if}}
+    </div>
+
+    <div class="field" style="margin-top: 8px;">
+      <label>Itens extras entregues junto (opcional)</label>
+      <input type="text" class="nauren-uuid-input" data-node-field="itensExtrasUuids" value="{{noSelecionado.itensExtrasUuids}}" placeholder="Arraste itens aqui (ou cole UUIDs separados por vírgula)">
+      <p class="item-meta-hint" style="margin-top: 4px;">
+        Entregues junto do item principal na 1ª vez que este nó é investido - funciona até em nós "Só sobe o rank". Usado pelas "armas-modelo" das Subclasses: o nó dá a Habilidade E já coloca na ficha uma arma com o efeito dela pronto, que o jogador usa direto ou edita como quiser. Some junto ao resetar a Subclasse.
+      </p>
+    </div>
+
+    <label class="item-meta-toggle" style="margin-top: 6px;">
+      <input type="checkbox" data-node-field="apenasUpgrade" {{checked noSelecionado.apenasUpgrade}}>
+      Só sobe o rank (não concede item novo, nem no 1º ponto) - use quando este nó só melhora algo que a própria Classe já deu
+    </label>
+
+    <!-- CAMADAS (Fase 3): como este nó modifica outros itens, aplicado no uso -->
+    <div class="nauren-no-camadas" style="margin-top: 10px;">
+      <label style="font-weight: bold; color: #cca162; display: block; margin-bottom: 4px;"><i class="fas fa-layer-group"></i> Modifica outros itens</label>
+      <p class="item-meta-hint" style="margin: 0 0 6px;">Aplicado no momento do uso, com o rank deste nó. O item do jogador nunca é alterado, e várias fontes podem modificar o mesmo item (a ordem é: estrutura → substituição → soma → multiplicação → limite).</p>
+      {{#each noSelecionado.modificadoresView as |mod modIndex|}}
+      <div class="item-meta-box" style="background: rgba(255,255,255,0.03); margin-bottom: 8px; position: relative; padding: 8px;">
+        <a data-action="removeModificadorNo" data-mod-index="{{modIndex}}" title="Remover" style="position: absolute; top: 6px; right: 8px; color: #c24b4b; cursor: pointer;"><i class="fas fa-trash"></i></a>
+        <p class="item-meta-hint" style="margin: 0 18px 6px 0;"><i class="fas fa-circle-info"></i> {{mod.resumo}}</p>
+        <div class="field">
+          <label>Item alvo (arraste aqui)</label>
+          <input type="text" data-mod-index="{{modIndex}}" data-mod-field="itemAlvoUuid" value="{{mod.itemAlvoUuid}}" placeholder="Arraste o item ou cole o UUID">
+          {{#if mod.nomeItemAlvo}}<div class="nauren-uuid-resolved">→ {{mod.nomeItemAlvo}}</div>{{/if}}
+        </div>
+        <div class="field-grid cols-2" style="margin-top: 4px;">
+          <div class="field">
+            <label>Campo</label>
+            <select data-mod-index="{{modIndex}}" data-mod-field="campo">
+              <option value="">— Escolha —</option>
+              {{selectOptions mod.camposOpcoes selected=mod.campo}}
+            </select>
+          </div>
+          <div class="field">
+            <label>Modo</label>
+            <select data-mod-index="{{modIndex}}" data-mod-field="modo">{{selectOptions ../modosModificador selected=mod.modo}}</select>
+          </div>
+        </div>
+        <div class="field" style="margin-top: 4px;">
+          <input type="text" data-mod-index="{{modIndex}}" data-mod-field="campo" value="{{mod.campo}}" placeholder="caminho manual (avançado): acoes.1.curas.0.formula • acoes.*.x vale para toda Ação • rank" style="font-size: 10px;">
+        </div>
+        <div style="margin-top: 6px;">
+          <label style="font-size: 10px; color: #a89bc4; display: block; margin-bottom: 4px;">Valor por rank deste nó</label>
+          {{#each mod.valorPorRank as |pr prIndex|}}
+          <div style="display: flex; gap: 6px; align-items: center; margin-bottom: 4px;">
+            <input type="number" data-mod-index="{{modIndex}}" data-mod-rank-index="{{prIndex}}" data-mod-field="rank" value="{{pr.rank}}" min="1" style="width: 55px; flex-shrink: 0;" title="Rank">
+            {{#if mod.tipoBoolean}}
+            <select data-mod-index="{{modIndex}}" data-mod-rank-index="{{prIndex}}" data-mod-field="valor" style="flex: 1;">
+              <option value="true" {{#if pr.valor}}selected{{/if}}>Sim</option>
+              <option value="false" {{#unless pr.valor}}selected{{/unless}}>Não</option>
+            </select>
+            {{else}}
+            <input type="text" data-mod-index="{{modIndex}}" data-mod-rank-index="{{prIndex}}" data-mod-field="valor" value="{{pr.valor}}" style="flex: 1;" placeholder="ex: -1d6-1 • 2 • @rank">
+            {{/if}}
+            <a data-action="removeModificadorNoRank" data-mod-index="{{modIndex}}" data-index="{{prIndex}}" title="Remover" style="color: #a89bc4; cursor: pointer; flex-shrink: 0;"><i class="fas fa-trash"></i></a>
+          </div>
+          {{/each}}
+          <a class="nauren-subclasse-link-pequeno" data-action="addModificadorNoRank" data-mod-index="{{modIndex}}">+ Adicionar rank</a>
+        </div>
+        <details style="margin-top: 6px;" data-persist="mod-{{modIndex}}-avancado">
+          <summary style="font-size: 10px; color: #a89bc4; cursor: pointer;">Opções avançadas</summary>
+          <div class="field-grid cols-2" style="margin-top: 4px;">
+            <div class="field">
+              <label>Só vale com a Condição (arraste)</label>
+              <input type="text" data-mod-index="{{modIndex}}" data-mod-field="condicaoNecessariaUuid" value="{{mod.condicaoNecessariaUuid}}" placeholder="vazio = sempre">
+              {{#if mod.nomeCondicao}}<div class="nauren-uuid-resolved">→ {{mod.nomeCondicao}}</div>{{/if}}
+            </div>
+            <div class="field" title="Só vale enquanto você estiver num estado (Condição ou Efeito) cujo nome contém este texto. Ex.: Investida Relâmpago — &quot;Guarda Ofensiva&quot;.">
+              <label>Só enquanto estiver em (nome do estado)</label>
+              <input type="text" data-mod-index="{{modIndex}}" data-mod-field="estadoAtivoNome" value="{{mod.estadoAtivoNome}}" placeholder="vazio = sempre (ex.: Guarda Ofensiva)">
+            </div>
+            <div class="field">
+              <label>Prioridade (desempate na mesma fase)</label>
+              <input type="number" data-mod-index="{{modIndex}}" data-mod-field="prioridade" value="{{mod.prioridade}}">
+            </div>
+          </div>
+        </details>
+      </div>
+      {{/each}}
+      <a class="nauren-subclasse-link-pequeno" data-action="addModificadorNo">+ Adicionar modificação</a>
+    </div>
+
+    {{#if noSelecionado.campoCustomizado}}
+    <div class="field" style="margin-top: 10px;">
+      <label>Campo customizado — formato antigo (grava no item; prefira "Modifica outros itens")</label>
+      <select data-node-field="campoCustomizado">
+        <option value="">— Escolha um campo —</option>
+        {{selectOptions noSelecionado.camposOpcoes selected=noSelecionado.campoCustomizado}}
+      </select>
+      {{#if noSelecionado.nomeItemAlvoCampo}}<div class="nauren-uuid-resolved">→ {{noSelecionado.nomeItemAlvoCampo}}</div>{{/if}}
+    </div>
+    <div class="field" style="margin-top: 4px;">
+      <input type="text" data-node-field="campoCustomizado" value="{{noSelecionado.campoCustomizado}}" placeholder="ou digite o caminho manualmente (avançado), ex: acoes.1.gastosRecurso.0.quantidade" style="font-size: 10px;" title="Dot-path dentro de system do item concedido, sem escrever &quot;system.&quot; no começo - mesmo campo do seletor acima, editável direto quando o item ainda não foi escolhido ou o campo não está na lista">
+    </div>
+    <div class="field" style="margin-top: 6px;">
+      <label>Novo valor (usado se a tabela "Por Rank" abaixo estiver vazia, ou pra qualquer rank não coberto por ela)</label>
+      {{#if noSelecionado.tipoCampoBoolean}}
+      <select data-node-field="valorCustomizado">
+        <option value="true" {{#if noSelecionado.valorCustomizado}}selected{{/if}}>Sim (true)</option>
+        <option value="false" {{#unless noSelecionado.valorCustomizado}}selected{{/unless}}>Não (false)</option>
+      </select>
+      {{else}}
+      <input type="text" data-node-field="valorCustomizado" value="{{noSelecionado.valorCustomizado}}" placeholder="ex: -1d6-1">
+      {{/if}}
+    </div>
+    <div style="margin-top: 8px; margin-left: 10px;">
+      <label style="font-size: 10px; color: #a89bc4; display: block; margin-bottom: 4px;">Valor Por Rank (opcional - um valor DIFERENTE a cada rank investido neste nó, ex: Transbordar, Druida: +1/+2/+3)</label>
+      {{#each noSelecionado.valorCustomizadoPorRank as |pr prIndex|}}
+      <div data-porrank-index="{{prIndex}}" style="display: flex; gap: 6px; align-items: center; margin-bottom: 4px;">
+        <input type="number" data-porrank-field="rank" value="{{pr.rank}}" min="1" style="width: 55px; flex-shrink: 0;" title="Rank">
+        {{#if ../noSelecionado.tipoCampoBoolean}}
+        <select data-porrank-field="valor" style="flex: 1;">
+          <option value="true" {{#if pr.valor}}selected{{/if}}>Sim (true)</option>
+          <option value="false" {{#unless pr.valor}}selected{{/unless}}>Não (false)</option>
+        </select>
+        {{else}}
+        <input type="text" data-porrank-field="valor" value="{{pr.valor}}" style="flex: 1;" placeholder="ex: -1d6-2">
+        {{/if}}
+        <a data-action="removeValorCustomizadoPorRank" data-index="{{prIndex}}" title="Remover" style="color: #a89bc4; cursor: pointer; flex-shrink: 0;"><i class="fas fa-trash"></i></a>
+      </div>
+      {{/each}}
+      <a class="nauren-subclasse-link-pequeno" data-action="addValorCustomizadoPorRank">+ Adicionar rank</a>
+    </div>
+    <p class="item-meta-hint" style="margin-top: 4px;">
+      Deixe "Campo customizado" em branco pra subir "Rank Atual" do item normalmente. Preencha só quando OUTRO nó já controla o rank desse mesmo item e este precisa mexer num campo diferente dele.
+    </p>
+    {{/if}}
+
+    <div class="field-grid cols-2" style="margin-top: 8px;">
+      <div class="field"><label>Rank máximo</label><input type="number" data-node-field="rankMax" value="{{noSelecionado.rankMax}}" min="1"></div>
+      <div class="field"><label>Curvatura da borda (px)</label><input type="number" data-node-field="curvaturaBorda" value="{{noSelecionado.curvaturaBorda}}" min="0" max="50"></div>
+    </div>
+
+    <div class="field-grid cols-3" style="margin-top: 8px;">
+      <div class="field"><label>Cor (não adquirido)</label><input type="color" data-node-field="corBordaPadrao" value="{{noSelecionado.corBordaPadrao}}"></div>
+      <div class="field"><label>Cor (adquirido)</label><input type="color" data-node-field="corBordaAdquirido" value="{{noSelecionado.corBordaAdquirido}}"></div>
+      <div class="field">
+        <label>Preenchimento (opcional)</label>
+        <input type="color" data-node-field="corPreenchimento" value="{{#if noSelecionado.corPreenchimento}}{{noSelecionado.corPreenchimento}}{{else}}#000000{{/if}}">
+      </div>
+    </div>
+    <p class="item-meta-hint" style="margin: 4px 0 0;">A imagem do nó (se tiver) nunca muda de cor/opacidade ao adquirir — só a borda (e o número de rank) trocam da cor "não adquirido" pra "adquirido".</p>
+    {{#if noSelecionado.corPreenchimento}}
+    <a class="nauren-subclasse-link-pequeno" data-node-field-clear="corPreenchimento">Remover preenchimento (deixar transparente)</a>
+    {{/if}}
+
+    <div class="nauren-subclasse-painel-toggles">
+      <a class="nauren-subclasse-toggle-icone" data-action="toggleNoBoolCampo" data-campo="sombra">
+        <i class="fas {{#if noSelecionado.sombra}}fa-square-check{{else}}fa-square{{/if}}"></i> Sombra leve
+      </a>
+      <a class="nauren-subclasse-toggle-icone" data-action="toggleNoBoolCampo" data-campo="mostrarNome">
+        <i class="fas {{#if noSelecionado.mostrarNome}}fa-square-check{{else}}fa-square{{/if}}"></i> Mostrar nome no nó
+      </a>
+      {{#if noSelecionado.imagemPropria}}
+      <a class="nauren-subclasse-toggle-icone" data-action="toggleNoBoolCampo" data-campo="mostrarImagem">
+        <i class="fas {{#if noSelecionado.mostrarImagem}}fa-square-check{{else}}fa-square{{/if}}"></i> Mostrar imagem no nó
+      </a>
+      {{/if}}
+    </div>
+    <div class="nauren-subclasse-topo-botoes" style="margin-top: 8px;">
+      <a class="btn-add" data-action="editNoImagem">
+        <i class="fas fa-image"></i> {{#if noSelecionado.imagemPropria}}Trocar{{else}}Escolher{{/if}} imagem do nó
+      </a>
+      {{#if noSelecionado.imagemPropria}}
+      <a class="nauren-subclasse-link-pequeno" data-node-field-clear="imagemPropria">Remover imagem</a>
+      {{/if}}
+    </div>
+
+    <div class="field" style="margin-top: 12px;">
+      <label>Lógica de pré-requisito</label>
+      <select class="nauren-subclasse-select" data-node-field="prerequisitoLogica" style="background: #241f38; color: #ece6d6; border-color: #453e66;">
+        <option value="qualquer" {{#if noSelecionado.logicaQualquer}}selected{{/if}}>Qualquer um dos ligados (OR)</option>
+        <option value="todos" {{#if noSelecionado.logicaTodos}}selected{{/if}}>Todos os ligados (AND)</option>
+      </select>
+    </div>
+
+    <div class="field" style="margin-top: 8px;">
+      <label>Pré-requisitos (marque os nós que precisam vir antes)</label>
+      <div class="nauren-subclasse-prereq-lista">
+        {{#each noSelecionado.outrosNos as |outro|}}
+        <div class="nauren-subclasse-prereq-item">
+          <a class="nauren-subclasse-prereq-label" data-action="togglePrereq" data-no-id="{{outro.id}}">
+            <i class="fas {{#if outro.ligado}}fa-square-check{{else}}fa-square{{/if}} nauren-subclasse-prereq-check"></i>
+            <span class="nauren-subclasse-prereq-swatch" style="background: {{outro.corBorda}};"></span>
+            <span class="nauren-subclasse-prereq-nome">{{outro.nome}}</span>
+            <span class="nauren-subclasse-prereq-tipo">{{outro.tipo}}</span>
+          </a>
+          {{#if outro.ligado}}
+          <a data-action="toggleLinhaPrereq" data-no-id="{{outro.id}}" title="{{#if outro.linhaVisivel}}Esconder a linha de conexão{{else}}Mostrar a linha de conexão{{/if}}" class="nauren-subclasse-prereq-linha-toggle {{#unless outro.linhaVisivel}}apagada{{/unless}}">
+            <i class="fas {{#if outro.linhaVisivel}}fa-eye{{else}}fa-eye-slash{{/if}}"></i>
+          </a>
+          {{/if}}
+        </div>
+        {{/each}}
+        {{#unless noSelecionado.outrosNos.length}}
+        <p class="item-meta-hint" style="margin: 0;">Não há outros nós ainda pra ligar como pré-requisito.</p>
+        {{/unless}}
+      </div>
+    </div>
+  </div>
+  {{/if}}
+
+</div>
