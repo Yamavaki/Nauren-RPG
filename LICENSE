@@ -1,0 +1,68 @@
+LICENÇA DE USO — SISTEMA NAUREN RPG PARA FOUNDRY VTT
+
+Copyright (c) 2026 Gustavo Yamavaki. Todos os direitos reservados.
+
+1. OBJETO
+
+Esta licença vale somente para o sistema "Nauren RPG" para o Foundry Virtual
+Tabletop, isto é, o conteúdo deste repositório e o pacote distribuído a partir
+dele (código, telas, estilos, compêndios, dados, imagens e documentação),
+doravante "o Sistema".
+
+Esta licença não trata do livro de regras do Nauren RPG nem da marca
+"Nauren", e não concede nenhum direito sobre eles.
+
+2. O QUE É PERMITIDO
+
+Você pode, sem custo:
+  a) baixar e instalar o Sistema no Foundry Virtual Tabletop, inclusive em
+     servidores hospedados (como a The Forge);
+  b) usar o Sistema para jogar, em mesas pessoais ou de comunidade, desde
+     que não cobre pelo acesso ao Sistema em si;
+  c) criar, dentro do seu próprio mundo do Foundry, personagens, criaturas,
+     itens e outros conteúdos de jogo usando o Sistema.
+
+3. O QUE NÃO É PERMITIDO SEM AUTORIZAÇÃO POR ESCRITO DO AUTOR
+
+  a) copiar, redistribuir, republicar ou disponibilizar o Sistema, no todo ou
+     em parte, em qualquer meio (outros repositórios, sites, pacotes,
+     servidores de download, mods ou módulos), exceto a instalação descrita
+     no item 2;
+  b) vender, alugar, sublicenciar ou usar o Sistema, no todo ou em parte, em
+     produto ou serviço pago;
+  c) modificar o Sistema e distribuir ou publicar a versão modificada, ou
+     criar e publicar obras derivadas dele;
+  d) extrair e reaproveitar o código, os compêndios, os textos, as imagens ou
+     os dados do Sistema em outro sistema, módulo ou produto;
+  e) remover ou alterar avisos de autoria e de copyright.
+
+A possibilidade técnica de baixar, ver ou fazer "fork" do repositório no
+GitHub não autoriza nenhum dos usos acima.
+
+4. CONTEÚDO DE TERCEIROS
+
+O Sistema pode fazer referência a conteúdo de terceiros que não é distribuído
+aqui (por exemplo, ícones do próprio Foundry VTT, animações do JB2A e módulos
+como Sequencer e Automated Animations). Esse conteúdo segue as licenças dos
+respectivos autores.
+
+5. SEM GARANTIA
+
+O Sistema é fornecido "no estado em que se encontra", sem garantia de qualquer
+tipo, expressa ou implícita. O autor não se responsabiliza por perdas de
+dados, danos ou problemas decorrentes do uso do Sistema.
+
+6. TÉRMINO
+
+O descumprimento de qualquer item desta licença encerra automaticamente a
+permissão de uso concedida no item 2.
+
+7. LEI APLICÁVEL
+
+Esta licença é regida pelas leis da República Federativa do Brasil, em
+especial a Lei nº 9.610/1998 (Direitos Autorais) e a Lei nº 9.609/1998
+(Programas de Computador).
+
+8. CONTATO
+
+Pedidos de autorização: https://github.com/Yamavaki/Nauren-RPG/issues

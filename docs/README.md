@@ -22,7 +22,7 @@
 | `jb2a-catalogo.md` | Resumo das animações do JB2A, com cores e exemplos. |
 | `jb2a-caminhos.txt` | Todos os caminhos do JB2A; todo caminho usado no JSON de animações precisa existir aqui. |
 
-## Integração com o bot da Torre Infinita
+## Torre Infinita
 | Arquivo | O que é |
 |---|---|
-| `catalogo-torre-infinita.json` | Catálogo dos itens da Torre (chaves, tiers, pigmentos), no formato que o bot O Curador lê. |
+| `catalogo-torre-infinita.json` | Catálogo dos itens da Torre Infinita (chaves, tiers, pigmentos). |

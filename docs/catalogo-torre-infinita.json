@@ -1,6 +1,6 @@
 {
- "sobre": "Catálogo de itens da Torre Infinita (Nauren RPG). Fonte: bot O Curador v0.21.1. A chave é o identificador do item no bot e deve ir em flags.nauren.torre.chave.",
- "novidades": "Sistema Nauren 0.94.27: os 16 Refinados saíram do catálogo (lista em 'retirados'); as descrições do Foundry não mostram mais preço (o preço é do bot). Sistema Nauren 0.94.24: +40 itens mágicos da Leva 1 (módulos genéricos); +5 Óleos de Lâmina (consumíveis, +1d4 por tier por 1 rodada); os mágicos Bronze e Prata deixaram de dar atributo permanente (descrição atualizada). Anterior: v0.21.1: Besta (besta) e Arma de Fogo (arma-de-fogo) entraram como itens básicos separados; a Munição passa a ser flechas, virotes ou balas.",
+ "sobre": "Catálogo de itens da Torre Infinita (Nauren RPG). A chave identifica o item e vai em flags.nauren.torre.chave.",
+ "novidades": "0.94.27: Refinados retirados (lista em 'retirados'); 0.94.25: Óleos de Lâmina; mágicos Bronze e Prata sem atributo permanente; 0.94.24: Leva 1 com 40 itens mágicos.",
  "seedParaChave": {
   "armadura-robe-simples": "robe-simples",
   "armadura-couro-simples": "couro-simples",

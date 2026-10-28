@@ -29,7 +29,7 @@ Para atualizar, use **Atualizar** na lista de sistemas: o Foundry compara a vers
   - botão para desfazer a Ação.
 - **HUD de combate.** As Ações do token selecionado ficam num painel embaixo da tela.
 - **Criador de Monstros e Bestiário.** Inclui o Bando de lacaios e mais de 500 Habilidades de Monstros prontas.
-- **Itens da Torre Infinita.** Catálogo integrado ao bot **O Curador** do Discord.
+- **Itens da Torre Infinita.** Itens mágicos, consumíveis e equipamentos prontos, com instruções de uso.
 - **Animações (opcional).** Integração com Automated Animations, Sequencer e JB2A, com movimento, cor do token e som sincronizados. O menu pronto fica em [`docs/`](docs/).
 
 ## Módulos recomendados (opcionais)
@@ -40,7 +40,6 @@ Para atualizar, use **Atualizar** na lista de sistemas: o Foundry compara a vers
 | [JB2A](https://foundryvtt.com/packages/JB2A_DnD5e) (gratuito ou Patreon) | Biblioteca de animações |
 | [Automated Animations](https://foundryvtt.com/packages/autoanimations) | Toca as animações pelo nome das Ações |
 | [Dice So Nice!](https://foundryvtt.com/packages/dice-so-nice) | Dados 3D |
-| Nauren no Discord ([repositório](https://github.com/Yamavaki/Nauren-Modulo-Foundry-Discord)) | Chat da mesa e painel do mundo no Discord |
 
 Sem esses módulos, o sistema funciona normalmente.
 
@@ -66,17 +65,9 @@ lang/ data/          tradução e dados (Habilidades de Monstros)
 assets/              imagens das árvores de subclasse
 docs/                guias e arquivos de apoio
 dist/nauren.zip      pacote que o Foundry baixa
+LICENSE              licença de uso
 ```
-
-## Publicar uma versão nova
-
-1. Mude `version` em `system.json`.
-2. Gere o pacote na raiz do repositório:
-   ```
-   rm -f dist/nauren.zip && zip -r dist/nauren.zip system.json nauren.mjs modulos templates styles lang data assets docs
-   ```
-3. Faça o commit no `main`. O manifesto e o download apontam para o `main`, então não precisa criar release.
 
 ---
 
-Nauren RPG © Gustavo Yamavaki. Todos os direitos reservados.
+Sistema Nauren RPG para Foundry VTT © Gustavo Yamavaki. Uso permitido conforme a [licença](LICENSE): instalar e jogar, sim; copiar, redistribuir, modificar ou vender, só com autorização.
