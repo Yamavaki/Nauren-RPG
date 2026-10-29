@@ -4383,3 +4383,11 @@ img.nauren-criador-token.com-borda { border: none; border-radius: 0; background:
 .nauren-sheet .main-header { min-width: 0; }
 .nauren-sheet .main-header .level-xp { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; min-width: 0; flex: 0 1 auto; }
 .nauren-sheet .main-header .char-name { min-width: 160px; flex: 1 1 200px; }
+/* 0.94.31: telas até 1400 px de largura (ex.: 1366×768, onde a janela também é reduzida pela escala automática):
+   as categorias da Bancada ficam em 2 colunas, com cartões mais largos. */
+@media (max-width: 1400px) {
+  .nauren-bancada .nbc-categorias { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@container (max-width: 780px) {
+  .nauren-bancada .nbc-categorias { grid-template-columns: minmax(0, 1fr); }
+}

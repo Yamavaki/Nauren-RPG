@@ -4,7 +4,7 @@
 
 Sistema completo do **Nauren RPG** para o Foundry VTT: fichas, combate automatizado e compêndios com todo o livro.
 
-![Foundry](https://img.shields.io/badge/Foundry-v13%20%7C%20v14-orange) ![Versão](https://img.shields.io/badge/vers%C3%A3o-0.94.30-purple) ![Idioma](https://img.shields.io/badge/idioma-pt--BR-green)
+![Foundry](https://img.shields.io/badge/Foundry-v13%20%7C%20v14-orange) ![Versão](https://img.shields.io/badge/vers%C3%A3o-0.94.31-purple) ![Idioma](https://img.shields.io/badge/idioma-pt--BR-green)
 
 ## Instalar
 
@@ -59,7 +59,7 @@ O índice de tudo está em [`docs/README.md`](docs/README.md).
 ```
 system.json          manifesto do sistema
 nauren.mjs           código principal
-modulos/             animações, compêndios, fichas de ator e de item
+modulos/             animações, compêndios, fichas, borda e ícones do token, relógio de combate, entidades de campo
 templates/ styles/   telas (Handlebars) e estilos
 lang/ data/          tradução e dados (Habilidades de Monstros)
 assets/              imagens das árvores de subclasse
