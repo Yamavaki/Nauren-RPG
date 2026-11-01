@@ -4521,7 +4521,7 @@ function naurenInterpretarModificador(texto, actor, item = null) {
   } catch (err) {
     // Dados em Modificador (ex.: "1d6" de Esquiva Elegante) são rolados na hora da reação, não na ficha:
     // avisa uma vez só por texto, em vez de a cada atualização da ficha.
-    if (!naurenModificadoresAvisados.has(String(texto))) {
+    if (!/\d*d\d+/i.test(String(texto)) && !naurenModificadoresAvisados.has(String(texto))) { // dado: esperado (rola na hora), sem aviso
       naurenModificadoresAvisados.add(String(texto));
       console.warn(`Nauren RPG | Não consegui interpretar o modificador "${texto}" - tratando como 0 na ficha (dados são rolados na hora).`, err);
     }
