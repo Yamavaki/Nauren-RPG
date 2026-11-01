@@ -3031,8 +3031,9 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
   }
 
   static async onDescansar(event, target) {
-    await naurenRecarregarUsos(this.actor, "dia");
-    ui.notifications.info(`${this.actor.name} descansou — usos diários recarregados.`);
+    // 0.94.39: descansar fecha a cena: usos por dia, por cena e por turno voltam (ex.: Os Frascos, 1 por cena).
+    for (const escopo of ["dia", "cena", "turno"]) await naurenRecarregarUsos(this.actor, escopo);
+    ui.notifications.info(`${this.actor.name} descansou — usos por dia e por cena recarregados.`);
   }
 
   /**
@@ -7472,6 +7473,8 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     if (extraUsosAcao && acao.usaUsos) acao = { ...acao, usosMax: (acao.usosMax ?? 0) + extraUsosAcao };
     // Usos compartilhados: esta Ação gasta do contador da 1ª Ação de outro item.
     let usoCompartilhado = null;
+    // 0.94.39: Frascos especiais (Elixir Verde, Remédio Não Testado) não gastam os usos de Os Frascos.
+    if (item.getFlag?.("nauren", "frascoEspecial") && acao.bebeFrasco) acao = { ...acao, usaUsos: false, usosDeOutroItemNome: "" };
     if (acao.usosDeOutroItemNome) {
       // 0.94.1: o outro item pode ter o contador no próprio item (usos do item inteiro, ex.: Os Frascos).
       const outro = this.actor.items.find(i => i !== item && naurenEhItem(i, acao.usosDeOutroItemNome) && (i.system.usaUsos === true || (i.system.acoes ?? [])[0]?.usaUsos));

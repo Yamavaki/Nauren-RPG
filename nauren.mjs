@@ -13988,6 +13988,24 @@ function naurenItensDoProjeto(actor, habilidade) {
   const chave = naurenChaveConstrucao(habilidade);
   return (actor?.items ?? []).filter(i => i.getFlag?.("nauren", "projeto")?.fonte === chave);
 }
+/**
+ * Pode criar esta fórmula agora? Fórmulas comuns dividem o limite do projeto (maximoItens).
+ * Uma fórmula liberada por habilidade (requer, ex.: "Nova Fórmula: Martelo") ganha a própria vaga:
+ * dá para ter a arma original e o Martelo (efeitos iguais entre elas não se acumulam).
+ */
+function naurenFormulaCriavel(c, actor, habilidade, f) {
+  if (!f) return { ok: false, motivo: "Fórmula desconhecida." };
+  if (f.requer && !(actor?.items ?? []).some(i => naurenEhItem(i, f.requer))) return { ok: false, motivo: `Precisa de ${f.requer}` };
+  const feitos = naurenItensDoProjeto(actor, habilidade);
+  const extras = new Set((c?.formulas ?? []).filter(x => x.requer).map(x => x.id));
+  if (f.requer) {
+    const ja = feitos.find(i => i.getFlag("nauren", "projeto")?.formula === f.id);
+    return ja ? { ok: false, motivo: `Já tem ${ja.name}` } : { ok: true };
+  }
+  const limite = Math.max(1, Math.round(naurenInterpretarModificador(String(c?.maximoItens ?? "1"), actor)?.valor ?? 1));
+  const comuns = feitos.filter(i => !extras.has(i.getFlag("nauren", "projeto")?.formula));
+  return comuns.length >= limite ? { ok: false, motivo: `Já tem ${comuns.map(i => i.name).join(", ")}` } : { ok: true };
+}
 function naurenChaveConstrucao(hab) {
   return hab?.getFlag?.("nauren", "seedId") || hab?.system?.construcao?.id || hab?.name || "";
 }
@@ -14016,8 +14034,8 @@ async function naurenGravarProjeto(actor, habilidade, projeto, { modo = "criar",
     }
   }
   if (modo === "criar") {
-    const limite = Math.max(1, Math.round(naurenInterpretarModificador(String(c.maximoItens ?? "1"), actor)?.valor ?? 1));
-    if (naurenItensDoProjeto(actor, habilidade).length >= limite) throw new Error(`Você já tem ${limite > 1 ? `${limite} itens` : "o seu item"} de ${c.titulo || habilidade.name}.`);
+    const pode = naurenFormulaCriavel(c, actor, habilidade, (c.formulas ?? []).find(f => f.id === projeto.formula) ?? { id: projeto.formula });
+    if (!pode.ok) throw new Error(`${pode.motivo}: não dá para criar outro de ${c.titulo || habilidade.name}.`);
   }
   const dados = naurenMontarItemDoProjeto(c, projeto, actor);
   const registro = {
@@ -14202,6 +14220,7 @@ class NaurenBancada extends foundry.applications.api.HandlebarsApplicationMixin(
 
   /** Uma fórmula pode exigir um item na ficha (ex.: Martelo: "Nova Fórmula: Martelo", do Engenheiro). */
   _formulaLiberada(f) {
+    if (this.modo === "criar") return naurenFormulaCriavel(naurenConstrucaoDe(this.habilidade), this.actor, this.habilidade, f).ok;
     if (!f?.requer) return true;
     return this.actor.items.some(i => naurenEhItem(i, f.requer));
   }
@@ -14262,7 +14281,7 @@ class NaurenBancada extends foundry.applications.api.HandlebarsApplicationMixin(
       return {
         id: f.id, nome: f.nome, sub: f.sub ?? "", icone: NAUREN_ICONES_FORMULA[f.esboco] ?? NAUREN_ICONES_FORMULA.generico,
         ativa: f.id === formula.id, bloqueada: !liberada || this.modo !== "criar", travada: !liberada,
-        selo: !liberada ? `Precisa de ${f.requer}` : (f.selo ?? ""), dica: this.modo === "melhorar" ? "A fórmula não muda numa melhoria." : (f.dica ?? "")
+        selo: !liberada ? (this.modo === "criar" ? naurenFormulaCriavel(c, this.actor, this.habilidade, f).motivo : `Precisa de ${f.requer}`) : (f.selo ?? ""), dica: this.modo === "melhorar" ? "A fórmula não muda numa melhoria." : (f.dica ?? "")
       };
     });
     let semForjar = usados === 0 || resta < 0 || (rec && rec.valor < cobrar);
@@ -14321,7 +14340,7 @@ class NaurenBancada extends foundry.applications.api.HandlebarsApplicationMixin(
   }
   static onMais(ev, t) { this._mudar(t.dataset.id, 1); }
   static onMenos(ev, t) { this._mudar(t.dataset.id, -1); }
-  static onFormula(ev, t) { if (this.modo !== "criar") return; this.projeto.formula = t.dataset.id; this.render(); }
+  static onFormula(ev, t) { if (this.modo !== "criar") return; const f = naurenConstrucaoDe(this.habilidade)?.formulas?.find(x => x.id === t.dataset.id); if (f && !this._formulaLiberada(f)) return; this.projeto.formula = t.dataset.id; this.render(); }
   static onLimpar() { this.projeto.escolhas = foundry.utils.deepClone(this.minimos); this.render(); }
   static async onForjar() {
     const nomeEl = this.element.querySelector(".nbc-nome");
@@ -14356,8 +14375,10 @@ function naurenAbrirConstrucaoPorAcao(actor, habilidade, modo, fonteNome = "") {
     if (!m.proxima) return ui.notifications.warn(m.liberadas ? `Você já fez as ${m.liberadas} melhoria(s) liberada(s) até o seu nível.` : "Nenhuma melhoria liberada no seu nível ainda.");
     return NaurenBancada.abrir(actor, habilidade, { modo: "melhorar", item: alvo });
   }
-  const limite = Math.max(1, Math.round(naurenInterpretarModificador(String(c.maximoItens ?? "1"), actor)?.valor ?? 1));
-  if (feitos.length >= limite) return ui.notifications.warn(`Você já tem ${feitos.map(i => i.name).join(", ")}. ${limite > 1 ? "" : "Só pode existir um por vez."}`);
+  if (!(c.formulas ?? []).some(f => naurenFormulaCriavel(c, actor, habilidade, f).ok)) {
+    const limite = Math.max(1, Math.round(naurenInterpretarModificador(String(c.maximoItens ?? "1"), actor)?.valor ?? 1));
+    return ui.notifications.warn(`Você já tem ${feitos.map(i => i.name).join(", ")}. ${limite > 1 ? "" : "Só pode existir um por vez."}`);
+  }
   return NaurenBancada.abrir(actor, habilidade, { modo: "criar" });
 }
 
@@ -14780,7 +14801,7 @@ async function naurenSemearInventorSubclasses(packs) {
     regrasExtras: { ultimoUsoCritico: { fonte: "Arma de Inventor", dadosExtras: "@rank-1" } },
     descricao: D("Passiva. O último uso da sua Arma de Inventor causa dano crítico em um acerto. Para cada ponto além do 1º, +1 dado no dano crítico.", "quando a arma tem 1 uso, o ataque rola o dano como crítico (se acertar; o acerto continua normal) e soma 1 dado por ponto extra; o card mostra \"último uso\".") });
   const martelo = await hab("habilidade-inventor-nova-formula-martelo", "Nova Fórmula: Martelo", "icons/weapons/hammers/hammer-war-spiked.webp", {
-    descricao: D("Passiva. Libera a fórmula Martelo na Bancada: Pesado (2 PdE por ataque), alcance 2 m, alvo único, Pigmento +2 de Destino equipado, 2 usos com Recarga. Requisitos de construção: 1 Pigmento (50 Florins) + Aço (50 Florins).", "a fórmula Martelo aparece liberada na Bancada de Invenção.", "os Florins dos requisitos.") });
+    descricao: D("Passiva. Libera a fórmula Martelo na Bancada: Pesado (2 PdE por ataque), alcance 2 m, alvo único, Pigmento +2 de Destino equipado, 2 usos com Recarga. Requisitos de construção: 1 Pigmento (50 Florins) + Aço (50 Florins).", "a fórmula Martelo aparece liberada na Bancada de Invenção, com vaga própria: o Martelo fica junto da Arma de Inventor que você já tem (efeitos iguais entre elas não somam).", "os Florins dos requisitos.") });
   const inspiracao = await hab("habilidade-inventor-inspiracao-genial", "Inspiração Genial", "icons/magic/light/explosion-star-glow-yellow.webp", { rankAtual: 1, rankMax: 3, prioridadeIndicador: "PA",
     acoes: [{ nome: "Inspiração Genial", custoEstamina: 1, alcance: "pessoal", modoAlvo: "nenhum", prioridadeIndicador: "PA", gastaUsoDeProjeto: "Arma de Inventor",
       efeitosEmMim: [{ nome: "Inspiração Genial", tipo: "condicao", uuid: cInspiracao.uuid, rank: "@rank", texto: "o próximo ataque com a Arma de Inventor causa +(@rank+1)d6" }] }],
@@ -15365,6 +15386,8 @@ async function naurenCriarFrascoEspecial(actor, spec, escolha = null, fonteItem 
   base.system.descricao = naurenMontarDescricao({ regra: spec.descricao || `${nome}: Frasco especial${spec.semColateral ? " sem efeito colateral" : ""}${spec.umaVezChave ? "; cada personagem só pode receber uma vez" : ""}.`,
     automatico: "beber (1 PdE) aplica tudo e mostra no card; quem já recebeu antes não ganha nada de novo.", manual: spec.manual || "" });
   foundry.utils.setProperty(base, "flags.nauren.frascoEspecial", fonteItem?.name ?? true);
+  // 0.94.39: Frasco especial não divide os usos de Os Frascos (é uma vez por personagem, sem limite por cena).
+  base.system.acoes = (base.system.acoes ?? []).map(a => ({ ...a, usaUsos: false, usosDeOutroItemNome: "" }));
   const [criado] = await actor.createEmbeddedDocuments("Item", [base]);
   return criado ?? null;
 }
