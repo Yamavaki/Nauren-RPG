@@ -741,6 +741,8 @@ async function naurenAplicarEfeitosPeriodicos(actor, momento) {
       }
       if (ef.removerCondicaoApos) removerDepois.add(cond);
       if (ef.recurso === "dano") instanciasDano += vezes;
+      // 0.94.36: a Redução de Dano zerou tudo: o card aparece mesmo assim, mostrando a conta (antes sumia).
+      if (!valor && ef.recurso === "dano" && breakdownPorAcumulo) { secondaryLines.push({ label: cond.name, value: "0", breakdown: breakdownPorAcumulo }); continue; }
       if (!valor) continue;
       let breakdown = breakdownPorAcumulo || naurenRollToBreakdownText(roll);
       // Sem dados: "3 acúmulos × (1 + 3 Técnica Suja) = 12" em vez de "1 + 3 + 1 + 3 + 1 + 3".

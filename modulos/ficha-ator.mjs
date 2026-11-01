@@ -14978,8 +14978,16 @@ class NaurenAlvoHelper {
     const raiz = raizForcada || uuidFonte;
     const donoDe = u => { try { const d = u ? fromUuidSync(u) : null; return (d?.actor ?? d)?.uuid ?? u ?? ""; } catch (err) { return u ?? ""; } };
     const porConjurador = origem.type === "condicao" && origem.system.unicaPorConjurador && !!conjuradorUuid;
+    // 0.94.36: Condição ACUMULÁVEL só soma na MESMA etapa (Sangramento soma em Sangramento). Antes a cadeia
+    // inteira contava como uma só: quem tinha Hemorragia e recebia Sangramento ganhava +1 Hemorragia.
+    const mesmaEtapa = i => i.getFlag("core", "sourceId") === uuidFonte || i._stats?.compendiumSource === uuidFonte || i.getFlag("nauren", "origemUuid") === uuidFonte
+      || naurenNomeNormalizado(i.name) === naurenNomeNormalizado(origem.name);
+    const doConjurador = i => !porConjurador || donoDe(i.system.conjuradorUuid) === donoDe(conjuradorUuid);
     const existente = origem.type === "condicao"
-      ? actor.items.find(i => i.type === "condicao" && i.getFlag("nauren", "cadeiaRaizUuid") === raiz && (!porConjurador || donoDe(i.system.conjuradorUuid) === donoDe(conjuradorUuid)))
+      ? (origem.system.acumulativel
+        ? (actor.items.find(i => i.type === "condicao" && i.getFlag("nauren", "cadeiaRaizUuid") === raiz && mesmaEtapa(i) && doConjurador(i))
+          ?? actor.items.find(i => i.type === "condicao" && mesmaEtapa(i) && doConjurador(i)))
+        : actor.items.find(i => i.type === "condicao" && i.getFlag("nauren", "cadeiaRaizUuid") === raiz && doConjurador(i)))
       : actor.items.find(i => i.type === origem.type && (i.getFlag("nauren", "origemUuid") === uuidFonte || i.getFlag("core", "sourceId") === uuidFonte));
     if (existente && Number(flagsExtras?.somarCurtos)) await existente.setFlag("nauren", "acumulosCurtos", (existente.getFlag("nauren", "acumulosCurtos") ?? 0) + Number(flagsExtras.somarCurtos)).catch(() => {});
     if (existente && flagsExtras) {
@@ -15059,8 +15067,7 @@ class NaurenAlvoHelper {
         // Evolução automática por LIMIAR de acúmulos (ex: Sangramento -> Hemorragia)
         if (origem.system.evolutiva && (origem.system.limiarAcumulos || 0) > 0 &&
             novo >= origem.system.limiarAcumulos && origem.system.proximaEvolucaoUuid) {
-          await existente.delete();
-          return this.aplicarCondicao(actor, origem.system.proximaEvolucaoUuid, 1, naurenRaizDaEvolucao(actor, origem.system.proximaEvolucaoUuid, raiz), rankParaCondicao, duracaoExtra, custoParaRemoverRecurso, custoParaRemoverQuantidade, overrideFormulaEfeitoPeriodico, conjuradorUuid);
+          return naurenEvoluirPorLimiar(existente, actor, origem, novo, { rankParaCondicao, duracaoExtra, custoParaRemoverRecurso, custoParaRemoverQuantidade, conjuradorUuid });
         }
         naurenProcessarGatilhos("euRecebiCondicao", actor, { condicaoUuid: raiz, condicaoNome: origem.name, condicaoItemId: existente.id, acumulosRecebidos: Math.max(1, acumulosParaSomar), alvoUuid: actor.uuid, atacanteTokenUuid: conjuradorUuid || "" }).catch(() => {});
         // "+N (agora T)": o card mostra quanto ESTA Ação deu, não só o total (antes "Queimando (3 acúmulos)" parecia 3 novos).
@@ -15216,8 +15223,7 @@ class NaurenAlvoHelper {
       }
       if (actor.items.get(criadoCond.id) && origem.system.evolutiva && (origem.system.limiarAcumulos || 0) > 0 &&
           acN >= origem.system.limiarAcumulos && origem.system.proximaEvolucaoUuid) {
-        await criadoCond.delete();
-        return this.aplicarCondicao(actor, origem.system.proximaEvolucaoUuid, 1, naurenRaizDaEvolucao(actor, origem.system.proximaEvolucaoUuid, raiz), rankParaCondicao, duracaoExtra, custoParaRemoverRecurso, custoParaRemoverQuantidade, overrideFormulaEfeitoPeriodico, conjuradorUuid);
+        return naurenEvoluirPorLimiar(criadoCond, actor, origem, acN, { rankParaCondicao, duracaoExtra, custoParaRemoverRecurso, custoParaRemoverQuantidade, conjuradorUuid });
       }
       if (!actor.items.get(criadoCond.id)) return origem.name;
     }
@@ -15243,9 +15249,23 @@ async function naurenChecarLimiarEvolucao(item) {
   if (!sys.proximaEvolucaoUuid) return;
   const actor = item.parent;
   if (!actor) return;
-  const raiz = item.getFlag("nauren", "cadeiaRaizUuid") || item.getFlag("core", "sourceId") || sys.proximaEvolucaoUuid;
-  await item.delete();
-  await NaurenAlvoHelper.aplicarCondicao(actor, sys.proximaEvolucaoUuid, 1, raiz);
+  await naurenEvoluirPorLimiar(item, actor, item, sys.acumulos || 1, {});
+}
+
+/**
+ * 0.94.36: cada "limiar" de acúmulos vira 1 acúmulo da próxima etapa (5 Sangramento = 1 Hemorragia; 10 = 2);
+ * o que sobra continua na etapa atual. A próxima etapa é uma Condição à parte: Sangramento e Hemorragia
+ * convivem, e a Hemorragia que já existia soma.
+ */
+async function naurenEvoluirPorLimiar(item, actor, origem, total, opc = {}) {
+  const limiar = Math.max(1, Number(origem.system.limiarAcumulos) || 1);
+  const vezes = Math.floor(total / limiar), resto = total - vezes * limiar;
+  if (resto > 0) await item.update({ "system.acumulos": resto });
+  else await item.delete();
+  const proxima = origem.system.proximaEvolucaoUuid;
+  const r = await NaurenAlvoHelper.aplicarCondicao(actor, proxima, vezes, proxima, opc.rankParaCondicao ?? 0, opc.duracaoExtra ?? 0,
+    opc.custoParaRemoverRecurso ?? "", opc.custoParaRemoverQuantidade ?? "1", "", opc.conjuradorUuid ?? "");
+  return `${origem.name} → ${r ?? "próxima etapa"}${resto > 0 ? ` (sobram ${resto} de ${origem.name})` : ""}`;
 }
 
 /**
