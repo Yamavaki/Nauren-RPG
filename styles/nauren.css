@@ -4391,3 +4391,21 @@ img.nauren-criador-token.com-borda { border: none; border-radius: 0; background:
 @container (max-width: 780px) {
   .nauren-bancada .nbc-categorias { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* 0.94.37: Descansar na coluna da esquerda (antes só na aba Opções) */
+.nauren-sheet .btn-modo-ficha.btn-descanso-lateral { border-color: #cca162; color: #f4ead1; background: linear-gradient(180deg, #3a3150, #2b2442); }
+.nauren-sheet .btn-modo-ficha.btn-descanso-lateral i { color: #cca162; }
+/* 0.94.37: Desfazer dentro do card, alinhado à direita, numa faixa própria */
+.nauren-roll-card .nauren-desfazer-linha { display: flex; justify-content: flex-end; padding: 5px 8px 6px; border-top: 1px solid rgba(204, 161, 98, .25); background: rgba(0, 0, 0, .15); }
+.nauren-roll-card .nauren-desfazer-linha .nauren-btn-desfazer { margin: 0; padding: 2px 10px; font-size: 11px; color: #cca162; border: 1px solid rgba(204, 161, 98, .55); border-radius: 12px; background: rgba(204, 161, 98, .08); opacity: .9; text-decoration: none; }
+.nauren-roll-card .nauren-desfazer-linha .nauren-btn-desfazer:hover { opacity: 1; background: rgba(204, 161, 98, .2); color: #f4ead1; }
+/* 0.94.37: "Topo" vira um botão flutuante no canto de baixo da ficha (antes encavalava nas abas) */
+.nauren-sheet .main-content > .nauren-subir-topo {
+  display: none; position: sticky; bottom: 10px; z-index: 8; width: fit-content; margin: -30px 6px 0 auto;
+  align-items: center; gap: 5px; padding: 4px 11px; font-size: 11px; font-weight: bold; line-height: 1.4;
+  color: #cca162; background: #2b2442; border: 1px solid #cca162; border-radius: 14px; cursor: pointer;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, .55);
+}
+.nauren-sheet .main-content.rolou > .nauren-subir-topo { display: flex; }
+.nauren-sheet .main-content > .nauren-subir-topo:hover { background: #3a3150; color: #f4ead1; }
+.nauren-sheet .main-content > .nauren-subir-topo i { margin: 0; }

@@ -126,6 +126,10 @@
       </div>
 
       {{#if editable}}
+      <a class="btn-modo-ficha btn-descanso-lateral" data-action="descansar" title="Descansar: recarrega para o máximo as Ações com usos &quot;por dia&quot; (de qualquer item). Vida, Mana, Estamina e Estresse ficam a critério do Mestre.">
+        <i class="fas fa-bed"></i>
+        Descansar
+      </a>
       <a class="btn-modo-ficha" data-action="toggleModoFicha" title="{{#if modoFichaEdicao}}Voltar a mostrar só os valores finais{{else}}Mostrar os campos editáveis e o detalhamento de bônus{{/if}}">
         <i class="fas {{#if modoFichaEdicao}}fa-play{{else}}fa-pen-to-square{{/if}}"></i>
         {{#if modoFichaEdicao}}Modo Jogo{{else}}Editar Ficha{{/if}}
@@ -341,7 +345,6 @@
         {{#if isNpc}}<a class="item" data-tab="condicoesModelo"><i class="fas fa-flask"></i> Condições</a>{{/if}}
         <a class="item" data-tab="notas"><i class="fas fa-feather-alt"></i> Notas</a>
         <a class="item" data-tab="opcoes"><i class="fas fa-cog"></i> Opções</a>
-        <a class="nauren-subir-topo" title="Voltar ao topo da ficha (Vida, Mana, atributos)"><i class="fas fa-arrow-up"></i> Topo</a>
       </nav>
 
       <!-- Conteúdo das Abas -->
@@ -1522,6 +1525,7 @@
         </div>
 
       </section>
+      <a class="nauren-subir-topo" title="Voltar ao topo da ficha (Vida, Mana, atributos)"><i class="fas fa-arrow-up"></i> Topo</a>
     </main>
   </div>
 </div>

@@ -6216,7 +6216,8 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
     btn.className = "nauren-btn-desfazer"; btn.dataset.tooltip = "Desfazer esta Ação (só o Mestre vê)";
     btn.innerHTML = `<i class="fas fa-rotate-left"></i> Desfazer`;
     btn.addEventListener("click", ev => { ev.preventDefault(); ev.stopPropagation(); naurenDesfazerAcao(message).catch(err => console.warn("Nauren RPG | Desfazer", err)); });
-    card.append(btn);
+    const linha = document.createElement("div"); linha.className = "nauren-desfazer-linha"; linha.append(btn);
+    card.append(linha);
   } catch (err) { console.warn("Nauren RPG | botão Desfazer", err); }
 });
 
