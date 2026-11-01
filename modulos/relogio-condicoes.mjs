@@ -146,11 +146,14 @@ async function naurenRecarregarUsos(actor, escopo) {
     // nenhuma Ação individual dele tem usosAtual próprio real, então a
     // recarga por Ação abaixo é pulada por completo pra este item -
     // o pool do próprio item é recarregado separadamente mais abaixo.
-    if (acoes?.length && (!sys?.usaUsos || acoes.some(a => a.usosProprios))) {
+    // 0.94.38: Ação com usos que recarregam num escopo DIFERENTE do pool do item (ex.: "Preparar Frasco",
+    // 1 por descanso, dentro de "Os Frascos", 1 por cena) tem usos próprios de verdade.
+    const propria = a => a.usosProprios || (sys?.usaUsos && a.usaUsos && (a.usosReset || "cena") !== (sys.usosReset || "dia"));
+    if (acoes?.length && (!sys?.usaUsos || acoes.some(propria))) {
       let mudouAcoes = false;
       const clonadas = foundry.utils.deepClone(acoes);
       for (const a of clonadas) {
-        if (sys?.usaUsos && !a.usosProprios) continue;
+        if (sys?.usaUsos && !propria(a)) continue;
         const usosMaxPorNivel = naurenResolverPorNivel(a.usosMaxPorNivel, nivelAtor, "valor");
         const usosMaxEfetivo = (usosMaxPorNivel !== null ? usosMaxPorNivel : (a.usosMax ?? 0)) + naurenUsosExtrasPara(actor, item, a.nome);
         if (a.usaUsos && (a.usosReset || "cena") === escopo && ((a.usosAtual ?? 0) < usosMaxEfetivo || (a.usosBonusConsumidoAtual ?? 0) > 0)) {
