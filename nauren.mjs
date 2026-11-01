@@ -8382,7 +8382,7 @@ class NaurenHudCombate extends foundry.applications.api.ApplicationV2 {
   }
 
   async _renderHTML(context) { return naurenHudHtml(context); }
-  _replaceHTML(result, content) { content.innerHTML = result; }
+  _replaceHTML(result, content) { naurenTrocarHtmlMantendoRolagem(content, result); }
 
   _onRender(context, options) {
     super._onRender?.(context, options);
@@ -12806,6 +12806,20 @@ function naurenTokenConfigBarras(app, html) {
 // "renderTokenApplication" vale para o Configurar Token e o Token Protótipo no v14 (mesmo gancho do Bar Brawl 1.9).
 Hooks.on("renderTokenApplication", (app, html) => { try { naurenTokenConfigBarras(app, html); } catch (err) { console.warn("Nauren RPG | barras no Configurar Token", err); } });
 
+/**
+ * 0.94.40: troca o HTML de uma janela sem perder a rolagem. Cada clique re-renderiza a janela inteira
+ * (Barras do token, Recursos do HUD, HUD de Combate); sem isto a lista voltava para o topo.
+ * Guarda o scroll de todo elemento rolado pelo caminho de índices dos filhos e devolve depois.
+ */
+function naurenTrocarHtmlMantendoRolagem(content, html) {
+  const caminho = el => { const p = []; for (let n = el; n && n !== content; n = n.parentElement) p.unshift([...n.parentElement.children].indexOf(n)); return p; };
+  const achar = p => p.reduce((n, i) => n?.children?.[i] ?? null, content);
+  const rolados = [...content.querySelectorAll("*")].filter(e => e.scrollTop || e.scrollLeft).map(e => ({ p: caminho(e), top: e.scrollTop, left: e.scrollLeft, cls: e.className }));
+  const raiz = { top: content.scrollTop, left: content.scrollLeft };
+  content.innerHTML = html;
+  content.scrollTop = raiz.top; content.scrollLeft = raiz.left;
+  for (const r of rolados) { const el = achar(r.p); if (el && el.className === r.cls) { el.scrollTop = r.top; el.scrollLeft = r.left; } }
+}
 /* =======================================================================
  * EDITOR DE BARRAS
  * ======================================================================= */
@@ -12912,7 +12926,7 @@ class NaurenBarrasEditor extends foundry.applications.api.ApplicationV2 {
       <section class="nauren-be-preview"><div class="nauren-be-cab"><b>Pré-visualização</b><span>como fica no mapa</span></div>${this.#previewHtml()}</section>
     </div>`;
   }
-  _replaceHTML(result, content) { content.innerHTML = result; }
+  _replaceHTML(result, content) { naurenTrocarHtmlMantendoRolagem(content, result); }
 
   #previewHtml() {
     const actor = this.#actor;
@@ -13252,7 +13266,7 @@ class NaurenCarrosselTurnos extends foundry.applications.api.ApplicationV2 {
       ${ctrlDir}
     </div>`;
   }
-  _replaceHTML(result, content) { content.innerHTML = result; }
+  _replaceHTML(result, content) { naurenTrocarHtmlMantendoRolagem(content, result); }
   _onRender() {
     const raiz = this.element;
     const nav = document.getElementById("navigation");
@@ -13422,7 +13436,7 @@ class NaurenHudRecursosEditor extends foundry.applications.api.ApplicationV2 {
       <div class="nauren-be-rodape"><button type="button" data-action="restaurar"><i class="fas fa-rotate-left"></i> Restaurar padrão</button></div>
     </div>`;
   }
-  _replaceHTML(result, content) { content.innerHTML = result; }
+  _replaceHTML(result, content) { naurenTrocarHtmlMantendoRolagem(content, result); }
   _onRender() { try { naurenAplicarEscalaEAjuste?.(this, { ajustarTamanho: false }); } catch (err) { /* sem escala */ } }
   static async onOlho(ev, target) {
     const lista = naurenHudCombateRecursos(this.#actor);
