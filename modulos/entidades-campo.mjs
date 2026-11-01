@@ -1405,7 +1405,9 @@ function naurenEhItem(item, nome) {
 }
 
 /** Condições negativas do livro (Cap. V). */
-const NAUREN_CONDICOES_NEGATIVAS_LIVRO = ["alvejado", "preso", "agarrado", "caído", "caido", "cego", "amedrontado", "pânico", "panico", "pavor", "atordoado", "desacordado", "envenen", "veneno", "sangramento", "hemorragia", "fragmentado", "queimando", "congelando", "lerdeza", "desestabilizado"];
+const NAUREN_CONDICOES_NEGATIVAS_LIVRO = ["alvejado", "preso", "agarrado", "caído", "caido", "cego", "amedrontado", "pânico", "panico", "pavor", "atordoado", "desacordado", "envenen", "veneno", "sangramento", "hemorragia", "fragmentado", "queimando", "congelando", "lerdeza", "desestabilizado",
+  // 0.94.42: aflições sem penalidade numérica (o efeito é narrado ou vem de outra regra) - a Sanatio também tira estas.
+  "loucura", "desarmado", "mancha", "caminho rompido", "maldição do lobo", "julgado", "marcado pela epigrafia", "marcado pelas palavras"];
 /**
  * A Condição é negativa para quem a tem? "sim"/"não" na Condição mandam;
  * no automático: as negativas do livro, dano periódico, penalidade numérica
