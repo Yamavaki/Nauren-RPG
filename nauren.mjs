@@ -12318,7 +12318,10 @@ function naurenHudDesenharBarrasNoToken(token, { animado = true } = {}) {
   const caixa = naurenBordaCaixaVisual(token);
   const w = caixa.w, h = caixa.h;
   cont.position.set(caixa.x, caixa.y);
-  const esc = Math.max(0.6, Math.min(1.6, (canvas.grid?.size ?? 100) / 100));
+  // 0.94.41: a espessura acompanha o tamanho do token (por casa), não a grade do mapa: "6 px" = 6% de um token de 1 casa,
+  // igual em mapa de grade 50 ou 300. Token grande (2x2) não engorda as barras.
+  const casas = Math.max(1, Math.min(Number(token.document?.width) || 1, Number(token.document?.height) || 1));
+  const esc = Math.max(0.15, Math.min(6, Math.min(w, h) / casas / 100));
   const pilhas = { abaixo: 0, acima: 0, esquerda: 0, direita: 0, dentroBase: 0, dentroTopo: 0 };
   const podeNumeros = naurenHudPodeVerNumeros(actor);
   const anim = naurenHudAnimacoes.get(token.id) ?? {};
