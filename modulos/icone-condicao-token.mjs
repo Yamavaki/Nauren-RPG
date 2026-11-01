@@ -2137,6 +2137,11 @@ async function naurenProcessarGatilhosInterno(tipoEvento, atorEvento, contexto =
       if (!gatilhosBatendo.length) continue;
       if (item.system.usaUsosPassiva && (item.system.usosPassivaAtual ?? 0) <= 0) {
         console.log(`Nauren RPG | Gatilho "${item.name}" (${tipoEvento}) não disparou: sem usos sobrando.`);
+        // 0.94.43: reação que seria oferecida (Penitência Desesperada...) avisa na tela em vez de sumir calada.
+        if (gatilhosBatendo.some(g => g.recurso === "oferecerAcaoDesteItem") && !(tipoEvento === "penitenciaAceita" && !(Number(contexto.danoPenitencia) > 0))) {
+          const quando = { cena: "por cena", combate: "por combate", dia: "por dia", rodada: "por rodada", turno: "por turno" }[item.system.usosPassivaReset] ?? "";
+          ui.notifications.info(`${item.name} (${candidato.name}): sem usos agora${quando ? ` (${quando})` : ""}. Volta ao começar outro combate ou ao Descansar.`);
+        }
         continue;
       }
 
