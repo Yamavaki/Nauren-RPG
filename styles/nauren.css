@@ -5544,3 +5544,241 @@ img.nauren-criador-token.com-borda { border: none; border-radius: 0; background:
 /* 0.97.2: botões cheios na cor secundária sempre com texto escuro (Ônix/Pérola/Verde claros perdiam o contraste) */
 .nauren-sheet.ns2 .ns-sub-pontos .ns-sub-btn, .nauren-sheet.ns2 .ns-sub-vazio .ns-sub-btn, .nauren-sheet.ns2 .ns-btn-principal { background: var(--ns-s) !important; color: #15111b !important; border: 0 !important; }
 .nauren-sheet.ns2 .ns-sub-pontos .ns-sub-btn i, .nauren-sheet.ns2 .ns-btn-principal i { color: #15111b !important; }
+
+/* 0.97.3: atributo com bônus não muda de cor — o bônus aparece só no passar do mouse. */
+.nauren-sheet.ns2 .ns-brasao.buff b, .nauren-sheet.ns2 .ns-brasao.debuff b { color: #f3ead2; }
+
+/* ===================================================
+   0.97.3 — CARDS DO CHAT NO ESTILO DA FICHA
+   Cores de quem agiu (--nc-p primária, --nc-pd escura, --nc-pc clara, --nc-s secundária, --nc-sc clara),
+   postas pelo hook renderChatMessageHTML — vale para cards novos e antigos.
+   =================================================== */
+.nauren-roll-card.nc2, .nauren-deflexao-card.nc2, .nauren-aviso-chat.nc2 {
+  --nc-p: #a86ee0; --nc-pd: #26183a; --nc-pc: #d9bdf7; --nc-s: #e0b257; --nc-sc: #ffe2a3;
+  --nc-fundo: #1b1624; --nc-linha: #2a2338; --nc-texto: #ece6f5; --nc-suave: #b3a6c9;
+  --nc-bom: #a8e6cf; --nc-ruim: #ff9aa1; --nc-neutro: #d6cce6;
+}
+.nauren-roll-card.nc2.nc-fundo-escuro, .nauren-deflexao-card.nc2.nc-fundo-escuro { --nc-fundo: #141317; --nc-linha: #26252c; }
+.chat-message.nc-mensagem .message-content { overflow: visible; }
+
+/* moldura: cantos chanfrados na primária, filete interno na secundária */
+.nauren-roll-card.nc2 {
+  position: relative; isolation: isolate; padding: 1.5px; border: 0 !important; border-radius: 0; box-shadow: none;
+  background: color-mix(in srgb, var(--nc-p) 80%, #000);
+  clip-path: polygon(8px 0, calc(100% - 8px) 0, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0 calc(100% - 8px), 0 8px);
+  color: var(--nc-texto); font-family: "Signika", sans-serif; overflow: hidden;
+}
+.nauren-roll-card.nc2::before {
+  content: ""; position: absolute; inset: 1.5px; z-index: -1; background: var(--nc-fundo);
+  clip-path: polygon(7.4px 0, calc(100% - 7.4px) 0, 100% 7.4px, 100% calc(100% - 7.4px), calc(100% - 7.4px) 100%, 7.4px 100%, 0 calc(100% - 7.4px), 0 7.4px);
+}
+.nauren-roll-card.nc2::after { content: ""; position: absolute; inset: 4px; border: 1px solid color-mix(in srgb, var(--nc-s) 42%, transparent); pointer-events: none; z-index: 3; }
+
+/* cabeçalho: faixa listrada na primária escura + linha da secundária */
+.nauren-roll-card.nc2 > header.nrc-toggle {
+  position: relative; gap: 10px; align-items: center; padding: 11px 12px 9px; border-left: 0 !important; color: #fff;
+  background: repeating-linear-gradient(135deg, var(--nc-pd) 0 10px, color-mix(in srgb, var(--nc-pd) 78%, #000) 10px 20px);
+  border-bottom: 2px solid var(--nc-s);
+}
+.nauren-roll-card.nc2 .nrc-icon { width: 34px; height: 34px; border-radius: 50%; border: 0; object-fit: cover; display: block; }
+.nauren-roll-card.nc2 > header .nrc-icon, .nauren-roll-card.nc2 > header .nc-retrato {
+  flex: 0 0 34px; height: 34px; border-radius: 50%; background: #2b2140;
+  box-shadow: 0 0 0 2px var(--nc-p), 0 0 0 4px var(--nc-fundo), 0 0 0 5px var(--nc-s);
+}
+.nauren-roll-card.nc2 .nc-retrato .nrc-icon { box-shadow: none; }
+.nauren-roll-card.nc2.nc-monstro > header .nrc-icon, .nauren-roll-card.nc2.nc-monstro > header .nc-retrato { border-radius: 7px; }
+.nauren-roll-card.nc2 .nrc-title { font-family: "Modesto Condensed", "Cinzel", Georgia, serif; font-size: 15px; font-weight: 700; color: #fff; line-height: 1.15; letter-spacing: .02em; }
+.nauren-roll-card.nc2 .nrc-actor { font-size: 11.5px; color: var(--nc-pc); margin-top: 1px; }
+.nauren-roll-card.nc2 .nrc-player { font-weight: 400; color: var(--nc-suave) !important; white-space: nowrap; }
+.nauren-roll-card.nc2 .nc-ponto { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin: 0 4px 1px 4px; vertical-align: middle; }
+.nauren-roll-card.nc2 .nrc-fonte { font-size: 11px; color: var(--nc-suave); }
+.nauren-roll-card.nc2 .nrc-custo-visivel { font-size: 11px; color: var(--nc-sc); opacity: 1; }
+.nauren-roll-card.nc2 .nrc-custo-visivel i { color: var(--nc-s); }
+.nauren-roll-card.nc2 .nrc-chevron { color: var(--nc-s); }
+.nauren-roll-card.nc2 .nrc-prio-sigla { align-self: flex-start; border-radius: 999px; }
+
+/* fita de crítico / falha crítica */
+.nauren-roll-card.nc2 .nc-fita {
+  position: absolute; left: 50%; top: 1.5px; z-index: 4; transform: translateX(-50%); padding: 1px 14px 2px;
+  font-family: "Modesto Condensed", "Cinzel", Georgia, serif; font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; white-space: nowrap;
+  clip-path: polygon(0 0, 100% 0, 92% 100%, 8% 100%);
+}
+.nauren-roll-card.nc2 .nc-fita-crit { background: linear-gradient(180deg, #ffe7a8, #e0b257); color: #2a1a05; }
+.nauren-roll-card.nc2 .nc-fita-fumble { background: linear-gradient(180deg, #e46a72, #9e2f37); color: #fff1f2; }
+.nauren-roll-card.nc2.nc-critico > header, .nauren-roll-card.nc2.nc-fumble > header { padding-top: 19px; }
+.nauren-roll-card.nc2.nc-critico { background: linear-gradient(180deg, #e0b257, color-mix(in srgb, var(--nc-p) 80%, #000) 45%); }
+.nauren-roll-card.nc2.nc-fumble { background: linear-gradient(180deg, #c2474f, color-mix(in srgb, var(--nc-p) 80%, #000) 45%); }
+
+/* rolagem: d20 desenhado + um número de bônus + total */
+.nauren-roll-card.nc2 .nc-oculto { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+.nauren-roll-card.nc2 .nc-so-aberto { display: none !important; }
+.nauren-roll-card.nc2.nrc-expanded .nc-so-aberto { display: revert !important; }
+.nauren-roll-card.nc2 .nrc-dice-row.nc-rolagem {
+  display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 4px 8px; margin: 10px 12px 0; padding: 9px 8px;
+  border-radius: 8px; background: color-mix(in srgb, var(--nc-pd) 45%, #15111b); border: 1px solid color-mix(in srgb, var(--nc-p) 30%, var(--nc-linha));
+}
+.nauren-roll-card.nc2 .nc-dados { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.nauren-roll-card.nc2 .nc-dados-linha { display: flex; gap: 4px; }
+.nauren-roll-card.nc2 .nc-rolagem .nrc-die-box {
+  flex: none; max-width: none; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 0; margin: 0;
+  background: none; border: 0; box-shadow: none; border-radius: 0; position: relative;
+}
+.nauren-roll-card.nc2 .nc-d20 {
+  width: 38px; height: 42px; display: grid; place-items: center; background: #8f82a8;
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+}
+.nauren-roll-card.nc2 .nc-d20 > b {
+  width: 34px; height: 38px; display: grid; place-items: center; background: #2d2440; color: #f4eefc; font-size: 16px; font-weight: 700;
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+}
+.nauren-roll-card.nc2 .nrc-die-box.nrc-crit .nc-d20 { background: #fff1c9; box-shadow: 0 0 12px #e0b257; }
+.nauren-roll-card.nc2 .nrc-die-box.nrc-crit .nc-d20 > b { background: #e0b257; color: #2a1a05; }
+.nauren-roll-card.nc2 .nrc-die-box.nrc-fumble .nc-d20 { background: #c2474f; }
+.nauren-roll-card.nc2 .nrc-die-box.nrc-fumble .nc-d20 > b { background: #3a1d22; color: #ffd0d3; }
+.nauren-roll-card.nc2 .nc-rolagem .nrc-die-box.nrc-unused { opacity: .38; }
+.nauren-roll-card.nc2 .nc-rolagem .nrc-die-box.nrc-unused .nc-d20 > b { text-decoration: line-through; }
+.nauren-roll-card.nc2 .nc-rolagem .nrc-die-raw { position: static; display: block; max-width: 220px; font-size: 10.5px; color: var(--nc-suave); text-align: center; white-space: normal; }
+.nauren-roll-card.nc2 .nc-modo { font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--nc-bom); }
+.nauren-roll-card.nc2 .nc-modo-Dificuldade { color: var(--nc-ruim); }
+.nauren-roll-card.nc2 .nc-op { font-size: 17px; font-weight: 700; color: #8f82a8; }
+.nauren-roll-card.nc2 .nc-bonus { font-size: 19px; font-weight: 700; color: var(--nc-texto); }
+.nauren-roll-card.nc2 .nc-bonus.nc-neg { color: var(--nc-ruim); }
+.nauren-roll-card.nc2 .nc-total {
+  min-width: 44px; height: 44px; padding: 0 6px; box-sizing: border-box; display: grid; place-items: center; border-radius: 9px;
+  border: 2px solid var(--nc-s); background: #15111b; color: var(--nc-sc); font-size: 23px; font-weight: 700;
+}
+.nauren-roll-card.nc2.nc-critico > .nc-rolagem .nc-total { border-color: #e0b257; color: #ffe2a3; }
+.nauren-roll-card.nc2.nc-fumble > .nc-rolagem .nc-total { border-color: #c2474f; color: #ffb4b8; }
+/* cards antigos (caixa de d20 antiga): mesmas cores */
+.nauren-roll-card.nc2 .nrc-dice-row:not(.nc-rolagem) { padding: 10px 12px 0; }
+.nauren-roll-card.nc2 .nrc-dice-row:not(.nc-rolagem) .nrc-die-box { background: color-mix(in srgb, var(--nc-pd) 45%, #15111b); border-color: color-mix(in srgb, var(--nc-p) 40%, var(--nc-linha)); }
+.nauren-roll-card.nc2 .nrc-dice-row:not(.nc-rolagem) .nrc-die-total { color: var(--nc-sc); }
+
+/* linhas (Dano, Cura, Você recebeu...) */
+.nauren-roll-card.nc2 .nrc-secondary { margin: 8px 12px 0; padding: 0; gap: 2px; border: 0; background: none; display: flex; flex-direction: column; }
+.nauren-roll-card.nc2 .nrc-secondary-line { display: flex; align-items: baseline; gap: 8px; padding: 4px 2px; border: 0; border-bottom: 1px solid var(--nc-linha); background: none; }
+.nauren-roll-card.nc2 .nrc-secondary-line:last-child { border-bottom: 0; }
+.nauren-roll-card.nc2 .nrc-sec-label { flex: 0 1 auto; max-width: 45%; font-size: 10.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--nc-sc); }
+.nauren-roll-card.nc2 .nrc-sec-value { flex: 1 1 0; min-width: 0; text-align: left; font-size: 14px; font-weight: 700; color: var(--nc-texto); }
+.nauren-roll-card.nc2 .nrc-sec-breakdown { font-size: 11px; font-weight: 400; color: var(--nc-suave); margin-left: 4px; }
+
+/* placa "NOS ALVOS" e alvos */
+.nauren-roll-card.nc2 .nc-placa { display: flex; align-items: center; gap: 6px; margin: 10px 13px 2px; font-family: "Modesto Condensed", "Cinzel", Georgia, serif; font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--nc-sc); }
+.nauren-roll-card.nc2 .nc-placa > i { flex: none; width: 6px; height: 6px; transform: rotate(45deg); background: var(--nc-s); }
+.nauren-roll-card.nc2 .nc-placa::after { content: ""; flex: 1; height: 1.5px; background: linear-gradient(90deg, var(--nc-p), transparent); }
+.nauren-roll-card.nc2 .nrc-resultado-alvos { margin: 2px 12px 0; gap: 0; }
+.nauren-roll-card.nc2 .nrc-res-alvo { padding: 6px 2px; border: 0; border-radius: 0; border-bottom: 1px solid var(--nc-linha); background: none; }
+.nauren-roll-card.nc2 .nrc-res-alvo:last-child { border-bottom: 0; }
+.nauren-roll-card.nc2 .nrc-res-alvo.nc-alvo { flex-direction: row; align-items: flex-start; gap: 8px; }
+.nauren-roll-card.nc2 .nc-alvo-retrato { flex: 0 0 26px; height: 26px; border-radius: 50%; overflow: hidden; display: grid; place-items: center; background: #3b3154; font-size: 12px; font-weight: 700; color: var(--nc-texto); box-shadow: 0 0 0 1px color-mix(in srgb, var(--nc-p) 60%, transparent); }
+.nauren-roll-card.nc2 .nc-alvo-retrato img { width: 100%; height: 100%; object-fit: cover; border: 0; }
+.nauren-roll-card.nc2 .nc-alvo-meio { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.nauren-roll-card.nc2 .nc-alvo .nrc-res-nome { font-size: 13px; font-weight: 700; color: var(--nc-texto); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nauren-roll-card.nc2 .nc-selos { display: flex; flex-wrap: wrap; gap: 3px; }
+.nauren-roll-card.nc2 .nc-selo { font-size: 10.5px; font-weight: 700; line-height: 1.5; padding: 0 7px; border-radius: 999px; white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; background: #2c2240; border: 1px solid #4a3d66; color: var(--nc-neutro); }
+.nauren-roll-card.nc2 .nc-selo.nc-bom { background: #1c2a26; border-color: #4f8f78; color: var(--nc-bom); }
+.nauren-roll-card.nc2 .nc-selo.nc-ruim { background: #2a1a1c; border-color: #c2474f; color: #ffb4b8; }
+.nauren-roll-card.nc2 .nc-selo.nc-cond { background: color-mix(in srgb, var(--nc-p) 14%, #1b1624); border-color: color-mix(in srgb, var(--nc-p) 55%, #000); color: var(--nc-pc); }
+.nauren-roll-card.nc2 .nc-alvo .nrc-res-lista { display: flex; flex-direction: column; gap: 1px; font-size: 11.5px; line-height: 1.35; color: var(--nc-suave); }
+.nauren-roll-card.nc2 .nc-alvo .nrc-res-lista > span { padding-left: 0; }
+.nauren-roll-card.nc2 .nc-alvo .nrc-res-lista > span::before { content: none; }
+.nauren-roll-card.nc2.nrc-expanded .nc-alvo .nrc-res-lista > span.nc-so-aberto { color: #8f82a8; }
+.nauren-roll-card.nc2 .nc-cons { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 1px; font-size: 14px; white-space: nowrap; }
+.nauren-roll-card.nc2 .nc-cons .nc-ruim { color: var(--nc-ruim); }
+.nauren-roll-card.nc2 .nc-cons .nc-bom { color: #7fe0b8; }
+.nauren-roll-card.nc2 .nrc-resultado-alvos .nc-alvo:nth-child(n+5) { display: none; }
+.nauren-roll-card.nc2.nc-alvos-todos .nrc-resultado-alvos .nc-alvo:nth-child(n+5) { display: flex; }
+.nauren-roll-card.nc2 .nc-mais-alvos { display: block; margin: 0 12px; padding: 4px 0; text-align: center; font-size: 11.5px; font-weight: 700; color: var(--nc-sc); border-top: 1px dashed var(--nc-linha); cursor: pointer; }
+.nauren-roll-card.nc2 .nc-mais-fechar, .nauren-roll-card.nc2.nc-alvos-todos .nc-mais-abrir { display: none; }
+.nauren-roll-card.nc2.nc-alvos-todos .nc-mais-fechar { display: inline; }
+/* alvos de cards antigos */
+.nauren-roll-card.nc2 .nrc-res-alvo:not(.nc-alvo) .nrc-res-nome { color: var(--nc-texto); }
+.nauren-roll-card.nc2 .nrc-res-alvo:not(.nc-alvo) .nrc-res-texto { color: var(--nc-suave); }
+
+/* várias rolagens na mesma ação */
+.nauren-roll-card.nc2 .nrc-extra { margin: 8px 12px 0; padding: 0; border: 0 !important; background: none; }
+.nauren-roll-card.nc2 .nrc-extra-divider { display: flex; align-items: center; gap: 6px; margin: 0; }
+.nauren-roll-card.nc2 .nrc-extra-line { flex: 1; height: 1px; background: var(--nc-linha) !important; }
+.nauren-roll-card.nc2 .nrc-extra-label { font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #8f82a8 !important; }
+.nauren-roll-card.nc2 .nrc-extra .nc-rolagem { margin: 6px 0 0; padding: 6px 8px; }
+.nauren-roll-card.nc2 .nc-rolagem-mini .nc-d20 { width: 32px; height: 35px; }
+.nauren-roll-card.nc2 .nc-rolagem-mini .nc-d20 > b { width: 28px; height: 31px; font-size: 14px; }
+.nauren-roll-card.nc2 .nc-rolagem-mini .nc-total { min-width: 36px; height: 36px; font-size: 19px; }
+.nauren-roll-card.nc2 .nrc-extra.nc-critico .nc-total { border-color: #e0b257; color: #ffe2a3; }
+.nauren-roll-card.nc2 .nrc-extra .nrc-secondary { margin: 4px 0 0; }
+
+/* Prioridade e entidade */
+.nauren-roll-card.nc2 .nrc-prioridade { margin: 10px 12px 0; padding: 7px 9px; border-radius: 8px; background: color-mix(in srgb, var(--nc-pd) 35%, #15111b); border: 1px solid var(--nc-linha); color: var(--nc-texto); font-size: 12px; }
+.nauren-roll-card.nc2 .nrc-prio-texto i, .nauren-roll-card.nc2 .nrc-prio-selecao > summary i { color: var(--nc-s); }
+.nauren-roll-card.nc2 .nrc-prio-aba { border-radius: 999px; }
+.nauren-roll-card.nc2 .nrc-prio-aba.ativa { border-color: var(--nc-s); color: var(--nc-sc); background: color-mix(in srgb, var(--nc-s) 12%, #1b1624); }
+.nauren-roll-card.nc2 .nrc-prio-item { border-radius: 7px; }
+.nauren-roll-card.nc2 .nrc-prio-item:has(input:checked) { border-color: var(--nc-s); background: color-mix(in srgb, var(--nc-s) 10%, #1b1624); }
+.nauren-roll-card.nc2 .nrc-prio-confirmar { background: var(--nc-s); border-color: var(--nc-s); color: #15111b; border-radius: 999px; }
+.nauren-roll-card.nc2 .nrc-prio-dispensar, .nauren-roll-card.nc2 .nrc-prio-tomar-btn, .nauren-roll-card.nc2 .nrc-ent-btn, .nauren-roll-card.nc2 .nrc-manual-btn {
+  border-radius: 999px; border: 1px solid color-mix(in srgb, var(--nc-s) 70%, #000); color: var(--nc-sc); background: color-mix(in srgb, var(--nc-s) 12%, #1b1624);
+}
+.nauren-roll-card.nc2 .nrc-ent-encerrar { border-color: #6e2c33; color: #ffb4b8; background: #2a1a1c; }
+.nauren-roll-card.nc2 .nrc-manual-btn:hover, .nauren-roll-card.nc2 .nrc-ent-btn:hover, .nauren-roll-card.nc2 .nrc-prio-tomar-btn:hover { border-color: var(--nc-sc); color: #fff; }
+.nauren-roll-card.nc2 .nrc-entidade { margin: 10px 12px 0; }
+
+/* "Como foi calculado" e "Descrição": fechados, abrem com um clique */
+.nauren-roll-card.nc2 > .nc-abrir-calculo, .nauren-roll-card.nc2 > .nrc-regra > summary {
+  display: flex; align-items: center; gap: 7px; padding: 7px 2px; margin: 0; cursor: pointer; font-size: 12px; color: var(--nc-suave);
+  background: none; border: 0; list-style: none; user-select: none;
+}
+.nauren-roll-card.nc2 > .nc-abrir-calculo { margin: 10px 12px 0; border-top: 1px solid var(--nc-linha); }
+.nauren-roll-card.nc2 > .nrc-regra { margin: 0 12px; border-top: 1px solid var(--nc-linha); }
+.nauren-roll-card.nc2 > .nrc-regra > summary::-webkit-details-marker { display: none; }
+.nauren-roll-card.nc2 .nc-abrir-calculo b, .nauren-roll-card.nc2 .nrc-regra > summary b { color: var(--nc-texto); font-weight: 600; }
+.nauren-roll-card.nc2 .nc-seta { flex: none; width: 0; height: 0; border-left: 5px solid var(--nc-s); border-top: 4px solid transparent; border-bottom: 4px solid transparent; transition: transform .15s; }
+.nauren-roll-card.nc2.nrc-expanded > .nc-abrir-calculo .nc-seta, .nauren-roll-card.nc2 > .nrc-regra[open] > summary .nc-seta { transform: rotate(90deg); }
+.nauren-roll-card.nc2 > .nrc-details { margin: 0 12px; padding: 0 2px 6px; border: 0; background: none; }
+.nauren-roll-card.nc2 .nrc-breakdown { display: flex; flex-direction: column; gap: 3px; }
+.nauren-roll-card.nc2 .nrc-breakdown-row { display: flex; justify-content: space-between; gap: 8px; padding: 0; border: 0; background: none; font-size: 12px; }
+.nauren-roll-card.nc2 .nrc-bd-label { color: var(--nc-suave); font-size: 12px; }
+.nauren-roll-card.nc2 .nrc-bd-value { color: var(--nc-texto); font-weight: 700; font-size: 12px; }
+.nauren-roll-card.nc2 .nrc-breakdown-row.nc-bom .nrc-bd-value { color: var(--nc-bom); }
+.nauren-roll-card.nc2 .nrc-breakdown-row.nc-ruim .nrc-bd-value { color: var(--nc-ruim); }
+.nauren-roll-card.nc2 .nrc-breakdown-group { margin-top: 6px; border: 0; background: none; padding: 0; }
+.nauren-roll-card.nc2 .nrc-breakdown-group-title { font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--nc-sc); border: 0; }
+.nauren-roll-card.nc2 .nrc-manual-row { display: flex; flex-wrap: wrap; gap: 5px; padding-top: 6px; margin: 0; border: 0; }
+.nauren-roll-card.nc2 .nrc-manual-btn { padding: 2px 9px; font-size: 11px; font-weight: 700; }
+.nauren-roll-card.nc2 .nrc-description { padding: 2px 2px 8px; margin: 0; border: 0; background: none; font-size: 12.5px; line-height: 1.5; color: #d6cce6; }
+.nauren-roll-card.nc2 > .nrc-description-direta { padding: 11px 13px 4px; font-size: 13px; }
+.nauren-roll-card.nc2 > :last-child { margin-bottom: 9px; }
+.nauren-roll-card.nc2 > .nrc-regra:last-child, .nauren-roll-card.nc2 > .nrc-details:last-child { margin-bottom: 5px; }
+.nauren-roll-card.nc2 .nauren-desfazer-linha { margin: 6px 6px 6px; border-top: 1px solid var(--nc-linha); background: none; }
+
+/* fala do personagem: balão nas cores dele */
+.nauren-roll-card.nc2.nrc-speech-card { background: none; clip-path: none; padding: 0; }
+.nauren-roll-card.nc2.nrc-speech-card::before, .nauren-roll-card.nc2.nrc-speech-card::after { content: none; }
+.nauren-roll-card.nc2.nrc-speech-card > header.nrc-toggle { background: none; border: 0; padding: 2px; align-items: flex-start; }
+.nauren-roll-card.nc2.nrc-speech-card .nc-retrato { margin-top: 4px; }
+.nauren-roll-card.nc2 .nc-balao { flex: 1; min-width: 0; padding: 8px 11px; border-radius: 12px 12px 12px 4px; background: color-mix(in srgb, var(--nc-pd) 70%, #1b1624); border: 1px solid color-mix(in srgb, var(--nc-p) 70%, #000); }
+.nauren-roll-card.nc2 .nc-balao .nrc-description-direta { padding: 4px 0 0; font-style: italic; color: var(--nc-texto); }
+
+/* avisos curtos: uma linha com losango nas cores de quem é */
+.chat-message .nauren-aviso-chat.nc2 {
+  position: relative; display: block; padding: 8px 11px 8px 34px; border-radius: 8px; border: 1px solid color-mix(in srgb, var(--nc-p) 60%, #000);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--nc-pd) 90%, #000), #1b1624); box-shadow: inset 3px 0 0 var(--nc-s); color: #d6cce6; font-size: 13px;
+}
+.chat-message .nauren-aviso-chat.nc2 > i.fas, .chat-message .nauren-aviso-chat.nc2 > i.fa-solid { position: absolute; left: 11px; top: 10px; width: 16px; text-align: center; margin: 0; color: var(--nc-s) !important; }
+.chat-message .nauren-aviso-chat.nc2 b { color: #fff; }
+
+/* Deflexão: destaque com título em placa */
+.nauren-deflexao-card.nc2 {
+  position: relative; padding: 14px 14px 13px; border: 1.5px solid color-mix(in srgb, var(--nc-p) 80%, #000); border-radius: 0; background: var(--nc-fundo); box-shadow: none; color: #d6cce6;
+  clip-path: polygon(8px 0, calc(100% - 8px) 0, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0 calc(100% - 8px), 0 8px);
+}
+.nauren-deflexao-card.nc2::after { content: ""; position: absolute; inset: 4px; border: 1px solid color-mix(in srgb, var(--nc-s) 45%, transparent); pointer-events: none; }
+.nauren-deflexao-card.nc2 .nauren-deflexao-titulo { font-family: "Modesto Condensed", "Cinzel", Georgia, serif; font-size: 19px; letter-spacing: .14em; color: var(--nc-sc); text-shadow: none; }
+.nauren-deflexao-card.nc2 .nauren-deflexao-titulo i { display: none; }
+.nauren-deflexao-card.nc2 .nauren-deflexao-titulo::before, .nauren-deflexao-card.nc2 .nauren-deflexao-titulo::after { content: ""; width: 8px; height: 8px; transform: rotate(45deg); background: var(--nc-s); }
+.nauren-deflexao-card.nc2 .nauren-deflexao-texto { color: #d6cce6; font-size: 12.5px; }
+.nauren-deflexao-card.nc2 .nauren-deflexao-texto b { color: #fff; }
+.nauren-roll-card.nc2 .nc-sep { display: none; }
+/* selos logo abaixo do nome (no HTML vêm depois do texto, para quem lê o texto do card) */
+.nauren-roll-card.nc2 .nc-alvo-meio > .nrc-res-nome { order: 0; }
+.nauren-roll-card.nc2 .nc-alvo-meio > .nc-selos { order: 1; }
+.nauren-roll-card.nc2 .nc-alvo-meio > .nrc-res-lista { order: 2; }

@@ -84,6 +84,94 @@ function naurenFichaPaleta(x, y, { inverter = false, manual = false } = {}) {
   return { primaria: P, secundaria: S, nomeP: p.nome ?? P, nomeS: s.nome ?? S, p: p.a, pd: p.d, pc: p.c, s: claro ? s.c : s.a, sc: s.c, fundoEscuro };
 }
 
+/**
+ * 0.97.3: as cores de um ator (ficha e cards do chat): os 2 primeiros Pigmentos, ou o que estiver em
+ * Opções > Cores da ficha. Sem Pigmento: cor da Classe + dourado; NPC sem Pigmento: Vermelho + Ônix.
+ */
+function naurenCoresDoAtor(actor, classeVis = null) {
+  const cfg = actor?.getFlag?.("nauren", "coresFicha") ?? {};
+  const modo = cfg.modo || "auto";
+  const pigs = (actor?.items ?? []).filter(i => i.type === "cor").sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0))
+    .map(i => naurenFichaPigmentoDoItem(i)).filter(Boolean);
+  let pal = null;
+  if (modo === "manual" && NAUREN_FICHA_PIGMENTOS[cfg.p]) pal = naurenFichaPaleta(cfg.p, cfg.s || cfg.p, { manual: true });
+  else if (modo !== "classe" && pigs.length) pal = naurenFichaPaleta(pigs[0], pigs[1] ?? (pigs[0] === "Dourado" ? "Branco" : "Dourado"), { inverter: modo === "inverter" });
+  if (!pal && modo !== "classe" && actor?.type === "npc") pal = naurenFichaPaleta("Vermelho", "Preto");
+  if (!pal) {
+    if (!classeVis) {
+      const chave = naurenFichaChaveClasse(actor?.items?.find?.(i => i.type === "classe"));
+      const vis = NAUREN_FICHA_CLASSES[chave] ?? NAUREN_FICHA_CLASSE_NEUTRA;
+      classeVis = { ...vis, nome: actor?.items?.find?.(i => i.type === "classe")?.name ?? "" };
+    }
+    const cor = classeVis.cor ?? "#cca162";
+    pal = { primaria: "", secundaria: "", nomeP: classeVis.nome || "Classe", nomeS: "Dourado", p: cor, pd: "#241b31", pc: classeVis.texto ?? "#f3d48f", s: "#e0b257", sc: "#ffe2a3", fundoEscuro: false };
+  }
+  return { pal, modo, pigs, cfg };
+}
+
+/**
+ * 0.97.3 — resumo de um alvo para o card do chat: selos (acertou, esquivou, bloqueou, Deflexão, caído),
+ * as Condições recebidas, a consequência (−10 PV / +13 PV) e quais linhas de texto já estão ditas pelos selos
+ * (essas só aparecem ao abrir "Como foi calculado"; as outras ficam à vista).
+ */
+function naurenResumoAlvoCard(r, acao = {}) {
+  if (!r || typeof r !== "object") return null;
+  const linhas = (r.linhas ?? []).filter(Boolean).map(String);
+  const reacoes = new Set((r.textosReacao ?? []).map(String));
+  const conds = (r.condicoesRecebidas ?? []).filter(c => c?.nome);
+  const linhasCond = new Set(conds.map(c => c.linha));
+  const selos = [];
+  const reacao = String(r.reacao ?? "");
+  const dano = Math.max(0, Number(r.danoAplicado) || 0), cura = Math.max(0, Number(r.curaAplicada) || 0);
+  if (r.deflexao) selos.push({ t: "Deflexão", tom: "bom" });
+  else if (r.acertou === false) selos.push({ t: "errou", tom: "bom" });
+  else if (r.evitou) selos.push({ t: { bloquear: "bloqueou", esquivar: "esquivou", "esquiva-instintiva": "esquivou", "esquivar-energia": "esquivou", "contra-atacar": "contra-atacou", usarPrioridade: "usou a Prioridade", "sem-dano": "sem dano" }[reacao] ?? "evitou", tom: "bom" });
+  else if (reacao === "estresse") selos.push({ t: "Estresse: metade", tom: "neu" });
+  else if (r.houveAtaque !== false && (r.acertou === true || reacoes.size)) {
+    const t = { bloquear: "bloqueio não segurou", esquivar: "não esquivou", "esquiva-instintiva": "não esquivou", "esquivar-energia": "não esquivou", "contra-atacar": "contra-atacou", estresse: "Estresse: metade", "sem-dano": "sem dano" }[reacao];
+    selos.push({ t: t ?? "acertou", tom: reacao === "estresse" ? "neu" : "ruim" });
+  }
+  if (r.vidaDepois !== null && r.vidaDepois !== undefined && Number(r.vidaDepois) <= 0 && (r.vidaMax ?? 0) > 0 && dano > 0) selos.push({ t: "caído", tom: "ruim" });
+  for (const c of conds) selos.push({ t: c.nome, tom: "cond" });
+  const cons = [];
+  if (dano > 0) cons.push({ t: `−${dano} PV`, tom: "ruim" });
+  if (cura > 0) cons.push({ t: `+${cura} PV`, tom: "bom" });
+  const redundante = l => reacoes.has(l) || linhasCond.has(l) || /^(\[\d+\/\d+\] )?-\d+ PV$/.test(l) || /^\+\d+ PV$/.test(l);
+  const itens = linhas.map(l => ({ t: l, oculta: redundante(l) }));
+  if (!itens.length) itens.push({ t: acao.usaDarPrioridade ? "recebe Prioridade" : "nada aplicado", oculta: !!selos.length });
+  let img = "";
+  try { const tok = r._tokenUuid ? fromUuidSync(r._tokenUuid, { strict: false }) : null; img = tok?.texture?.src ?? tok?.actor?.img ?? ""; } catch (err) { img = ""; }
+  return { nome: r.alvo, marca: r.acertou === true ? " ✓" : r.acertou === false ? " ✗" : "", inicial: String(r.alvo ?? "?").trim().charAt(0).toUpperCase(), img, selos, cons, itens };
+}
+
+/** 0.97.3 — rolagem para o card: d20 (face), um número de bônus (soma de tudo) e o total. */
+function naurenRolagemDoCard(boxes = [], isAdvDis = false, modo = "normal") {
+  if (!boxes?.length) return null;
+  const usada = boxes.find(b => b.usado !== false && !String(b.cssClass ?? "").includes("nrc-unused")) ?? boxes[0];
+  const total = Number(usada.total);
+  const face = Number.isFinite(Number(usada.face)) && usada.face !== null ? Number(usada.face) : null;
+  const bonus = face !== null && Number.isFinite(total) ? total - face : null;
+  return {
+    total: usada.total, face,
+    temBonus: bonus !== null && bonus !== 0,
+    sinal: bonus !== null && bonus < 0 ? "−" : "+",
+    bonus: bonus !== null ? Math.abs(bonus) : "",
+    negativo: bonus !== null && bonus < 0,
+    dados: boxes.map(b => ({ face: b.face ?? "?", usado: b.usado !== false && !String(b.cssClass ?? "").includes("nrc-unused") })),
+    duplo: !!isAdvDis && boxes.length > 1,
+    rotuloModo: isAdvDis ? (modo === "vantagem" ? "Facilidade" : "Dificuldade") : "",
+    critico: !!usada.isCrit, fumble: !!usada.isFumble
+  };
+}
+/** 0.97.3 — linhas do card: fórmula curta fica à vista; comprida só no "Como foi calculado". Tom bom/ruim pelo sinal. */
+function naurenLinhasDoCard(linhas = []) {
+  return (linhas ?? []).map(l => {
+    const bd = l?.breakdown ? String(l.breakdown) : "";
+    const v = String(l?.value ?? "").trim();
+    return { ...l, bdCurto: bd.length > 0 && bd.length <= 30, tom: /^\+\s*\d/.test(v) ? "bom" : /^[−-]\s*\d/.test(v) ? "ruim" : "" };
+  });
+}
+
 /** Chave da classe ("guerreiro", "mago"...) a partir do item de Classe (identifier ou nome sem acento). */
 function naurenFichaChaveClasse(item) {
   const bruto = String(item?.system?.identifier || item?.name || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
@@ -1616,18 +1704,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     ns.classe = { chave: chave || "neutra", ...vis, nome: context.classeEquipada?.name || sys.classe || "" };
     // 0.97: cores da ficha — os 2 primeiros Pigmentos (ou o que o jogador escolheu em Opções)
     {
-      const cfg = this.actor.getFlag("nauren", "coresFicha") ?? {};
-      const modo = cfg.modo || "auto";
-      const pigs = this.actor.items.filter(i => i.type === "cor").sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0))
-        .map(i => naurenFichaPigmentoDoItem(i)).filter(Boolean);
-      let pal = null;
-      if (modo === "manual" && NAUREN_FICHA_PIGMENTOS[cfg.p]) pal = naurenFichaPaleta(cfg.p, cfg.s || cfg.p, { manual: true });
-      else if (modo !== "classe" && pigs.length) pal = naurenFichaPaleta(pigs[0], pigs[1] ?? (pigs[0] === "Dourado" ? "Branco" : "Dourado"), { inverter: modo === "inverter" });
-      if (!pal) {
-        // Sem pigmento (ou "cores da classe"): cor da classe como primária, dourado como secundária
-        const cor = ns.classe.cor ?? "#cca162";
-        pal = { primaria: "", secundaria: "", nomeP: ns.classe.nome || "Classe", nomeS: "Dourado", p: cor, pd: "#241b31", pc: ns.classe.texto ?? "#f3d48f", s: "#e0b257", sc: "#ffe2a3", fundoEscuro: false };
-      }
+      const { pal, modo, pigs, cfg } = naurenCoresDoAtor(this.actor, ns.classe);
       const pegou = modo === "classe" ? "classe" : (modo === "manual" ? "manual" : (pigs.length ? modo : "sem"));
       ns.cores = { ...pal, modo, origem: pegou, pigmentos: pigs.slice(0, 2).map(k => NAUREN_FICHA_PIGMENTOS[k]?.nome ?? k),
         opcoes: Object.keys(NAUREN_FICHA_PIGMENTOS).map(k => ({ chave: k, nome: NAUREN_FICHA_PIGMENTOS[k].nome ?? k })),
@@ -4772,9 +4849,9 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
       // Mesmo ícone usado em Graça do Destinado (nat 20, estrela) e
       // Perjúrio do Acaso (nat 1, caveira) - dá pra reconhecer de cara que
       // aquele resultado específico é o que gera ponto de Graça/Perjúrio.
-      return { label, total: roll.total, breakdown: this._rollToBreakdownText(roll), cssClass: classes.join(" "), isCrit, isFumble };
+      return { label, total: roll.total, breakdown: this._rollToBreakdownText(roll), cssClass: classes.join(" "), isCrit, isFumble, face, usado: used };
     });
-    return { isAdvDis, d20Boxes };
+    return { isAdvDis, d20Boxes, modo: d20Result?.mode ?? "normal" };
   }
 
   /**
@@ -4855,6 +4932,9 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     breakdown = breakdown.map(l => ({ ...l, value: legivel(l.value) }));
     for (const b of d20Boxes) b.breakdown = legivel(b.breakdown);
     const custoVisivel = breakdown.find(l => l.label === "Custo")?.value ?? "";
+    const rolagemCard = naurenRolagemDoCard(d20Boxes, isAdvDis, d20Result?.mode);
+    const extrasCard = extrasData.map(e => ({ ...e, rolagem: naurenRolagemDoCard(e.d20Boxes, e.isAdvDis, extras.find(x => x.titulo === e.titulo)?.d20Result?.mode) }));
+    const secundariasCard = naurenLinhasDoCard(secondaryLines);
     // Título sem repetição ("Chute do Nascer do Sol — Chute do Nascer do Sol").
     const partesTitulo = String(title ?? "").split(" — ");
     if (partesTitulo.length === 2 && partesTitulo[0].trim() === partesTitulo[1].trim()) title = partesTitulo[0];
@@ -4868,15 +4948,20 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
       hasD20: d20Boxes.length > 0,
       isAdvDis,
       d20Boxes,
-      secondaryLines,
-      breakdown,
+      rolagem: rolagemCard,
+      critico: rolagemCard?.critico || extrasCard.some(e => e.rolagem?.critico),
+      fumble: !rolagemCard?.critico && (rolagemCard?.fumble || (!extrasCard.some(e => e.rolagem?.critico) && extrasCard.some(e => e.rolagem?.fumble))),
+      secondaryLines: secundariasCard,
+      breakdown: naurenLinhasDoCard(breakdown),
       breakdownAlvos, // linhas sanitizadas de alvo (sem Defesa/Agilidade/Vitalidade expostas)
+      alvosMais: Math.max(0, breakdownAlvos.length - 4),
+      atorUuid: this.actor.uuid,
       // Descrição da regra: seção própria, sempre acessível (aberta ou
       // recolhida conforme a preferência de cada jogador).
       descricaoRegra: description,
       fonte,
       prioridade,
-      extras: extrasData,
+      extras: extrasCard,
       botoesManuais,
       botoesRecurso,
       hasDetails: breakdown.length > 0 || temDetalhesExtras || botoesManuais.length > 0 || botoesRecurso.length > 0
@@ -10841,7 +10926,8 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
       const marca = r.acertou === true ? " ✓" : r.acertou === false ? " ✗" : "";
       // Muitas linhas (ex.: um Frasco: benefícios, colateral, tabela): uma por linha, fica fácil de ler.
       const itens = (r.linhas ?? []).filter(Boolean);
-      return { label: itens.join(" • ") || (acao.usaDarPrioridade ? "recebe Prioridade" : "nada aplicado"), value: `${r.alvo}${marca}`, itens: itens.length >= 4 ? itens : null };
+      return { label: itens.join(" • ") || (acao.usaDarPrioridade ? "recebe Prioridade" : "nada aplicado"), value: `${r.alvo}${marca}`, itens: itens.length >= 4 ? itens : null,
+        nc: naurenResumoAlvoCard(r, acao) };
     });
 
     // Resumo SEMPRE VISÍVEL (não precisa expandir o card pra ver) com nome
@@ -13174,6 +13260,7 @@ class NaurenAlvoHelper {
     const ataqueSemDano = !(Number(pEvento.dano) > 0);
     if (ataqueSemDano && /^Sofreu o dano cheio/.test(decisao.texto ?? "")) linhas.push(String(decisao.texto).replace(/^Sofreu o dano cheio/, "Acertou (sem dano)"));
     else linhas.push(decisao.texto);
+    const textoReacao = linhas[linhas.length - 1]; // 0.97.3: o card mostra a reação como selo; o texto inteiro fica no "Como foi calculado"
     if (!ataqueSemDano || decisao.danoFinal > 0) linhas.push(`-${decisao.danoFinal} PV`);
     // Dano verdadeiro: não é reduzido por bloqueio, Estresse, reduções nem Escudo - só não entra se o ataque foi evitado.
     const dv = Math.max(0, Number(pEvento.danoVerdadeiro) || 0);
@@ -13280,7 +13367,7 @@ class NaurenAlvoHelper {
       if (curaFinal > 0) naurenProcessarGatilhos("euCurei", actor).catch(err => console.warn("Nauren RPG | Falha ao processar gatilhos (eu curei).", err));
     }
 
-    return { danoFinal: danoAplicado, curaFinal, linhas, evitouCompletamente: decisao.evitouCompletamente, usouPrioridade: !!decisao.usouPrioridade, evitados, curaAceita: !!curaJunto && curaAceita, reacaoDano };
+    return { danoFinal: danoAplicado, curaFinal, linhas, evitouCompletamente: decisao.evitouCompletamente, usouPrioridade: !!decisao.usouPrioridade, evitados, curaAceita: !!curaJunto && curaAceita, reacaoDano, textoReacao, deflexao: /^Deflexão/.test(decisao.texto ?? "") };
   }
 
   static async _processarPacoteLocalmenteInterno(tokenDoc, actor, pacote) {
@@ -13635,6 +13722,7 @@ class NaurenAlvoHelper {
     let algumEventoAcertouDeVerdade = !p.houveAtaque;
     let pulouPorPrioridade = false; // "Usar minha Prioridade" numa Ação Anunciada: sem dano, sem Condições, sem gastos
     let reacaoPrimeiroEvento = ""; // reação escolhida no 1º evento (decide se a Prioridade já foi gasta)
+    const textosReacao = [], condicoesRecebidas = []; let houveDeflexao = false; // 0.97.3: resumo do alvo no card
     // "curaJaResolvida": true assim que a Cura for fundida no popup do
     // 1º evento de ataque abaixo (ver "curaJunto") - o passo 6 (Cura
     // separada) só roda quando isso NÃO acontecer, ou seja, quando esta
@@ -13666,6 +13754,8 @@ class NaurenAlvoHelper {
       if (resultadoEvento.usouPrioridade) pulouPorPrioridade = true;
       const prefixo = eventosDeAtaque.length > 1 ? `[${i + 1}/${eventosDeAtaque.length}] ` : "";
       for (const linha of resultadoEvento.linhas) linhas.push(`${prefixo}${linha}`);
+      if (resultadoEvento.textoReacao) textosReacao.push(`${prefixo}${resultadoEvento.textoReacao}`);
+      if (resultadoEvento.deflexao) houveDeflexao = true;
     }
 
     // 6) Cura (ver _resolverUmEventoDeCura, popup de reação próprio) -
@@ -13801,6 +13891,7 @@ class NaurenAlvoHelper {
           if (r && r !== "Sem bônus definidos" && !r.includes("@") && r.length <= 70) oQueFaz = ` (${r}${condNoAlvo.system.acumulativel && (condNoAlvo.system.acumulos ?? 1) > 1 ? " por acúmulo" : ""})`;
         } catch (err) { oQueFaz = ""; }
         linhas.push(`Recebeu ${nomeAplicado}${oQueFaz}`);
+        condicoesRecebidas.push({ nome: nomeAplicado, linha: linhas[linhas.length - 1] });
       }
     }
 
@@ -13951,7 +14042,8 @@ class NaurenAlvoHelper {
       movimentoModo: movimentoEvitado ? (evitados.get(idxMov) ?? "") : "",
       // 0.94.16: para o movimento dos tokens (Motion): reação escolhida e se evitou o ataque todo.
       reacao: reacaoPrimeiroEvento, evitou: !!p.houveAtaque && !algumEventoAcertouDeVerdade,
-      vidaMax: actor.system.vida?.max ?? 0 };
+      vidaMax: actor.system.vida?.max ?? 0, vidaDepois: (tokenDoc?.actor ?? actor).system.vida?.value ?? null,
+      textosReacao, condicoesRecebidas, deflexao: houveDeflexao, houveAtaque: !!p.houveAtaque };
   }
 
   /**
@@ -15765,4 +15857,4 @@ async function naurenChecarLimiarEfeitoDireto(item, actor, atual, novo) {
 }
 
 
-export { naurenFichaPaleta, naurenFichaPigmentoDoItem, NAUREN_FICHA_PIGMENTOS, naurenXpParaNivel, naurenNivelPeloXp, NAUREN_BARRA_CORES_PADRAO, NAUREN_CRIADOR_ATRIBUTOS, NAUREN_CRIADOR_ETAPAS, NAUREN_CRIADOR_VALORES_FIXOS, NaurenActorSheet, NaurenAlvoHelper, NaurenCriadorPersonagem, NaurenRegionHelper, naurenAdicionarItemNaFicha, naurenBonusModoExtra, naurenChecarLimiarEfeitoDireto, naurenChecarLimiarEvolucao, naurenLinhaModoExtra, naurenNumeroModo };
+export { naurenCoresDoAtor, naurenFichaPaleta, naurenFichaPigmentoDoItem, NAUREN_FICHA_PIGMENTOS, naurenXpParaNivel, naurenNivelPeloXp, NAUREN_BARRA_CORES_PADRAO, NAUREN_CRIADOR_ATRIBUTOS, NAUREN_CRIADOR_ETAPAS, NAUREN_CRIADOR_VALORES_FIXOS, NaurenActorSheet, NaurenAlvoHelper, NaurenCriadorPersonagem, NaurenRegionHelper, naurenAdicionarItemNaFicha, naurenBonusModoExtra, naurenChecarLimiarEfeitoDireto, naurenChecarLimiarEvolucao, naurenLinhaModoExtra, naurenNumeroModo };

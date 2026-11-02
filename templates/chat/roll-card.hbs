@@ -1,15 +1,16 @@
-<div class="nauren-roll-card" style="border-color: {{playerColor}};">
+<div class="nauren-roll-card nc2{{#if critico}} nc-critico{{/if}}{{#if fumble}} nc-fumble{{/if}}"{{#if atorUuid}} data-nc-ator="{{atorUuid}}"{{/if}}>
+  {{#if critico}}<div class="nc-fita nc-fita-crit">Crítico!</div>{{/if}}
+  {{#if fumble}}<div class="nc-fita nc-fita-fumble">Falha crítica</div>{{/if}}
 
-  <header class="nrc-toggle {{#unless hasDetails}}nrc-no-details{{/unless}}" style="border-left: 4px solid {{playerColor}};">
-    <img class="nrc-icon" src="{{#if icon}}{{icon}}{{else}}icons/svg/d20-highlight.svg{{/if}}" alt="{{title}}">
+  <header class="nrc-toggle {{#unless hasDetails}}nrc-no-details{{/unless}}">
+    <span class="nc-retrato"><img class="nrc-icon" src="{{#if icon}}{{icon}}{{else}}icons/svg/d20-highlight.svg{{/if}}" alt="{{title}}"></span>
     <div class="nrc-title-block">
       <span class="nrc-title">{{title}}</span>
-      <span class="nrc-actor">{{actorName}} <span class="nrc-player" style="color: color-mix(in srgb, {{playerColor}} 60%, #ffffff);">· {{playerName}}</span></span>
+      <span class="nrc-actor">{{actorName}} <span class="nrc-player"><i class="nc-sep">· </i><i class="nc-ponto" style="background: {{playerColor}};"></i>{{playerName}}</span></span>
       {{#if fonte}}<span class="nrc-fonte">{{fonte}}</span>{{/if}}
       {{#if custoVisivel}}<span class="nrc-custo-visivel" title="Custo pago"><i class="fas fa-coins"></i> {{custoVisivel}}</span>{{/if}}
     </div>
     {{#if prioridade.sigla}}<span class="nrc-prio-sigla nrc-prio-{{prioridade.indicador}}" title="{{prioridade.rotulo}}">{{prioridade.sigla}}</span>{{/if}}
-    {{#if hasDetails}}<i class="fas fa-chevron-down nrc-chevron"></i>{{/if}}
   </header>
 
   {{#if descricaoDireta}}
@@ -17,27 +18,33 @@
   {{/if}}
 
   {{#if hasD20}}
-  <div class="nrc-dice-row {{#if isAdvDis}}nrc-dual{{/if}}">
-    {{#each d20Boxes}}
-    <div class="nrc-die-box {{this.cssClass}}">
-      {{#if this.isCrit}}<i class="fas fa-star nrc-die-icon"></i>{{/if}}
-      {{#if this.isFumble}}<i class="fas fa-skull nrc-die-icon"></i>{{/if}}
-      <span class="nrc-die-label">{{this.label}}</span>
-      <span class="nrc-die-total">{{this.total}}</span>
-      {{#if this.breakdown}}<span class="nrc-die-raw">{{this.breakdown}}</span>{{/if}}
+  <div class="nrc-dice-row nc-rolagem {{#if isAdvDis}}nrc-dual{{/if}}">
+    <div class="nc-dados">
+      <div class="nc-dados-linha">
+      {{#each d20Boxes}}
+      <div class="nrc-die-box {{this.cssClass}}">
+        <span class="nc-d20"><b>{{#if this.face}}{{this.face}}{{else}}{{this.total}}{{/if}}</b></span>
+        <span class="nrc-die-label nc-oculto">{{this.label}}</span>
+        <span class="nrc-die-total nc-oculto">{{this.total}}</span>
+        {{#if this.breakdown}}<span class="nrc-die-raw nc-so-aberto">{{this.breakdown}}</span>{{/if}}
+      </div>
+      {{/each}}
+      </div>
+      {{#if rolagem.duplo}}<span class="nc-modo nc-modo-{{rolagem.rotuloModo}}">{{rolagem.rotuloModo}}</span>{{/if}}
     </div>
-    {{/each}}
+    {{#if rolagem.temBonus}}<span class="nc-op">{{rolagem.sinal}}</span><span class="nc-bonus{{#if rolagem.negativo}} nc-neg{{/if}}">{{rolagem.bonus}}</span>{{/if}}
+    {{#if rolagem}}<span class="nc-op">=</span><span class="nc-total">{{rolagem.total}}</span>{{/if}}
   </div>
   {{/if}}
 
   {{#if secondaryLines.length}}
   <div class="nrc-secondary">
     {{#each secondaryLines}}
-    <div class="nrc-secondary-line">
+    <div class="nrc-secondary-line{{#if this.tom}} nc-{{this.tom}}{{/if}}">
       <span class="nrc-sec-label">{{this.label}}</span>
       <span class="nrc-sec-value">
         {{this.value}}
-        {{#if this.breakdown}}<span class="nrc-sec-breakdown">({{this.breakdown}})</span>{{/if}}
+        {{#if this.breakdown}}<span class="nrc-sec-breakdown{{#unless this.bdCurto}} nc-so-aberto{{/unless}}">({{this.breakdown}})</span>{{/if}}
       </span>
     </div>
     {{/each}}
@@ -45,14 +52,28 @@
   {{/if}}
 
   {{#if breakdownAlvos.length}}
+  <div class="nc-placa"><i></i><span>Nos alvos{{#if alvosMais}} · {{breakdownAlvos.length}}{{/if}}</span></div>
   <div class="nrc-resultado-alvos">
     {{#each breakdownAlvos}}
+    {{#if this.nc}}
+    <div class="nrc-res-alvo nc-alvo">
+      <span class="nc-alvo-retrato">{{#if this.nc.img}}<img src="{{this.nc.img}}" alt="">{{else}}{{this.nc.inicial}}{{/if}}</span>
+      <div class="nc-alvo-meio">
+        <span class="nrc-res-nome">{{this.nc.nome}}<span class="nc-oculto">{{this.nc.marca}}</span></span>
+        <span class="nrc-res-texto nrc-res-lista">{{#each this.nc.itens}}<span class="{{#if this.oculta}}nc-so-aberto{{/if}}">{{this.t}}</span>{{#unless @last}}<i class="nc-sep"> • </i>{{/unless}}{{/each}}</span>
+        {{#if this.nc.selos.length}}<span class="nc-selos">{{#each this.nc.selos}}<span class="nc-selo nc-{{this.tom}}">{{this.t}}</span>{{/each}}</span>{{/if}}
+      </div>
+      {{#if this.nc.cons.length}}<span class="nc-cons">{{#each this.nc.cons}}<b class="nc-{{this.tom}}">{{this.t}}</b>{{/each}}</span>{{/if}}
+    </div>
+    {{else}}
     <div class="nrc-res-alvo">
       <span class="nrc-res-nome">{{this.value}}</span>
       {{#if this.itens}}<span class="nrc-res-texto nrc-res-lista">{{#each this.itens}}<span>{{this}}</span>{{/each}}</span>{{else}}<span class="nrc-res-texto">{{this.label}}</span>{{/if}}
     </div>
+    {{/if}}
     {{/each}}
   </div>
+  {{#if alvosMais}}<a class="nc-mais-alvos"><span class="nc-mais-abrir">Mais {{alvosMais}} alvo(s)</span><span class="nc-mais-fechar">Mostrar menos</span></a>{{/if}}
   {{/if}}
 
   {{#if entidade}}
@@ -105,24 +126,30 @@
   {{/if}}
 
   {{#each extras}}
-  <div class="nrc-extra" style="border-color: {{../playerColor}};">
+  <div class="nrc-extra{{#if this.rolagem.critico}} nc-critico{{/if}}">
     <div class="nrc-extra-divider">
-      <span class="nrc-extra-line" style="background: {{../playerColor}};"></span>
-      <span class="nrc-extra-label" style="color: color-mix(in srgb, {{../playerColor}} 60%, #ffffff);">{{this.titulo}}</span>
-      <span class="nrc-extra-line" style="background: {{../playerColor}};"></span>
+      <span class="nrc-extra-line"></span>
+      <span class="nrc-extra-label">{{this.titulo}}</span>
+      <span class="nrc-extra-line"></span>
     </div>
 
     {{#if this.hasD20}}
-    <div class="nrc-dice-row {{#if this.isAdvDis}}nrc-dual{{/if}}">
-      {{#each this.d20Boxes}}
-      <div class="nrc-die-box {{this.cssClass}}">
-        {{#if this.isCrit}}<i class="fas fa-star nrc-die-icon"></i>{{/if}}
-        {{#if this.isFumble}}<i class="fas fa-skull nrc-die-icon"></i>{{/if}}
-        <span class="nrc-die-label">{{this.label}}</span>
-        <span class="nrc-die-total">{{this.total}}</span>
-        {{#if this.breakdown}}<span class="nrc-die-raw">{{this.breakdown}}</span>{{/if}}
+    <div class="nrc-dice-row nc-rolagem nc-rolagem-mini {{#if this.isAdvDis}}nrc-dual{{/if}}">
+      <div class="nc-dados">
+        <div class="nc-dados-linha">
+        {{#each this.d20Boxes}}
+        <div class="nrc-die-box {{this.cssClass}}">
+          <span class="nc-d20"><b>{{#if this.face}}{{this.face}}{{else}}{{this.total}}{{/if}}</b></span>
+          <span class="nrc-die-label nc-oculto">{{this.label}}</span>
+          <span class="nrc-die-total nc-oculto">{{this.total}}</span>
+          {{#if this.breakdown}}<span class="nrc-die-raw nc-so-aberto">{{this.breakdown}}</span>{{/if}}
+        </div>
+        {{/each}}
+        </div>
+        {{#if this.rolagem.duplo}}<span class="nc-modo nc-modo-{{this.rolagem.rotuloModo}}">{{this.rolagem.rotuloModo}}</span>{{/if}}
       </div>
-      {{/each}}
+      {{#if this.rolagem.temBonus}}<span class="nc-op">{{this.rolagem.sinal}}</span><span class="nc-bonus{{#if this.rolagem.negativo}} nc-neg{{/if}}">{{this.rolagem.bonus}}</span>{{/if}}
+      {{#if this.rolagem}}<span class="nc-op">=</span><span class="nc-total">{{this.rolagem.total}}</span>{{/if}}
     </div>
     {{/if}}
 
@@ -142,19 +169,13 @@
   </div>
   {{/each}}
 
-  {{#if descricaoRegra}}
-  <details class="nrc-regra" open>
-    <summary><i class="fas fa-book-open"></i> Descrição</summary>
-    <div class="nrc-description">{{{descricaoRegra}}}</div>
-  </details>
-  {{/if}}
-
   {{#if hasDetails}}
+  <a class="nrc-toggle nc-abrir-calculo"><i class="nc-seta"></i><b>Como foi calculado</b></a>
   <div class="nrc-details" style="display: none;">
     {{#if breakdown.length}}
     <div class="nrc-breakdown">
       {{#each breakdown}}
-      <div class="nrc-breakdown-row">
+      <div class="nrc-breakdown-row{{#if this.tom}} nc-{{this.tom}}{{/if}}">
         <span class="nrc-bd-label">{{this.label}}</span>
         <span class="nrc-bd-value">{{this.value}}</span>
       </div>
@@ -195,6 +216,13 @@
     <div class="nrc-description">{{{description}}}</div>
     {{/unless}}{{/if}}
   </div>
+  {{/if}}
+
+  {{#if descricaoRegra}}
+  <details class="nrc-regra">
+    <summary><i class="nc-seta"></i><b>Descrição</b></summary>
+    <div class="nrc-description">{{{descricaoRegra}}}</div>
+  </details>
   {{/if}}
 
 </div>
