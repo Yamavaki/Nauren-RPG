@@ -4669,3 +4669,22 @@ img.nauren-criador-token.com-borda { border: none; border-radius: 0; background:
 @container (max-width: 420px) { .nk-escolhas-duas { grid-template-columns: minmax(0, 1fr); } }
 .application.nauren-kit:not(.minimized):not(.minimizing):not(.maximizing) { max-width: min(600px, calc((100vw - 16px) / var(--nauren-escala, 1))) !important; max-height: calc((100vh - 16px) / var(--nauren-escala, 1)) !important; }
 .nauren-kit .nk-opcao.nauren-popup-opt-disabled { opacity: .45; cursor: not-allowed; }
+
+/* Kit — barra de Vida que acompanha o dano escolhido (0.95.1) */
+.nk-vidadano { background: var(--nk-painel); border: 1px solid var(--nk-linha); border-radius: 14px; padding: 12px 14px; display: flex; flex-direction: column; gap: 7px; transition: border-color .2s, box-shadow .2s, background .2s; }
+.nk-vidadano-topo { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.nk-vidadano-titulo { font-size: 12px; font-weight: 700; color: var(--nk-ouro); text-transform: uppercase; letter-spacing: .08em; }
+.nk-vidadano-rotulo { font-size: 12px; color: var(--nk-suave); }
+.nk-vidadano-barra { height: 16px; border-radius: 8px; background: var(--nk-painel2); overflow: hidden; display: flex; box-shadow: inset 0 0 0 1px rgba(255,255,255,.04); }
+.nk-vidadano-barra i { display: block; background: linear-gradient(90deg, #3f8f6e, #5fbf9a); transition: width .25s ease; }
+.nk-vidadano-barra b { display: block; background: repeating-linear-gradient(135deg, #c2474f 0 6px, #8e2f36 6px 12px); transition: width .25s ease; }
+.nk-vidadano-barra u { display: block; text-decoration: none; background: #b9a6f0; transition: width .25s ease; }
+.nk-vidadano-numeros { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; flex-wrap: wrap; }
+.nk-vd-perda { color: #ff9aa1; font-weight: 700; }
+.nk-vidadano.nk-vd-baixa .nk-vidadano-barra i { background: linear-gradient(90deg, #b8742e, #e0a14b); }
+.nk-vidadano-alerta { display: none; }
+.nk-vidadano.nk-vd-morre { border: 2px solid #c2474f; background: var(--nk-falha-fundo); box-shadow: 0 0 22px rgba(194,71,79,.35); animation: nk-pulsa 1.4s ease-in-out infinite; }
+.nk-vidadano.nk-vd-morre .nk-vd-final { color: var(--nk-falha); }
+.nk-vidadano.nk-vd-morre .nk-vidadano-alerta { display: block; text-align: center; font-family: "Modesto Condensed", Georgia, serif; font-size: 20px; font-weight: 700; letter-spacing: .06em; color: var(--nk-falha); text-transform: uppercase; }
+@keyframes nk-pulsa { 0%, 100% { box-shadow: 0 0 14px rgba(194,71,79,.25); } 50% { box-shadow: 0 0 30px rgba(194,71,79,.55); } }
+@media (prefers-reduced-motion: reduce) { .nk-vidadano.nk-vd-morre { animation: none; } .nk-vidadano-barra i, .nk-vidadano-barra b, .nk-vidadano-barra u { transition: none; } }

@@ -153,3 +153,38 @@ export function naurenKitOferta({ porque = "", oQueFaz = "", usos = "" } = {}) {
 
 /** Linha de nota discreta. */
 export function naurenKitNota(texto) { return texto ? `<p class="nk-nota">${texto}</p>` : ""; }
+
+/**
+ * 0.95.1: barra de Vida que mostra quanto o dano escolhido tira (atualiza ao trocar de opção:
+ * cada rádio com data-dano="N" e, opcional, data-dano-rotulo). Se a Vida chegar a 0, ganha destaque.
+ */
+export function naurenKitVidaDano({ vida = 0, max = 0, escudo = 0, dano = 0, rotulo = "" } = {}) {
+  return `<div class="nk-vidadano" data-vida="${Number(vida) || 0}" data-max="${Number(max) || 0}" data-escudo="${Number(escudo) || 0}">
+    <div class="nk-vidadano-topo"><span class="nk-vidadano-titulo">Sua Vida</span><span class="nk-vidadano-rotulo">${esc(rotulo)}</span></div>
+    <div class="nk-vidadano-barra" aria-hidden="true"><i class="nk-vd-fica"></i><b class="nk-vd-perde"></b><u class="nk-vd-escudo"></u></div>
+    <div class="nk-vidadano-numeros"><span class="nk-vd-conta"></span><span class="nk-vd-perda"></span></div>
+    <div class="nk-vidadano-alerta">Com este dano a sua Vida chega a 0</div>
+  </div>`;
+}
+
+/** Atualiza a barra de Vida pelo rádio marcado (chamar no render e a cada "change"). */
+export function naurenKitAtualizarVidaDano(raiz) {
+  const box = raiz?.querySelector?.(".nk-vidadano");
+  if (!box) return;
+  const vida = Number(box.dataset.vida) || 0, max = Math.max(1, Number(box.dataset.max) || vida || 1), escudo = Number(box.dataset.escudo) || 0;
+  const marcado = [...raiz.querySelectorAll('input[name="reacaoDano"]')].find(i => i.checked);
+  const dano = Math.max(0, Number(marcado?.dataset?.dano ?? box.dataset.danoPadrao ?? 0) || 0);
+  const noEscudo = Math.min(escudo, dano), naVida = Math.min(vida, dano - noEscudo);
+  const fica = Math.max(0, vida - naVida);
+  const pct = n => `${Math.max(0, Math.min(100, 100 * n / max))}%`;
+  box.querySelector(".nk-vd-fica").style.width = pct(fica);
+  box.querySelector(".nk-vd-perde").style.width = pct(naVida);
+  box.querySelector(".nk-vd-escudo").style.width = pct(Math.max(0, escudo - noEscudo));
+  box.querySelector(".nk-vd-conta").innerHTML = `<b>${vida}</b> → <b class="nk-vd-final">${fica}</b> / ${max}`;
+  const sobra = dano - noEscudo - naVida;
+  box.querySelector(".nk-vd-perda").textContent = dano ? `−${naVida} PV${noEscudo ? ` (e −${noEscudo} no Escudo)` : ""}${sobra > 0 ? ` · dano ${dano}` : ""}` : "não perde Vida";
+  const rot = marcado?.dataset?.danoRotulo ?? "";
+  box.querySelector(".nk-vidadano-rotulo").textContent = rot;
+  box.classList.toggle("nk-vd-morre", dano > 0 && fica <= 0);
+  box.classList.toggle("nk-vd-baixa", fica > 0 && fica <= max * 0.25);
+}

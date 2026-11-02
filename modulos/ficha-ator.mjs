@@ -3679,6 +3679,8 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
 
   _calcularAlcanceEfetivo(acao, item = null) {
     if (!acao.alcance) return null;
+    // 0.95.1: Dar Prioridade não tem limite de alcance (basta ver o aliado).
+    if (acao.usaDarPrioridade) return null;
     const alcanceResolvido = this._substituirAtributosNaFormula(String(acao.alcance), acao);
     const m = alcanceResolvido.match(/\d+([.,]\d+)?/);
     if (!m) return null;
@@ -12788,7 +12790,7 @@ class NaurenAlvoHelper {
       const prioridadeGasta = this.REACOES_QUE_USAM_PRIORIDADE.has(reacaoDano);
       const lista = itensEvitaveis.map((it, i) => ({ ...it, _pre: pre.get(i) ?? null,
         _prioridadeGasta: it.tipo === "movimento" && prioridadeGasta,
-        _oculto: !!(saiu || (evitou && it.ref?.soSeAcertar) || (it.tipo === "movimento" && evitou)) }));
+        _oculto: !!(saiu || (evitou && (it.ref?.soSeAcertar || pEvento.houveAtaque)) || (it.tipo === "movimento" && evitou)) }));
       const temEvitavel = lista.some(it => !it._oculto);
       const mostrarDano = popupLigado && !lacaio && danoAgora > 0;
       if (!mostrarDano && !temEvitavel) return null;
@@ -13380,7 +13382,9 @@ class NaurenAlvoHelper {
       // Sem custo pra "evitar" aqui - já foi evitado de verdade pela
       // própria reação, não precisa pagar nada extra por cima.
       if (pulouPorPrioridade) continue;
-      if (c.soSeAcertar && !algumEventoAcertouDeVerdade) continue;
+      // 0.95.1: ataque esquivado/bloqueado "evita completamente o dano e seus efeitos" (livro) - vale para
+      // toda Condição do ataque, não só as marcadas "só se acertar".
+      if ((c.soSeAcertar || p.houveAtaque) && !algumEventoAcertouDeVerdade) continue;
       // Vinculada à 1ª Condição (ver campoCondicaoAplicada > acima) -
       // segue a MESMA decisão (evitou ou não) da primeira Condição
       // desta Ação que tenha "perguntarParaEvitar", sem custo próprio
@@ -13871,6 +13875,8 @@ class NaurenAlvoHelper {
     const danoP = Math.max(0, Number(p.dano) || 0);
     const semDanoNoAtaque = !(Number(p.dano) > 0) && !(Number(p.danoVerdadeiro) > 0);
     const condsQueVem = (itensEvitaveis ?? []).filter(it => it && !it._oculto && it.tipo !== "movimento" && it.label).map(it => it.label);
+    const escudoP = actor.system.escudo?.value ?? 0;
+    const dd = (n, rot = "") => `data-dano="${Math.max(0, Math.round(Number(n) || 0))}" data-dano-rotulo="${escP(rot)}"`;
     const ajusteCampo = (nome, desab = false) => `<span class="nk-opcao-ajuste">ajuste <input type="text" name="${nome}" value="0" class="nauren-popup-ajuste"${desab ? " disabled" : ""} title="Bônus ou penalidade só nesta reação. Aceita dado (ex.: 1d4, -2)" aria-label="ajuste"></span>`;
     // Ajustes pontuais (dano final, ignorar o dano) — para o jogador ou o Mestre.
     const ajustesDano = (incluiSemDano = true) => `
@@ -13879,7 +13885,7 @@ class NaurenAlvoHelper {
         <div class="nk-ajustes-grade">
           <div class="nauren-popup-opt-row"><label style="flex: 1;" for="nk-aj-dano-${actor.id}">Ajuste no dano final</label><input id="nk-aj-dano-${actor.id}" type="text" name="ajusteDanoFinal" value="0" class="nauren-popup-ajuste" title="Positivo aumenta, negativo reduz; vale depois de tudo. Aceita dado (ex.: 1d4)"></div>
         </div>
-        ${incluiSemDano ? `<div class="nk-ajustes-checks"><label><input type="radio" name="reacaoDano" value="sem-dano"> Ignorar este dano (decisão da mesa)</label></div>` : ""}
+        ${incluiSemDano ? `<div class="nk-ajustes-checks"><label><input type="radio" name="reacaoDano" value="sem-dano" data-dano="0" data-dano-rotulo="ignorando o dano"> Ignorar este dano (decisão da mesa)</label></div>` : ""}
       </details>`;
 
     let htmlReacao = "";
@@ -13899,12 +13905,12 @@ class NaurenAlvoHelper {
       const resultadoHtml = fx ? NK.naurenKitFaixa(fx)
         : (p.resumoReacao ? `<div class="nk-faixa"><div class="nk-regra">${escP(p.resumoReacao)}</div></div>` : "");
       const opcoesC = [];
-      if (danoAgora > 0 && stressAtual < stressMax) opcoesC.push(NK.naurenKitOpcao({ campo: "reacaoDano", valor: "estresse", nome: "Gastar 1 Estresse e levar metade",
-        desc: `Estresse ${stressAtual} → ${stressAtual + 1} de ${stressMax}.`, extra: `<span class="nk-opcao-numero">−${Math.floor(danoAgora / 2)} PV</span>` }));
+      if (danoAgora > 0 && stressAtual < stressMax) opcoesC.push(NK.naurenKitOpcao({ campo: "reacaoDano", valor: "estresse", nome: "Gastar 1 Estresse e levar metade", extraAttr: dd(Math.floor(danoAgora / 2), "gastando 1 Estresse"),
+        desc: `Estresse ${stressAtual} → ${stressAtual + 1} de ${stressMax}.`, extra: `<span class="nk-opcao-numero">−${Math.floor(danoAgora / 2)}</span>` }));
       else if (danoAgora > 0) opcoesC.push(NK.naurenKitNota(`Estresse no máximo (${stressAtual}/${stressMax}): não dá para reduzir este dano.`));
-      opcoesC.push(NK.naurenKitOpcao({ campo: "reacaoDano", valor: "cheio", marcado: true, nome: "Levar o dano",
-        desc: vidaMaxP ? `Vida ${vidaP} → ${Math.max(0, vidaP - danoAgora)} de ${vidaMaxP}.` : "", extra: `<span class="nk-opcao-numero">−${danoAgora} PV</span>` }));
-      htmlReacao = `${resultadoHtml}<div class="nk-grupo">${NK.naurenKitSecao("O dano que você leva")}<div class="nk-opcoes">${opcoesC.join("")}</div></div>${ajustesDano(true)}`;
+      opcoesC.push(NK.naurenKitOpcao({ campo: "reacaoDano", valor: "cheio", marcado: true, nome: "Levar o dano", extraAttr: dd(danoAgora, "levando o dano"),
+        desc: "", extra: `<span class="nk-opcao-numero">−${danoAgora}</span>` }));
+      htmlReacao = `${resultadoHtml}${danoAgora > 0 ? NK.naurenKitVidaDano({ vida: vidaP, max: vidaMaxP, escudo: escudoP }) : ""}<div class="nk-grupo">${NK.naurenKitSecao("O dano que você leva")}<div class="nk-opcoes">${opcoesC.join("")}</div></div>${ajustesDano(true)}`;
     } else if (mostrarReacaoDano) {
       const opcoes = [];
       const avisos = [];
@@ -13912,7 +13918,7 @@ class NaurenAlvoHelper {
       if (p.houveAtaque && p.critico) avisos.push("Acerto crítico: não dá para Bloquear nem Esquivar.");
       if (p.houveAtaque && p.falhaCritica) avisos.push("O ataque tirou 1 natural: erra automaticamente.");
       if (!p.houveAtaque && !p.ehSustentacao && !p.semPrioridade) {
-        opcoes.push(NK.naurenKitOpcao({ campo: "reacaoDano", valor: "usarPrioridade", nome: "Usar minha Prioridade agora", custo: "sua Prioridade",
+        opcoes.push(NK.naurenKitOpcao({ campo: "reacaoDano", valor: "usarPrioridade", nome: "Usar minha Prioridade agora", custo: "sua Prioridade", extraAttr: dd(0, "usando a Prioridade"),
           desc: "Ação Anunciada: você age antes do efeito (ex.: sair da área) e não recebe o dano nem as Condições desta Ação." }));
       }
       // Bloquear, Esquivar e Contra-Atacar custam 1 Estamina; Esquiva Instintiva (usos por turno) e a
@@ -13925,6 +13931,7 @@ class NaurenAlvoHelper {
           const limiarP = Number(actor.system.limiarDeflexaoTotal ?? 0) + (Number(p.ajusteLimiarDeflexaoAtacante) || 0);
           const deflete = p.atacanteTokenUuid && Math.abs(ataqueP - bloqueio) <= limiarP;
           opcoes.push(NK.naurenKitOpcao({ campo: "reacaoDano", valor: "bloquear", nome: "Bloquear", custo: "1 Estamina", fraco: !segura && !deflete,
+            extraAttr: deflete ? dd(0, "Deflexão no Bloqueio") : segura ? dd(Number(p.danoMinimo) || 0, "bloqueando: só o dano mínimo") : dd(danoP, "o Bloqueio não segura"),
             desc: `Seu Bloqueio é <b>${bloqueio}</b> (Defesa + Vitalidade${bloqueioDetalhe ? ` · ${escP(bloqueioDetalhe.replace(/^\s*\((.*)\)\s*$/, "$1"))}` : ""}${NaurenAlvoHelper._fontesDefesaTexto(actor, "bloqueio") ? ` · inclui ${escP(NaurenAlvoHelper._fontesDefesaTexto(actor, "bloqueio"))}` : ""}). ${deflete ? `Contra ${ataqueP}: <b>Deflexão</b> — o ataque falha, não causa dano e ${escP(p.atacante ?? "quem atacou")} perde 1 Estamina e fica Caído.` : segura ? `Contra ${ataqueP} <b>segura</b>: você leva só o dano mínimo e o ataque conta como falha.` : `Contra ${ataqueP} <b>não segura</b>: você leva o dano igual.`}`,
             extra: ajusteCampo("ajusteBloqueio") }));
         }
@@ -13933,15 +13940,15 @@ class NaurenAlvoHelper {
           const fontesEsqP = NaurenAlvoHelper._fontesDefesaTexto(actor, "esquiva");
           const contaEsq = `1d20 + Agilidade${esquivaBonusFinal ? ` + ${esquivaBonusFinal}` : ""}${extraEsqP ? ` ${extraEsqP > 0 ? "+" : "−"} ${Math.abs(extraEsqP)}` : ""}`;
           const descEsq = `Role <b>${contaEsq}</b> (= 1d20 + ${bonusEsqTotalP})${fontesEsqP ? ` <span class="nk-suave">· inclui ${escP(fontesEsqP)}</span>` : ""}. Passando de ${ataqueP}, você <b>evita o dano${condsQueVem.length ? " e as Condições" : ""}</b>. ${textoPrecisa}${modoEsqTexto}`;
-          if (temEstReacao) opcoes.push(NK.naurenKitOpcao({ campo: "reacaoDano", valor: "esquivar", nome: "Esquivar", custo: "1 Estamina", desc: descEsq + (esquivaDetalhe ? ` <span class="nk-suave">${escP(esquivaDetalhe.replace(/^\s*\((.*)\)\s*$/, "$1"))}</span>` : ""), chance: chanceEsq, extra: ajusteCampo("ajusteEsquiva") }));
-          if (temGruhua) opcoes.push(NK.naurenKitOpcao({ campo: "reacaoDano", valor: "esquivar-energia", nome: "Esquivar (Postura Gruhua)", custo: "2 Energia", desc: `Mesma rolagem da Esquiva (${contaEsq}), sem gastar Estamina.`, chance: chanceEsq, extra: temEstReacao ? "" : ajusteCampo("ajusteEsquiva") }));
+          if (temEstReacao) opcoes.push(NK.naurenKitOpcao({ campo: "reacaoDano", valor: "esquivar", nome: "Esquivar", custo: "1 Estamina", extraAttr: dd(danoP, "se a esquiva falhar (passando: nada)"), desc: descEsq + (esquivaDetalhe ? ` <span class="nk-suave">${escP(esquivaDetalhe.replace(/^\s*\((.*)\)\s*$/, "$1"))}</span>` : ""), chance: chanceEsq, extra: ajusteCampo("ajusteEsquiva") }));
+          if (temGruhua) opcoes.push(NK.naurenKitOpcao({ campo: "reacaoDano", valor: "esquivar-energia", nome: "Esquivar (Postura Gruhua)", custo: "2 Energia", extraAttr: dd(danoP, "se a esquiva falhar (passando: nada)"), desc: `Mesma rolagem da Esquiva (${contaEsq}), sem gastar Estamina.`, chance: chanceEsq, extra: temEstReacao ? "" : ajusteCampo("ajusteEsquiva") }));
         }
         // Esquiva Instintiva (Ladino) - mesma rolagem de Esquivar, sem
         // custar Estamina, limitada a X usos por turno (reseta sozinha).
         const esquivaInstintivaInfo = NaurenAlvoHelper._esquivaInstintivaInfo(actor);
         if (esquivaInstintivaInfo && !p.critico) {
           const semUsos = esquivaInstintivaInfo.usosRestantes <= 0 && esquivaInstintivaInfo.emCombate;
-          opcoes.push(NK.naurenKitOpcao({ campo: "reacaoDano", valor: "esquiva-instintiva", nome: "Esquiva Instintiva", custoBom: `grátis · ${esquivaInstintivaInfo.usosRestantes}/${esquivaInstintivaInfo.usosMax} usos`, desabilitado: semUsos,
+          opcoes.push(NK.naurenKitOpcao({ campo: "reacaoDano", valor: "esquiva-instintiva", nome: "Esquiva Instintiva", extraAttr: dd(danoP, "se a esquiva falhar (passando: nada)"), custoBom: `grátis · ${esquivaInstintivaInfo.usosRestantes}/${esquivaInstintivaInfo.usosMax} usos`, desabilitado: semUsos,
             desc: semUsos ? "Sem usos neste turno." : `Igual à Esquiva, sem gastar Estamina. ${textoPrecisa}`, chance: semUsos ? undefined : chanceEsq, extra: ajusteCampo("ajusteEsquivaInstintiva", semUsos) }));
         }
         // Contra-Atacar: exige uma arma equipada (ou habilidade/magia ativa) com Ação de ataque; usa o motor normal de ataque.
@@ -13958,7 +13965,7 @@ class NaurenAlvoHelper {
           ).join("");
           const primeiraArma = armasComAtaque[0];
           const opcoesAcaoInicial = acoesDaArma(primeiraArma).map(a => `<option value="${a.idx}">${escP(a.nome)}</option>`).join("");
-          opcoes.push(NK.naurenKitOpcao({ campo: "reacaoDano", valor: "contra-atacar", nome: "Contra-Atacar", custo: "1 Estamina",
+          opcoes.push(NK.naurenKitOpcao({ campo: "reacaoDano", valor: "contra-atacar", nome: "Contra-Atacar", custo: "1 Estamina", extraAttr: dd(danoP, "contra-atacando (sem Deflexão você leva o dano)"),
             desc: `Você ataca ${escP(p.atacante ?? "quem atacou")} de volta. Empatar com ${ataqueP}${p.critico ? "" : " (ou ficar dentro do Limiar de Deflexão)"} causa <b>Deflexão</b>: o ataque dele falha.`,
             extra: `<span class="nk-opcao-selects"><label>com <select name="armaContraAtaqueId" class="nauren-popup-ajuste" id="nauren-contra-arma-select">${opcoesArma}</select></label><label>ação <select name="acaoContraAtaqueIndex" class="nauren-popup-ajuste" id="nauren-contra-acao-select">${opcoesAcaoInicial}</select></label></span>` }));
         }
@@ -13969,10 +13976,11 @@ class NaurenAlvoHelper {
         const textoEstP = semEstP && escPv > 0 && (actor.system.escudo?.max ?? 0) === semEstP.max
           ? `${escP(semEstP.nome)}: o escudo leva ${Math.min(escPv, danoP)} cheio, metade do resto (${Math.min(escPv, danoP) + Math.floor(Math.max(0, danoP - escPv) / 2)} no total).`
           : `Leva metade do dano (${Math.floor(danoP / 2)}).`;
-        opcoes.push(NK.naurenKitOpcao({ campo: "reacaoDano", valor: "estresse", nome: `${ehReacao ? "Não reagir e g" : "G"}astar 1 Estresse`, custo: `Estresse ${stressAtual} → ${stressAtual + 1}`, desc: textoEstP }));
+        const danoEstP = semEstP && escPv > 0 && (actor.system.escudo?.max ?? 0) === semEstP.max ? Math.min(escPv, danoP) + Math.floor(Math.max(0, danoP - escPv) / 2) : Math.floor(danoP / 2);
+        opcoes.push(NK.naurenKitOpcao({ campo: "reacaoDano", valor: "estresse", extraAttr: dd(danoEstP, "gastando 1 Estresse"), nome: `${ehReacao ? "Não reagir e g" : "G"}astar 1 Estresse`, custo: `Estresse ${stressAtual} → ${stressAtual + 1}`, desc: textoEstP }));
       }
-      opcoes.push(NK.naurenKitOpcao({ campo: "reacaoDano", valor: "cheio", marcado: true, nome: ehReacao || p.houveAtaque ? "Não reagir" : "Receber",
-        desc: semDanoNoAtaque ? "Deixa o ataque acertar (não causa dano)." : `Leva <b>${danoP} de dano</b>${vidaMaxP ? ` (Vida ${vidaP} → ${Math.max(0, vidaP - danoP)})` : ""}.${ehReacao && !p.semPrioridade ? " Sua Prioridade fica guardada." : ""}` }));
+      opcoes.push(NK.naurenKitOpcao({ campo: "reacaoDano", valor: "cheio", marcado: true, nome: ehReacao || p.houveAtaque ? "Não reagir" : "Receber", extraAttr: dd(semDanoNoAtaque ? 0 : danoP, "levando o dano"),
+        desc: semDanoNoAtaque ? "Deixa o ataque acertar (não causa dano)." : `Leva <b>${danoP} de dano</b>.${ehReacao && !p.semPrioridade ? " Sua Prioridade fica guardada." : ""}` }));
       // Fase 6 (P): Condições ativas podem proibir Bloqueio/Esquiva (ex.: Juramentos).
       const proibindo = actor.items.filter(i => i.type === "condicao" && i.system.ativo !== false && (i.system.proibeBloqueio || i.system.proibeEsquiva || i.system.proibeContraAtaque));
       const proibeBloqueio = proibindo.some(i => i.system.proibeBloqueio) || !!p?.ignoraBloqueio || !!p?.apenasContraAtaque;
@@ -13982,6 +13990,7 @@ class NaurenAlvoHelper {
       if (proibindo.length && (proibeBloqueio || proibeEsquiva || proibeContra)) avisos.push(`${[proibeBloqueio && "Bloqueio", proibeEsquiva && "Esquiva", proibeContra && "Contra-Ataque"].filter(Boolean).join(", ").replace(/, ([^,]*)$/, " e $1")} indisponível por: ${proibindo.map(i => escP(i.name)).join(", ")}.`);
       const notaDoisPassos = ehReacao && !p.semPrioridade && p.houveAtaque ? NK.naurenKitNota("Reagindo com dado, o Estresse e o que evitar são decididos depois, já com o resultado na tela.") : "";
       htmlReacao = `${avisos.length ? `<div class="nk-avisos">${avisos.map(a => `<div>${a}</div>`).join("")}</div>` : ""}
+        ${!semDanoNoAtaque && danoP > 0 ? NK.naurenKitVidaDano({ vida: vidaP, max: vidaMaxP, escudo: escudoP }) : ""}
         <div class="nk-grupo">${NK.naurenKitSecao(p.houveAtaque ? "O que você faz?" : "Como você recebe?", p.houveAtaque && !p.semPrioridade ? "· usa sua Prioridade" : "")}<div class="nk-opcoes">${opcoesPermitidas.join("")}</div>${notaDoisPassos}</div>
         ${semDanoNoAtaque ? "" : ajustesDano(true)}`;
     }
@@ -14177,6 +14186,8 @@ class NaurenAlvoHelper {
         botao.innerHTML = `${icone}${nome ? `Confirmar: ${foundry.utils.escapeHTML(nome)}` : "Confirmar"}`;
       };
       raiz?.addEventListener?.("change", rotular); rotular();
+      const vidaDano = () => NK.naurenKitAtualizarVidaDano(raiz);
+      raiz?.addEventListener?.("change", vidaDano); vidaDano();
     };
     Hooks.on("renderDialogV2", onRenderRegistrar);
     let motivoDescarte = "";

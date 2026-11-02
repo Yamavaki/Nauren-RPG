@@ -4169,11 +4169,11 @@ async function naurenSemearHabilidadeDarPrioridade(pack) {
     name: "Dar Prioridade", type: "habilidade", img: "icons/equipment/hand/gloves-leather-tan.webp",
     system: {
       acoes: [{
-        nome: "Dar Prioridade", custoEstamina: 1, alcance: "9m",
+        nome: "Dar Prioridade", custoEstamina: 1, alcance: "",
         modoAlvo: "selecionado", modoAlvoTravado: true,
         usaDarPrioridade: true
       }],
-      descricao: naurenMontarDescricao({ regra: "Prioridade Estratégica (todas as classes). Custo: 1 Estamina. Alcance: 9m. Concede Prioridade a um aliado à sua escolha: uma abertura, um momento de proteção ou uma ação coordenada.", automatico: "marque o aliado (T) e use: ele recebe a Prioridade na hora e o card registra.", manual: "" })
+      descricao: naurenMontarDescricao({ regra: "Prioridade Estratégica (todas as classes). Custo: 1 Estamina. Alcance: qualquer aliado que você consiga ver. Concede Prioridade a um aliado à sua escolha: uma abertura, um momento de proteção ou uma ação coordenada.", automatico: "marque o aliado (T) e use: ele recebe a Prioridade na hora e o card registra.", manual: "" })
     }
   });
   return item.uuid;
