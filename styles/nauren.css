@@ -5515,3 +5515,32 @@ img.nauren-criador-token.com-borda { border: none; border-radius: 0; background:
 .nauren-sheet.ns2 .niv-engrenagem { stroke: var(--ns-s); }
 .nauren-sheet.ns2 .nauren-estudo-alvo { border-color: color-mix(in srgb, var(--ns-p) 35%, #2a2338); }
 .nauren-sheet.ns2 .nauren-estudo-btn { border-color: color-mix(in srgb, var(--ns-s) 50%, #000); }
+/* 0.97.2: cartão "Cores da ficha" em 3 colunas alinhadas (amostra + nome + escolha embaixo) */
+.nauren-sheet.ns2 .ns-cores-grade { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 18px; align-items: start; }
+.nauren-sheet.ns2 .ns-cores-col { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+.nauren-sheet.ns2 .ns-cores-col .ns-mini-rotulo { font-size: 11px; color: var(--ns-sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nauren-sheet.ns2 .ns-cores-amostra { display: flex; align-items: center; gap: 10px; height: 34px; }
+.nauren-sheet.ns2 .ns-cores-amostra > span { flex: none; width: 34px; height: 34px; border-radius: 8px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.2); }
+.nauren-sheet.ns2 .ns-cores-amostra b { font-size: 14px; }
+.nauren-sheet.ns2 .ns-cores-col select { width: 100%; height: 32px; border-radius: 8px; border: 1px solid var(--ns-borda2); background: var(--ns-fundo); color: var(--ns-texto); }
+@container ficha (max-width: 600px) { .nauren-sheet.ns2 .ns-cores-grade { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .nauren-sheet.ns2 .ns-cores-col:last-child { grid-column: 1 / -1; } }
+/* 0.97.2: Notas com o mesmo acabamento da ficha (moldura, filete, título em placa) */
+.nauren-sheet.ns2 .ns-notas-pagina {
+  border-radius: 10px; background: var(--ns-painel); border: 1px solid color-mix(in srgb, var(--ns-p) 80%, #000);
+  box-shadow: inset 0 0 0 3px var(--ns-painel), inset 0 0 0 4px color-mix(in srgb, var(--ns-s) 50%, transparent);
+  padding: 16px 20px 18px;
+}
+.nauren-sheet.ns2 .ns-notas-titulo {
+  display: flex; align-items: center; gap: 10px; border: 0; padding: 0; margin-bottom: 14px;
+  font-family: var(--ns-titulo); font-size: 20px; letter-spacing: .08em; color: var(--ns-sc);
+}
+.nauren-sheet.ns2 .ns-notas-titulo::before { content: ""; flex: none; width: 8px; height: 8px; transform: rotate(45deg); background: var(--ns-s); }
+.nauren-sheet.ns2 .ns-notas-titulo::after { content: ""; flex: 1; height: 2px; background: linear-gradient(90deg, var(--ns-p), transparent); }
+.nauren-sheet.ns2 .ns-notas .nauren-notas-caixa { border-radius: 8px; background: color-mix(in srgb, var(--ns-pd) 30%, #120e18) !important; border: 1px solid color-mix(in srgb, var(--ns-p) 30%, #2a2338) !important; padding: 10px 14px !important; }
+.nauren-sheet.ns2 .ns-notas .nauren-notas-caixa h1, .nauren-sheet.ns2 .ns-notas .nauren-notas-caixa h2, .nauren-sheet.ns2 .ns-notas .nauren-notas-caixa h3 { font-family: var(--ns-titulo); color: var(--ns-sc); border-bottom: 1px solid color-mix(in srgb, var(--ns-p) 45%, transparent); }
+.nauren-sheet.ns2 .ns-notas .nauren-notas-caixa a { color: var(--ns-sc); }
+.nauren-sheet.ns2 .ns-notas .nauren-notas-caixa blockquote { border-left: 3px solid var(--ns-s); background: color-mix(in srgb, var(--ns-s) 8%, transparent); }
+.nauren-sheet.ns2 .nauren-notas-rodape button { background: var(--ns-s) !important; color: #15111b !important; border: 0 !important; }
+/* 0.97.2: botões cheios na cor secundária sempre com texto escuro (Ônix/Pérola/Verde claros perdiam o contraste) */
+.nauren-sheet.ns2 .ns-sub-pontos .ns-sub-btn, .nauren-sheet.ns2 .ns-sub-vazio .ns-sub-btn, .nauren-sheet.ns2 .ns-btn-principal { background: var(--ns-s) !important; color: #15111b !important; border: 0 !important; }
+.nauren-sheet.ns2 .ns-sub-pontos .ns-sub-btn i, .nauren-sheet.ns2 .ns-btn-principal i { color: #15111b !important; }

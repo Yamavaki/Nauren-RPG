@@ -1238,24 +1238,27 @@ Clique para abrir">
           <div class="ns-cards">
           <section class="ns-card ns-card-largo ns-card-cores">
             <header class="ns-card-cab"><span class="ns-card-icone"><i class="fas fa-palette"></i></span><div><b>Cores da ficha</b><small>{{#if (eq ns.cores.origem "sem")}}sem Pigmentos: usa a cor da classe{{else}}{{#if (eq ns.cores.origem "classe")}}usando a cor da classe{{else}}{{#if (eq ns.cores.origem "manual")}}escolhidas à mão{{else}}dos 2 primeiros Pigmentos: {{#each ns.cores.pigmentos}}{{this}}{{#unless @last}} + {{/unless}}{{/each}}{{/if}}{{/if}}{{/if}}</small></div></header>
-            <div class="ns-cores-linha">
-              <div class="ns-cores-amostra" title="Primária: molduras, títulos, faixa do topo"><span style="background: {{ns.cores.p}};"></span><small>Primária<br><b>{{ns.cores.nomeP}}</b></small></div>
-              <div class="ns-cores-amostra" title="Secundária: detalhes, botões, Nível, divisores"><span style="background: {{ns.cores.s}};"></span><small>Secundária<br><b>{{ns.cores.nomeS}}</b></small></div>
-              <label class="ns-campo-linha ns-cores-modo"><span>Usar</span>
-                <select name="flags.nauren.coresFicha.modo">
-                  <option value="auto" {{#if (eq ns.cores.modo "auto")}}selected{{/if}}>Automático (Pigmentos)</option>
+            <div class="ns-cores-grade">
+              <div class="ns-cores-col">
+                <span class="ns-mini-rotulo">Primária · molduras e títulos</span>
+                <div class="ns-cores-amostra"><span style="background: {{ns.cores.p}};"></span><b>{{ns.cores.nomeP}}</b></div>
+                {{#if (eq ns.cores.modo "manual")}}<select name="flags.nauren.coresFicha.p" aria-label="Cor primária">{{#each ns.cores.opcoes as |o|}}<option value="{{o.chave}}" {{#if (eq o.chave ../ns.cores.manualP)}}selected{{/if}}>{{o.nome}}</option>{{/each}}</select>{{/if}}
+              </div>
+              <div class="ns-cores-col">
+                <span class="ns-mini-rotulo">Secundária · detalhes e botões</span>
+                <div class="ns-cores-amostra"><span style="background: {{ns.cores.s}};"></span><b>{{ns.cores.nomeS}}</b></div>
+                {{#if (eq ns.cores.modo "manual")}}<select name="flags.nauren.coresFicha.s" aria-label="Cor secundária">{{#each ns.cores.opcoes as |o|}}<option value="{{o.chave}}" {{#if (eq o.chave ../ns.cores.manualS)}}selected{{/if}}>{{o.nome}}</option>{{/each}}</select>{{/if}}
+              </div>
+              <div class="ns-cores-col">
+                <span class="ns-mini-rotulo">De onde vêm</span>
+                <select name="flags.nauren.coresFicha.modo" aria-label="De onde vêm as cores">
+                  <option value="auto" {{#if (eq ns.cores.modo "auto")}}selected{{/if}}>Pigmentos (automático)</option>
                   <option value="inverter" {{#if (eq ns.cores.modo "inverter")}}selected{{/if}}>Pigmentos, invertido</option>
                   <option value="manual" {{#if (eq ns.cores.modo "manual")}}selected{{/if}}>Escolher à mão</option>
                   <option value="classe" {{#if (eq ns.cores.modo "classe")}}selected{{/if}}>Cor da classe</option>
                 </select>
-              </label>
+              </div>
             </div>
-            {{#if (eq ns.cores.modo "manual")}}
-            <div class="ns-cores-linha">
-              <label class="ns-campo-linha"><span>Primária</span><select name="flags.nauren.coresFicha.p">{{#each ns.cores.opcoes as |o|}}<option value="{{o.chave}}" {{#if (eq o.chave ../ns.cores.manualP)}}selected{{/if}}>{{o.nome}}</option>{{/each}}</select></label>
-              <label class="ns-campo-linha"><span>Secundária</span><select name="flags.nauren.coresFicha.s">{{#each ns.cores.opcoes as |o|}}<option value="{{o.chave}}" {{#if (eq o.chave ../ns.cores.manualS)}}selected{{/if}}>{{o.nome}}</option>{{/each}}</select></label>
-            </div>
-            {{/if}}
           </section>
           <section class="ns-card">
             <header class="ns-card-cab"><span class="ns-card-icone"><i class="fas fa-dice-d20"></i></span><div><b>Rolagem</b><small>vale para todo teste de d20</small></div></header>
