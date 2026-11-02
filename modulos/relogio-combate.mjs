@@ -1,4 +1,5 @@
 /* Nauren RPG — Relógio de combate (turnos e rodadas). Separado do nauren.mjs na 0.94.31. */
+import * as NK from "./janelas-kit.mjs";
 import { NAUREN_MOMENTOS_PERIODICOS, naurenAncoraDuracaoAtual, naurenAplicarEfeitoSimples, naurenAtoresDoTurno, naurenAvancarDuracoesCondicoes, naurenBandoChave, naurenBandoMembros, naurenBonusDanoPeriodico, naurenEhCondicaoModelo, naurenEhItem, naurenEscolherCorDaPintura, naurenGrimorio, naurenInterpretarModificador, naurenMedirDistanciaBordas, naurenMomentoEfeitoPeriodico, naurenMovSemPrioridadeUsado, naurenMovimentoEmCombate, naurenMovimentoSaldo, naurenPostarCard, naurenRecarregarUsos, naurenRecursoDoAtor, naurenResolverPorRank, naurenResolverTokenFormula, naurenRollToBreakdownText, naurenUuidPorSeed } from "../nauren.mjs";
 import { NaurenAlvoHelper, naurenChecarLimiarEfeitoDireto } from "./ficha-ator.mjs";
 import { naurenAurasDeEstaminaSobreMim, naurenChecarCondicaoAoAtingirMax, naurenConcederRecurso, naurenGravarMemoriaVida, naurenPontoDentroDaRegiao, naurenProcessarEmanacoes, naurenProcessarEmanacoesSobre, naurenProcessarGatilhos, naurenProcessarTemplatesPersistentes } from "./icone-condicao-token.mjs";
@@ -202,7 +203,7 @@ Hooks.on("combatStart", (combat) => {
       if (!hab) continue;
       const g = naurenGrimorio(actor);
       if (!g.paginas.length) continue;
-      const esc = await foundry.applications.api.DialogV2.wait({ window: { title: `Marcador de Página — ${actor.name}` }, classes: ["nauren-dialogo"],
+      const esc = await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA, window: { title: `Marcador de Página — ${actor.name}` }, classes: ["nauren-dialogo", "nauren-kit"],
         content: "<p>O combate começou: em qual página fica o marcador? (vale até o fim do combate)</p>",
         buttons: g.paginas.map((m, i) => ({ action: m.id, label: `${i + 1}. ${m.name}` })), rejectClose: false }).catch(() => null);
       if (!esc) continue;
@@ -219,7 +220,7 @@ Hooks.on("combatStart", (combat) => {
     if (!primeiro || !naurenSouResponsavelPor(primeiro)) return;
     const hab = primeiro.items.find(i => i.type === "habilidade" && naurenEhItem(i, "Virtude da Coragem") && i.system.ativo !== false);
     if (!hab) return;
-    const esc = await foundry.applications.api.DialogV2.wait({ window: { title: "Virtude da Coragem" }, content: "<p>Você age primeiro: +3 em qual Poder até o fim do combate?</p>",
+    const esc = await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA, window: { title: "Virtude da Coragem" }, content: "<p>Você age primeiro: +3 em qual Poder até o fim do combate?</p>",
       buttons: [{ action: "poderAtaque", label: "Poder de Ataque" }, { action: "poderMagia", label: "Poder de Magia" }], rejectClose: false }).catch(() => null);
     if (!esc) return;
     await primeiro.createEmbeddedDocuments("Item", [{ name: `Virtude da Coragem (+3 ${esc === "poderAtaque" ? "Poder de Ataque" : "Poder de Magia"})`, type: "condicao", img: hab.img,
@@ -374,7 +375,7 @@ async function naurenProcessarSustentacoes(ator) {
     const mana = ator.system?.mana?.value ?? 0;
     if (mana < (sd.custoMana ?? 0)) { await encerrar(`sem Mana para sustentar (${mana} de ${sd.custoMana})`); continue; }
     const proximoBonus = (sd.incremento ?? 0) * ((sd.turnos ?? 0) + 1);
-    const sim = await foundry.applications.api.DialogV2.confirm({ window: { title: sd.itemNome },
+    const sim = await foundry.applications.api.DialogV2.confirm({ ...NK.NAUREN_KIT_JANELA, window: { title: sd.itemNome },
       content: `<p>Sustentar <b>${sd.itemNome}</b> em <b>${alvoDoc.name}</b>?</p><p>Custa <b>${sd.custoMana} Mana</b> (você tem ${mana}). Dano: <b>${sd.formula}${proximoBonus ? ` + ${proximoBonus}` : ""}</b>, sem teste (acerta direto).</p>`,
       yes: { label: "Sustentar" }, no: { label: "Encerrar" }, rejectClose: false }).catch(() => false);
     if (!sim) { await encerrar("você deixou de sustentar"); continue; }
@@ -406,8 +407,8 @@ async function naurenAtaqueBasicoNaReacao(ator, atacanteTokenDoc, fonte) {
   const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
   const idxBasico = a => Math.max(0, (a.system.acoes ?? []).findIndex(x => /b[aá]sico/i.test(x.nome ?? "")));
   let escolhida = null;
-  await foundry.applications.api.DialogV2.wait({
-    window: { title: `${fonte?.name ?? "Ataque"} — atacar agora?`, icon: "fas fa-khanda" }, classes: ["nauren-janela-movimento", "nauren-dialogo"], position: { width: 380 },
+  await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA,
+    window: { title: `${fonte?.name ?? "Ataque"} — atacar agora?`, icon: "fas fa-khanda" }, classes: ["nauren-janela-movimento", "nauren-dialogo", "nauren-kit"], position: { width: 380 },
     content: `<div class="nauren-mov">
       <p class="nauren-mov-aviso" style="margin:0;">Você bloqueou <b>${esc(atacanteTokenDoc.name)}</b>. Faça um ataque básico contra ele como parte do bloqueio, <b>sem custo</b>.</p>
       <div class="nauren-mov-opcoes">${armas.map(a => {
@@ -571,7 +572,7 @@ async function naurenRelogioProcessarTransicao(t) {
       const specV = cv.system.vooCusto === "mana" ? "mana" : (cv.system.vooCusto === "estamina" ? "estaminaCombate" : cv.system.vooCusto);
       const recV = naurenRecursoDoAtor(atorDoTurno, specV);
       const nomeR = recV?.nome ?? specV, tem = recV?.valor ?? 0;
-      const manter = tem >= 1 && await foundry.applications.api.DialogV2.confirm({ window: { title: cv.name }, content: `<p>Manter o voo (<b>${cv.name}</b>)? Custa 1 de ${nomeR} (você tem ${tem}).</p>`, yes: { label: "Manter" }, no: { label: "Pousar" }, rejectClose: false }).catch(() => false);
+      const manter = tem >= 1 && await foundry.applications.api.DialogV2.confirm({ ...NK.NAUREN_KIT_JANELA, window: { title: cv.name }, content: `<p>Manter o voo (<b>${cv.name}</b>)? Custa 1 de ${nomeR} (você tem ${tem}).</p>`, yes: { label: "Manter" }, no: { label: "Pousar" }, rejectClose: false }).catch(() => false);
       if (manter) { await naurenConcederRecurso(atorDoTurno, specV, "-1", cv); naurenPostarCard({ ator: atorDoTurno, titulo: cv.name, icone: cv.img, fonte: "Voo", linhas: [{ label: "Manteve o voo", value: `−1 de ${nomeR}` }] }).catch(() => {}); }
       else { await cv.delete().catch(() => {}); naurenPostarCard({ ator: atorDoTurno, titulo: cv.name, icone: cv.img, fonte: "Voo", linhas: [{ label: "Pousou", value: tem >= 1 ? "escolheu pousar" : `sem ${nomeR}` }] }).catch(() => {}); }
     }

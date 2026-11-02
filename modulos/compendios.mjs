@@ -1,4 +1,5 @@
 /* Nauren RPG — Compêndios oficiais (auto-semeadura, Torre, Bestiário, mascotes). Separado do nauren.mjs na 0.94.22. */
+import { NAUREN_KIT_JANELA } from "./janelas-kit.mjs";
 import { NAUREN_CAPACIDADE_POR_NOME, NAUREN_CORES_PINTURA, NAUREN_EQUIPAMENTO_CLASSE_LIVRO, NaurenActorSheet, NaurenAlvoHelper, NaurenCondicaoData, NaurenHabilidadeData, NaurenMagiaData, campoAcao, campoModificador, naurenAtorTemRecurso, naurenClamparRecursosAoMaximo, naurenEhCondicaoModelo, naurenEquipRecomendadoPreenchido, naurenFixarTipoAlcanceSemeado, naurenInterpretarModificador, naurenMontarDescricao, naurenNomeDoRecurso, naurenPostarCard, naurenPreencherRecursosNoMaximo, naurenProcessarGatilhos, naurenRecursoEstaTravado, naurenResetarCompendios, naurenUuidPorSeed } from "../nauren.mjs";
 /* =======================================
  * 7. COMPÊNDIOS OFICIAIS DO SISTEMA (auto-semeadura)
@@ -10072,8 +10073,8 @@ async function naurenPerguntarEscolhaAoReceber(item) {
   if (!esc?.rotulos?.length) return null;
   const escH = v => String(v).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
   let escolhido = null;
-  await foundry.applications.api.DialogV2.wait({
-    window: { title: `${item.name} · escolha o bônus` }, classes: ["nauren-janela-movimento"], position: { width: 380 },
+  await foundry.applications.api.DialogV2.wait({ ...NAUREN_KIT_JANELA,
+    window: { title: `${item.name} · escolha o bônus` }, classes: ["nauren-janela-movimento", "nauren-kit"], position: { width: 380 },
     content: `<div class="nauren-mov"><p class="nauren-mov-aviso" style="margin:0;">Este item dá um bônus à sua escolha. Ele fica valendo enquanto o item estiver equipado.</p>
       <div class="nauren-mov-opcoes">${esc.rotulos.map((r, k) => `<button type="button" class="nauren-mov-opcao" data-escolha="${k}"><i class="fas fa-star"></i><span class="nauren-mov-titulo">${escH(r)}</span><span class="nauren-mov-custo"></span></button>`).join("")}</div></div>`,
     buttons: [{ action: "depois", label: "Escolher depois" }], rejectClose: false,

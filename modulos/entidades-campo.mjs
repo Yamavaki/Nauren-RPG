@@ -1,4 +1,5 @@
 /* Nauren RPG — Entidades de campo. Separado do nauren.mjs na 0.94.31. */
+import * as NK from "./janelas-kit.mjs";
 import { ARMA_TIPOS, ATRIBUTOS_BONUS, NAUREN_CAMPOS_MODIFICADOR_OPCOES, NAUREN_REFERENCIA_FORMULAS, NAUREN_TOKENS_CONTEXTO, naurenAvaliarExpressaoSimples, naurenCasasLivresEmVolta, naurenCondicoesAtivas, naurenConsumirUsoDaHabilidade, naurenCriarInvocacoes, naurenCriarObraPrima, naurenDisposicaoDoAtor, naurenFormulaParaTexto, naurenMedirDistanciaBordas, naurenMontarDescricao, naurenPostarCard, naurenPrioridadesNoTurno, naurenResolverPorNivel, naurenResolverTokenFormula, naurenTextoRolagem, naurenTravaPrioridade, naurenUsoDisponivel } from "../nauren.mjs";
 import { NAUREN_MASCOTES_INICIAIS, NAUREN_PACKS_DEFINICAO, naurenAliadosDoGrupo } from "./compendios.mjs";
 import { NAUREN_MOTION_ALVO_OPCOES, NAUREN_MOTION_USUARIO_OPCOES } from "./animacoes.mjs";
@@ -224,16 +225,16 @@ async function naurenEscolherCorDaPintura(alvo, fonte) {
   if (!packC) return "";
   const coresDoAlvo = Object.entries(NAUREN_CORES_PINTURA).filter(([k, c]) => c.nomeCondicao && alvo.items.some(i => i.type === "condicao" && i.name === c.nomeCondicao));
   const botoes = def.cores.filter(k => k !== "branco" || coresDoAlvo.length).map(k => ({ action: k, label: NAUREN_CORES_PINTURA[k].rotulo }));
-  const esc = await foundry.applications.api.DialogV2.wait({
-    window: { title: `${def.titulo} — cor da Pintura` }, classes: ["nauren-dialogo"],
+  const esc = await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA,
+    window: { title: `${def.titulo} — cor da Pintura` }, classes: ["nauren-dialogo", "nauren-kit"],
     content: `<p><b>${alvo.name}</b> ganhou 1 Ponto de Pintura. Qual efeito ele dá?</p>`,
     buttons: botoes, rejectClose: false
   }).catch(() => null);
   if (!esc) return "";
   let chave = esc;
   if (esc === "branco") {
-    const rep = coresDoAlvo.length === 1 ? coresDoAlvo[0][0] : await foundry.applications.api.DialogV2.wait({
-      window: { title: "Pintura Branca — repetir qual?" }, classes: ["nauren-dialogo"],
+    const rep = coresDoAlvo.length === 1 ? coresDoAlvo[0][0] : await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA,
+      window: { title: "Pintura Branca — repetir qual?" }, classes: ["nauren-dialogo", "nauren-kit"],
       content: `<p>O Branco repete o efeito de outra pintura que <b>${alvo.name}</b> já tem.</p>`,
       buttons: coresDoAlvo.map(([k, c]) => ({ action: k, label: c.rotulo })), rejectClose: false
     }).catch(() => null);
@@ -275,7 +276,7 @@ async function naurenHandleQueryEstrela({ misticoUuid, quemNome }) {
   const a = doc?.actor ?? doc;
   const estrela = a?.items?.find(i => i.type === "habilidade" && (naurenEhItem(i, "Estrela do Arco Íris, Otaki") || String(i.name).startsWith("Estrela do Arco Íris")) && i.system.ativo !== false);
   if (!estrela) return false;
-  const sim = await foundry.applications.api.DialogV2.confirm({ window: { title: estrela.name },
+  const sim = await foundry.applications.api.DialogV2.confirm({ ...NK.NAUREN_KIT_JANELA, window: { title: estrela.name },
     content: `<p><b>${quemNome}</b> chegou a 5 Pontos de Pintura.</p><p>Usar o <b>Dragão de Tinta</b> agora? Marque o alvo e coloque a linha no mapa.</p>`,
     yes: { label: "Usar o Dragão de Tinta" }, no: { label: "Agora não" }, rejectClose: false }).catch(() => false);
   if (sim) await a.sheet._executarAcao(estrela, 0);
@@ -304,7 +305,7 @@ Hooks.on("updateActor", async (actor, mudancas) => {
   if (!marca) return;
   const limite = 5 * Math.max(1, marca.system.acumulos ?? 1);
   if (vidaNova < limite) {
-    const confirma = await foundry.applications.api.DialogV2.confirm({ window: { title: "Epigrafia da Morte" },
+    const confirma = await foundry.applications.api.DialogV2.confirm({ ...NK.NAUREN_KIT_JANELA, window: { title: "Epigrafia da Morte" },
       content: `<p><b>${actor.name}</b> ficou com <b>${vidaNova}</b> de Vida, abaixo do limiar da Epigrafia (<b>${limite}</b> = 5 × ${marca.system.acumulos ?? 1}).</p><p>Ele morre?</p>`,
       yes: { label: "Morre" }, no: { label: "Poupar" }, rejectClose: false }).catch(() => false);
     if (!confirma) {
@@ -933,8 +934,8 @@ async function naurenEscolherEfeitoPoderosa(actor) {
     }).join("")}</div>
     ${armados.length ? `<div class="na-chips">${armados.map(a => `<span>${e(NAUREN_PODEROSA_EFEITOS[a]?.nome ?? a)}</span>`).join("")}</div>` : ""}
   </div>`;
-  const r = await foundry.applications.api.DialogV2.wait({
-    window: { title: "Conjuração Poderosa", icon: "fas fa-bolt" }, classes: ["nauren-analise-janela"], position: { width: 440 },
+  const r = await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA,
+    window: { title: "Conjuração Poderosa", icon: "fas fa-bolt" }, classes: ["nauren-analise-janela", "nauren-kit"], position: { width: 440 },
     content: conteudo,
     buttons: [{ action: "armar", label: "Armar", icon: "fas fa-bolt", default: true, callback: () => "armar" }, { action: "cancelar", label: "Cancelar" }],
     rejectClose: false,
@@ -1559,7 +1560,7 @@ async function naurenHandleQueryDomar({ cacadorUuid, alvoUuid }) {
   const mascotesAtuais = Array.from(game.actors).filter(a => a.system?.mascoteDeUuid === cacador.uuid);
   const vaiFugir = mascotesAtuais.length >= limite ? mascotesAtuais[0] : null;
   const estamina = alvo.system.estaminaCombate?.value ?? 0;
-  const resiste = estamina >= 1 && await foundry.applications.api.DialogV2.confirm({
+  const resiste = estamina >= 1 && await foundry.applications.api.DialogV2.confirm({ ...NK.NAUREN_KIT_JANELA,
     window: { title: `Domar Besta — ${alvo.name}` },
     content: `<p><b>${cacador.name}</b> tenta domar <b>${alvo.name}</b>.</p><p>Gastar 1 Estamina para resistir a esta tentativa?</p>`,
     yes: { label: "Resistir (−1 Estamina)" }, no: { label: "Não resistir" }, rejectClose: false
@@ -1717,7 +1718,7 @@ async function naurenHandleQueryManipular({ ladraoUuid, aliadoTokenUuid }) {
     const dist = naurenMedirDistanciaBordas(tokLadino, t);
     if (dist > 9) continue;
     const estamina = a.system.estaminaCombate?.value ?? 0;
-    const escolha = await foundry.applications.api.DialogV2.wait({
+    const escolha = await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA,
       window: { title: `Manipular a Verdade — ${t.document.name}` },
       content: `<p><b>${t.document.name}</b> é compelido a ir até <b>${aliado.name}</b>.</p><p>Gastar 1 Estamina e usar todo o movimento até ele, ou sofrer 1 de Estresse?</p>`,
       buttons: [
@@ -1811,7 +1812,7 @@ async function naurenHandleQueryAcovardar({ ladinoUuid, atacanteTokenUuid, ataca
   if (!tok) return false;
   const custo = Number(hab.system.acoes?.[0]?.custoEstamina) || 0;
   const eu = tok.actor === ladino;
-  const sim = await foundry.applications.api.DialogV2.confirm({
+  const sim = await foundry.applications.api.DialogV2.confirm({ ...NK.NAUREN_KIT_JANELA,
     window: { title: `Acovardar — ${ladino.name}` },
     content: `<p><b>${eu ? "Você" : atacanteNome}</b> errou um ataque.</p><p>Usar <b>Acovardar</b>${custo ? ` (${custo} PdE)` : ""}? ${eu ? "Você fica" : "Ele fica"} <b>Ridicularizado</b> (ataques contra ${eu ? "você" : "ele"} com Facilidade por 1 rodada) e você ganha Facilidade no próximo ataque.</p>`,
     yes: { label: `Acovardar${custo ? ` (${custo} PdE)` : ""}` }, no: { label: "Agora não" }, rejectClose: false
@@ -1836,7 +1837,7 @@ async function naurenHandleQueryResistirRoubo({ vitimaUuid, custo, ladraoNome })
   if (!vitima) return false;
   const estamina = vitima.system.estaminaCombate?.value ?? 0;
   if (estamina < custo) return false;
-  const sim = await foundry.applications.api.DialogV2.confirm({
+  const sim = await foundry.applications.api.DialogV2.confirm({ ...NK.NAUREN_KIT_JANELA,
     window: { title: `${vitima.name} — Prioridade` },
     content: `<p><b>${ladraoNome}</b> quer roubar a Prioridade de <b>${vitima.name}</b>.</p><p>Gastar <b>${custo} Estamina</b> para impedir?</p>`,
     yes: { label: `Impedir (−${custo} Estamina)` }, no: { label: "Deixar roubar" }, rejectClose: false
@@ -2066,7 +2067,7 @@ async function naurenHandleQueryAureum({ actorUuid, combateId }) {
   const actor = doc?.actor ?? doc;
   if (!actor) return null;
   if (actor.getFlag("nauren", "aureumD20")?.combate === combateId) return null;
-  const rolar = await foundry.applications.api.DialogV2.confirm({ window: { title: `Palavra de Destino: Aureum — ${actor.name}` },
+  const rolar = await foundry.applications.api.DialogV2.confirm({ ...NK.NAUREN_KIT_JANELA, window: { title: `Palavra de Destino: Aureum — ${actor.name}` },
     content: "<p>Início da cena de combate. Rolar <b>1d20</b> do Aureum? Você poderá usar esse resultado no lugar de um d20 seu durante este combate.</p>",
     yes: { label: "Rolar 1d20" }, no: { label: "Não" }, rejectClose: false }).catch(() => false);
   if (!rolar) { await actor.setFlag("nauren", "aureumD20", { face: null, combate: combateId, recusado: true }); return null; }
@@ -2152,9 +2153,9 @@ async function naurenUsarAcalanto(grupo) {
   }
   if (!opcoes.length) { ui.notifications.warn("Dado de Acalanto: nenhum personagem na cena ou no Grupo."); return; }
   let alvoUuid = null;
-  const efeito = await foundry.applications.api.DialogV2.wait({
+  const efeito = await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA,
     window: { title: "Dado de Acalanto do Destino" },
-    content: `<p>Em quem?</p><select data-acalanto-alvo style="width:100%;">${opcoes.join("")}</select>
+    content: `<div class="field"><label for="nauren-acalanto-alvo">Em quem?</label><select id="nauren-acalanto-alvo" data-acalanto-alvo style="width:100%;">${opcoes.join("")}</select></div>
       <p class="nauren-popup-nota">"Sucesso" e "erro" valem no próximo teste de d20 do escolhido (o card mostra). "Vida" fica armado até ele chegar a 0.</p>`,
     buttons: [...Object.entries(NAUREN_ACALANTO_EFEITOS).map(([k, v]) => ({ action: k, label: v })), { action: "cancelar", label: "Cancelar" }],
     rejectClose: false,
@@ -2202,19 +2203,48 @@ Hooks.on("updateActor", async (actor, mudancas, options, userId) => {
  * Dados. Devolve o mesmo "resultado" ({ mode, rolls, usedIndex }), com o d20
  * usado trocado e "historicoDestino" preenchido.
  */
+/**
+ * 0.95: Dado de Destino — a janela mostra a Faixa de rolagem (d20 desenhado, bônus com nome, total;
+ * 20 natural dourado e 1 natural vermelho). Regras: sempre pergunta (não existe mais "só quando falharia",
+ * que revelava ao atacante se ia acertar); só 1 rerolagem de Destino por ação (por personagem). d20
+ * roubado (Tudo é Meu!) e d20 do Aureum não contam como essa rerolagem. Quem ataca não vê Defesa nem acerto:
+ * "contra" só vem quando quem rola pode saber o número (Esquiva contra o ataque mostrado).
+ */
+function naurenPartesDaRolagem(bonusLinhas, face, total) {
+  const partes = [];
+  let soma = 0;
+  for (const l of bonusLinhas ?? []) {
+    if (!l || !l.label) continue;
+    const v = String(l.value ?? "").trim();
+    let m = v.match(/^(.*?)\s*\(([+-]?\d+)\)\s*$/);
+    if (m && /^[+-]?\d+$/.test(m[2])) { const n = Number(m[2]); if (n) { partes.push({ rotulo: m[1] || l.label, valor: n }); soma += n; } continue; }
+    if (/^[+-]?\s*\d+$/.test(v)) { const n = Number(v.replace(/\s/g, "")); if (n) { partes.push({ rotulo: l.label, valor: n }); soma += n; } continue; }
+  }
+  const resto = (Number(total) || 0) - (Number(face) || 0) - soma;
+  if (resto) partes.push({ rotulo: "dados e outros bônus", valor: resto });
+  return partes;
+}
 async function naurenOferecerDestino(actor, resultado, { titulo = "", tipo = "teste", bonusLinhas = [], contra = null } = {}) {
   resultado.historicoDestino ??= [];
   if (!actor) return resultado;
   // Dado de Acalanto armado (sucesso/erro garantido): vale neste teste, sem perguntar nada.
   if (await naurenAplicarAcalanto(actor, resultado)) return resultado;
+  const kit = await import("./janelas-kit.mjs");
   const temGuardado = () => !!actor.getFlag("nauren", "dadoRoubado") || !!naurenAureumValido(actor)?.face;
-  const modo = game.settings.get("nauren", "destinoPerguntar") || "sempre";
-  if ((actor.system?.perguntarDestino === false || modo === "nunca") && !temGuardado()) return resultado;
+  const modo = game.settings.get("nauren", "destinoPerguntar") === "nunca" ? "nunca" : "sempre";
+  const perguntaLigada = actor.system?.perguntarDestino !== false && modo !== "nunca";
+  if (!perguntaLigada && !temGuardado()) return resultado;
   const temPrisma = () => actor.items.some(i => i.type === "condicao" && i.system.ativo !== false && (naurenEhItem(i, "Oração do Prisma") || /Oração do Prisma/i.test(i.name)));
   const piso = naurenPisoGuiarDestino(actor);
+  // 1 rerolagem de Destino por ação: a chave é a execução da Ação em curso na ficha; fora de uma Ação
+  // (esquiva, teste de atributo), cada rolagem é a sua própria ação.
+  const chaveAcao = actor.sheet?._execucaoIdAtual || null;
+  const jaUsouNaAcao = () => !!chaveAcao && actor._naurenDestinoUsadoEm === chaveAcao;
+  const critMin = Math.max(2, (actor.system?.critMinTotal ?? 20) - (naurenAjusteCriticoDoGrupo(actor)?.valor ?? 0));
   // Romper o Caminho e afins: só usa Dado de Destino sofrendo 1 Estresse.
   let trava = actor.items.find(i => i.type === "condicao" && i.system.ativo !== false && i.system.destinoCustaEstresse);
-  while (true) {
+  let anterior = null, rerolou = false;
+  for (let volta = 0; volta < 3; volta++) {
     const dados = actor.system.dadosDestino?.value ?? 0;
     const semEstresseLivre = trava && (actor.system.stress?.value ?? 0) >= (actor.system.stress?.max ?? 2);
     const guardado = actor.getFlag("nauren", "dadoRoubado");
@@ -2222,47 +2252,56 @@ async function naurenOferecerDestino(actor, resultado, { titulo = "", tipo = "te
     const roll = resultado.rolls[resultado.usedIndex];
     const face = naurenFaceD20(roll);
     if (face === null) break;
-    const podeRerolar = dados > 0 && face !== 20 && (face !== 1 || temPrisma()) && actor.system?.perguntarDestino !== false && modo !== "nunca" && !semEstresseLivre;
-    if (!podeRerolar && !guardado && !aureum) break;
+    const ehAtaque = tipo === "ataque";
+    const estado = face === 1 ? "falha" : (ehAtaque ? (face >= critMin ? "critico" : "normal") : (face === 20 ? "critico" : "normal"));
+    const motivoSem = !perguntaLigada ? "" : rerolou || jaUsouNaAcao() ? "Dado de Destino já usado nesta ação."
+      : face === 20 ? "20 natural: não precisa rerolar." : (face === 1 && !temPrisma()) ? "1 natural não pode ser rerolado com Destino (só com Oração do Prisma)."
+      : dados <= 0 ? "Você não tem Dados de Destino." : semEstresseLivre ? `${trava.name}: para usar Destino é preciso sofrer 1 Estresse, e o seu Estresse está no máximo.` : "";
+    const podeRerolar = perguntaLigada && !motivoSem;
+    // Ataque com 20 ou 1 natural mostra o destaque mesmo sem poder rerolar; nos outros casos, sem nada a oferecer, segue.
+    const mostrarMesmoAssim = perguntaLigada && ehAtaque && (estado !== "normal") && !rerolou;
+    if (!podeRerolar && !guardado && !aureum && !rerolou && !mostrarMesmoAssim) break;
     const total = roll.total;
-    let resultadoTexto = "";
+    const faces = resultado.rolls.length > 1 ? resultado.rolls.map((r, i) => ({ face: naurenFaceD20(r), usada: i === resultado.usedIndex })) : [];
+    const modoTexto = resultado.rolls.length > 1 ? (resultado.mode === "vantagem" ? "Facilidade: fica o maior" : resultado.mode === "desvantagem" ? "Dificuldade: fica o menor" : "") : "";
+    let veredito = null, contraFaixa = null;
     if (contra) {
       const vence = total > contra.valor;
-      resultadoTexto = contra.ocultarValor
-        ? `${contra.rotulo}: <b>${vence ? contra.textoVence : contra.textoPerde}</b>`
-        : `${contra.rotulo}: ${contra.valor} → <b>${vence ? contra.textoVence : contra.textoPerde}</b>`;
-      if (modo === "erraria" && vence) break;
-    } else if (tipo === "ataque" && modo === "erraria") {
-      const alvo = Array.from(game.user.targets ?? [])[0]?.actor;
-      if (alvo && total > (alvo.system?.defesaTotal ?? alvo.system?.defesa ?? 0)) break;
+      veredito = { texto: vence ? contra.textoVence : contra.textoPerde, sub: contra.ocultarValor ? "" : (vence ? `passou por ${total - contra.valor}` : `faltaram ${contra.valor + 1 - total}`), tom: vence ? "bom" : "ruim" };
+      if (!contra.ocultarValor) contraFaixa = { valor: contra.valor, rotulo: contra.rotulo };
     }
-    const dadosTexto = resultado.rolls.length > 1
-      ? resultado.rolls.map((r, i) => `<span style="${i === resultado.usedIndex ? "font-weight: bold; color: #e8b84b;" : "opacity: .55; text-decoration: line-through;"}">${naurenFaceD20(r)}</span>`).join(" e ") + ` (${resultado.mode})`
-      : `<b style="color: #e8b84b;">${face}</b>`;
-    const linhasBonus = bonusLinhas.filter(l => l && l.label).map(l => `<tr><td>${l.label}</td><td style="text-align: right;">${l.value ?? ""}</td></tr>`).join("");
+    const regra = ehAtaque && estado === "critico" ? "Acerta <b>automaticamente</b> e <b>todos os dados de dano dobram</b>."
+      : ehAtaque && estado === "falha" ? "<b>Erra automaticamente</b>, não importa o total." : "";
+    const faixa = kit.naurenKitFaixa({
+      face, estado, faces, modoTexto, total, anterior,
+      partes: naurenPartesDaRolagem(bonusLinhas, face, total),
+      rotuloTotal: tipo === "ataque" ? "seu ataque" : tipo === "esquiva" ? "sua esquiva" : "seu resultado",
+      contra: contraFaixa, veredito,
+      destaque: ehAtaque ? undefined : (estado === "critico" ? "20 natural" : estado === "falha" ? "1 natural" : ""),
+      regra,
+      nota: ehAtaque && estado === "normal" ? "Se passar da Defesa do alvo, acerta. <b>O resultado aparece no chat</b> depois da reação." : ""
+    });
     const avisos = [
-      face === 1 ? "Oração do Prisma: você pode rerolar o 1 natural." : "",
-      piso ? `Guiar o Destino: na rerolagem, resultados abaixo de ${piso} (exceto 1) contam como ${piso}.` : "",
-      trava ? (semEstresseLivre ? `${trava.name}: para usar Dado de Destino é preciso sofrer 1 Estresse, e o seu Estresse está no máximo.` : `${trava.name}: rerolar também custa 1 Estresse.`) : ""
-    ].filter(Boolean).map(a => `<p class="nauren-popup-nota">${a}</p>`).join("");
-    const conteudo = `
-      <p><b>${titulo}</b>${tipo === "teste" ? " (teste)" : tipo === "esquiva" ? " (esquiva)" : ""}</p>
-      <table style="width: 100%; font-size: 13px;">
-        <tr><td>d20</td><td style="text-align: right;">${dadosTexto}</td></tr>
-        ${linhasBonus}
-        <tr style="border-top: 1px solid #555;"><td><b>Total</b></td><td style="text-align: right; font-size: 16px;"><b>${total}</b></td></tr>
-      </table>
-      ${resultado.historicoDestino.length ? `<p class="nauren-popup-nota">Já rerolado: ${resultado.historicoDestino.map(h => `${h.de} → ${h.para}`).join(", ")}</p>` : ""}
-      <p style="margin-top: 6px;">Dados de Destino: <b>${dados}</b> restante(s)${podeRerolar ? " — rerolar gasta 1" : ""}.</p>${guardado ? `<p class="nauren-popup-nota">Tudo é Meu!: você guardou um d20 <b>${guardado.face}</b> de ${guardado.de}.</p>` : ""}${aureum ? `<p class="nauren-popup-nota">Aureum: seu d20 guardado neste combate é <b>${aureum.face}</b>.</p>` : ""}${avisos}`;
+      podeRerolar && face === 1 ? "Oração do Prisma: você pode rerolar este 1 natural." : "",
+      podeRerolar && piso ? `Guiar o Destino: na rerolagem, resultados abaixo de ${piso} (exceto 1) contam como ${piso}.` : "",
+      podeRerolar && trava ? `${trava.name}: rerolar também custa 1 Estresse.` : "",
+      guardado ? `Tudo é Meu!: você guardou um d20 <b>${guardado.face}</b> de ${foundry.utils.escapeHTML(guardado.de ?? "")}.` : "",
+      aureum ? `Palavra de Destino: Aureum — d20 guardado <b>${aureum.face}</b>.` : ""
+    ].filter(Boolean).map(a => kit.naurenKitNota(a)).join("");
+    const destinoBloco = perguntaLigada && !(face === 20 && !rerolou) ? kit.naurenKitDestino({ dados, pode: podeRerolar, motivo: motivoSem, custoExtra: trava && podeRerolar ? "e 1 Estresse" : "" }) : "";
+    const cab = `<div class="nk-secao">${foundry.utils.escapeHTML(titulo)}${tipo === "esquiva" ? " <span>· sua reação</span>" : tipo === "teste" ? " <span>· teste</span>" : ""}</div>`;
+    const conteudo = `${cab}${faixa}${destinoBloco}${avisos}`;
+    const botoes = [
+      ...(podeRerolar ? [{ action: "rerolar", label: trava ? "Rerolar (−1 Destino, +1 Estresse)" : "Rerolar (−1 Destino)", icon: "fas fa-dice-d20", class: "nk-destino-btn" }] : []),
+      ...(guardado ? [{ action: "guardado", label: `Usar d20 guardado (${guardado.face})`, icon: "fas fa-hand-holding" }] : []),
+      ...(aureum ? [{ action: "aureum", label: `Usar d20 do Aureum (${aureum.face})`, icon: "fas fa-sun" }] : []),
+      { action: "manter", label: podeRerolar ? `Manter o ${total}` : "Continuar", default: true }
+    ];
     const escolha = await foundry.applications.api.DialogV2.wait({
-      window: { title: `Rerolar com Destino — ${actor.name}` },
+      ...kit.NAUREN_KIT_JANELA,
+      window: { title: `Rolagem: ${titulo || "d20"} — ${actor.name}` },
       content: conteudo,
-      buttons: [
-        ...(podeRerolar ? [{ action: "rerolar", label: trava ? "Rerolar (+1 Estresse)" : "Rerolar", icon: "fas fa-dice-d20" }] : []),
-        ...(guardado ? [{ action: "guardado", label: `Usar d20 guardado (${guardado.face})`, icon: "fas fa-hand-holding" }] : []),
-        ...(aureum ? [{ action: "aureum", label: `Usar d20 do Aureum (${aureum.face})`, icon: "fas fa-sun" }] : []),
-        { action: "manter", label: "Manter", default: true }
-      ],
+      buttons: botoes,
       rejectClose: false
     }).catch(() => "manter");
     if (escolha === "aureum" && aureum) {
@@ -2283,13 +2322,15 @@ async function naurenOferecerDestino(actor, resultado, { titulo = "", tipo = "te
       await actor.unsetFlag("nauren", "dadoRoubado");
       break;
     }
-    if (escolha !== "rerolar") break;
+    if (escolha !== "rerolar" || !podeRerolar) break;
     await actor.update({ "system.dadosDestino.value": dados - 1, ...(trava ? { "system.stress.value": (actor.system.stress?.value ?? 0) + 1 } : {}) });
     if (trava) {
       resultado.historicoDestino.push({ de: "Destino", para: `+1 Estresse (${trava.name}: pago, pode usar Destino de novo)` });
       await trava.delete().catch(() => null);
       trava = null;
     }
+    if (chaveAcao) actor._naurenDestinoUsadoEm = chaveAcao;
+    rerolou = true; anterior = face;
     naurenProcessarGatilhos("euGasteiDadoDeDestino", actor).catch(() => {});
     naurenProcessarGatilhos("aliadoGastouDadoDeDestino", actor).catch(() => {});
     const novo = await new Roll(roll.formula).evaluate();
@@ -2306,6 +2347,7 @@ async function naurenOferecerDestino(actor, resultado, { titulo = "", tipo = "te
       faceNova = piso;
     }
     resultado.historicoDestino.push({ de: `${face} (total ${total})`, para: `${faceNova} (total ${novo.total})${observacao}` });
+    // Facilidade/Dificuldade: a rerolagem troca só o d20 usado.
     resultado.rolls[resultado.usedIndex] = novo;
   }
   return resultado;
@@ -2450,7 +2492,7 @@ async function naurenMoverTokenPara(tokenDoc, centro, { teleporte = false } = {}
  */
 const NAUREN_QUERY_ESCOLHA_PALAVRA = "nauren.escolhaPalavra";
 async function naurenHandleQueryEscolhaPalavra({ alvoNome, origem }) {
-  return foundry.applications.api.DialogV2.wait({
+  return foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA,
     window: { title: `Palavra — ${alvoNome}` },
     content: `<p><b>${alvoNome}</b> foi marcado com uma Palavra (${origem}). Qual Condição a Palavra causa?</p>`,
     buttons: [{ action: "condicao-lerdeza", label: "Lerdeza", default: true }, { action: "condicao-loucura", label: "Loucura" }, { action: "condicao-fragmentado", label: "Fragmentado" }],
@@ -2496,7 +2538,7 @@ const NAUREN_QUERY_ESCOLHA_DRUIDISMO = "nauren.escolhaDruidismo";
 async function naurenHandleQueryEscolhaDruidismo({ nome, nivel, druida, exceto = "", segunda = false }) {
   const todas = [{ action: "lagoa", label: "Lagoa" }, { action: "cachoeira", label: "Cachoeira" }, { action: "chuva", label: "Chuva" }].filter(b => b.action !== exceto);
   todas[todas.length - 1].default = true;
-  return foundry.applications.api.DialogV2.wait({
+  return foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA,
     window: { title: `Druidismo — ${nome} (nível ${nivel})${segunda ? " · 2ª bênção" : ""}` },
     content: `<p><b>${nome}</b> subiu para o nível ${nivel}. Pelo Druidismo de <b>${druida}</b>, escolha ${segunda ? "a <b>segunda</b> bênção (Druida no nível 16 ou mais)" : "uma bênção"}:</p>
       <ul>${todas.map(b => `<li>${{ lagoa: "<b>Lagoa:</b> +1 ponto para distribuir nas Subclasses.", cachoeira: "<b>Cachoeira:</b> pode mudar 2 pontos de Subclasse já investidos.", chuva: "<b>Chuva:</b> +3 Pontos de Vida adicionais." }[b.action]}</li>`).join("")}</ul>`,
@@ -2870,7 +2912,7 @@ Hooks.on("targetToken", async (usuario, token, marcado) => {
   const ator = canvas?.tokens?.controlled?.find(t => t !== token)?.actor ?? game.user.character;
   if (!ator) return;
   const custo = [estado.custo ? `−${estado.custo} Estamina` : "", estado.cura ? `cura ${estado.cura}` : "", estado.condNome ? `recebe ${estado.condNome}` : ""].filter(Boolean).join(" • ");
-  const sim = await foundry.applications.api.DialogV2.confirm({
+  const sim = await foundry.applications.api.DialogV2.confirm({ ...NK.NAUREN_KIT_JANELA,
     window: { title: estado.nome },
     content: `<p><b>${ator.name}</b> interage com <b>${estado.nome}</b>?</p><p>${custo}${estado.cargasMax ? ` — cargas ${estado.cargas}/${estado.cargasMax}` : ""}</p><p class="nauren-popup-nota">Recusar só mantém o target (para atacar, por exemplo).</p>`,
     yes: { label: "Interagir" }, no: { label: "Só marcar como alvo" }, rejectClose: false
@@ -3011,12 +3053,14 @@ function naurenCronometroNoDialog(app, root) {
   let resta = tempo;
   const el = document.createElement("div");
   el.className = "nauren-cronometro";
-  el.innerHTML = `<i class="fas fa-hourglass-half"></i> Responda em <b>${resta}</b>s — sem resposta: sem reação`;
+  el.innerHTML = `<span class="nauren-cronometro-texto"><i class="fas fa-hourglass-half"></i> Responda em <b>${resta}</b>s — sem resposta: sem reação</span><span class="nauren-cronometro-barra" aria-hidden="true"><i style="width: 100%"></i></span>`;
   alvo.prepend(el);
   const intervalo = setInterval(() => {
     resta -= 1;
     const b = el.querySelector("b");
     if (b) b.textContent = String(Math.max(0, resta));
+    const barra = el.querySelector(".nauren-cronometro-barra i");
+    if (barra) barra.style.width = `${Math.max(0, 100 * resta / tempo)}%`;
     if (resta <= 0) { clearInterval(intervalo); try { app.close(); } catch (err) { /* já fechado */ } }
   }, 1000);
   return () => clearInterval(intervalo);

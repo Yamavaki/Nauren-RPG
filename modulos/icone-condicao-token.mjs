@@ -6,6 +6,12 @@ import { NAUREN_MASCOTES_INICIAIS, NAUREN_PACKS_DEFINICAO, NAUREN_VERSAO_SEED_MA
 import { NaurenAlvoHelper, NaurenRegionHelper } from "./ficha-ator.mjs";
 import { naurenAnimarPassiva, naurenMotionEmTodos } from "./animacoes.mjs";
 import { naurenBordaConfig, naurenBordaDadosPreparados } from "./borda-token.mjs";
+import { NAUREN_KIT_JANELA } from "./janelas-kit.mjs";
+/** 0.95: ofertas de gatilho dizem o que aconteceu antes de perguntar. */
+function naurenOfertaPrefixo(item, rotuloEvento) {
+  const r = String(rotuloEvento ?? "").replace(/\s*\(.*\)\s*$/, "");
+  return r ? `<div class="nk-oferta-porque">Aconteceu: ${foundry.utils.escapeHTML(r)}</div>` : "";
+}
 /* =======================================
  * ÍCONE DA CONDIÇÃO NO TOKEN
  * -----------------------------------------------------------------------
@@ -2185,7 +2191,7 @@ async function naurenProcessarGatilhosInterno(tipoEvento, atorEvento, contexto =
             return !!e && (!(e.max > 0) || (e.valor ?? 0) < e.max) && !naurenRecursoEstaTravado(candidato, id); };
           const okA = podeReceber(alvoRec), okB = podeReceber(g.recursoAlternativo);
           if (!okA && !okB) continue;
-          const esc = okA && okB ? await foundry.applications.api.DialogV2.wait({ window: { title: item.name }, content: `<p><b>${item.name}</b>: qual você recebe?</p>`,
+          const esc = okA && okB ? await foundry.applications.api.DialogV2.wait({ ...NAUREN_KIT_JANELA, window: { title: item.name }, content: naurenOfertaPrefixo(item, rotuloEvento) + `<p><b>${item.name}</b>: qual você recebe?</p>`,
             buttons: [{ action: "a", label: nomeRec(alvoRec) }, { action: "b", label: nomeRec(g.recursoAlternativo) }], rejectClose: false }).catch(() => null) : (okA ? "a" : "b");
           if (!esc) continue;
           if (esc === "b") { g.recurso = g.recursoAlternativo; g.efeitoUuid = ""; }
@@ -2226,7 +2232,7 @@ async function naurenProcessarGatilhosInterno(tipoEvento, atorEvento, contexto =
           continue;
         }
         if (g.recurso === "virarPaginaGratis") {
-          const esc = await foundry.applications.api.DialogV2.wait({ window: { title: item.name }, content: `<p>${item.name}: virar a página do Grimório (sem custo)?</p>`,
+          const esc = await foundry.applications.api.DialogV2.wait({ ...NAUREN_KIT_JANELA, window: { title: item.name }, content: naurenOfertaPrefixo(item, rotuloEvento) + `<p>${item.name}: virar a página do Grimório (sem custo)?</p>`,
             buttons: naurenBotoesDirecaoGrimorio(candidato, "", [{ action: "0", label: "Não" }]), rejectClose: false }).catch(() => "0");
           if (Number(esc)) { const r = await naurenMoverGrimorio(candidato, Number(esc) * naurenGrimorio(candidato).janela); concedeuAlgo = true; linhasCard.push({ label: "Grimório", value: r.texto, breakdown: r.nomes }); }
           continue;
@@ -2245,8 +2251,8 @@ async function naurenProcessarGatilhosInterno(tipoEvento, atorEvento, contexto =
           const recP = specP ? naurenRecursoDoAtor(candidato, specP) : null;
           if (specP && (recP?.valor ?? 0) < qtdP) continue;
           const nomeQuem = (() => { try { const d = fromUuidSync(contexto.alvoUuid); return (d?.actor ?? d)?.name ?? "um inimigo"; } catch (err) { return "um inimigo"; } })();
-          const escC = await foundry.applications.api.DialogV2.wait({ window: { title: item.name },
-            content: `<p><b>${nomeQuem}</b> recebeu <b>${condC.name}</b> a até ${raioC} m de você.</p><p>${specP ? `Gastar <b>${qtdP} ${recP?.nome ?? specP}</b> (você tem ${recP?.valor ?? 0}) para a` : "A"}plicar 1 acúmulo em outro inimigo?</p>`,
+          const escC = await foundry.applications.api.DialogV2.wait({ ...NAUREN_KIT_JANELA, window: { title: item.name },
+            content: naurenOfertaPrefixo(item, rotuloEvento) + `<p><b>${nomeQuem}</b> recebeu <b>${condC.name}</b> a até ${raioC} m de você.</p><p>${specP ? `Gastar <b>${qtdP} ${recP?.nome ?? specP}</b> (você tem ${recP?.valor ?? 0}) para a` : "A"}plicar 1 acúmulo em outro inimigo?</p>`,
             buttons: [...opcoesC.map(t => ({ action: t.id, label: t.document.name })), { action: "nenhum", label: "Não", default: true }], rejectClose: false }).catch(() => "nenhum");
           const tokC = opcoesC.find(t => t.id === escC);
           if (!tokC) continue;
@@ -2263,7 +2269,7 @@ async function naurenProcessarGatilhosInterno(tipoEvento, atorEvento, contexto =
           const aliados = (canvas?.tokens?.placeables ?? []).filter(t => t.actor && t !== tokEu && t.document.disposition === tokEu?.document?.disposition);
           if (!aliados.length || !g.efeitoUuid) continue;
           const nomeEfA = (() => { try { return fromUuidSync(g.efeitoUuid)?.name ?? "o efeito"; } catch (err) { return "o efeito"; } })();
-          const esc = await foundry.applications.api.DialogV2.wait({ window: { title: item.name }, content: `<p><b>${item.name}</b>: qual aliado recebe <b>${nomeEfA}</b>?</p>`,
+          const esc = await foundry.applications.api.DialogV2.wait({ ...NAUREN_KIT_JANELA, window: { title: item.name }, content: naurenOfertaPrefixo(item, rotuloEvento) + `<p><b>${item.name}</b>: qual aliado recebe <b>${nomeEfA}</b>?</p>`,
             buttons: [...aliados.map(t => ({ action: t.id, label: t.document.name })), { action: "nenhum", label: "Nenhum" }], rejectClose: false }).catch(() => "nenhum");
           const tokA = aliados.find(t => t.id === esc);
           if (!tokA) continue;
@@ -2281,8 +2287,8 @@ async function naurenProcessarGatilhosInterno(tipoEvento, atorEvento, contexto =
           for (const emCursoAntes of [atorEvento?.sheet?._acaoEmCurso, candidato.sheet?._acaoEmCurso]) {
             if (emCursoAntes) await Promise.race([emCursoAntes.catch(() => {}), new Promise(r => setTimeout(r, 30000))]);
           }
-          const escA = await foundry.applications.api.DialogV2.wait({ window: { title: item.name },
-            content: `<p><b>${item.name}</b>: escolha uma.</p>`,
+          const escA = await foundry.applications.api.DialogV2.wait({ ...NAUREN_KIT_JANELA, window: { title: item.name },
+            content: naurenOfertaPrefixo(item, rotuloEvento) + `<p><b>${item.name}</b>: escolha uma.</p>`,
             buttons: [...listaE.map(x => ({ action: String(x.i), label: x.a.nome })), { action: "nao", label: "Agora não" }], rejectClose: false }).catch(() => "nao");
           if (escA !== "nao" && escA !== null && listaE.some(x => String(x.i) === escA)) {
             try { await candidato.sheet._executarAcao(item, Number(escA)); } catch (err) { console.warn("Nauren RPG | Falha ao usar a Ação escolhida.", err); }
@@ -2305,8 +2311,8 @@ async function naurenProcessarGatilhosInterno(tipoEvento, atorEvento, contexto =
             if (nomeCond && !cond) break;
             if (volta > 0 && !nomeCond) break;
             const resta = cond ? Math.max(1, cond.system.acumulos ?? 1) : 1;
-            const sim = await foundry.applications.api.DialogV2.confirm({ window: { title: `${item.name} — ${candidato.name}` },
-              content: `<p>Você esquivou de <b>${tokAt.name}</b>. Atacar agora com <b>${arma.name}</b>, sem custo?${resta > 1 ? ` (${resta} ataques disponíveis)` : ""}</p>`,
+            const sim = await foundry.applications.api.DialogV2.confirm({ ...NAUREN_KIT_JANELA, window: { title: `${item.name} — ${candidato.name}` },
+              content: naurenOfertaPrefixo(item, rotuloEvento) + `<p>Você esquivou de <b>${tokAt.name}</b>. Atacar agora com <b>${arma.name}</b>, sem custo?${resta > 1 ? ` (${resta} ataques disponíveis)` : ""}</p>`,
               yes: { label: "Atacar" }, no: { label: "Agora não" }, rejectClose: false }).catch(() => false);
             if (!sim) break;
             for (const t of Array.from(game.user.targets ?? [])) t.setTarget(false, { releaseOthers: false });
@@ -2340,8 +2346,8 @@ async function naurenProcessarGatilhosInterno(tipoEvento, atorEvento, contexto =
           if (tokAlvoOf?.documentName === "Actor") tokAlvoOf = tokAlvoOf.getActiveTokens?.(true, true)?.[0] ?? null;
           if (tokAlvoOf && (tokAlvoOf.actor ?? tokAlvoOf) === candidato) tokAlvoOf = null;
           const porque = { penitenciaAceita: `sua penitência causou ${contexto.danoPenitencia} de dano`, euAcerteiCritico: "você acertou um crítico", aliadoAcertouCritico: `${atorEvento?.name ?? "um aliado"} acertou um crítico` }[tipoEvento] ?? "";
-          const usar = await foundry.applications.api.DialogV2.confirm({ window: { title: item.name },
-            content: `<p>${porque ? `${porque.charAt(0).toUpperCase()}${porque.slice(1)}${tokAlvoOf ? ` em <b>${tokAlvoOf.name}</b>` : ""}. ` : ""}Usar <b>${acaoOf.nome || item.name}</b> agora?</p>`, yes: { label: "Usar" }, no: { label: "Agora não" }, rejectClose: false }).catch(() => false);
+          const usar = await foundry.applications.api.DialogV2.confirm({ ...NAUREN_KIT_JANELA, window: { title: item.name },
+            content: naurenOfertaPrefixo(item, rotuloEvento) + `<p>${porque ? `${porque.charAt(0).toUpperCase()}${porque.slice(1)}${tokAlvoOf ? ` em <b>${tokAlvoOf.name}</b>` : ""}. ` : ""}Usar <b>${acaoOf.nome || item.name}</b> agora?</p>`, yes: { label: "Usar" }, no: { label: "Agora não" }, rejectClose: false }).catch(() => false);
           if (usar) {
             if (acaoOf.modoAlvo === "selecionado") {
               const meuTok = candidato.getActiveTokens?.(true)?.[0];
@@ -2361,7 +2367,7 @@ async function naurenProcessarGatilhosInterno(tipoEvento, atorEvento, contexto =
           const opcoes = [];
           for (const u of g.opcoesUuids ?? []) { try { const d = await fromUuid(u); if (d) opcoes.push({ action: u, label: d.name }); } catch (err) { /* ignora */ } }
           if (!opcoes.length) continue;
-          const esc = await foundry.applications.api.DialogV2.wait({ window: { title: item.name }, content: `<p>${item.name}: escolha um.</p>`, buttons: opcoes, rejectClose: false }).catch(() => null);
+          const esc = await foundry.applications.api.DialogV2.wait({ ...NAUREN_KIT_JANELA, window: { title: item.name }, content: naurenOfertaPrefixo(item, rotuloEvento) + `<p>${item.name}: escolha um.</p>`, buttons: opcoes, rejectClose: false }).catch(() => null);
           if (!esc) continue;
           const nome = await NaurenAlvoHelper.aplicarCondicao(candidato, esc, 1).catch(() => null);
           if (nome) { concedeuAlgo = true; linhasCard.push({ label: "Escolheu", value: nome }); }
@@ -2382,13 +2388,13 @@ async function naurenProcessarGatilhosInterno(tipoEvento, atorEvento, contexto =
               && (!raioT || !tokEu || naurenMedirDistanciaBordas(tokEu, t) <= raioT)
               && !t.actor.items.some(i => i.type === "condicao" && i.system.ativo !== false && (i.getFlag("nauren", "cadeiaRaizUuid") === contexto.condicaoUuid || i.name === condRec.name)));
             if (!aliados.length) continue;
-            const esc = await foundry.applications.api.DialogV2.wait({ window: { title: item.name }, content: `<p>${item.name}: passar <b>${condRec.name}</b> para qual aliado${custoEst ? ` (${custoEst} Estamina)` : ""}?</p>`,
+            const esc = await foundry.applications.api.DialogV2.wait({ ...NAUREN_KIT_JANELA, window: { title: item.name }, content: naurenOfertaPrefixo(item, rotuloEvento) + `<p>${item.name}: passar <b>${condRec.name}</b> para qual aliado${custoEst ? ` (${custoEst} Estamina)` : ""}?</p>`,
               buttons: [...aliados.map(t => ({ action: t.id, label: t.document.name })), { action: "nenhum", label: "Não passar" }], rejectClose: false }).catch(() => "nenhum");
             tokDestino = aliados.find(t => t.id === esc); if (!tokDestino) continue;
           } else if (g.perguntarPagarEstresse) {
             const est = candidato.system.stress?.value ?? 0, estMax = candidato.system.stress?.max ?? 2;
             if (est >= estMax) continue;
-            const ok = await foundry.applications.api.DialogV2.confirm({ window: { title: item.name }, content: `<p>${item.name}: anular <b>${condRec.name}</b> pagando 1 Estresse?</p>`, yes: { label: "Pagar 1 Estresse" }, no: { label: "Não" }, rejectClose: false }).catch(() => false);
+            const ok = await foundry.applications.api.DialogV2.confirm({ ...NAUREN_KIT_JANELA, window: { title: item.name }, content: naurenOfertaPrefixo(item, rotuloEvento) + `<p>${item.name}: anular <b>${condRec.name}</b> pagando 1 Estresse?</p>`, yes: { label: "Pagar 1 Estresse" }, no: { label: "Não" }, rejectClose: false }).catch(() => false);
             if (!ok) continue;
             await candidato.update({ "system.stress.value": est + 1 });
             linhasCard.push({ label: "Estresse", value: "+1", breakdown: "pago para recusar" });
@@ -2414,7 +2420,7 @@ async function naurenProcessarGatilhosInterno(tipoEvento, atorEvento, contexto =
           // Só Condições negativas: remover um benefício próprio (ex.: Facilidade no próximo ataque) não faz sentido.
           const minhas = candidato.items.filter(i => i.type === "condicao" && i.system.ativo !== false && naurenCondicaoNegativa(i));
           if (!minhas.length) continue;
-          const esc = await foundry.applications.api.DialogV2.wait({ window: { title: item.name }, content: `<p>${item.name}: remover qual Condição (sem gastar Estamina)?</p>`,
+          const esc = await foundry.applications.api.DialogV2.wait({ ...NAUREN_KIT_JANELA, window: { title: item.name }, content: naurenOfertaPrefixo(item, rotuloEvento) + `<p>${item.name}: remover qual Condição (sem gastar Estamina)?</p>`,
             buttons: [...minhas.map(i => ({ action: i.id, label: i.system.acumulativel && (i.system.acumulos ?? 1) > 1 ? `${i.name} (1 de ${i.system.acumulos})` : i.name })), { action: "nenhuma", label: "Nenhuma" }], rejectClose: false }).catch(() => "nenhuma");
           const alvoCond = candidato.items.get(esc);
           if (!alvoCond) continue;
@@ -2505,7 +2511,7 @@ async function naurenProcessarGatilhosInterno(tipoEvento, atorEvento, contexto =
             (it.system.acoes ?? []).forEach((a, i) => { if (a.usaUsos && (a.usosAtual ?? 0) < (a.usosMax ?? 0)) opcoes.push({ id: `${it.id}|${i}`, label: `${it.name} — ${a.nome} (${a.usosAtual}/${a.usosMax})` }); });
           }
           if (!opcoes.length) { linhasCard.push({ label: item.name, value: "nenhuma habilidade com uso gasto" }); concedeuAlgo = true; continue; }
-          const escolha = await foundry.applications.api.DialogV2.wait({ window: { title: item.name }, content: "<p>Qual habilidade recupera 1 uso?</p>", buttons: [...opcoes.map(o => ({ action: o.id, label: o.label })), { action: "nenhuma", label: "Nenhuma" }], rejectClose: false }).catch(() => "nenhuma");
+          const escolha = await foundry.applications.api.DialogV2.wait({ ...NAUREN_KIT_JANELA, window: { title: item.name }, content: naurenOfertaPrefixo(item, rotuloEvento) + "<p>Qual habilidade recupera 1 uso?</p>", buttons: [...opcoes.map(o => ({ action: o.id, label: o.label })), { action: "nenhuma", label: "Nenhuma" }], rejectClose: false }).catch(() => "nenhuma");
           if (escolha && escolha !== "nenhuma") {
             const [itId, alvoIdx] = escolha.split("|");
             const it = candidato.items.get(itId);

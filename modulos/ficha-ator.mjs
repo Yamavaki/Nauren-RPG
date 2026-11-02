@@ -1,6 +1,7 @@
 /* Nauren RPG — Ficha do Ator (NaurenActorSheet). Separado do nauren.mjs na 0.94.22. */
 import { ARMA_TIPOS, ATRIBUTOS_BONUS, CALCULO_DADOS_DESTINO_OPCOES, CALCULO_ESTAMINA_COMBATE_OPCOES, CALCULO_MANA_OPCOES, CALCULO_VIDA_OPCOES, MODOS_ROLAGEM, NAUREN_ARRAYS_ADICIONAVEIS, NAUREN_CAMPOS_ACIMA_AUTOMATICOS, NAUREN_CAMPOS_ACIMA_GERAIS, NAUREN_CAMPOS_ANALISE_CRIATIVA, NAUREN_CAMPOS_ESTADO_ACAO, NAUREN_CAMPOS_ESTADO_ITEM, NAUREN_CAMPOS_MODIFICADOR_OPCOES, NAUREN_FASE_MODIFICADOR, NAUREN_NOMES_ATRIBUTO_CURTO, NAUREN_PODEROSA_EFEITOS, NAUREN_QUERY_APLICAR_CONDICAO, NAUREN_QUERY_APLICAR_CONDICAO_ECO, NAUREN_QUERY_AREA_AO_CRIAR, NAUREN_QUERY_BESTA_INICIAL, NAUREN_QUERY_CRIAR_ITEM, NAUREN_QUERY_DANO_COLISAO, NAUREN_QUERY_DOMAR, NAUREN_QUERY_ITEM_MESTRE, NAUREN_QUERY_MANIPULAR, NAUREN_QUERY_REACAO_PRE_ATAQUE, NAUREN_REACAO_RESISTIR_OPCOES, NAUREN_REFERENCIA_FORMULAS, NAUREN_ROTULO_FASE_MODIFICADOR, NaurenActor, NaurenActorData, NaurenBarrasEditor, NaurenConcessaoHelper, NaurenCondicaoData, NaurenCriadorMonstro, NaurenEfeitoData, NaurenGrupoHelper, NaurenHabilidadeData, NaurenHudCombate, NaurenHudRecursosEditor, NaurenItemSheet, NaurenMagiaData, NaurenProgressaoHelper, NaurenSubclasseHelper, RECURSOS_ALVO, USOS_RESET_LABEL, USOS_RESET_POR_COMBATE, campoAcao, campoCondicaoAplicada, campoDanoBloco, campoGatilho, campoModificador, campoModificadorExterno, naurenAbrirBorda, naurenAbrirConstrucaoPorAcao, naurenAbrirEnquadramento, naurenAcaoEhCura, naurenAcaoEhGolpe, naurenAcaoSemCustoEstaminaMana, naurenAgindoForaDoTurno, naurenAjusteCriticoDoGrupo, naurenAjusteCustoManaMagia, naurenAlcanceEmMetros, naurenAliadosAte, naurenAlvoDaRecarga, naurenAlvosSaoVelhos, naurenAncoraDuracaoAtual, naurenAnotarModsRecebidosNoCard, naurenAnotarNoRegistro, naurenApagarItensSeExistirem, naurenAplicarAcalanto, naurenAplicarDanoManual, naurenAplicarEfeitoSimples, naurenAplicarEfeitosPeriodicos, naurenAplicarPalavraComEscolha, naurenArmarPoderosa, naurenAtacouNoTurnoAtual, naurenAtualizarCondicaoPresenca, naurenAtualizarItemViaMestre, naurenAvaliarExpressaoSimples, naurenAvisarEstrelaDoArcoIris, naurenAvisarSeLinkBloqueado, naurenBandoCfg, naurenBandoChave, naurenBandoMembros, naurenBandoNoAlcance, naurenBeneficiosDoEstado, naurenBonusAcimaContra, naurenBordaPreviaDataUrl, naurenBordaPreviaDoAtor, naurenBotoesDeFormula, naurenBotoesDirecaoGrimorio, naurenBreakdownSimples, naurenBuscarMascotesDe, naurenCalcularEmpurrao, naurenCategoriaDaArma, naurenCategoriaDoAtor, naurenCategoriaEquipamento, naurenCelulasNaArea, naurenChaveEscopoRelogio, naurenChaveFlagSegura, naurenChecarCondicaoAoAtingirMax, naurenClamparRecursosAoMaximo, naurenCombatenteEhDoAtor, naurenCompensacoesContraOrigem, naurenConcederPrioridadePeloCard, naurenConcederRecurso, naurenConcederRecursoAoAtacante, naurenCondicaoNegativa, naurenCondicoesAtivas, naurenCondicoesLigadasA, naurenCongelarNoNivel, naurenConsumirUsoDaHabilidade, naurenContarAliadosProximos, naurenContextoInvencoes, naurenCriarFrascoEspecial, naurenCriarInvocacoes, naurenCriarItemNoAtor, naurenCronometroNoDialog, naurenDescricaoParaChat, naurenDeslocarToken, naurenDiferencaDesfazer, naurenDispararEventoNoDono, naurenDisposicaoDoAtor, naurenEfeitoComSubst, naurenEhCondicaoModelo, naurenEhGolpeEspiritual, naurenEhItem, naurenEmpurrarToken, naurenEquipamentoRecomendado, naurenEscalaPorCategoria, naurenEscolherCorDaPintura, naurenEscolherEfeitoPoderosa, naurenEscolherFrasco, naurenEscolherPeculiaridade, naurenEscolherPontoNoMapa, naurenEstiloEnquadramento, naurenEstresseDosAliados, naurenEstudoNoAlvo, naurenExecutarRecarga, naurenFaceD20, naurenFontesDeModificadores, naurenFormulaComTokensDoAtor, naurenFormulaParaTexto, naurenFotoCenaDesfazer, naurenFotografarModsRecebidos, naurenFrascoParaPacote, naurenGastarRecursoSimples, naurenGrimorio, naurenGuardarD20Roubado, naurenHandleQueryAreaAoCriar, naurenHandleQueryBestaInicial, naurenHandleQueryDanoColisao, naurenHandleQueryDomar, naurenHandleQueryItemMestre, naurenHandleQueryManipular, naurenHandleQueryReacaoPreAtaque, naurenHudAlvos, naurenIdentificadorTurnoAtual, naurenInterpretarModificador, naurenInterpretarModificadorComDado, naurenItemCorrespondeAoAlvo, naurenItemEhDoProjeto, naurenItensDoProjetoPorNome, naurenLimiteOfensivoBase, naurenLimiteVagaDefesa, naurenLimparMeusAlvos, naurenMaisDadosPoderosa, naurenMapearStrings, naurenMarcarAlvosAgora, naurenMedirDistanciaBordas, naurenMestreDaMesa, naurenMetrosEmpurrao, naurenModsAcima, naurenMontarDescricao, naurenMontarSelecaoPrioridade, naurenMoverGrimorio, naurenMoverTokenPara, naurenMoverTokenViaMestre, naurenMovimentoSaldo, naurenMunicoesCompativeis, naurenNivelDeOrigemNaClasse, naurenNomeDeToken, naurenNomeDoRecurso, naurenNomeNormalizado, naurenNomeParaUuid, naurenNomeRecurso, naurenNotificarGanhoPerda, naurenOferecerAcovardar, naurenOferecerDestino, naurenOperarEntidade, naurenOperarEstudo, naurenOperarRecursoViaMestre, naurenOperarRegistroPrioridade, naurenOrdemListaMagias, naurenPersonagensEmCena, naurenPesoOfensivo, naurenPesoOfensivoEquipado, naurenPontoDentroDaRegiao, naurenPostarCard, naurenPostarDescricaoNoChat, naurenPreparacaoUsadas, naurenPrepararModificador, naurenPresosPorArmadilha, naurenPrioridadesGeradas, naurenProcessarEmanacoes, naurenProcessarFrascoNoAlvo, naurenProcessarGatilhos, naurenProcessarTemplatesPersistentes, naurenRaizDaEvolucao, naurenReacoesPagasDano, naurenReacoesPagasDefesa, naurenReaplicarUpgradesDeSubclasse, naurenRecarregarUsos, naurenReconciliarTodosOsItens, naurenReconjurarPendente, naurenRecursoDoAtor, naurenRecursoEstaTravado, naurenRegistrarAtaqueNoTurno, naurenRegistrarUsoTorre, naurenRegistroParaExport, naurenRegistroParaFicha, naurenRegraVagasDefesa, naurenRegrasExtras, naurenReordenarGrimorio, naurenResolverPorNivel, naurenResolverPorRank, naurenResolverPrioridade, naurenResolverSelf, naurenResolverSelfEmObjeto, naurenResolverTokenFormula, naurenResumoDaAcao, naurenResumoEquipamentoClasse, naurenRolagemAuditada, naurenRollToBreakdownText, naurenRotuloToken, naurenSincronizarCriativasDoLadino, naurenSincronizarGrimorio, naurenSincronizarRecursosCustom, naurenSomarEfeitoPermanente, naurenSubstituirTokensDeContexto, naurenTemEstado, naurenTempoReacao, naurenTextoFrascoEspecial, naurenTextoHistoricoDestino, naurenTextoModificador, naurenTextoRolagem, naurenTimeoutReacaoMs, naurenTipoAlcanceAdivinhado, naurenTipoAlcanceDaAcao, naurenTiposEstudoDoAtor, naurenTokenElegivelPorDisposicao, naurenTransferirRecursoDoAlvo, naurenTravaDaAcao, naurenUltimoAtacante, naurenUmaVezMarcar, naurenUmaVezRecusa, naurenUsoDisponivel, naurenUsosExtrasPara, naurenUsosPassivaMax, naurenUuidEhEsteToken, naurenUuidPorSeed, naurenVagaDefesa, naurenValorEstudo, resumoCondicao, resumoCor, resumoEfeito } from "../nauren.mjs";
 import { NAUREN_MASCOTES_INICIAIS, naurenDisponivelNoInicio, naurenDuasArmasPendente, naurenExtraEstaminaCondicoes, naurenObterOuCriarPacks, naurenPreverDuasArmasGratis, naurenRolarAjustePopup, naurenTierTorre } from "./compendios.mjs";
+import * as NK from "./janelas-kit.mjs";
 import { naurenAnimarAcao, naurenAnimarCritico, naurenMotionEmTodos, naurenMotionEnviar, naurenMotionPlanoDaAcao } from "./animacoes.mjs";
 /* =======================================
  * 4. FICHA DO ATOR (Application V1 - continua funcionando normalmente)
@@ -217,7 +218,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     const opcoes = naurenBeneficiosDoEstado(estado, this.actor);
     const quantidade = Math.max(1, Math.round(naurenAvaliarExpressaoSimples(String(acao.beneficiosQuantidade || "1").replace(/@rank\b/gi, String(this._rankEfetivo(item)))) || 1));
     if (!opcoes.length) return;
-    const escolhidos = opcoes.length <= quantidade ? opcoes : await foundry.applications.api.DialogV2.prompt({
+    const escolhidos = opcoes.length <= quantidade ? opcoes : await foundry.applications.api.DialogV2.prompt({ ...NK.NAUREN_KIT_JANELA,
       window: { title: `${item.name} — ${estado.name}` },
       content: `<p>Escolha até <b>${quantidade}</b> benefícios de <b>${estado.name}</b> para conceder:</p>${opcoes.map(o => `<label class="nauren-popup-opt"><input type="checkbox" name="${o.id}"> <span>${o.rotulo}</span></label>`).join("")}`,
       ok: {
@@ -427,9 +428,9 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
       const bt = raiz.closest(".application, dialog")?.querySelector('button[data-action="analisar"]') ?? raiz.ownerDocument.querySelector('button[data-action="analisar"]');
       if (bt) bt.disabled = !!bloqueia;
     };
-    const escolha = await foundry.applications.api.DialogV2.wait({
+    const escolha = await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA,
       window: { title: `${item.name}`, icon: "fas fa-magnifying-glass" },
-      classes: ["nauren-analise-janela"], position: { width: 440 },
+      classes: ["nauren-analise-janela", "nauren-kit"], position: { width: 440 },
       content: conteudo,
       buttons: [{ action: "analisar", label: "Analisar", icon: "fas fa-eye", default: true, callback: () => "analisar" }, { action: "cancelar", label: "Cancelar" }],
       rejectClose: false,
@@ -487,7 +488,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     const nomeTeste = criativa ? `${entrada.tipo.nome}: ${criativa.rotulo}` : entrada.tipo.nome;
     const formulaEstudo = [String(intMinha), ...bonusEstudo.map(b => String(b.valor))].join(" + ");
     const d20 = await this._rollD20WithMode(formulaEstudo, "teste", "normal", null, null,
-      { titulo: `${item.name}: ${nomeTeste}`, tipo: "teste", bonusLinhas: [{ label: "Inteligência", value: `+${intMinha}` }, ...bonusEstudo.map(b => ({ label: b.nome, value: b.rotulo ?? `+${b.valor}` }))], contra: { rotulo: "Resultado", valor: dificuldade - 1, textoVence: "Passaria", textoPerde: "Falharia", ocultarValor: true } });
+      { titulo: `${item.name}: ${nomeTeste}`, tipo: "teste", bonusLinhas: [{ label: "Inteligência", value: `+${intMinha}` }, ...bonusEstudo.map(b => ({ label: b.nome, value: b.rotulo ?? `+${b.valor}` }))], contra: { rotulo: "Resultado", valor: dificuldade - 1, textoVence: "Passa", textoPerde: "Não passa", ocultarValor: true } });
     const roll = d20.rolls[d20.usedIndex];
     const passou = roll.total >= dificuldade;
     const historico = naurenTextoHistoricoDestino(d20);
@@ -566,7 +567,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
       }
     }
     if (!opcoes.length) { ui.notifications.warn("Falsificar Seu Destino: nenhum aliado na cena com habilidade de nível 1 a 3 da classe dele que você não tenha."); return [{ label: "Emprestar", value: "nada disponível" }]; }
-    const escolha = await foundry.applications.api.DialogV2.wait({
+    const escolha = await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA,
       window: { title: `${item.name} (${emprestadas.length}/${limite})` },
       content: "<p>Qual habilidade de um aliado você falsifica? Aparecem só as que a classe dele concede até o nível 3. A cópia fica na sua ficha com 1 uso por dia e para sempre no nível de origem (não sobe com o seu nível).</p>",
       buttons: [...opcoes.slice(0, 30).map(o => ({ action: o.action, label: o.label })), { action: "cancelar", label: "Cancelar" }],
@@ -590,7 +591,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     const acoesD = dados.system.acoes ?? [];
     const temCustoConv = acoesD.some(a => (Number(a.custoMana) || 0) > 0 || (a.custosRecursoProprio ?? []).some(c => c.ativo !== false && convertiveis.test(c.recurso ?? "")));
     if (temArdiloso && temCustoConv) {
-      const converter = await foundry.applications.api.DialogV2.confirm({ window: { title: "Falsificar Seu Destino" },
+      const converter = await foundry.applications.api.DialogV2.confirm({ ...NK.NAUREN_KIT_JANELA, window: { title: "Falsificar Seu Destino" },
         content: `<p><b>${o.hab.name}</b> custa Mana, Espírito da Batalha ou Energia. Pagar esses custos com <b>Espírito Ardiloso</b>?</p>`,
         yes: { label: "Pagar com Espírito Ardiloso" }, no: { label: "Manter os custos" }, rejectClose: false }).catch(() => false);
       if (converter) {
@@ -727,7 +728,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
       if (h.system.usaUsosPassiva && (h.system.usosPassivaAtual ?? 0) <= 0) continue;
       if (regra.exigeProjetoEquipado && !naurenItensDoProjetoPorNome(this.actor, regra.exigeProjetoEquipado).some(i => i.system.equipado)) continue;
       const resta = h.system.usaUsosPassiva ? (h.system.usosPassivaAtual ?? 0) : null;
-      const sim = await foundry.applications.api.DialogV2.confirm({ window: { title: h.name },
+      const sim = await foundry.applications.api.DialogV2.confirm({ ...NK.NAUREN_KIT_JANELA, window: { title: h.name },
         content: `<p><b>${h.name}</b>: fazer <b>2 Ações</b> nesta Prioridade${resta !== null ? ` (gasta 1 uso, você tem ${resta})` : ""}?</p><p>Esta Ação (${acao?.nome || item.name}) é a 1ª; a 2ª fica guardada para logo depois.</p>`,
         yes: { label: "Sim, 2 Ações" }, no: { label: "Não" }, rejectClose: false }).catch(() => false);
       if (!sim) continue;
@@ -815,7 +816,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
       const acumulosBuff = sys.acumulativel ? Math.max(1, sys.acumulos ?? 1) : 1;
       let vaiParaAcerto = false;
       if (sys.proximaAcaoEscolherAcertoOuDano && acao.ehAtaque && pedaco("proximaAcaoBonusDano")) {
-        const escPL = await foundry.applications.api.DialogV2.wait({ window: { title: c.name }, content: `<p>${c.name}: usar <b>+${pedaco("proximaAcaoBonusDano")}</b> no acerto ou no dano?</p>`,
+        const escPL = await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA, window: { title: c.name }, content: `<p>${c.name}: usar <b>+${pedaco("proximaAcaoBonusDano")}</b> no acerto ou no dano?</p>`,
           buttons: [{ action: "acerto", label: "No acerto" }, { action: "dano", label: "No dano" }], rejectClose: false }).catch(() => "dano");
         vaiParaAcerto = escPL === "acerto";
       }
@@ -864,7 +865,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
         const tokEu = this.actor.getActiveTokens?.(true)?.[0];
         const aliados = (canvas?.tokens?.placeables ?? []).filter(t => t.actor && t !== tokEu && t.document.disposition === tokEu?.document?.disposition);
         if (aliados.length) {
-          const esc = await foundry.applications.api.DialogV2.wait({ window: { title: e.item.name }, content: "<p>Qual aliado recebe a Prioridade deste ataque?</p>",
+          const esc = await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA, window: { title: e.item.name }, content: "<p>Qual aliado recebe a Prioridade deste ataque?</p>",
             buttons: aliados.map(t => ({ action: t.id, label: t.document.name })), rejectClose: false }).catch(() => null);
           const tokA = aliados.find(t => t.id === esc);
           if (tokA) {
@@ -2145,7 +2146,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     // Regra da mesa: Condição negativa custa Estamina para sair. Tirar de graça é decisão do Mestre, então só ele vê o botão.
     if (game.user.isGM) botoes.push({ label: `${acaoLabel.charAt(0).toUpperCase()}${acaoLabel.slice(1)} sem gastar nada (Mestre)`, action: "gratis", default: !temSuficiente, callback: () => { escolha = "gratis"; } });
     botoes.push({ label: "Cancelar", action: "cancelar", default: !temSuficiente && !game.user.isGM });
-    await foundry.applications.api.DialogV2.wait({
+    await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA,
       window: { title: `${item.name} — remover` },
       content: `<p>${acaoLabel.charAt(0).toUpperCase()}${acaoLabel.slice(1)} a condição "${item.name}" custa <b>${quantidade} de ${naurenNomeDoRecurso(null, recurso)}</b>${!temSuficiente ? ` - você só tem ${valorAtual}, não o suficiente para pagar</p><p>Você pode remover sem pagar, ou cancelar` : ""}.</p>`,
       buttons: botoes,
@@ -2235,7 +2236,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     let escolha = null;
     const pre = this._pagamentoEfeitoPre; this._pagamentoEfeitoPre = null;
     if (pre && (pre !== "espirito" || podeTrocarEspirito)) escolha = pre;
-    else await foundry.applications.api.DialogV2.wait({
+    else await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA,
       window: { title: `${item.name} — ativar` },
       content: `<p>Ativar "${item.name}" custa <b>${custo} de Estamina</b> - como prefere pagar?</p>`,
       buttons: botoes,
@@ -2417,16 +2418,24 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     ].filter(Boolean).join(" e ");
 
     let escolha = null;
-    await foundry.applications.api.DialogV2.wait({
+    await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA,
       window: { title: `${item.name} — Penitência` },
       content: `
-        <p>Como conjurar <b>${item.name}</b>?</p>
-        ${linhasResumo.length ? `<p class="item-meta-hint nauren-popup-resumo">${linhasResumo.join(" · ")}</p>` : ""}
-        ${bonusPenitenciaTexto ? `<p class="item-meta-hint nauren-popup-resumo">Se aceitar a Penitência, ganha ${bonusPenitenciaTexto} nesta conjuração.</p>` : ""}
+        ${NK.naurenKitCabecalho({ titulo: `Como conjurar ${foundry.utils.escapeHTML(item.name)}?`, sub: linhasResumo.join(" · "), tom: "roxo" })}
+        <div class="nk-escolhas-duas">
+          <div class="nk-escolha-card">
+            <div class="nk-escolha-nome">Evitar a Penitência</div>
+            <div class="nk-escolha-desc">Rola <b>${acao.penitenciaTesteDado || "1d6"}</b>: a magia <b>falha se sair ${descricaoRisco}</b>. Cada conjuração seguida sem penitência aumenta essa chance.</div>
+          </div>
+          <div class="nk-escolha-card nk-escolha-destaque">
+            <div class="nk-escolha-nome">Aceitar a Penitência</div>
+            <div class="nk-escolha-desc">${descricaoCusto}. A magia <b>não falha</b>${bonusPenitenciaTexto ? ` e ganha <b>${bonusPenitenciaTexto}</b>` : ""}.</div>
+          </div>
+        </div>
       `,
       buttons: [
-        { label: `Evitar a Penitência (falha em ${descricaoRisco} no ${acao.penitenciaTesteDado || "1d6"})`, action: "evitar", callback: () => { escolha = "evitar"; } },
-        { label: `Aceitar a Penitência (${descricaoCusto}${bonusPenitenciaTexto ? `, ganha ${bonusPenitenciaTexto}` : ""})`, action: "aceitar", default: true, callback: () => { escolha = "aceitar"; } }
+        { label: "Evitar a Penitência", action: "evitar", callback: () => { escolha = "evitar"; } },
+        { label: "Aceitar a Penitência", action: "aceitar", default: true, callback: () => { escolha = "aceitar"; } }
       ],
       rejectClose: false
     }).catch(() => null);
@@ -2464,11 +2473,11 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     }
     const htmlOpcoes = opcoes.map((o, i) => `<option value="${i}">${o.label}</option>`).join("");
     let escolhaIndex = null;
-    await foundry.applications.api.DialogV2.wait({
+    await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA,
       window: { title: `${tituloHabilidade} — escolher arma e ataque` },
       content: `
         <p>Qual arma (e qual ataque dela) você quer usar?</p>
-        <div class="field"><select name="armaEAcao">${htmlOpcoes}</select></div>`,
+        <div class="field"><label for="nauren-arma-e-acao">Arma e ataque</label><select id="nauren-arma-e-acao" name="armaEAcao">${htmlOpcoes}</select></div>`,
       buttons: [
         { label: "Confirmar", action: "ok", default: true, callback: (event, button, dialog) => {
           const formEl = button?.form || event?.currentTarget?.form || dialog?.element?.querySelector?.("form") || dialog?.querySelector?.("form");
@@ -2506,8 +2515,8 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
       + opcoes.map((o, k) => `<label class="nauren-popup-opt"><input type="radio" name="condicaoEscolhida" value="${o.uuid}" ${k === 0 && !opcional ? "checked" : ""}>
       <span><b>${esc(o.rotulo || o.nome)}</b>${o.rotulo ? ` <em>(${esc(o.nome)})</em>` : ""}${o.resumo ? `<br><em>${esc(o.resumo)}</em>` : ""}</span></label>`).join("");
     let escolhaUuid = null;
-    await foundry.applications.api.DialogV2.wait({
-      window: { title: `${tituloHabilidade} — escolher efeito` }, classes: ["nauren-dialogo"], position: { width: 420 },
+    await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA,
+      window: { title: `${tituloHabilidade} — escolher efeito` }, classes: ["nauren-dialogo", "nauren-kit"], position: { width: 420 },
       content: `<p class="nauren-popup-intro">${intro || "Qual efeito você quer aplicar se o ataque acertar?"}</p><fieldset class="nauren-popup-group"><legend>Efeito</legend>${htmlOpcoes}</fieldset>`,
       buttons: [
         { label: "Confirmar", action: "ok", default: true, callback: (event, button, dialog) => {
@@ -2530,7 +2539,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
    */
   async _popupPerguntaAtaqueNoTurno(tituloHabilidade) {
     let resposta = false;
-    await foundry.applications.api.DialogV2.wait({
+    await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA,
       window: { title: `${tituloHabilidade} — Efeito Extra` },
       content: `<p>Você realizou um ataque contra um inimigo neste turno (antes de usar esta Habilidade)?</p>`,
       buttons: [
@@ -2577,11 +2586,11 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
       return 0;
     }
     let escolha = 0;
-    await foundry.applications.api.DialogV2.wait({
+    await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA,
       window: { title: `${tituloHabilidade} — quanto gastar?` },
       content: `
         <p>Quanto de <b>${nomeRecurso}</b> você quer gastar? Você tem ${disponivel} disponível.</p>${disponivel < disponivelReal && motivoLimite ? `<p class="hint">${motivoLimite}.</p>` : ""}
-        <div class="field"><input type="number" id="nauren-escolha-recurso-input" value="${Math.max(minimo, Math.min(disponivel, sugerido ?? minimo))}" min="${minimo}" max="${disponivel}" step="1"></div>`,
+        <div class="field"><label for="nauren-escolha-recurso-input">Quanto de ${nomeRecurso} gastar</label><input type="number" id="nauren-escolha-recurso-input" value="${Math.max(minimo, Math.min(disponivel, sugerido ?? minimo))}" min="${minimo}" max="${disponivel}" step="1"></div>`,
       buttons: [
         { label: "Confirmar", action: "ok", default: true, callback: (event, button, dialog) => {
           const formEl = button?.form || event?.currentTarget?.form || dialog?.element?.querySelector?.("form") || dialog?.querySelector?.("form");
@@ -2624,7 +2633,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     const copias = nomes.map(n => this.actor.items.find(i => i.type === "efeito" && i.getFlag("nauren", "origemUuid") === n.uuid));
     if (copias.length && copias.every(c => c?.system.grupoExclusivo === "guarda")) return this._popupEscolherGuarda(tituloHabilidade, nomes, copias);
     let escolha = null;
-    await foundry.applications.api.DialogV2.wait({
+    await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA,
       window: { title: `${tituloHabilidade} — escolha um benefício` },
       content: `<p>Qual benefício você quer ativar? (desativa qualquer outro desta lista automaticamente)</p>`,
       buttons: [
@@ -2691,8 +2700,8 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
          ${esp ? `<label class="nauren-popup-opt${podeEsp ? "" : " nauren-popup-opt-disabled"}"><input type="radio" name="pagar" value="espirito" ${podeEsp ? (est < custo && !comReducao ? "checked" : "") : "disabled"}><span>${custo} de Espírito da Batalha <em>(${esp.valorAtual} na barra · ${emCombate ? `${esp.usosRestantes}/${esp.usosMax} trocas nesta rodada` : "fora de combate"})</em></span></label>` : ""}
          ${comReducao ? "" : `<label class="nauren-popup-opt"><input type="radio" name="pagar" value="gratis" ${est < custo && !podeEsp ? "checked" : ""}><span>Sem custo <em>(decisão da mesa)</em></span></label>`}`;
     let escolha = null;
-    await foundry.applications.api.DialogV2.wait({
-      window: { title: `${tituloHabilidade} — escolher Guarda` }, classes: ["nauren-dialogo"], position: { width: 440 },
+    await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA,
+      window: { title: `${tituloHabilidade} — escolher Guarda` }, classes: ["nauren-dialogo", "nauren-kit"], position: { width: 440 },
       content: `<p class="nauren-popup-intro">Só aparecem as Guardas do que você está empunhando.${juramento ? " Juramento da Guarda: a Guarda da outra postura continua ativa." : " A Guarda anterior sai sozinha."}</p>
         <fieldset class="nauren-popup-group"><legend>Guarda</legend>${opcoes}</fieldset>
         <fieldset class="nauren-popup-group"><legend>Pagar com</legend>${pagar}</fieldset>`,
@@ -2786,7 +2795,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
   static async onMarcaRemover(event, target) {
     const marca = await fromUuid(target.dataset.item).catch(() => null);
     if (!marca) return;
-    const ok = await foundry.applications.api.DialogV2.confirm({ window: { title: "Remover marca" }, content: `<p>Remover <b>${marca.name}</b> de <b>${marca.parent?.name}</b>?</p>`, rejectClose: false }).catch(() => false);
+    const ok = await foundry.applications.api.DialogV2.confirm({ ...NK.NAUREN_KIT_JANELA, window: { title: "Remover marca" }, content: `<p>Remover <b>${marca.name}</b> de <b>${marca.parent?.name}</b>?</p>`, rejectClose: false }).catch(() => false);
     if (!ok) return;
     if (marca.isOwner) await marca.delete();
     else await game.users.activeGM?.query(NAUREN_QUERY_ITEM_MESTRE, { tipo: "apagarItem", itemUuid: marca.uuid }, { timeout: 15000 }).catch(() => null);
@@ -2814,7 +2823,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     if (!game.combat?.started) { ui.notifications.warn("Páginas em Chamas: só em combate."); return; }
     if (this.actor.getFlag("nauren", "paginasEmChamas") !== game.combat.id) { ui.notifications.info("Páginas em Chamas: o uso deste combate ainda está disponível."); return; }
     const magia = this.actor.items.get(target.dataset.id);
-    const ok = await foundry.applications.api.DialogV2.confirm({ window: { title: "Páginas em Chamas" },
+    const ok = await foundry.applications.api.DialogV2.confirm({ ...NK.NAUREN_KIT_JANELA, window: { title: "Páginas em Chamas" },
       content: `<p>Queimar a página <b>${magia?.name}</b>? Ela fica indisponível até o fim do combate, e o próximo Condensar volta a sair sem Estamina.</p>`,
       yes: { label: "Queimar" }, no: { label: "Cancelar" }, rejectClose: false }).catch(() => false);
     if (!ok) return;
@@ -2880,7 +2889,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
       if (ult?.face) opcoes.push({ action: t.id, label: `${t.document.name}: ${ult.face}${ult.rotulo ? ` (${ult.rotulo})` : ""}`, face: ult.face, de: t.document.name });
     }
     if (!opcoes.length) { ui.notifications.warn("Tudo é Meu!: nenhum aliado rolou um d20 ainda."); return; }
-    const escolha = await foundry.applications.api.DialogV2.wait({
+    const escolha = await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA,
       window: { title: "Tudo é Meu! — roubar um d20" },
       content: "<p>Qual d20 de aliado você rouba? Ele fica guardado até você usá-lo numa rolagem sua (aparece na janela de rerolar).</p>",
       buttons: [...opcoes.map(o => ({ action: o.action, label: o.label })), { action: "cancelar", label: "Cancelar" }],
@@ -4401,6 +4410,9 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
       if (isAdvDis && !used) classes.push("nrc-unused");
       let label = "Resultado";
       if (isAdvDis) label = (d20Result.mode === "vantagem" ? "Facilidade" : "Dificuldade") + (i === 0 ? " A" : " B");
+      // 0.95: o card fala o mesmo que a janela de rolagem (20 natural dourado, 1 natural vermelho).
+      if (isCrit) label = `${isAdvDis ? `${label} · ` : ""}Crítico! (${face} natural)`;
+      else if (isFumble) label = `${isAdvDis ? `${label} · ` : ""}Falha crítica (${face} natural)`;
       // Mesmo ícone usado em Graça do Destinado (nat 20, estrela) e
       // Perjúrio do Acaso (nat 1, caveira) - dá pra reconhecer de cara que
       // aquele resultado específico é o que gera ponto de Graça/Perjúrio.
@@ -5085,7 +5097,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     if ((acao.consumivelCriadoOpcoesUuids ?? []).length) {
       const opcoes = [];
       for (const u of acao.consumivelCriadoOpcoesUuids) { const d = await fromUuid(u).catch(() => null); if (d) opcoes.push(d); }
-      const esc = opcoes.length ? await foundry.applications.api.DialogV2.wait({ window: { title: acao.nome || item.name }, content: "<p>O que preparar?</p>",
+      const esc = opcoes.length ? await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA, window: { title: acao.nome || item.name }, content: "<p>O que preparar?</p>",
         buttons: opcoes.map(d => ({ action: d.uuid, label: d.name })), rejectClose: false }).catch(() => null) : null;
       if (!esc) return null;
       modeloUuid = esc;
@@ -5406,8 +5418,8 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
           return `<button type="button" class="nauren-mov-opcao" data-escolha="${i}"><i class="fas fa-play"></i><span class="nauren-mov-titulo">${esc(acao.nome || `Ação ${i + 1}`)}</span><span class="nauren-mov-custo">${esc(custos)}</span>${resumo ? `<span class="nauren-mov-nota">${esc(resumo)}</span>` : ""}</button>`;
         }).join("");
         let escolha = null;
-        await foundry.applications.api.DialogV2.wait({
-          window: { title: `${item.name} · qual Ação?` }, classes: ["nauren-janela-movimento"], position: { width: 460 },
+        await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA,
+          window: { title: `${item.name} · qual Ação?` }, classes: ["nauren-janela-movimento", "nauren-kit"], position: { width: 460 },
           content: `<div class="nauren-mov"><div class="nauren-mov-opcoes">${cartoes}</div></div>`,
           buttons: [{ action: "cancelar", label: "Cancelar" }], rejectClose: false,
           render: (ev, dialog) => {
@@ -5448,8 +5460,8 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
       const nomes = [...game.user.targets].map(t => t.name);
       const lista = nomes.length > 1 ? `${nomes.slice(0, -1).map(n => `<b>${esc(n)}</b>`).join(", ")} e <b>${esc(nomes.at(-1))}</b>` : `<b>${esc(nomes[0])}</b>`;
       const rotulo = nomes.length > 1 ? "Usar nesses alvos" : `Usar em ${nomes[0]}`;
-      const escolha = await foundry.applications.api.DialogV2.wait({
-        window: { title: nomeAcao }, classes: ["nauren-dialogo"], position: { width: 420 },
+      const escolha = await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA,
+        window: { title: nomeAcao }, classes: ["nauren-dialogo", "nauren-kit"], position: { width: 420 },
         content: `<p>Você ainda tem ${nomes.length > 1 ? "alvos marcados" : "um alvo marcado"} de antes: ${lista}.</p><p>Usar <b>${esc(nomeAcao)}</b> ${nomes.length > 1 ? "neles" : "nele"}?</p>`,
         buttons: [{ action: "usar", label: rotulo, default: true }, { action: "trocar", label: "Escolher outro alvo" }],
         rejectClose: false
@@ -5567,28 +5579,32 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     let htmlModo = "";
     let modoEfetivo = "normal";
     let formulaAtaque = "";
+    let chipsAtaque = [];
     if (ehAtaque) {
-      const { formula, modoDoAlvo } = this._montarFormulaAtaque(acao, localBonus, rankAtual);
-      formulaAtaque = formula;
+      const { formula, modoDoAlvo, breakdown: breakdownAtaque } = this._montarFormulaAtaque(acao, localBonus, rankAtual);
+      formulaAtaque = formula; chipsAtaque = breakdownAtaque ?? [];
       modoEfetivo = this._calcularModoEfetivo("ataque", modoDoAlvo, item.type);
       const fontesModo = this._fontesModoAtaque(item, acao, localBonus);
       const escF = foundry.utils.escapeHTML;
       const htmlFontes = fontesModo.length
-        ? `<ul class="nauren-popup-fontes-modo">${fontesModo.map(f => `<li class="${f.delta > 0 ? "facilidade" : f.delta < 0 ? "dificuldade" : "neutra"}"><i class="fas ${f.delta > 0 ? "fa-arrow-up" : f.delta < 0 ? "fa-arrow-down" : "fa-equals"}"></i><b>${escF(f.fonte)}</b><span>${escF(f.efeito)}</span></li>`).join("")}</ul>
-           ${fontesModo.some(f => f.delta > 0) && fontesModo.some(f => f.delta < 0) ? `<p class="nauren-popup-fontes-nota">Facilidade e Dificuldade se anulam uma a uma; o que sobrar decide a seleção acima.</p>` : ""}`
-        : `<p class="nauren-popup-fontes-nota">Nenhuma Facilidade ou Dificuldade automática neste ataque.</p>`;
+        ? `<div class="nk-fontes">${fontesModo.map(f => `<div class="nk-fonte ${f.delta > 0 ? "nk-fac" : f.delta < 0 ? "nk-dif" : ""}"><span class="nk-fonte-seta" aria-hidden="true">${f.delta > 0 ? "▲" : f.delta < 0 ? "▼" : "="}</span><span><b>${escF(f.fonte)}</b> · ${escF(f.efeito)}</span></div>`).join("")}</div>
+           ${fontesModo.some(f => f.delta > 0) && fontesModo.some(f => f.delta < 0) ? `<p class="nk-nota">Facilidade e Dificuldade se anulam uma a uma; o que sobrar decide a escolha acima.</p>` : ""}`
+        : `<p class="nk-nota">Nada está dando Facilidade ou Dificuldade neste ataque.</p>`;
+      const linhaExtraModo = naurenLinhaModoExtra(this._somaModo("ataque", modoDoAlvo, item.type));
       htmlModo = `
-        <fieldset class="nauren-popup-group">
-          <legend>Modo de rolagem</legend>
-          <div class="nauren-modo-rolagem-grupo">
-            <label class="nauren-modo-rolagem-opt"><input type="radio" name="modoPreAcao" value="vantagem" ${modoEfetivo === "vantagem" ? "checked" : ""}><span>Facilidade</span></label>
-            <label class="nauren-modo-rolagem-opt"><input type="radio" name="modoPreAcao" value="normal" ${modoEfetivo === "normal" ? "checked" : ""}><span>Normal</span></label>
-            <label class="nauren-modo-rolagem-opt"><input type="radio" name="modoPreAcao" value="desvantagem" ${modoEfetivo === "desvantagem" ? "checked" : ""}><span>Dificuldade</span></label>
+        <div class="nk-grupo">
+          ${NK.naurenKitSecao("Como rolar")}
+          <div class="nk-segmentos" role="radiogroup" aria-label="Como rolar">
+            <label class="nk-seg nk-seg-fac"><input type="radio" name="modoPreAcao" value="vantagem" ${modoEfetivo === "vantagem" ? "checked" : ""}><span>Facilidade</span></label>
+            <label class="nk-seg"><input type="radio" name="modoPreAcao" value="normal" ${modoEfetivo === "normal" ? "checked" : ""}><span>Normal</span></label>
+            <label class="nk-seg nk-seg-dif"><input type="radio" name="modoPreAcao" value="desvantagem" ${modoEfetivo === "desvantagem" ? "checked" : ""}><span>Dificuldade</span></label>
           </div>
-          <div class="nauren-popup-fontes-titulo">Por que veio assim</div>
-          ${htmlFontes}
-          ${(() => { const l = naurenLinhaModoExtra(this._somaModo("ataque", modoDoAlvo, item.type)); return l ? `<p class="nauren-popup-fontes-nota"><b>${l.label}:</b> ${l.value} no teste (cada uma além da primeira vale 2).</p>` : ""; })()}
-        </fieldset>`;
+          <div class="nk-fontes-caixa">
+            <div class="nk-fontes-titulo">Por que veio assim</div>
+            ${htmlFontes}
+            ${linhaExtraModo ? `<div class="nk-fontes-conta"><b>${linhaExtraModo.label}:</b> ${linhaExtraModo.value} no ataque <span>(cada uma além da primeira vale 2)</span></div>` : ""}
+          </div>
+        </div>`;
     }
 
     // Resumo dos blocos de Dano E Cura (fórmulas, sem rolar) - só
@@ -5634,9 +5650,43 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     if (acao.usaTemplate) linhasResumo.push(`Área ${acao.templateTamanho}m (${acao.templateTipo})`);
     if (ehAtaque) linhasResumo.push(`Ataque 1d20 + ${formulaAtaque}`);
 
+    const temAlvoPopupR = (acao.modoAlvo || "nenhum") !== "nenhum";
+    // 0.95: cabeçalho (quem → em quem) e um bloco por coisa que a Ação faz, com a origem de cada número.
+    const escR = foundry.utils.escapeHTML;
+    const nomeAcaoR = acao.nome && acao.nome !== "Ação" && acao.nome !== item.name ? acao.nome : "";
+    const alvosR = Array.from(game.user.targets ?? []);
+    const nomeAlvoR = alvosR.length > 1 ? `${alvosR.length} alvos` : (alvosR[0]?.document?.name ?? alvosR[0]?.name ?? "");
+    const quemR = escR(tokenOrigem?.document?.name ?? this.actor.name);
+    const tituloR = ehAtaque && nomeAlvoR ? `${quemR} ataca <span class="nk-destaque-nome">${escR(nomeAlvoR)}</span>`
+      : nomeAlvoR && temAlvoPopupR ? `${quemR} usa ${escR(nomeAcaoR || item.name)} em <span class="nk-destaque-nome">${escR(nomeAlvoR)}</span>`
+      : `${quemR} usa ${escR(nomeAcaoR || item.name)}`;
+    const alcanceR = acao.alcance ? linhasResumo[0] : "";
+    const subR = [escR(item.name) + (nomeAcaoR ? ` — ${escR(nomeAcaoR)}` : ""), alcanceR].filter(Boolean).join(" · ");
+    const indR = acao.prioridadeIndicador || item.system?.prioridadeIndicador || "";
+    const seloR = { PI: "P/I", PA: "P/A", NP: "N/P" }[indR] ?? "";
+    const blocosR = [];
+    if (ehAtaque) blocosR.push(NK.naurenKitBloco({ tipo: "ataque", valor: `1d20 + ${escR(formulaAtaque || "0")}`,
+      chips: chipsAtaque.map(b => { const v = String(b.value ?? ""); return { texto: b.label === "Atributo de ataque" ? v.replace(/\s*\(([+-]?\d+)\)\s*$/, " $1") : `${b.label}: ${v}`, tipo: /^\s*-|−|\(-/.test(v) ? "debuff" : /Efeito|Opções|Contra o alvo|extra/i.test(b.label) ? "buff" : "" }; }) }));
+    if (danosResumo.length) blocosR.push(NK.naurenKitBloco({ tipo: "dano", valor: escR(danosResumo.join(" + ") + (bonusDanoCondicionalResumo ? ` + ${bonusDanoCondicionalResumo}` : "")), detalhe: ehAtaque ? "se acertar" : "" }));
+    if (curasResumo.length) blocosR.push(NK.naurenKitBloco({ tipo: "cura", valor: escR(curasResumo.join(" + ") + (bonusCuraCondicionalResumo ? ` + ${bonusCuraCondicionalResumo}` : "")) }));
+    for (const c of (acao.condicoesAplicadas ?? []).filter(c => c && c.ativo !== false && c.uuid)) {
+      const nomeC = String(c.uuid).startsWith("self:") ? String(c.uuid).slice(5) : (fromUuidSync(c.uuid)?.name ?? "Condição");
+      const chipsC = [];
+      if (c.soSeAcertar && ehAtaque) chipsC.push({ texto: "se acertar" });
+      if (c.condicaoParaAtivar) chipsC.push({ texto: "só em certos casos" });
+      if (c.perguntarParaEvitar) {
+        const qtdEv = String(c.custoParaEvitarQuantidade || 1).trim();
+        const nomeEv = c.custoParaEvitarRecurso ? (naurenNomeDoRecurso(null, c.custoParaEvitarRecurso) || c.custoParaEvitarRecurso) : "";
+        chipsC.push({ texto: nomeEv ? `o alvo pode evitar pagando ${/^\d+$/.test(qtdEv) ? `${qtdEv} ` : ""}${nomeEv}` : "o alvo pode evitar" });
+      }
+      blocosR.push(NK.naurenKitBloco({ tipo: "condicao", valor: `${escR(nomeC)}${c.acumulos && String(c.acumulos) !== "1" ? ` ×${escR(c.acumulos)}` : ""}`, detalhe: temAlvoPopupR || acao.usaTemplate ? "no alvo" : "", chips: chipsC }));
+    }
+    const emMimR = (acao.efeitosEmMim ?? []).filter(e => e && e.nome).map(e => escR(e.nome));
+    if (emMimR.length) blocosR.push(NK.naurenKitBloco({ tipo: "emvoce", valor: [...new Set(emMimR)].join(", ") }));
+    if (acao.usaTemplate) blocosR.push(NK.naurenKitBloco({ tipo: "area", valor: `${escR(acao.templateTamanho)} m · ${escR({ circle: "círculo", cone: "cone", ray: "linha", rect: "quadrado" }[acao.templateTipo] ?? acao.templateTipo ?? "")}`, detalhe: { inimigos: "atinge inimigos", aliados: "atinge aliados", todos: "atinge todos" }[acao.areaDisposicao] ?? "" }));
     const resumoGeral = `
-      <p class="nauren-popup-intro"><b>${item.name}</b>${acao.nome && acao.nome !== "Ação" && acao.nome !== item.name ? ` — ${acao.nome}` : ""}</p>
-      ${linhasResumo.length ? `<p class="item-meta-hint nauren-popup-resumo">${linhasResumo.join(" · ")}</p>` : ""}
+      ${NK.naurenKitCabecalho({ titulo: tituloR, sub: subR, selo: seloR })}
+      ${blocosR.length ? `<div class="nk-grupo">${NK.naurenKitSecao("O que esta Ação faz")}${blocosR.join("")}</div>` : ""}
     `;
 
     // Escolhas reais do jogador ficam à vista; os ajustes de mesa (raros) ficam recolhidos e só com o que
@@ -5644,57 +5694,58 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     const temDanoPopup = !!danosResumo.length || ehAtaque;
     const temAlvoPopup = (acao.modoAlvo || "nenhum") !== "nenhum";
     const htmlEscolhas = (condicaoTroca || bonusArea) ? `
-      <fieldset class="nauren-popup-group">
-        <legend>Opções deste uso</legend>
-        ${condicaoTroca ? `
-        <label class="nauren-popup-opt" style="margin-top: 4px;">
-          <input type="checkbox" name="trocarAtributoAtaque">
-          <span>Usar ${ATRIBUTOS_BONUS[condicaoTroca.atributo] || condicaoTroca.atributo} no lugar de ${ATRIBUTOS_BONUS[acao.atributoAtaque || "poderAtaque"] || "Poder de Ataque"} (${condicaoTroca.nome})</span>
-        </label>` : ""}
-        ${bonusArea ? `
-        <label class="nauren-popup-opt" style="margin-top: 4px;">
-          <input type="checkbox" name="usarBonusAreaAtaque">
-          <span>Adicionar bônus de ${bonusArea.nome}${bonusArea.donoNome !== this.actor.name ? ` (${bonusArea.donoNome})` : ""} — ${bonusArea.dado}, 1x por turno</span>
-        </label>` : ""}
-      </fieldset>` : "";
-    const htmlAjustes = `${htmlEscolhas}
-      <details class="nauren-popup-group nauren-popup-ajustes-mesa">
-        <summary>Ajustes da mesa (opcional, só neste uso)</summary>
+      <div class="nk-grupo">
+        ${NK.naurenKitSecao("Opções deste uso")}
+        <div class="nk-opcoes">
+        ${condicaoTroca ? NK.naurenKitOpcao({ tipo: "checkbox", campo: "trocarAtributoAtaque", nome: `Usar ${ATRIBUTOS_BONUS[condicaoTroca.atributo] || condicaoTroca.atributo}`, desc: `no lugar de ${ATRIBUTOS_BONUS[acao.atributoAtaque || "poderAtaque"] || "Poder de Ataque"} · ${foundry.utils.escapeHTML(condicaoTroca.nome)}` }) : ""}
+        ${bonusArea ? NK.naurenKitOpcao({ tipo: "checkbox", campo: "usarBonusAreaAtaque", nome: `Bônus de ${foundry.utils.escapeHTML(bonusArea.nome)}`, custo: `${bonusArea.dado}`, desc: `${bonusArea.donoNome !== this.actor.name ? `de ${foundry.utils.escapeHTML(bonusArea.donoNome)} · ` : ""}1 vez por turno` }) : ""}
+        </div>
+      </div>` : "";
+    const htmlAjustes = `
+      <details class="nk-ajustes nauren-popup-ajustes-mesa">
+        <summary>Ajustes pontuais <span>· só neste uso (você ou o Mestre) · aceita dado: 1d4, −2</span></summary>
+        <div class="nk-ajustes-grade">
         ${ehAtaque ? `
         <div class="nauren-popup-opt-row">
-          <label style="flex: 1;">Bônus/Penalidade no Ataque</label>
+          <label style="flex: 1;">Ataque</label>
           <input type="text" name="bonusAtaqueAdhoc" value="0" class="nauren-popup-ajuste" title="Aceita dado (ex: 1d4+2, -1d6)">
         </div>` : ""}
         ${temDanoPopup ? `
         <div class="nauren-popup-opt-row">
-          <label style="flex: 1;">Bônus/Penalidade no Dano</label>
+          <label style="flex: 1;">Dano</label>
           <input type="text" name="bonusDanoAdhoc" value="0" class="nauren-popup-ajuste" title="Aceita dado (ex: 1d4+2, -1d6)">
         </div>` : ""}
         ${ehAtaque ? `
         <div class="nauren-popup-opt-row">
-          <label style="flex: 1;">Ajuste no Limiar de Deflexão</label>
+          <label style="flex: 1;">Limiar de Deflexão</label>
           <input type="text" name="ajusteLimiarDeflexao" value="0" class="nauren-popup-ajuste" title="Aceita dado (ex: 1d4). Some ao Limiar de Deflexão de quem está usando esta Ação - ajuda tanto o atacante original (facilita ser defletido de propósito) quanto quem for contra-atacar depois">
         </div>` : ""}
         ${acao.alcance && temAlvoPopup ? `
         <div class="nauren-popup-opt-row">
-          <label style="flex: 1;">Bônus no Alcance (metros)</label>
+          <label style="flex: 1;">Alcance (m)</label>
           <input type="text" name="bonusAlcanceAdhoc" value="0" class="nauren-popup-ajuste" title="Aceita dado (ex: 1d4, 1d6+2) - rolado ao confirmar" data-alcance-base="${numeroAlcance}" data-distancia-alvo="${distanciaAlvo ?? ""}">
         </div>` : ""}
         ${acao.usaTemplate ? `
         <div class="nauren-popup-opt-row">
-          <label style="flex: 1;">Bônus/Penalidade na Área (metros)</label>
+          <label style="flex: 1;">Área (m)</label>
           <input type="text" name="bonusAreaAdhoc" value="0" class="nauren-popup-ajuste" title="Aceita dado (ex: 1d4, -2). Positivo aumenta o tamanho da área (raio/comprimento), negativo reduz - só nesta rolagem">
         </div>` : ""}
+        </div>
         ${temAlvoPopup || acao.usaTemplate ? `
-        <div style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed #453e66;">
-          <label style="display: block; margin-bottom: 4px;">Condição/Efeito extra no(s) alvo(s)</label>
+        <div class="nk-ajustes-cond">
+          <label style="display: block; margin-bottom: 4px;">Condição ou Efeito extra no alvo (arraste da ficha ou do compêndio)</label>
           <div id="nauren-condicoes-adhoc-container">
             <div class="nauren-condicao-adhoc-linha">
               <div class="nauren-popup-opt-row">
-                <input type="text" class="nauren-uuid-input nauren-popup-ajuste nauren-condicao-adhoc-input" placeholder="Arraste um item aqui" style="flex: 1;">
+                <input type="text" class="nauren-uuid-input nauren-popup-ajuste nauren-condicao-adhoc-input" placeholder="Arraste um item aqui" aria-label="Condição ou Efeito extra" style="flex: 1;">
               </div>
             </div>
           </div>
+        </div>` : ""}
+        ${temDanoPopup ? `
+        <div class="nk-ajustes-checks">
+          <label><input type="checkbox" name="naoDarDanoAlvo"> Não dar dano no alvo</label>
+          <label><input type="checkbox" name="naoDarDanoAliados"> Não dar dano em aliados</label>
         </div>` : ""}
       </details>`;
 
@@ -5714,6 +5765,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
       else if (extra) label = `Estamina de Combate: <b>${base + extra}</b> <em style="color:#e0a14b;">(${base} + ${extra} por ${nomes.join(", ")})</em>`;
       const temEst = this.actor.system.estaminaCombate?.value ?? 0;
       if (!primeiraArma && temEst < base + extra) label += ` <b style="color:#c24b4b;">⚠ você tem ${temEst}</b>`;
+      else if (!primeiraArma) label += ` <em>· você tem ${temEst}, fica com ${temEst - base - extra}</em>`;
       recursosLista.push({ id: "estamina", label, noAlvo: false });
     }
     if ((acao.custoMana ?? 0) > 0) {
@@ -5728,7 +5780,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
           if (novo !== custoM) { ajusteTxt = ` <em style="color:#e0a14b;">(${custoM} → ${novo}: ${ajM.linhas.join(", ")})</em>`; custoM = novo; }
         }
       }
-      recursosLista.push({ id: "mana", label: `Mana: <b>${custoM}</b>${ajusteTxt}${temMana < custoM ? ` <b style="color:#c24b4b;">⚠ você tem ${temMana}</b>` : ""}`, noAlvo: false });
+      recursosLista.push({ id: "mana", label: `Mana: <b>${custoM}</b>${ajusteTxt}${temMana < custoM ? ` <b style="color:#c24b4b;">⚠ você tem ${temMana}</b>` : ` <em>· você tem ${temMana}, fica com ${temMana - custoM}</em>`}`, noAlvo: false });
     }
     (acao.custosRecursoProprio ?? []).forEach((c, i) => {
       if (!c.ativo || !c.recurso) return;
@@ -5780,7 +5832,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     if (recursosLista.length) {
       const linhasRecursos = recursosLista.map(r => {
         const linhaPrincipal = `
-        <label class="nauren-popup-opt"><input type="checkbox" name="consumir_${r.id}" class="nauren-popup-consumir-item" checked><span>${r.semPrefixo ? r.label : `${r.noAlvo ? "Causar" : "Consumir"} ${r.label}`}</span></label>`;
+        <label class="nk-gasto${r.noAlvo ? " nk-gasto-alvo" : ""}"><input type="checkbox" name="consumir_${r.id}" class="nauren-popup-consumir-item" checked><span>${r.semPrefixo ? r.label : `${r.noAlvo ? "No alvo: " : ""}${r.label}`}</span></label>`;
         // Espírito da Batalha (Guerreiro) - sub-opção logo abaixo da
         // linha de Estamina, com leve recuo pra deixar claro que é uma
         // FORMA ALTERNATIVA de pagar aquele mesmo custo, não um consumo à
@@ -5794,7 +5846,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
           const desabilitado = semUsos || semEspirito;
           const motivo = semUsos ? " (sem usos restantes nesta rodada)" : (semEspirito ? ` (precisa de ${custoEst}, a barra tem ${espiritoInfo.valorAtual})` : ` · barra ${espiritoInfo.valorAtual}`);
           return linhaPrincipal + `
-        <label class="nauren-popup-opt" style="margin-left: 22px;${desabilitado ? " opacity: 0.45;" : ""}">
+        <label class="nk-gasto nk-gasto-sub" style="${desabilitado ? "opacity: 0.45;" : ""}">
           <input type="checkbox" name="trocarPorEspiritoBatalha"${desabilitado ? " disabled" : ""}>
           <span>Trocar por Espírito da Batalha (${espiritoInfo.usosRestantes}/${espiritoInfo.usosMax} usos restantes)${motivo}</span>
         </label>`;
@@ -5802,30 +5854,26 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
         return linhaPrincipal;
       }).join("");
       htmlRecursos = `
-        <fieldset class="nauren-popup-group">
-          <legend>Recursos desta Ação</legend>
-          <label class="nauren-popup-opt" style="font-weight: bold;"><input type="checkbox" name="naoConsumirNenhum" class="nauren-popup-master-recurso"><span>Desligar tudo abaixo</span></label>
+        <div class="nk-grupo">
+          <div class="nk-secao-linha">${NK.naurenKitSecao("Vai gastar")}<label class="nk-desligar"><input type="checkbox" name="naoConsumirNenhum" class="nauren-popup-master-recurso"> não gastar nada desta vez</label></div>
           ${linhasRecursos}
-        </fieldset>`;
+        </div>`;
     }
 
-    const htmlTestes = temDanoPopup ? `
-      <details class="nauren-popup-group nauren-popup-ajustes-mesa">
-        <summary>Restringir dano causado (opcional)</summary>
-        <label class="nauren-popup-opt"><input type="checkbox" name="naoDarDanoAlvo"><span>Não dar Dano no Alvo</span></label>
-        <label class="nauren-popup-opt"><input type="checkbox" name="naoDarDanoAliados"><span>Não dar Dano em Aliados</span></label>
-      </details>` : "";
+    const htmlTestes = ""; // 0.95: "Não dar dano" entrou nos Ajustes pontuais
 
     const buffsCandidatos = this._buffsProximaAcaoCandidatos(item, acao);
     const htmlBuffs = buffsCandidatos.length ? `
-      <fieldset class="nauren-popup-group">
-        <legend>Buffs de próxima ação</legend>
-        ${buffsCandidatos.map(c => `
-          <label class="nauren-popup-opt"><input type="checkbox" name="usarBuff_${c.id}" checked>
-            <span><b>${c.name}</b>${c.system.acumulativel ? ` (${Math.max(1, c.system.acumulos ?? 1)}×)` : ""} — ${this._resumoBuffProximaAcao(c, acao).join(", ") || "aplicado"}</span></label>`).join("")}
-        <p class="nauren-popup-nota">Desmarque para guardar o buff para outra Ação.</p>
-      </fieldset>` : "";
-    const content = `${resumoGeral}${htmlModo}${htmlBuffs}${htmlAjustes}${htmlRecursos}${htmlTestes}`;
+      <div class="nk-grupo">
+        ${NK.naurenKitSecao("Buffs prontos para usar agora")}
+        <div class="nk-opcoes">
+        ${buffsCandidatos.map(c => NK.naurenKitOpcao({ tipo: "checkbox", campo: `usarBuff_${c.id}`, marcado: true,
+          nome: `${foundry.utils.escapeHTML(c.name)}${c.system.acumulativel ? ` <span class="nk-suave">(${Math.max(1, c.system.acumulos ?? 1)}×)</span>` : ""}`,
+          desc: foundry.utils.escapeHTML(this._resumoBuffProximaAcao(c, acao).join(", ") || "aplicado nesta Ação") })).join("")}
+        </div>
+        ${NK.naurenKitNota("Desmarque para guardar o buff para outra Ação.")}
+      </div>` : "";
+    const content = `${resumoGeral}${htmlModo}${htmlBuffs}${htmlEscolhas}${htmlRecursos}${htmlAjustes}${htmlTestes}`;
 
     // Master "Não Consumir Nenhum Recurso" desmarca (e desabilita) os
     // checkboxes individuais - desmarcar o master de novo reabilita tudo,
@@ -5946,6 +5994,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
             novoInput.type = "text";
             novoInput.className = "nauren-uuid-input nauren-popup-ajuste nauren-condicao-adhoc-input";
             novoInput.placeholder = "Arraste outro item (opcional)";
+            novoInput.setAttribute("aria-label", "Condição ou Efeito extra");
             novoInput.style.flex = "1";
             novaOpcaoRow.appendChild(novoInput);
             novaLinha.appendChild(novaOpcaoRow);
@@ -5961,10 +6010,12 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     let dados = null;
     try {
       await foundry.applications.api.DialogV2.wait({
+        ...NK.NAUREN_KIT_JANELA,
         window: { title: `${item.name} — confirmar uso` },
         content,
         buttons: [{
-          label: "Confirmar",
+          label: ehAtaque ? "Rolar o ataque" : `Usar ${acao.nome && acao.nome !== "Ação" ? acao.nome : item.name}`,
+          icon: ehAtaque ? "fas fa-dice-d20" : "",
           action: "ok",
           default: true,
           callback: async (event, button, dialog) => {
@@ -6014,7 +6065,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
               consumir
             };
           }
-        }],
+        }, { label: "Cancelar", action: "cancelar" }],
         rejectClose: false
       });
     } finally {
@@ -6098,8 +6149,8 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
       const alvoTk = recon.alvoTokenUuid ? fromUuidSync(recon.alvoTokenUuid)?.object : null;
       const acaoR = item.system.acoes?.[idx];
       const alvoUnico = alvoTk && !["area", "nenhum"].includes(acaoR?.modoAlvo);
-      const simR = await foundry.applications.api.DialogV2.confirm({
-        window: { title: `${recon.fonte} — ${item.name}` }, classes: ["nauren-dialogo"],
+      const simR = await foundry.applications.api.DialogV2.confirm({ ...NK.NAUREN_KIT_JANELA,
+        window: { title: `${recon.fonte} — ${item.name}` }, classes: ["nauren-dialogo", "nauren-kit"],
         content: `<p>Passou no 1d6: você pode conjurar <b>${item.name}</b> de novo${alvoUnico ? ` contra <b>${alvoTk.name}</b>` : " (mesma área ou alvo)"}, <b>sem gastar Estamina</b>. A Mana é gasta normalmente.</p>`,
         yes: { label: "Conjurar de novo" }, no: { label: "Não" }, rejectClose: false
       }).catch(() => false);
@@ -6117,8 +6168,8 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
       const aceitou = this._penitenciaDestaExecucao === "aceitar";
       this._penitenciaDestaExecucao = undefined;
       if (anjo) {
-        const simA = await foundry.applications.api.DialogV2.confirm({
-          window: { title: `${anjo.name} — ${item.name}` }, classes: ["nauren-dialogo"],
+        const simA = await foundry.applications.api.DialogV2.confirm({ ...NK.NAUREN_KIT_JANELA,
+          window: { title: `${anjo.name} — ${item.name}` }, classes: ["nauren-dialogo", "nauren-kit"],
           content: `<p>O ser de luz conjura <b>${item.name}</b> também, <b>sem custo</b>${aceitou ? ", com o bônus da penitência (sem você sofrer de novo)" : ""}.</p><p>Marque o alvo dele (pode ser outro) e confirme.</p>`,
           yes: { label: "Conjurar" }, no: { label: "Não" }, rejectClose: false
         }).catch(() => false);
@@ -6131,8 +6182,8 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     }
     const rep = this._repetirPendente; this._repetirPendente = null;
     if (rep) {
-      const sim = await foundry.applications.api.DialogV2.confirm({
-        window: { title: `${rep.nome} — dano máximo!` }, classes: ["nauren-dialogo"],
+      const sim = await foundry.applications.api.DialogV2.confirm({ ...NK.NAUREN_KIT_JANELA,
+        window: { title: `${rep.nome} — dano máximo!` }, classes: ["nauren-dialogo", "nauren-kit"],
         content: `<p>Todos os dados saíram no máximo: <b>${rep.nome}</b> se repete como parte da mesma Ação, <b>sem custo</b>.</p><p>Marque o alvo (pode ser outro) e confirme.</p>`,
         yes: { label: "Repetir" }, no: { label: "Não repetir" }, rejectClose: false
       }).catch(() => false);
@@ -6290,7 +6341,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     if (naurenEhItem(item, "Dar Prioridade") && acao.usaDarPrioridade && this.actor.items.some(i => i.type === "habilidade" && i.system.ativo !== false && naurenEhItem(i, "Chamar as Armas"))) {
       const esp = (this.actor.system.recursosCustom ?? []).find(r => r.id === "espiritodabatalha");
       if ((esp?.valor ?? 0) >= 1) {
-        const sim = await foundry.applications.api.DialogV2.confirm({ window: { title: "Chamar as Armas" },
+        const sim = await foundry.applications.api.DialogV2.confirm({ ...NK.NAUREN_KIT_JANELA, window: { title: "Chamar as Armas" },
           content: `<p>Gastar <b>1 Espírito da Batalha</b> (você tem ${esp.valor}) para que <b>mais um aliado</b> também receba Prioridade? Marque os dois aliados.</p>`, rejectClose: false }).catch(() => false);
         if (sim) {
           await naurenGastarRecursoSimples(this.actor, "recursoCustom:espiritodabatalha", 1);
@@ -6364,7 +6415,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     if (acao.escolherBeneficioMarca) {
       const rkM = Math.max(1, this._rankEfetivo(item) || 1);
       const extraRk = rkM > 1 ? ` (3m + ${rkM - 1} do rank ${rkM})` : "";
-      const escB = await foundry.applications.api.DialogV2.wait({ window: { title: `${item.name} (rank ${rkM})` }, content: "<p>Qual benefício contra este alvo?</p>",
+      const escB = await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA, window: { title: `${item.name} (rank ${rkM})` }, content: "<p>Qual benefício contra este alvo?</p>",
         buttons: [{ action: "focoMortal", label: `Foco Mortal: +${2 + rkM}m à distância${extraRk}` }, { action: "tiroLetal", label: `Tiro Letal: +${rkM} de dano` }, { action: "reflexos", label: `Reflexos de Caça: +${rkM} Bloqueio/Esquiva` }],
         rejectClose: false }).catch(() => null);
       if (!escB) return; // fechou a janela: cancela a Ação sem gastar nada
@@ -6463,7 +6514,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     // como "na página aberta" agora. Puramente informativo - o
     // jogador pode confirmar e conjurar mesmo assim.
     if (item.type === "magia" && item.system.ehMagiaDeMago && !this._acaoGratis && !item.system.paginaAberta && !(this.actor.getFlag("nauren", "aspectus") ?? []).includes(item.id)) {
-      const confirmou = await foundry.applications.api.DialogV2.confirm({
+      const confirmou = await foundry.applications.api.DialogV2.confirm({ ...NK.NAUREN_KIT_JANELA,
         window: { title: "Grimório fora da página" },
         content: `<p>O Grimório não está na página de <b>${item.name}</b> agora (ela não está marcada como "Página Aberta"). Conjurar mesmo assim?</p>`,
         rejectClose: false
@@ -7051,7 +7102,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
             if (t.tipo.semPrioridade && t.tipo.porAnalisado) {
               const restam = Math.max(0, n - (dados.estrategiaUsados ?? 0));
               if (restam > 0 && !acao.naoGeraPrioridade) {
-                const declarar = await foundry.applications.api.DialogV2.confirm({ window: { title: t.tipo.nome },
+                const declarar = await foundry.applications.api.DialogV2.confirm({ ...NK.NAUREN_KIT_JANELA, window: { title: t.tipo.nome },
                   content: `<p>${t.tipo.nome}: declarar que este ataque contra <b>${alvoEst.name}</b> <b>não gera Prioridade</b>? (restam ${restam} de ${n})</p>`,
                   yes: { label: "Sem Prioridade" }, no: { label: "Normal" }, rejectClose: false }).catch(() => false);
                 if (declarar) { acao = { ...acao, naoGeraPrioridade: true, _semPrioridadeFonte: t.tipo.nome }; est.gastarEstrategia = 1; partes.push(`não gera Prioridade (restam ${restam - 1} de ${n})`); }
@@ -7151,7 +7202,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
               const est = this.actor.system.stress?.value ?? 0, estMax = this.actor.system.stress?.max ?? 3;
               if (est >= estMax) continue;
               const ganho = [ea.danoExtraDado ? `+${ea.danoExtraDado} de dano` : "", ea.acertoExtraDado ? `+${ea.acertoExtraDado} no acerto` : ""].filter(Boolean).join(" e ");
-              const pagar = await foundry.applications.api.DialogV2.confirm({ window: { title: fonte.name }, content: `<p>${fonte.name}: receber 1 Ponto de Estresse para ${ganho} neste ataque?</p>`,
+              const pagar = await foundry.applications.api.DialogV2.confirm({ ...NK.NAUREN_KIT_JANELA, window: { title: fonte.name }, content: `<p>${fonte.name}: receber 1 Ponto de Estresse para ${ganho} neste ataque?</p>`,
                 yes: { label: "Pagar 1 Estresse" }, no: { label: "Não" }, rejectClose: false }).catch(() => false);
               if (!pagar) continue;
               await this.actor.update({ "system.stress.value": est + 1 });
@@ -7642,7 +7693,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     if (acao.usaPerguntarQuantidadeMana) {
       const manaAtualParaPopup = this.actor.system.mana?.value ?? 0;
       let quantidadeEscolhida = null;
-      await foundry.applications.api.DialogV2.wait({
+      await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA,
         window: { title: `${item.name} — quantidade de Mana` },
         content: `
           <p>Quantos pontos de Mana você quer gastar? (Mana atual: ${manaAtualParaPopup})</p>
@@ -7688,8 +7739,8 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
       if (baseNiveis >= 99) baseNiveis = 1;
       const maxNiveis = Math.max(1, baseNiveis + maxNiveisExtra);
       let nivelEscolhido = 0;
-      await foundry.applications.api.DialogV2.wait({
-        window: { title: `${acao.nome} · Crescimento` }, classes: ["nauren-janela-movimento"], position: { width: 400 },
+      await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA,
+        window: { title: `${acao.nome} · Crescimento` }, classes: ["nauren-janela-movimento", "nauren-kit"], position: { width: 400 },
         content: `<div class="nauren-mov">
             <div class="nauren-mov-resumo">
               <div><span>Por nível</span><b>+${custoPorNivelBase} Mana</b></div>
@@ -7947,8 +7998,8 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
         if (custoEstPagar <= 0) break;
         const cfgR = regiaoC.getFlag("nauren", "templatePersistente");
         const maxUso = Math.min(custoEstPagar, cfgR.cargasEstamina);
-        const usar = await foundry.applications.api.DialogV2.wait({ window: { title: regiaoC.name },
-          content: `<p>Usar cargas de <b>${regiaoC.name}</b> no lugar de Estamina? (${cfgR.cargasEstamina} disponível(is); custo ${custoEstPagar})</p><input type="number" name="n" value="${maxUso}" min="1" max="${maxUso}" style="width: 100%;">`,
+        const usar = await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA, window: { title: regiaoC.name },
+          content: `<p>Usar cargas de <b>${regiaoC.name}</b> no lugar de Estamina? (${cfgR.cargasEstamina} disponível(is); custo ${custoEstPagar})</p><div class="field"><label for="nauren-cargas-${regiaoC.id}">Quantas cargas usar</label><input id="nauren-cargas-${regiaoC.id}" type="number" name="n" value="${maxUso}" min="1" max="${maxUso}" style="width: 100%;"></div>`,
           buttons: [{ action: "sim", label: "Usar", callback: (ev, btn) => Math.min(maxUso, Math.max(1, Number(btn.form.elements.n.value) || 1)) }, { action: "nao", label: "Não" }], rejectClose: false }).catch(() => "nao");
         const n = Number(usar) || 0;
         if (!n) continue;
@@ -8835,7 +8886,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
       const alvoTroca = Array.from(game.user.targets ?? [])[0];
       const meuTok = this.actor.getActiveTokens?.(true)?.[0];
       if (alvoTroca && meuTok) {
-        const trocar = await foundry.applications.api.DialogV2.confirm({ window: { title: acao.nome || item.name },
+        const trocar = await foundry.applications.api.DialogV2.confirm({ ...NK.NAUREN_KIT_JANELA, window: { title: acao.nome || item.name },
           content: `<p>Se você <b>já atacou neste turno</b>, pode trocar de lugar com <b>${alvoTroca.document.name}</b> em vez de se teleportar para perto dele.</p>`,
           yes: { label: "Trocar de lugar (já ataquei)" }, no: { label: "Teleportar para perto" }, rejectClose: false }).catch(() => false);
         if (trocar) {
@@ -8928,7 +8979,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
         const rollS = await new Roll(`1d${faces}`).evaluate();
         if (game.dice3d) await game.dice3d.showForRoll(rollS, game.user, true).catch(() => {});
         const btsS = naurenBotoesDirecaoGrimorio(this.actor, ` ${rollS.total}`);
-        const esc = btsS.length <= 1 ? (btsS[0]?.action ?? "0") : await foundry.applications.api.DialogV2.wait({ window: { title: `Grimório Selvagem (1d${faces}: ${rollS.total})` },
+        const esc = btsS.length <= 1 ? (btsS[0]?.action ?? "0") : await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA, window: { title: `Grimório Selvagem (1d${faces}: ${rollS.total})` },
           content: `<p>O Grimório se agita: avançar ou voltar <b>${rollS.total}</b> página(s)?</p>`,
           buttons: btsS, rejectClose: false }).catch(() => btsS[0].action);
         // Selvagem: o dado é em páginas; cada 2 páginas (arredondando para cima) = 1 virada.
@@ -8950,7 +9001,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
       if (danca && faceB >= 7 - Math.max(1, Math.min(3, danca.system.rankAtual || 1))) {
         const packCond = game.packs.find(pk => pk.metadata.label === "Nauren - Condições e Venenos");
         const opcoesPoesia = [{ action: "condicao-poesia-lunar", label: "Poesia Lunar (dado no próximo ataque)" }, { action: "condicao-poesia-da-espada", label: "Poesia da Espada (próximo ataque mais barato)" }];
-        const esc = await foundry.applications.api.DialogV2.wait({ window: { title: "Dança do Espírito Bêbado" }, content: "<p>A Poesia toma conta de você: receba o efeito de uma Poesia.</p>", buttons: opcoesPoesia, rejectClose: false }).catch(() => null);
+        const esc = await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA, window: { title: "Dança do Espírito Bêbado" }, content: "<p>A Poesia toma conta de você: receba o efeito de uma Poesia.</p>", buttons: opcoesPoesia, rejectClose: false }).catch(() => null);
         if (esc) {
           const nome = await NaurenAlvoHelper.aplicarCondicao(this.actor, await naurenUuidPorSeed(packCond, esc), 1, null, danca.system.rankAtual || 1).catch(() => null);
           if (nome) this.#beneficiosAtual.push({ label: "Dança do Espírito Bêbado", value: nome });
@@ -8972,7 +9023,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
         const docs = packCores ? (await packCores.getDocuments()).filter(d => d.type === "cor" && !alvoH.items.some(i => i.type === "cor" && i.name === d.name)) : [];
         if (!docs.length) this.#beneficiosAtual.push({ label: "Colorir!", value: `${alvoH.name} já tem todas as Heranças` });
         else {
-          const esc = await foundry.applications.api.DialogV2.wait({ window: { title: `Colorir! — ${alvoH.name}` }, content: `<p>Qual Herança de Cor nova para <b>${alvoH.name}</b>?</p>`,
+          const esc = await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA, window: { title: `Colorir! — ${alvoH.name}` }, content: `<p>Qual Herança de Cor nova para <b>${alvoH.name}</b>?</p>`,
             buttons: docs.map(d => ({ action: d.id, label: d.name })), rejectClose: false }).catch(() => null);
           const cor = docs.find(d => d.id === esc);
           if (cor) { await naurenCriarItemNoAtor(alvoH, { ...cor.toObject(), _id: undefined }); this.#beneficiosAtual.push({ label: "Colorir!", value: `${alvoH.name} ganhou ${cor.name}` }); }
@@ -8982,7 +9033,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
         const cores = alvoH.items.filter(i => i.type === "cor");
         if (!cores.length) this.#beneficiosAtual.push({ label: "Conexão com a Arte", value: `${alvoH.name} não tem Heranças de Cor` });
         else {
-          const esc = await foundry.applications.api.DialogV2.wait({ window: { title: `Conexão com a Arte — ${alvoH.name}` }, content: `<p>Qual Herança de <b>${alvoH.name}</b> fica com o efeito dobrado?</p>`,
+          const esc = await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA, window: { title: `Conexão com a Arte — ${alvoH.name}` }, content: `<p>Qual Herança de <b>${alvoH.name}</b> fica com o efeito dobrado?</p>`,
             buttons: cores.map(c => ({ action: c.id, label: c.name })), rejectClose: false }).catch(() => null);
           const cor = cores.find(c => c.id === esc);
           if (cor) {
@@ -9001,12 +9052,12 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
       const alvosV = this.actor.items.filter(i => i.type === "arma" || (i.type === "consumivel" && i.system.ehMunicao));
       if (!venenoU || !alvosV.length) this.#beneficiosAtual.push({ label: item.name, value: !venenoU ? "frasco sem veneno configurado" : "nenhuma arma ou munição no inventário" });
       else {
-        const esc = await foundry.applications.api.DialogV2.wait({ window: { title: `${item.name}: onde aplicar?` }, content: "<p>Escolha a arma ou a munição.</p>",
+        const esc = await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA, window: { title: `${item.name}: onde aplicar?` }, content: "<p>Escolha a arma ou a munição.</p>",
           buttons: alvosV.map(i => ({ action: i.id, label: i.type === "arma" ? i.name : `${i.name} ×${i.system.quantidade ?? 0}` })), rejectClose: false }).catch(() => null);
         const alvoV = esc ? this.actor.items.get(esc) : null;
         if (alvoV?.type === "arma") {
-          const dur = await foundry.applications.api.DialogV2.wait({ window: { title: `${alvoV.name}: por quanto tempo?` },
-            content: `<p>O veneno fica até ser removido, ou por um número de golpes (cada uso da arma conta, acertando ou não)?</p><input type="number" name="golpes" value="3" min="1" style="width: 100%;">`,
+          const dur = await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA, window: { title: `${alvoV.name}: por quanto tempo?` },
+            content: `<p>O veneno fica até ser removido, ou por um número de golpes (cada uso da arma conta, acertando ou não)?</p><div class="field"><label for="nauren-veneno-golpes">Número de golpes (se escolher "por golpes")</label><input id="nauren-veneno-golpes" type="number" name="golpes" value="3" min="1" style="width: 100%;"></div>`,
             buttons: [{ action: "sempre", label: "Até ser removido" }, { action: "n", label: "Por este número de golpes", callback: (ev, btn) => Math.max(1, Number(btn.form.elements.golpes.value) || 1) }],
             rejectClose: false }).catch(() => null);
           if (dur) {
@@ -9016,8 +9067,8 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
           }
         } else if (alvoV) {
           const qtdM = alvoV.system.quantidade ?? 0;
-          const esc2 = await foundry.applications.api.DialogV2.wait({ window: { title: `${alvoV.name}: quantas envenenar?` },
-            content: `<p>Quantas munições envenenar? (tem ${qtdM})</p><input type="number" name="qtd" value="${Math.min(5, qtdM)}" min="1" max="${qtdM}" style="width: 100%;">`,
+          const esc2 = await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA, window: { title: `${alvoV.name}: quantas envenenar?` },
+            content: `<p>Quantas munições envenenar? (tem ${qtdM})</p><div class="field"><label for="nauren-veneno-qtd">Munições</label><input id="nauren-veneno-qtd" type="number" name="qtd" value="${Math.min(5, qtdM)}" min="1" max="${qtdM}" style="width: 100%;"></div>`,
             buttons: [{ action: "n", label: "Envenenar esta quantidade", callback: (ev, btn) => Number(btn.form.elements.qtd.value) || 1 }, { action: "todas", label: "Todas" }], rejectClose: false }).catch(() => null);
           if (esc2) {
             const todas = esc2 === "todas";
@@ -9035,7 +9086,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
         let idx = g.paginas.findIndex(m => m.id === g.marcador);
         // Sem marcador ainda: escolhe agora (antes a Ação gastava 1 Estamina e só dizia "nenhuma página marcada").
         if (idx < 0 && g.paginas.length) {
-          const escM = await foundry.applications.api.DialogV2.wait({ window: { title: "Marcador de Página" }, content: "<p>Em qual página fica o marcador? (vale até o fim do combate; dá para mudar no painel Grimório)</p>",
+          const escM = await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA, window: { title: "Marcador de Página" }, content: "<p>Em qual página fica o marcador? (vale até o fim do combate; dá para mudar no painel Grimório)</p>",
             buttons: g.paginas.map((m, i) => ({ action: m.id, label: `${i + 1}. ${m.name}` })), rejectClose: false }).catch(() => null);
           if (escM) { await this.actor.setFlag("nauren", "marcadorPagina", escM); idx = g.paginas.findIndex(m => m.id === escM); }
         }
@@ -9047,7 +9098,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
         const extra = codex ? Math.max(1, codex.system.rankAtual || 1) : 0;
         if (extra > 0) {
           const botoes = Array.from({ length: extra + 1 }, (_, k) => ({ action: String(k + 1), label: `${k + 1} virada${k ? "s" : ""} (${(k + 1) * 2} páginas)` }));
-          const esc = await foundry.applications.api.DialogV2.wait({ window: { title: "Codex Sapiente" }, content: "<p>Quantas viradas? (cada uma passa 2 páginas)</p>", buttons: botoes, rejectClose: false }).catch(() => "1");
+          const esc = await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA, window: { title: "Codex Sapiente" }, content: "<p>Quantas viradas? (cada uma passa 2 páginas)</p>", buttons: botoes, rejectClose: false }).catch(() => "1");
           passos = acao.virarPagina * (Number(esc) || 1) * naurenGrimorio(this.actor).janela;
         }
       }
@@ -9063,7 +9114,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
       else {
         const packM = game.packs.find(pk => pk.metadata.label === "Nauren - Magias");
         const docs = packM ? (await packM.getDocuments()).filter(d => d.type === "magia" && d.system.ehMagiaDeMago && !/^\[Removida/.test(d.name) && !this.actor.items.some(i => i.name === d.name)) : [];
-        const esc = docs.length ? await foundry.applications.api.DialogV2.wait({ window: { title: `${item.name} (${ja}/${limite})` }, content: "<p>Qual magia nova aprender?</p>",
+        const esc = docs.length ? await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA, window: { title: `${item.name} (${ja}/${limite})` }, content: "<p>Qual magia nova aprender?</p>",
           buttons: docs.slice(0, 30).map(d => ({ action: d.id, label: d.name })), rejectClose: false }).catch(() => null) : null;
         const m = docs.find(d => d.id === esc);
         if (m) { await this.actor.createEmbeddedDocuments("Item", [{ ...m.toObject(), _id: undefined }]); await this.actor.setFlag("nauren", "magiasOnisciencia", ja + 1); this.#beneficiosAtual.push({ label: item.name, value: `aprendeu ${m.name}`, breakdown: `${ja + 1}/${limite}` }); }
@@ -9085,8 +9136,8 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
       const nomesAtr = { forca: "Força", agilidade: "Agilidade", estamina: "Estamina", inteligencia: "Inteligência", destino: "Destino" };
       const opcoesAtr = Object.entries(nomesAtr).map(([k, v]) => `<option value="${k}">${v}</option>`).join("");
       let escolha = null;
-      await foundry.applications.api.DialogV2.wait({ window: { title: item.name },
-        content: `<p>Quais 2 atributos sobem (+1 por rank)?</p><div style="display:flex;gap:8px;"><select id="nauren-atr-1">${opcoesAtr}</select><select id="nauren-atr-2">${opcoesAtr.replace('value="agilidade"', 'value="agilidade" selected')}</select></div>`,
+      await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA, window: { title: item.name },
+        content: `<p>Quais 2 atributos sobem (+1 por rank)?</p><div style="display:flex;gap:8px;"><div class="field" style="flex:1"><label for="nauren-atr-1">1º atributo</label><select id="nauren-atr-1">${opcoesAtr}</select></div><div class="field" style="flex:1"><label for="nauren-atr-2">2º atributo</label><select id="nauren-atr-2">${opcoesAtr.replace('value="agilidade"', 'value="agilidade" selected')}</select></div></div><p class="nk-nota">Os dois precisam ser diferentes.</p>`,
         buttons: [{ action: "ok", label: "Confirmar", default: true, callback: (ev, btn, dialog) => { const f = dialog.element ?? btn.form; escolha = [f.querySelector("#nauren-atr-1")?.value, f.querySelector("#nauren-atr-2")?.value]; } }, { action: "cancelar", label: "Cancelar" }],
         rejectClose: false }).catch(() => null);
       if (escolha && escolha[0] && escolha[1] && escolha[0] !== escolha[1]) {
@@ -9107,7 +9158,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     }
     if (acao.usaBestaInicial) {
       const botoes = NAUREN_MASCOTES_INICIAIS.map((d, k) => ({ action: d.seedId, label: d.nome, default: k === 0 }));
-      const escolha = await foundry.applications.api.DialogV2.wait({ window: { title: `${item.name} — besta inicial` },
+      const escolha = await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA, window: { title: `${item.name} — besta inicial` },
         content: `<p>Escolha a sua besta companheira. Ela entra no seu nível e sobe de nível junto com você.</p>`,
         buttons: botoes, rejectClose: false }).catch(() => null);
       const gmB = game.users.activeGM;
@@ -9122,7 +9173,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
       const alvoR = Array.from(game.user.targets ?? [])[0]?.actor;
       if (alvoR) {
         const lista = alvoR.items.filter(i => ["habilidade", "magia"].includes(i.type)).map(i => i.name);
-        await foundry.applications.api.DialogV2.prompt({ window: { title: `${item.name} — ${alvoR.name}` },
+        await foundry.applications.api.DialogV2.prompt({ ...NK.NAUREN_KIT_JANELA, window: { title: `${item.name} — ${alvoR.name}` },
           content: lista.length ? `<p>Habilidades de <b>${alvoR.name}</b>:</p><ul>${lista.map(n => `<li>${n}</li>`).join("")}</ul>` : `<p>${alvoR.name} não tem habilidades.</p>`,
           ok: { label: "Ok" }, rejectClose: false }).catch(() => null);
         this.#beneficiosAtual.push({ label: "Conhecimento", value: `você conhece as habilidades de ${alvoR.name}` });
@@ -9259,7 +9310,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
           if (!alvoTokC) secondaryLines.push({ label: "Traço Celestial", value: "não usado", breakdown: "marque um alvo (T) a até 4m para escrever a Palavra" });
           else if (dist > 4.01) secondaryLines.push({ label: "Traço Celestial", value: "não usado", breakdown: `${alvoTokC.name} está a ${Math.round(dist)}m (alcance 4m)` });
           else {
-            const escC = await foundry.applications.api.DialogV2.wait({
+            const escC = await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA,
               window: { title: `Traço Celestial — ${alvoTokC.name}` },
               content: `<p>Você agiu numa Prioridade de <b>${doadorC.name}</b>. Escrever uma Palavra em <b>${alvoTokC.name}</b>?</p>`,
               buttons: [{ action: "condicao-lerdeza", label: "Lerdeza" }, { action: "condicao-loucura", label: "Loucura" }, { action: "condicao-fragmentado", label: "Fragmentado" }, { action: "nao", label: "Não" }],
@@ -9460,7 +9511,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
             if (recR && qtdR) {
               const nomeR = NAUREN_REACAO_RESISTIR_OPCOES[recR]?.replace(/ \(.*\)$/, "") ?? recR;
               const podeR = recR === "estresse" ? NaurenAlvoHelper._podePagar(this.actor, "estresse", qtdR) : Number(naurenResolverTokenFormula(recR, this.actor)) >= qtdR;
-              const resistiu = podeR && await foundry.applications.api.DialogV2.confirm({ window: { title: `${it.name} — ${nomeReator}` },
+              const resistiu = podeR && await foundry.applications.api.DialogV2.confirm({ ...NK.NAUREN_KIT_JANELA, window: { title: `${it.name} — ${nomeReator}` },
                 content: `<p><b>${nomeReator}</b> tenta desviar seu ataque para <b>${naurenNomeDeToken(novoDoc)}</b>.</p><p>Pagar <b>${qtdR} ${nomeR}</b> para resistir e manter o alvo?</p>`,
                 yes: { label: "Resistir" }, no: { label: "Deixar desviar" }, rejectClose: false }).catch(() => false);
               if (resistiu) {
@@ -10316,7 +10367,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
           && this.actor.items.some(i => i.type === "habilidade" && naurenEhItem(i, "Espírito Ardiloso") && i.system.ativo !== false)) {
           const resA = (this.actor.system.recursosCustom ?? []).find(x => x.id === "espiritoardiloso");
           if ((resA?.valor ?? 0) > 0) {
-            const escA = await foundry.applications.api.DialogV2.wait({
+            const escA = await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA,
               window: { title: `Espírito Ardiloso — ${tokenDoc.name}` },
               content: `<p>Você acertou <b>${tokenDoc.name}</b>. Gastar 1 Espírito Ardiloso (${resA.valor}/${resA.max ?? "?"}) para causar uma Condição?</p>`,
               buttons: [{ action: "condicao-caido", label: "Caído" }, { action: "condicao-cego", label: "Cego" }, { action: "condicao-sangramento", label: "Sangramento" }, { action: "nao", label: "Não", default: true }],
@@ -10673,7 +10724,7 @@ class NaurenCriadorPersonagem extends foundry.applications.api.HandlebarsApplica
       { id: "criador", icone: "fa-hat-wizard", titulo: "Criador de Personagem", texto: npc ? "O mesmo assistente dos jogadores - atributos, peculiaridades, pigmentos, equipamento e classe passo a passo." : "Um assistente guiado - você define atributos, peculiaridades, pigmentos, equipamento e classe passo a passo." },
       { id: "manual", icone: "fa-hand-pointer", titulo: "Criar Ficha Manualmente", texto: "A ficha abre do jeito de sempre - arraste itens do compêndio você mesmo." }
     ];
-    await foundry.applications.api.DialogV2.wait({
+    await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA,
       window: { title: `${actor.name} — como você quer criar ${npc ? "esta ficha" : "este personagem"}?` },
       position: { width: npc ? 820 : 640 },
       content: `
@@ -11832,7 +11883,7 @@ class NaurenRegionHelper {
       // Arsenal de Armadilhas: escolher o efeito extra desta armadilha.
       if (acao.templatePersistenteAoEntrar && (item?.actor ?? item?.parent)?.items?.some(i => i.type === "habilidade" && naurenEhItem(i, "Arsenal de Armadilhas") && i.system.ativo !== false)) {
         const packCond = game.packs.find(pk => pk.metadata.label === "Nauren - Condições e Venenos");
-        const escolhaArsenal = await foundry.applications.api.DialogV2.wait({
+        const escolhaArsenal = await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA,
           window: { title: "Arsenal de Armadilhas" },
           content: "<p>Que efeito extra esta armadilha tem ao ser ativada?</p>",
           buttons: [{ action: "condicao-queimando", label: "Explosiva (Queimando 1)" }, { action: "condicao-fragmentado", label: "Destrutiva (Fragmentado 1)" }, { action: "nenhum", label: "Nenhum" }],
@@ -12328,7 +12379,7 @@ class NaurenAlvoHelper {
   /** Roda LOCALMENTE (já no cliente certo) - mostra o popup e devolve true (pagou) / false (não). */
   static async _perguntarSustentarLocal({ nomeRegiao, recurso, quantidade }) {
     let pagou = false;
-    await foundry.applications.api.DialogV2.wait({
+    await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA,
       window: { title: `${nomeRegiao} — Sustentar?` },
       content: `<p>Gastar <b>${quantidade} de ${naurenNomeDoRecurso(null, recurso)}</b> para manter "${nomeRegiao}" ativa por mais uma rodada?</p>`,
       buttons: [
@@ -12544,7 +12595,7 @@ class NaurenAlvoHelper {
     for (let n = 0; n < (pEvento.remocoesExtras ?? 0); n++) {
       const opcoes = this._montarOpcoesRemoverCondicaoOuEstresse(actor);
       if (!opcoes.length) break;
-      const escolha = await foundry.applications.api.DialogV2.wait({
+      const escolha = await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA,
         window: { title: `${actor.name} — remoção extra (${n + 1}/${pEvento.remocoesExtras})` },
         content: "<p>A penitência permite remover mais uma Condição ou 1 de Estresse:</p>",
         buttons: [...opcoes.map(o => ({ action: o.valor, label: o.label })), { action: "nenhuma", label: "Nenhuma" }],
@@ -12728,7 +12779,7 @@ class NaurenAlvoHelper {
       evitados = new Map(passo1.evitados ?? []);
       if (passo1.ajusteDanoFinal) ajustes.ajusteDanoFinal = passo1.ajusteDanoFinal;
       ajustes.semColisao = tiraColisao(evitados, reacaoDano);
-    } else ajustes.decidirConsequencia = async ({ danoFinal: danoAgora, texto: resumo, evitouCompletamente: evitou, usouPrioridade: saiu }) => {
+    } else ajustes.decidirConsequencia = async ({ danoFinal: danoAgora, texto: resumo, evitouCompletamente: evitou, usouPrioridade: saiu, faixa }) => {
       // Usou a Prioridade antes de uma Ação Anunciada (saiu da área): não recebe nada, então não há o que evitar.
       // O que foi marcado no passo 1 já vem marcado (_pre), para confirmar ou mudar com o resultado à vista.
       // Não ser movido usando a Prioridade some se ela já foi gasta na reação (Bloquear/Esquivar/Contra-Atacar)
@@ -12741,7 +12792,7 @@ class NaurenAlvoHelper {
       const temEvitavel = lista.some(it => !it._oculto);
       const mostrarDano = popupLigado && !lacaio && danoAgora > 0;
       if (!mostrarDano && !temEvitavel) return null;
-      const r = await this._popupReacao(actor, { ...pEvento, danoAtual: danoAgora, resumoReacao: resumo }, {
+      const r = await this._popupReacao(actor, { ...pEvento, danoAtual: danoAgora, resumoReacao: resumo, faixaReacao: faixa ?? null }, {
         mostrarReacaoDano: mostrarDano, itensEvitaveis: lista, fase: "consequencia", mostrarReacaoCura: false, opcoesRemover: []
       });
       evitados = new Map(r?.evitados ?? []);
@@ -12944,7 +12995,7 @@ class NaurenAlvoHelper {
     if (p.houveAtaque) {
       const olhos = actor.items.find(i => i.type === "condicao" && naurenEhItem(i, "Olhos Malignos") && (i.system.acumulos ?? 0) > 0);
       if (olhos) {
-        const usarOlho = await foundry.applications.api.DialogV2.confirm({ window: { title: `Olhar Culposo — ${actor.name}` },
+        const usarOlho = await foundry.applications.api.DialogV2.confirm({ ...NK.NAUREN_KIT_JANELA, window: { title: `Olhar Culposo — ${actor.name}` },
           content: `<p>Você está sendo atacado (ataque ${p.ataqueTotal ?? 0}). Consumir 1 Olho Maligno (${olhos.system.acumulos === 1 ? "o último" : `${olhos.system.acumulos} restantes`}) para reduzir o ataque em 1d10${naurenTemEstado(actor, "Profusão Retraída") ? " (máximo: Profusão Retraída)" : ""}?</p>`,
           yes: { label: "Usar um Olho" }, no: { label: "Agora não" }, rejectClose: false }).catch(() => false);
         if (usarOlho) {
@@ -12970,7 +13021,7 @@ class NaurenAlvoHelper {
         const atacante = atacDoc?.actor ?? atacDoc;
         const infVerdade = naurenEstudoNoAlvo(atacante, actor)?.getFlag("nauren", "estudo")?.informacoes ?? 0;
         if (atacante && infVerdade > 0) {
-          const usar = await foundry.applications.api.DialogV2.confirm({
+          const usar = await foundry.applications.api.DialogV2.confirm({ ...NK.NAUREN_KIT_JANELA,
             window: { title: `Verdade Atordoante — ${actor.name}` },
             content: `<p><b>${atacante.name}</b> está atacando você (ataque ${p.ataqueTotal ?? 0}).</p><p>Usar <b>Verdade Atordoante</b> e reduzir o ataque em <b>${infVerdade}</b> (suas informações sobre ele)? 1 vez por combate.</p>`,
             yes: { label: `Reduzir em ${infVerdade}` }, no: { label: "Agora não" }, rejectClose: false
@@ -13803,179 +13854,173 @@ class NaurenAlvoHelper {
     const bloqueioDetalhe = bloqueioDado.partes.length ? ` (${bloqueioDado.partes.join(", ")})` : "";
     const esquivaDetalhe = esquivaDado.partes.length ? ` (${esquivaDado.partes.join(", ")})` : "";
 
+    // 0.95: janela de reação com o kit — cabeçalho do ataque, reações em cartões (custo, o que faz,
+    // quanto precisa tirar e a chance), resultado da reação numa faixa, dano em escolhas grandes.
+    // Os nomes dos campos (reacaoDano, ajuste*, evitar_*, removerCondicaoOuEstresse...) não mudaram.
+    const escP = foundry.utils.escapeHTML;
+    const ataqueP = Number(p.ataqueTotal) || 0;
+    const agilP = actor.system.atributosTotais?.agilidade ?? actor.system.atributos?.agilidade?.value ?? 0;
+    const somaEsqP = naurenNumeroModo(actor.system.vantagemContagem?.esquiva ?? (actor.system.vantagemEsquivaModo || "normal"));
+    const extraEsqP = naurenBonusModoExtra(somaEsqP) || 0;
+    const bonusEsqTotalP = agilP + esquivaBonusFinal + extraEsqP;
+    const precisaEsq = ataqueP + 1 - bonusEsqTotalP;
+    const chanceEsq = p.critico ? 0 : Math.max(0, Math.min(20, 21 - Math.max(1, precisaEsq))) * 5;
+    const textoPrecisa = precisaEsq <= 1 ? "Qualquer resultado no dado passa." : precisaEsq > 20 ? "Nem um 20 no dado passa." : `Precisa tirar <b>${precisaEsq}+</b> no dado.`;
+    const modoEsqTexto = somaEsqP > 0 ? " Você rola com Facilidade." : somaEsqP < 0 ? " Você rola com Dificuldade." : "";
+    const vidaP = actor.system.vida?.value ?? 0, vidaMaxP = actor.system.vida?.max ?? 0;
+    const danoP = Math.max(0, Number(p.dano) || 0);
+    const semDanoNoAtaque = !(Number(p.dano) > 0) && !(Number(p.danoVerdadeiro) > 0);
+    const condsQueVem = (itensEvitaveis ?? []).filter(it => it && !it._oculto && it.tipo !== "movimento" && it.label).map(it => it.label);
+    const ajusteCampo = (nome, desab = false) => `<span class="nk-opcao-ajuste">ajuste <input type="text" name="${nome}" value="0" class="nauren-popup-ajuste"${desab ? " disabled" : ""} title="Bônus ou penalidade só nesta reação. Aceita dado (ex.: 1d4, -2)" aria-label="ajuste"></span>`;
+    // Ajustes pontuais (dano final, ignorar o dano) — para o jogador ou o Mestre.
+    const ajustesDano = (incluiSemDano = true) => `
+      <details class="nk-ajustes">
+        <summary>Ajustes pontuais <span>· só nesta reação (você ou o Mestre)</span></summary>
+        <div class="nk-ajustes-grade">
+          <div class="nauren-popup-opt-row"><label style="flex: 1;" for="nk-aj-dano-${actor.id}">Ajuste no dano final</label><input id="nk-aj-dano-${actor.id}" type="text" name="ajusteDanoFinal" value="0" class="nauren-popup-ajuste" title="Positivo aumenta, negativo reduz; vale depois de tudo. Aceita dado (ex.: 1d4)"></div>
+        </div>
+        ${incluiSemDano ? `<div class="nk-ajustes-checks"><label><input type="radio" name="reacaoDano" value="sem-dano"> Ignorar este dano (decisão da mesa)</label></div>` : ""}
+      </details>`;
+
     let htmlReacao = "";
+    let cabecalhoP = "";
+    if (p.houveAtaque || mostrarReacaoDano) {
+      const vem = [danoP > 0 ? `<b>${danoP} de dano</b>` : "", ...condsQueVem.map(c => `<b>${escP(c)}</b>`)].filter(Boolean).join(" + ");
+      cabecalhoP = `<div class="nk-cab nk-tom-ruim">
+        <div class="nk-avatar" aria-hidden="true">${escP(String(p.atacante ?? "?").charAt(0))}</div>
+        <div class="nk-cab-texto"><div class="nk-cab-titulo">${escP(p.atacante ?? "Alguém")} ${p.houveAtaque ? "ataca você" : "usa uma Ação em você"}</div>
+          <div class="nk-cab-sub">${escP(String(p.nomeAcao ?? "").replace(/^(.+?) — (.+)$/, (m, a, b) => a.includes(b) ? a : m))}${vem ? ` · ${p.houveAtaque ? "se acertar: " : ""}${vem}` : ""}</div></div>
+        ${p.houveAtaque ? `<div class="nk-cab-numero${p.critico ? " nk-critico" : p.falhaCritica ? " nk-falha" : ""}"><small>${p.critico ? "Crítico" : p.falhaCritica ? "1 natural" : "Ataque"}</small><b>${ataqueP}</b></div>` : ""}
+      </div>`;
+    }
     if (ehConsequencia && mostrarReacaoDano) {
       const danoAgora = Math.max(0, Number(p.danoAtual) || 0);
+      const fx = p.faixaReacao;
+      const resultadoHtml = fx ? NK.naurenKitFaixa(fx)
+        : (p.resumoReacao ? `<div class="nk-faixa"><div class="nk-regra">${escP(p.resumoReacao)}</div></div>` : "");
       const opcoesC = [];
-      if (danoAgora > 0 && stressAtual < stressMax) opcoesC.push(`<label class="nauren-popup-opt"><input type="radio" name="reacaoDano" value="estresse"><span>Tomar Estresse (+1) — o dano cai para ${Math.floor(danoAgora / 2)}</span></label>`);
-      else if (danoAgora > 0) opcoesC.push(`<p class="nauren-popup-nota"><i class="fas fa-ban"></i> Estresse no máximo (${stressAtual}/${stressMax}): não dá para reduzir este dano.</p>`);
-      opcoesC.push(`<label class="nauren-popup-opt"><input type="radio" name="reacaoDano" value="cheio" checked><span>Receber o dano (${danoAgora})</span></label>`);
-      opcoesC.push(`<label class="nauren-popup-opt"><input type="radio" name="reacaoDano" value="sem-dano"><span>Não tomar Dano</span></label>`);
-      opcoesC.push(`
-        <div class="nauren-popup-opt-row" style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed #453e66;">
-          <label style="flex: 1;">Ajuste no dano final (+/- direto no dano, depois de tudo)</label>
-          <input type="text" name="ajusteDanoFinal" value="0" class="nauren-popup-ajuste" title="Positivo aumenta o dano, negativo reduz - some depois de toda reação já calculada. Aceita dado (ex: 1d4)">
-        </div>`);
-      htmlReacao = `<fieldset class="nauren-popup-group"><legend>Dano a receber</legend>${p.resumoReacao ? `<p class="nauren-popup-nota">${p.resumoReacao}</p>` : ""}${opcoesC.join("")}</fieldset>`;
+      if (danoAgora > 0 && stressAtual < stressMax) opcoesC.push(NK.naurenKitOpcao({ campo: "reacaoDano", valor: "estresse", nome: "Gastar 1 Estresse e levar metade",
+        desc: `Estresse ${stressAtual} → ${stressAtual + 1} de ${stressMax}.`, extra: `<span class="nk-opcao-numero">−${Math.floor(danoAgora / 2)} PV</span>` }));
+      else if (danoAgora > 0) opcoesC.push(NK.naurenKitNota(`Estresse no máximo (${stressAtual}/${stressMax}): não dá para reduzir este dano.`));
+      opcoesC.push(NK.naurenKitOpcao({ campo: "reacaoDano", valor: "cheio", marcado: true, nome: "Levar o dano",
+        desc: vidaMaxP ? `Vida ${vidaP} → ${Math.max(0, vidaP - danoAgora)} de ${vidaMaxP}.` : "", extra: `<span class="nk-opcao-numero">−${danoAgora} PV</span>` }));
+      htmlReacao = `${resultadoHtml}<div class="nk-grupo">${NK.naurenKitSecao("O dano que você leva")}<div class="nk-opcoes">${opcoesC.join("")}</div></div>${ajustesDano(true)}`;
     } else if (mostrarReacaoDano) {
       const opcoes = [];
-      // Ação que não gera Prioridade (ex.: Condemnatio com penitência): Bloquear, Esquivar e Contra-Atacar
-      // só existem dentro de uma Prioridade (livro), então não aparecem.
-      if (p.semPrioridade) opcoes.push(`<p class="nauren-popup-nota"><i class="fas fa-ban"></i> ${p.semPrioridadeFonte ? `${p.semPrioridadeFonte}: ` : ""}esta Ação não gera Prioridade. Sem Bloquear, Esquivar ou Contra-Atacar.</p>`);
+      const avisos = [];
+      if (p.semPrioridade) avisos.push(`${p.semPrioridadeFonte ? `${escP(p.semPrioridadeFonte)}: ` : ""}esta Ação não gera Prioridade. Sem Bloquear, Esquivar ou Contra-Atacar.`);
+      if (p.houveAtaque && p.critico) avisos.push("Acerto crítico: não dá para Bloquear nem Esquivar.");
+      if (p.houveAtaque && p.falhaCritica) avisos.push("O ataque tirou 1 natural: erra automaticamente.");
       if (!p.houveAtaque && !p.ehSustentacao && !p.semPrioridade) {
-        opcoes.push(`
-          <div class="nauren-popup-opt-row">
-            <label class="nauren-popup-opt" title="Ação Anunciada: você recebe Prioridade antes dos efeitos. Usando-a (ex.: para sair da área), não recebe o dano nem as Condições desta Ação."><input type="radio" name="reacaoDano" value="usarPrioridade"><span>Usar minha Prioridade — agir antes do efeito (não recebe o dano nem as Condições desta Ação)</span></label>
-          </div>`);
+        opcoes.push(NK.naurenKitOpcao({ campo: "reacaoDano", valor: "usarPrioridade", nome: "Usar minha Prioridade agora", custo: "sua Prioridade",
+          desc: "Ação Anunciada: você age antes do efeito (ex.: sair da área) e não recebe o dano nem as Condições desta Ação." }));
       }
       // Bloquear, Esquivar e Contra-Atacar custam 1 Estamina; Esquiva Instintiva (usos por turno) e a
       // Esquiva da Postura Gruhua (Energia) não, então aparecem mesmo com 0 de Estamina.
       const temEstReacao = estamina >= 1;
-      if (p.houveAtaque && !p.semPrioridade && !temEstReacao) {
-        opcoes.push(`<p class="nauren-popup-nota"><i class="fas fa-battery-empty"></i> Sem Estamina: Bloquear, Esquivar e Contra-Atacar (1 Est) indisponíveis.</p>`);
-      }
-      if (p.houveAtaque && !p.semPrioridade) {
-        // Cada opção mostra um campo numérico ao lado pra ajustar o
-        // TESTE na hora (ex: usar uma Guarda Defensiva ou outra vantagem
-        // situacional que ainda não virou um Efeito permanente) - some
-        // POR CIMA de qualquer bônus/penalidade já persistente (Bônus
-        // Manual/Efeito/Condição/Pigmento, já incluídos no número
-        // mostrado aqui, dado de verdade incluso).
-        if (temEstReacao) opcoes.push(`
-          <div class="nauren-popup-opt-row">
-            <label class="nauren-popup-opt"><input type="radio" name="reacaoDano" value="bloquear"><span>Bloquear (1 Est) — Bloqueio ${bloqueio}${bloqueioDetalhe}</span></label>
-            <input type="text" name="ajusteBloqueio" value="0" class="nauren-popup-ajuste" title="Ajuste manual (+/-) só pra este Bloqueio - aceita dado (ex: 1d4)">
-          </div>`);
+      if (p.houveAtaque && !p.semPrioridade && !temEstReacao) avisos.push("Sem Estamina: Bloquear, Esquivar e Contra-Atacar (1 Estamina) não estão disponíveis.");
+      if (p.houveAtaque && !p.semPrioridade && !p.falhaCritica) {
+        if (temEstReacao && !p.critico) {
+          const segura = ataqueP <= bloqueio;
+          const limiarP = Number(actor.system.limiarDeflexaoTotal ?? 0) + (Number(p.ajusteLimiarDeflexaoAtacante) || 0);
+          const deflete = p.atacanteTokenUuid && Math.abs(ataqueP - bloqueio) <= limiarP;
+          opcoes.push(NK.naurenKitOpcao({ campo: "reacaoDano", valor: "bloquear", nome: "Bloquear", custo: "1 Estamina", fraco: !segura && !deflete,
+            desc: `Seu Bloqueio é <b>${bloqueio}</b> (Defesa + Vitalidade${bloqueioDetalhe ? ` · ${escP(bloqueioDetalhe.replace(/^\s*\((.*)\)\s*$/, "$1"))}` : ""}${NaurenAlvoHelper._fontesDefesaTexto(actor, "bloqueio") ? ` · inclui ${escP(NaurenAlvoHelper._fontesDefesaTexto(actor, "bloqueio"))}` : ""}). ${deflete ? `Contra ${ataqueP}: <b>Deflexão</b> — o ataque falha, não causa dano e ${escP(p.atacante ?? "quem atacou")} perde 1 Estamina e fica Caído.` : segura ? `Contra ${ataqueP} <b>segura</b>: você leva só o dano mínimo e o ataque conta como falha.` : `Contra ${ataqueP} <b>não segura</b>: você leva o dano igual.`}`,
+            extra: ajusteCampo("ajusteBloqueio") }));
+        }
         const temGruhua = actor.items.some(i => i.type === "habilidade" && naurenEhItem(i, "Postura Gruhua") && i.system.ativo !== false) && ((actor.system.recursosCustom ?? []).find(r => r.id === "energia")?.valor ?? 0) >= 2;
-        if (temEstReacao || temGruhua) opcoes.push(`
-          <div class="nauren-popup-opt-row">
-            ${temEstReacao ? `<label class="nauren-popup-opt"><input type="radio" name="reacaoDano" value="esquivar"><span>Esquivar (1 Est) — 1d20 + Agilidade${esquivaBonusFinal ? ` + ${esquivaBonusFinal}` : ""}${esquivaDetalhe}</span></label>` : ""}
-            ${temGruhua ? `<label class="nauren-popup-opt"><input type="radio" name="reacaoDano" value="esquivar-energia"><span>Esquivar (2 Energia, Postura Gruhua) — mesma rolagem, sem Estamina</span></label>` : ""}
-            <input type="text" name="ajusteEsquiva" value="0" class="nauren-popup-ajuste" title="Ajuste manual (+/-) só pra esta Esquiva - aceita dado (ex: 1d4)">
-          </div>`);
+        if (!p.critico && (temEstReacao || temGruhua)) {
+          const fontesEsqP = NaurenAlvoHelper._fontesDefesaTexto(actor, "esquiva");
+          const contaEsq = `1d20 + Agilidade${esquivaBonusFinal ? ` + ${esquivaBonusFinal}` : ""}${extraEsqP ? ` ${extraEsqP > 0 ? "+" : "−"} ${Math.abs(extraEsqP)}` : ""}`;
+          const descEsq = `Role <b>${contaEsq}</b> (= 1d20 + ${bonusEsqTotalP})${fontesEsqP ? ` <span class="nk-suave">· inclui ${escP(fontesEsqP)}</span>` : ""}. Passando de ${ataqueP}, você <b>evita o dano${condsQueVem.length ? " e as Condições" : ""}</b>. ${textoPrecisa}${modoEsqTexto}`;
+          if (temEstReacao) opcoes.push(NK.naurenKitOpcao({ campo: "reacaoDano", valor: "esquivar", nome: "Esquivar", custo: "1 Estamina", desc: descEsq + (esquivaDetalhe ? ` <span class="nk-suave">${escP(esquivaDetalhe.replace(/^\s*\((.*)\)\s*$/, "$1"))}</span>` : ""), chance: chanceEsq, extra: ajusteCampo("ajusteEsquiva") }));
+          if (temGruhua) opcoes.push(NK.naurenKitOpcao({ campo: "reacaoDano", valor: "esquivar-energia", nome: "Esquivar (Postura Gruhua)", custo: "2 Energia", desc: `Mesma rolagem da Esquiva (${contaEsq}), sem gastar Estamina.`, chance: chanceEsq, extra: temEstReacao ? "" : ajusteCampo("ajusteEsquiva") }));
+        }
         // Esquiva Instintiva (Ladino) - mesma rolagem de Esquivar, sem
         // custar Estamina, limitada a X usos por turno (reseta sozinha).
         const esquivaInstintivaInfo = NaurenAlvoHelper._esquivaInstintivaInfo(actor);
-        if (esquivaInstintivaInfo) {
+        if (esquivaInstintivaInfo && !p.critico) {
           const semUsos = esquivaInstintivaInfo.usosRestantes <= 0 && esquivaInstintivaInfo.emCombate;
-          opcoes.push(`
-            <div class="nauren-popup-opt-row"${semUsos ? ' style="opacity: 0.45;"' : ""}>
-              <label class="nauren-popup-opt"><input type="radio" name="reacaoDano" value="esquiva-instintiva"${semUsos ? " disabled" : ""}><span>Esquiva Instintiva (${esquivaInstintivaInfo.usosRestantes}/${esquivaInstintivaInfo.usosMax} usos, sem custo) — 1d20 + Agilidade${esquivaBonusFinal ? ` + ${esquivaBonusFinal}` : ""}${esquivaDetalhe}</span></label>
-              <input type="text" name="ajusteEsquivaInstintiva" value="0" class="nauren-popup-ajuste"${semUsos ? " disabled" : ""} title="Ajuste manual (+/-) só pra esta Esquiva - aceita dado (ex: 1d4)">
-            </div>`);
+          opcoes.push(NK.naurenKitOpcao({ campo: "reacaoDano", valor: "esquiva-instintiva", nome: "Esquiva Instintiva", custoBom: `grátis · ${esquivaInstintivaInfo.usosRestantes}/${esquivaInstintivaInfo.usosMax} usos`, desabilitado: semUsos,
+            desc: semUsos ? "Sem usos neste turno." : `Igual à Esquiva, sem gastar Estamina. ${textoPrecisa}`, chance: semUsos ? undefined : chanceEsq, extra: ajusteCampo("ajusteEsquivaInstintiva", semUsos) }));
         }
-        // Contra-Atacar (correção): agora exige uma ARMA EQUIPADA de
-        // verdade (com uma Ação de ataque configurada) - usa os atributos,
-        // bônus de dano e fórmula de dano DAQUELA arma específica, igual a
-        // um ataque normal (reaproveita o mesmo motor de rolagem). Só
-        // aparece a opção se existir pelo menos 1 arma válida; com mais de
-        // 1, mostra um seletor pra escolher qual usar.
-        // Armas equipadas + habilidades e magias ativas que tenham Ação de ataque (NPCs costumam atacar por habilidade).
+        // Contra-Atacar: exige uma arma equipada (ou habilidade/magia ativa) com Ação de ataque; usa o motor normal de ataque.
         const armasComAtaque = actor.items.filter(i =>
           ((i.type === "arma" && i.system.equipado) || ((i.type === "habilidade" || i.type === "magia") && i.system.ativo !== false))
           && (i.system.acoes ?? []).some(a => a.ehAtaque)
         ).sort((a, b) => (a.type === "arma" ? 0 : 1) - (b.type === "arma" ? 0 : 1));
         if (temEstReacao && p.atacanteTokenUuid && armasComAtaque.length) {
-          // Cada <option> de arma leva "data-acoes" (JSON: [{idx, nome}])
-          // com as Ações de ataque DELA, no ÍNDICE ORIGINAL (não o índice
-          // pós-filtro) - o listener de render (mais abaixo) usa isso pra
-          // repopular o segundo <select> sempre que a arma escolhida mudar.
           const acoesDaArma = (arma) => arma.system.acoes
             .map((a, idx) => ({ idx, nome: a.nome || `Ação ${idx + 1}`, ehAtaque: a.ehAtaque }))
             .filter(a => a.ehAtaque);
           const opcoesArma = armasComAtaque.map(a =>
-            `<option value="${a.id}" data-acoes='${JSON.stringify(acoesDaArma(a)).replace(/'/g, "&#39;")}'>${a.name}${a.type === "arma" ? "" : ` · ${a.type === "magia" ? "magia" : "habilidade"}`}</option>`
+            `<option value="${a.id}" data-acoes='${JSON.stringify(acoesDaArma(a)).replace(/'/g, "&#39;")}'>${escP(a.name)}${a.type === "arma" ? "" : ` · ${a.type === "magia" ? "magia" : "habilidade"}`}</option>`
           ).join("");
           const primeiraArma = armasComAtaque[0];
-          const opcoesAcaoInicial = acoesDaArma(primeiraArma).map(a => `<option value="${a.idx}">${a.nome}</option>`).join("");
-          opcoes.push(`
-            <div class="nauren-popup-opt-row">
-              <label class="nauren-popup-opt"><input type="radio" name="reacaoDano" value="contra-atacar"><span>Contra-Atacar (1 Est) com a arma ou habilidade:</span></label>
-              <select name="armaContraAtaqueId" class="nauren-popup-ajuste" id="nauren-contra-arma-select">${opcoesArma}</select>
-              <select name="acaoContraAtaqueIndex" class="nauren-popup-ajuste" id="nauren-contra-acao-select">${opcoesAcaoInicial}</select>
-            </div>`);
+          const opcoesAcaoInicial = acoesDaArma(primeiraArma).map(a => `<option value="${a.idx}">${escP(a.nome)}</option>`).join("");
+          opcoes.push(NK.naurenKitOpcao({ campo: "reacaoDano", valor: "contra-atacar", nome: "Contra-Atacar", custo: "1 Estamina",
+            desc: `Você ataca ${escP(p.atacante ?? "quem atacou")} de volta. Empatar com ${ataqueP}${p.critico ? "" : " (ou ficar dentro do Limiar de Deflexão)"} causa <b>Deflexão</b>: o ataque dele falha.`,
+            extra: `<span class="nk-opcao-selects"><label>com <select name="armaContraAtaqueId" class="nauren-popup-ajuste" id="nauren-contra-arma-select">${opcoesArma}</select></label><label>ação <select name="acaoContraAtaqueIndex" class="nauren-popup-ajuste" id="nauren-contra-acao-select">${opcoesAcaoInicial}</select></label></span>` }));
         }
       }
-      if (stressAtual < stressMax) {
+      if (stressAtual < stressMax && !semDanoNoAtaque) {
         // Escudo de Mana: o escudo absorve o dano cheio; só o que passa dele cai pela metade.
-        const semEstP = actor.getFlag?.("nauren", "escudoSemEstresse"), escP = actor.system?.escudo?.value ?? 0;
-        const textoEstP = semEstP && escP > 0 && (actor.system.escudo?.max ?? 0) === semEstP.max
-          ? `${semEstP.nome}: o escudo leva ${Math.min(escP, p.dano)} cheio, metade do resto (${Math.min(escP, p.dano) + Math.floor(Math.max(0, p.dano - escP) / 2)} no total)`
-          : `metade do dano (${Math.floor(p.dano / 2)})`;
-        opcoes.push(`<label class="nauren-popup-opt"><input type="radio" name="reacaoDano" value="estresse"><span>${ehReacao ? "Não reagir e tomar" : "Tomar"} Estresse (+1) — ${textoEstP}</span></label>`);
+        const semEstP = actor.getFlag?.("nauren", "escudoSemEstresse"), escPv = actor.system?.escudo?.value ?? 0;
+        const textoEstP = semEstP && escPv > 0 && (actor.system.escudo?.max ?? 0) === semEstP.max
+          ? `${escP(semEstP.nome)}: o escudo leva ${Math.min(escPv, danoP)} cheio, metade do resto (${Math.min(escPv, danoP) + Math.floor(Math.max(0, danoP - escPv) / 2)} no total).`
+          : `Leva metade do dano (${Math.floor(danoP / 2)}).`;
+        opcoes.push(NK.naurenKitOpcao({ campo: "reacaoDano", valor: "estresse", nome: `${ehReacao ? "Não reagir e g" : "G"}astar 1 Estresse`, custo: `Estresse ${stressAtual} → ${stressAtual + 1}`, desc: textoEstP }));
       }
-      opcoes.push(`<label class="nauren-popup-opt"><input type="radio" name="reacaoDano" value="cheio" checked><span>${ehReacao ? "Não reagir — " : ""}Tomar o dano cheio (${p.dano})</span></label>`);
-      opcoes.push(`<label class="nauren-popup-opt"><input type="radio" name="reacaoDano" value="sem-dano"><span>Não tomar Dano</span></label>`);
-      // Caixa ÚNICA e geral de ajuste no DANO FINAL (some ou reduza,
-      // mesmo campo pra ambos - número negativo reduz) - se aplica
-      // independente de qual opção acima for escolhida, pensada pra
-      // qualquer bônus/penalidade situacional que não se encaixe em
-      // nenhuma reação específica (ex: uma Habilidade com dado de
-      // redução de dano que você prefere calcular na mão).
-      opcoes.push(`
-        <div class="nauren-popup-opt-row" style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed #453e66;">
-          <label style="flex: 1;">Ajuste no dano final (+/- direto no dano, depois de tudo)</label>
-          <input type="text" name="ajusteDanoFinal" value="0" class="nauren-popup-ajuste" title="Positivo aumenta o dano, negativo reduz - some depois de toda reação já calculada. Aceita dado (ex: 1d4)">
-        </div>`);
+      opcoes.push(NK.naurenKitOpcao({ campo: "reacaoDano", valor: "cheio", marcado: true, nome: ehReacao || p.houveAtaque ? "Não reagir" : "Receber",
+        desc: semDanoNoAtaque ? "Deixa o ataque acertar (não causa dano)." : `Leva <b>${danoP} de dano</b>${vidaMaxP ? ` (Vida ${vidaP} → ${Math.max(0, vidaP - danoP)})` : ""}.${ehReacao && !p.semPrioridade ? " Sua Prioridade fica guardada." : ""}` }));
       // Fase 6 (P): Condições ativas podem proibir Bloqueio/Esquiva (ex.: Juramentos).
       const proibindo = actor.items.filter(i => i.type === "condicao" && i.system.ativo !== false && (i.system.proibeBloqueio || i.system.proibeEsquiva || i.system.proibeContraAtaque));
       const proibeBloqueio = proibindo.some(i => i.system.proibeBloqueio) || !!p?.ignoraBloqueio || !!p?.apenasContraAtaque;
       const proibeEsquiva = proibindo.some(i => i.system.proibeEsquiva) || !!p?.apenasContraAtaque;
       const proibeContra = proibindo.some(i => i.system.proibeContraAtaque);
       const opcoesPermitidas = opcoes.filter(o => !(proibeBloqueio && o.includes('value="bloquear"')) && !(proibeEsquiva && (o.includes('value="esquivar"') || o.includes('value="esquivar-energia"') || o.includes('value="esquiva-instintiva"'))) && !(proibeContra && o.includes('value="contra-atacar"')));
-      const notaProibicao = proibindo.length ? `<p class="nauren-popup-nota"><i class="fas fa-ban"></i> ${[proibeBloqueio && "Bloqueio", proibeEsquiva && "Esquiva", proibeContra && "Contra-Ataque"].filter(Boolean).join(", ").replace(/, ([^,]*)$/, " e $1")} indisponível por: ${proibindo.map(i => i.name).join(", ")}</p>` : "";
-      const notaDoisPassos = ehReacao && !p.semPrioridade ? `<p class="nauren-popup-nota"><i class="fas fa-circle-info"></i> Se você reagir (Bloquear, Esquivar, Contra-Atacar), o Estresse e o que evitar são decididos depois, já com o resultado da rolagem.</p>` : "";
-      // Ataque sem dano nenhum (ex.: Roubar Destino): só faz sentido Bloquear/Esquivar/Contra-Atacar ou deixar acertar.
-      const semDanoNoAtaque = !(Number(p.dano) > 0) && !(Number(p.danoVerdadeiro) > 0);
-      const opcoesFinais = semDanoNoAtaque
-        ? opcoesPermitidas.filter(o => !o.includes('value="estresse"') && !o.includes('value="sem-dano"') && !o.includes('name="ajusteDanoFinal"'))
-            .map(o => o.includes('value="cheio"') ? o.replace(/<span>[^<]*<\/span>/, `<span>${ehReacao ? "Não reagir — " : ""}deixar o ataque acertar (não causa dano)</span>`) : o)
-        : opcoesPermitidas;
-      htmlReacao = `<fieldset class="nauren-popup-group"><legend>${semDanoNoAtaque ? "Reagir ao ataque" : "Reagir ao dano"}</legend>${notaProibicao}${opcoesFinais.join("")}${notaDoisPassos}</fieldset>`;
+      if (proibindo.length && (proibeBloqueio || proibeEsquiva || proibeContra)) avisos.push(`${[proibeBloqueio && "Bloqueio", proibeEsquiva && "Esquiva", proibeContra && "Contra-Ataque"].filter(Boolean).join(", ").replace(/, ([^,]*)$/, " e $1")} indisponível por: ${proibindo.map(i => escP(i.name)).join(", ")}.`);
+      const notaDoisPassos = ehReacao && !p.semPrioridade && p.houveAtaque ? NK.naurenKitNota("Reagindo com dado, o Estresse e o que evitar são decididos depois, já com o resultado na tela.") : "";
+      htmlReacao = `${avisos.length ? `<div class="nk-avisos">${avisos.map(a => `<div>${a}</div>`).join("")}</div>` : ""}
+        <div class="nk-grupo">${NK.naurenKitSecao(p.houveAtaque ? "O que você faz?" : "Como você recebe?", p.houveAtaque && !p.semPrioridade ? "· usa sua Prioridade" : "")}<div class="nk-opcoes">${opcoesPermitidas.join("")}</div>${notaDoisPassos}</div>
+        ${semDanoNoAtaque ? "" : ajustesDano(true)}`;
     }
 
-    // Reagir à Cura (ver _resolverUmEventoDeCura) - bem mais simples
-    // que a reação a dano acima: só aceitar ou recusar, sem Bloqueio/
-    // Esquiva/Contra-Ataque (não fazem sentido pra receber cura).
-    // Concatenado (não substitui) com "Reagir ao dano" acima - agora os
-    // dois PODEM aparecer juntos no MESMO popup (ver comentário completo
-    // em "_resolverUmEventoDeAtaque"/"opcoesCuraJunto"), como uma seção a
-    // mais dentro da mesma janela de reação, em vez de dois popups
-    // sequenciais pro mesmo evento. Bug real corrigido: antes usava "="
-    // em vez de "+=" aqui - se os dois algum dia viessem juntos, o bloco
-    // de "Reagir ao dano" simplesmente desaparecia, sobrescrito por este.
+    // Reagir à Cura (ver _resolverUmEventoDeCura): só aceitar ou recusar; pode vir junto da reação a dano.
     if (mostrarReacaoCura) {
+      const curaP = Math.max(0, Number(p.cura) || 0);
+      const depois = vidaMaxP ? Math.min(vidaMaxP, vidaP + curaP) : vidaP + curaP;
+      const pctAntes = vidaMaxP ? Math.round(100 * vidaP / vidaMaxP) : 0, pctGanho = vidaMaxP ? Math.round(100 * (depois - vidaP) / vidaMaxP) : 0;
+      if (!cabecalhoP) cabecalhoP = `<div class="nk-cab nk-tom-bom"><div class="nk-avatar" aria-hidden="true">${escP(String(p.atacante ?? "?").charAt(0))}</div><div class="nk-cab-texto"><div class="nk-cab-titulo">${escP(p.atacante ?? "Alguém")} cura você</div><div class="nk-cab-sub">${escP(String(p.nomeAcao ?? "").replace(/^(.+?) — (.+)$/, (m, a, b) => a.includes(b) ? a : m))}</div></div></div>`;
       htmlReacao += `
-        <fieldset class="nauren-popup-group"><legend>Reagir à cura</legend>
-          <label class="nauren-popup-opt"><input type="radio" name="reacaoCura" value="aceitar" checked><span>Aceitar a cura (+${p.cura} PV)</span></label>
-          <label class="nauren-popup-opt"><input type="radio" name="reacaoCura" value="recusar"><span>Recusar a cura</span></label>
-        </fieldset>`;
+        <div class="nk-cura">
+          <div class="nk-cura-valor">+${curaP} <span>PV</span></div>
+          ${vidaMaxP ? `<div class="nk-vida"><span>Vida</span><div class="nk-vida-barra"><i style="width:${pctAntes}%"></i><b style="width:${pctGanho}%"></b></div><span><b>${vidaP}</b> → <b class="nk-bom">${depois}</b> / ${vidaMaxP}</span></div>` : ""}
+          ${vidaMaxP && vidaP + curaP > vidaMaxP ? NK.naurenKitNota(`A Vida já fica no máximo; ${vidaP + curaP - vidaMaxP} de cura sobra.`) : ""}
+        </div>
+        <div class="nk-grupo"><div class="nk-opcoes">
+          ${NK.naurenKitOpcao({ campo: "reacaoCura", valor: "aceitar", marcado: true, nome: "Aceitar a cura", extra: `<span class="nk-opcao-numero nk-bom">+${curaP} PV</span>` })}
+          ${NK.naurenKitOpcao({ campo: "reacaoCura", valor: "recusar", nome: "Recusar a cura" })}
+        </div></div>`;
     }
 
-    // Remover Condição ou Estresse (ver campoAcao > penitenciaRemoverCondicaoOuEstresse,
-    // ex: Palavra de Destino: Sanatio) - lista já montada pelo CALLER
-    // (que tem acesso às Condições reais do alvo) com uma entrada por
-    // Condição ativa + Estresse (se houver) - sem hardcoded de qual
-    // Condição é. Só aparece se houver pelo menos 1 opção válida.
+    // Remover Condição ou Estresse (ex.: Sanatio com penitência): lista o que o alvo tem agora.
     let htmlRemover = "";
     if (opcoesRemover?.length) {
-      const opcoesHtml = opcoesRemover.map(o => `<option value="${o.valor}">${o.label}</option>`).join("");
+      const opcoesHtml = opcoesRemover.map(o => `<option value="${o.valor}">${escP(o.label)}</option>`).join("");
       // Remoções extras da penitência (ex.: Símbolo Sagrado): na MESMA janela, uma lista por remoção.
       const nExtras = Math.max(0, Math.round(Number(p.remocoesExtras) || 0));
-      const fonteExtra = p.remocoesExtrasFonte ? ` (${p.remocoesExtrasFonte})` : "";
+      const fonteExtra = p.remocoesExtrasFonte ? ` (${escP(p.remocoesExtrasFonte)})` : "";
+      const principal = `<div class="nk-opcoes">${NK.naurenKitOpcao({ campo: "removerCondicaoOuEstresse", valor: "", marcado: true, nome: "Não tirar nada" })}${opcoesRemover.map(o => NK.naurenKitOpcao({ campo: "removerCondicaoOuEstresse", valor: o.valor, nome: escP(o.label) })).join("")}</div>`;
       const extrasHtml = Array.from({ length: nExtras }, (_, k) => `
-          <div class="field"><label>Remoção extra${nExtras > 1 ? ` ${k + 1}` : ""}${fonteExtra}</label><select name="removerExtra_${k}">
+          <div class="nk-remover-extra"><label>Remoção extra${nExtras > 1 ? ` ${k + 1}` : ""}${fonteExtra}</label><select name="removerExtra_${k}">
             <option value="">Não remover nada</option>
             ${opcoesHtml}
           </select></div>`).join("");
       htmlRemover = `
-        <fieldset class="nauren-popup-group"><legend>Remover (opcional)</legend>
-          <div class="field">${nExtras ? `<label>Remoção da penitência</label>` : ""}<select name="removerCondicaoOuEstresse">
-            <option value="">Não remover nada</option>
-            ${opcoesHtml}
-          </select></div>${extrasHtml}
-          ${nExtras ? `<p class="nauren-popup-nota">Pode escolher a mesma Condição duas vezes (tira 2 acúmulos) ou Estresse duas vezes (tira 2 pontos).</p>` : ""}
-        </fieldset>`;
+        <div class="nk-grupo">${NK.naurenKitSecao("Também tira 1 de:")}${principal}${extrasHtml}
+          ${nExtras ? NK.naurenKitNota("Pode escolher a mesma Condição duas vezes (tira 2 acúmulos) ou Estresse duas vezes (tira 2 pontos).") : ""}
+        </div>`;
     }
 
     let htmlEvitaveis = "";
@@ -13992,43 +14037,36 @@ class NaurenAlvoHelper {
           if (item.custo) ops.push(`<option value="custo"${podeMv ? "" : " disabled"}${item._pre === "custo" && podeMv ? " selected" : ""}>Gastar ${item.quantidade} ${nomeRec} e não ser ${item.verbo}${podeMv ? "" : " (insuficiente)"}</option>`);
           ops.push(`<option value="livre"${item._pre === "livre" ? " selected" : ""}>Não ser ${item.verbo}</option>`);
           const nota = item.usaPrioridade && !semPrio ? `<small>A Prioridade vale no lugar de Bloquear, Esquivar ou Contra-Atacar.</small>` : "";
-          return `<div class="nauren-popup-opt nauren-popup-movimento"><label><i class="fas fa-hand"></i> Movimento: ${item.label}</label><select name="evitar_${i}" data-movimento="1">${ops.join("")}</select>${nota}</div>`;
+          return `<div class="nk-evitar nauren-popup-movimento"><div class="nk-evitar-nome">Movimento: ${escP(item.label)}</div><select name="evitar_${i}" data-movimento="1">${ops.join("")}</select>${nota}</div>`;
         }
         if (item.tipo === "condicao-livre") {
-          // Opção livre de "não receber" (ver comentário completo em
-          // "_processarPacoteLocalmenteInterno") - sem custo, sem
-          // recurso pra verificar, sempre disponível.
-          return `<label class="nauren-popup-opt"><input type="checkbox" name="evitar_${i}"${item._pre ? " checked" : ""}><span>Não receber ${item.label}</span></label>`;
+          return NK.naurenKitOpcao({ tipo: "checkbox", campo: `evitar_${i}`, marcado: !!item._pre, nome: `Não receber ${escP(item.label)}` });
         }
         const recurso = item.ref.custoParaEvitarRecurso;
         const qtd = item.ref._custoQuantidade ?? 1;
-        // Recurso Alternativo (ver campoCondicaoAplicada > acima, ex:
-        // Pressão Gravitacional - "1 Estamina OU 1 Estresse") - select
-        // com 3 opções em vez de 1 checkbox, já que agora há uma
-        // escolha entre dois recursos, mutuamente exclusiva.
+        // Recurso Alternativo (ex.: Pressão Gravitacional - "1 Estamina OU 1 Estresse"): escolha entre dois recursos.
         if (item.ref.custoParaEvitarRecursoAlternativo) {
           const recursoAlt = item.ref.custoParaEvitarRecursoAlternativo;
           const qtdAlt = item.ref._custoQuantidadeAlternativo ?? 1;
           const podePrincipal = this._podePagar(actor, recurso, qtd);
           const podeAlt = this._podePagar(actor, recursoAlt, qtdAlt);
-          return `<label class="nauren-popup-opt"><span>Evitar ${item.label}:</span>
-            <select name="evitar_${i}">
-              <option value="">Não resistir</option>
-              <option value="principal" ${podePrincipal ? "" : "disabled"}${item._pre === "principal" ? " selected" : ""}>Gastar ${qtd} ${RECURSOS_ALVO[recurso]}${podePrincipal ? "" : " (insuficiente)"}</option>
-              <option value="alternativo" ${podeAlt ? "" : "disabled"}${item._pre === "alternativo" ? " selected" : ""}>Gastar ${qtdAlt} ${RECURSOS_ALVO[recursoAlt]}${podeAlt ? "" : " (insuficiente)"}</option>
-            </select></label>`;
+          return `<div class="nk-evitar"><div class="nk-evitar-nome">${escP(item.label)}</div>
+            <select name="evitar_${i}" aria-label="Evitar ${escP(item.label)}">
+              <option value="">Receber</option>
+              <option value="principal" ${podePrincipal ? "" : "disabled"}${item._pre === "principal" ? " selected" : ""}>Gastar ${qtd} ${RECURSOS_ALVO[recurso]} e evitar${podePrincipal ? "" : " (insuficiente)"}</option>
+              <option value="alternativo" ${podeAlt ? "" : "disabled"}${item._pre === "alternativo" ? " selected" : ""}>Gastar ${qtdAlt} ${RECURSOS_ALVO[recursoAlt]} e evitar${podeAlt ? "" : " (insuficiente)"}</option>
+            </select></div>`;
         }
         const pode = this._podePagar(actor, recurso, qtd);
-        const classeExtra = pode ? "" : " nauren-popup-opt-disabled";
-        const disabled = pode ? "" : "disabled";
-        const aviso = pode ? "" : ` <em>(sem ${RECURSOS_ALVO[recurso]} suficiente)</em>`;
-        return `<label class="nauren-popup-opt${classeExtra}"><input type="checkbox" name="evitar_${i}" ${disabled}${item._pre && pode ? " checked" : ""}><span>Gastar ${qtd} ${RECURSOS_ALVO[recurso]} pra evitar ${item.label}${aviso}</span></label>`;
+        return NK.naurenKitOpcao({ tipo: "checkbox", campo: `evitar_${i}`, marcado: !!(item._pre && pode), desabilitado: !pode,
+          nome: `Evitar ${escP(item.label)}`, custo: `${qtd} ${RECURSOS_ALVO[recurso] ?? recurso}`, aviso: pode ? "" : `sem ${RECURSOS_ALVO[recurso] ?? recurso} suficiente` });
       }).join("");
-      htmlEvitaveis = `<fieldset class="nauren-popup-group"><legend>Evitar efeitos</legend>${linhasHtml}</fieldset>`;
+      htmlEvitaveis = `<div class="nk-grupo">${NK.naurenKitSecao("O que vem junto", "· marque para evitar")}<div class="nk-opcoes">${linhasHtml}</div></div>`;
     }
 
+    const introSemCab = !cabecalhoP ? `<div class="nk-cab"><div class="nk-cab-texto"><div class="nk-cab-titulo">${escP(p.atacante ?? "Alguém")} usou ${escP(p.nomeAcao ?? "uma Ação")}</div></div></div>` : "";
     const content = `
-      <p class="nauren-popup-intro"><b>${p.atacante ?? "Alguém"}</b> usou <b>${p.nomeAcao}</b>${p.houveAtaque ? ` (ataque ${p.ataqueTotal})` : ""}.${ehConsequencia ? " <b>Resultado da sua reação:</b>" : ""}</p>
+      ${cabecalhoP || introSemCab}
       ${htmlReacao}
       ${htmlRemover}
       ${htmlEvitaveis}
@@ -14129,12 +14167,23 @@ class NaurenAlvoHelper {
         else escolhaAoVivo[el.name] = el.value;
       });
       raiz?.addEventListener?.("change", ler); raiz?.addEventListener?.("input", ler); ler();
+      // 0.95: o botão principal diz o que vai acontecer ("Confirmar: Esquivar").
+      const botao = raiz?.querySelector?.('.form-footer button[data-action="ok"]');
+      const rotular = () => {
+        if (!botao) return;
+        const marcado = raiz.querySelector('input[name="reacaoDano"]:checked') ?? raiz.querySelector('input[name="reacaoCura"]:checked');
+        const nome = marcado?.closest(".nk-opcao")?.querySelector(".nk-opcao-nome")?.textContent?.trim();
+        const icone = botao.querySelector("i")?.outerHTML ?? "";
+        botao.innerHTML = `${icone}${nome ? `Confirmar: ${foundry.utils.escapeHTML(nome)}` : "Confirmar"}`;
+      };
+      raiz?.addEventListener?.("change", rotular); rotular();
     };
     Hooks.on("renderDialogV2", onRenderRegistrar);
     let motivoDescarte = "";
     if (!ehConsequencia) { naurenHudAlvos.set(actor.uuid, { de: p.atacante ?? "Alguém", acao: p.nomeAcao ?? "uma Ação", houveAtaque: !!p.houveAtaque }); NaurenHudCombate.atualizar(); }
     try {
       await foundry.applications.api.DialogV2.wait({
+        ...NK.NAUREN_KIT_JANELA,
         window: { title: `${actor.name} — reagir?` },
         content,
         buttons: [{
@@ -14161,7 +14210,7 @@ class NaurenAlvoHelper {
               // existir ou mudar de assinatura entre builds).
               const reacaoDano = formEl.querySelector('input[name="reacaoDano"]:checked')?.value;
               const reacaoCura = formEl.querySelector('input[name="reacaoCura"]:checked')?.value;
-              const removerCondicaoOuEstresse = formEl.querySelector('select[name="removerCondicaoOuEstresse"]')?.value || "";
+              const removerCondicaoOuEstresse = formEl.querySelector('input[name="removerCondicaoOuEstresse"]:checked')?.value ?? formEl.querySelector('select[name="removerCondicaoOuEstresse"]')?.value ?? "";
               const removerExtras = [...formEl.querySelectorAll('select[name^="removerExtra_"]')].map(el => el.value || "");
               // Todos os 3 são aritmética JS pura (nunca passam por um Roll
               // formal) - se tiver dado (ex: "1d4+2"), precisa ser rolado DE
@@ -14297,6 +14346,7 @@ class NaurenAlvoHelper {
     // específico, não só zerar o dano.
     let evitouCompletamente = false;
     let usouPrioridade = false;
+    let faixaReacao = null; // 0.95: resultado da reação para a janela de consequência (kit)
 
     if (reacao === "sem-dano") {
       // Opção "coringa": não toma dano nenhum, sem custo de recurso e sem
@@ -14337,6 +14387,8 @@ class NaurenAlvoHelper {
         const fontesBF = NaurenAlvoHelper._fontesDefesaTexto(actor, "bloqueio");
         texto = p.critico ? `Acerto crítico: não dá para bloquear (${bloqueio})` : `Tentou bloquear e falhou (${bloqueio}${fontesBF ? `; inclui ${fontesBF}` : ""})`;
       }
+      faixaReacao = { semDado: true, total: bloqueio, rotuloTotal: "seu Bloqueio", contra: { valor: p.ataqueTotal ?? 0, rotulo: "ataque" },
+        veredito: { texto: evitouCompletamente ? (/^Deflexão/.test(texto) ? "DEFLEXÃO" : "BLOQUEOU") : "NÃO SEGUROU", sub: evitouCompletamente ? (danoFinal ? `leva só ${danoFinal} (dano mínimo)` : "não leva dano") : (p.critico ? "acerto crítico não dá para bloquear" : ""), tom: evitouCompletamente ? "bom" : "ruim" } };
     } else if ((reacao === "esquivar" || reacao === "esquiva-instintiva") && p.houveAtaque && !p.semPrioridade && (reacao === "esquiva-instintiva" || pagouComEnergia || estamina >= 1)) {
       const ehInstintiva = reacao === "esquiva-instintiva";
       let esquivaInstintivaInfo = null;
@@ -14388,7 +14440,7 @@ class NaurenAlvoHelper {
         const resultadoEsquiva = await naurenOferecerDestino(actor, { mode: modoEsquiva, rolls: [roll], usedIndex: 0 }, {
           titulo: ehInstintiva ? "Esquiva Instintiva" : "Esquiva", tipo: "esquiva",
           bonusLinhas: [{ label: "Agilidade", value: `+${agilidade}` }, esquivaBonus ? { label: "Bônus de Esquiva", value: `+${esquivaBonus}` } : null, naurenLinhaModoExtra(somaEsq)],
-          contra: { rotulo: "Ataque a superar", valor: p.ataqueTotal ?? 0, textoVence: "Esquivaria", textoPerde: "Falharia" }
+          contra: { rotulo: "Ataque a superar", valor: p.ataqueTotal ?? 0, textoVence: "Esquiva", textoPerde: "Não esquiva" }
         });
         roll = resultadoEsquiva.rolls[0];
         // 20 ou 1 natural na esquiva também conta para o Grupo (Graça / Perjúrio) - antes só ataques e testes contavam.
@@ -14410,6 +14462,13 @@ class NaurenAlvoHelper {
           texto = `${rotulo}: ${rollBreakdown}${modoEsquiva !== "normal" ? ` (${modoEsquiva})` : ""}, contra ${p.ataqueTotal} do ataque - Esquivou!${NaurenAlvoHelper._fontesDefesaTexto(actor, "esquiva") ? ` (inclui ${NaurenAlvoHelper._fontesDefesaTexto(actor, "esquiva")})` : ""}`;
         } else {
           texto = `${rotulo}: ${rollBreakdown}${modoEsquiva !== "normal" ? ` (${modoEsquiva})` : ""}, contra ${p.ataqueTotal} do ataque - ${p.critico ? "Acerto crítico: não dá para esquivar" : "Falhou"}${NaurenAlvoHelper._fontesDefesaTexto(actor, "esquiva") ? ` (inclui ${NaurenAlvoHelper._fontesDefesaTexto(actor, "esquiva")})` : ""}`;
+        }
+        {
+          const faceE = naurenFaceD20(roll);
+          faixaReacao = { face: faceE, destaque: "", total: roll.total, rotuloTotal: "sua esquiva",
+            partes: [{ rotulo: "Agilidade", valor: agilidade }, { rotulo: "bônus", valor: roll.total - (faceE ?? 0) - agilidade }],
+            contra: { valor: p.ataqueTotal ?? 0, rotulo: "ataque" },
+            veredito: { texto: evitouCompletamente ? "ESQUIVOU" : "NÃO ESQUIVOU", sub: evitouCompletamente ? "não leva dano" : (p.critico ? "acerto crítico não dá para esquivar" : `faltaram ${(p.ataqueTotal ?? 0) + 1 - roll.total}`), tom: evitouCompletamente ? "bom" : "ruim" } };
         }
       }
     } else if (reacao === "contra-atacar" && p.houveAtaque && p.atacanteTokenUuid && estamina >= 1 && !p.semPrioridade) {
@@ -14567,7 +14626,7 @@ class NaurenAlvoHelper {
     // O Estresse entra DEPOIS das rolagens acima (contra-ataque, esquiva, bloqueio não sofrem a penalidade dele).
     {
       let cons = null;
-      if (ajustes.decidirConsequencia) cons = await ajustes.decidirConsequencia({ danoFinal, texto, evitouCompletamente, usouPrioridade });
+      if (ajustes.decidirConsequencia) cons = await ajustes.decidirConsequencia({ danoFinal, texto, evitouCompletamente, usouPrioridade, faixa: faixaReacao });
       if (cons?.ajusteDanoFinal) ajustes.ajusteDanoFinal = (ajustes.ajusteDanoFinal || 0) + cons.ajusteDanoFinal;
       // Não foi empurrado: a colisão prevista (já somada ao dano) não acontece. Antes do Estresse dividir.
       const semColisao = (Number(ajustes.semColisao) || 0) + (Number(cons?.semColisao) || 0);

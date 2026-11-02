@@ -1,4 +1,5 @@
 import { NAUREN_HAB_MONSTROS, NAUREN_HAB_MONSTROS_VERSAO } from "./data/habilidades-monstros.mjs";
+import { NAUREN_KIT_JANELA } from "./modulos/janelas-kit.mjs";
 import { NAUREN_MOTION_ALVO_OPCOES, NAUREN_MOTION_CONDICAO_OPCOES, NAUREN_MOTION_ESPERA_EFEITO, NAUREN_MOTION_JANELA_EFEITOS, NAUREN_MOTION_SO_COR, NAUREN_MOTION_USUARIO_OPCOES, NAUREN_QUERY_MOTION, naurenAANomeReserva, naurenAANomeTemAnimacao, naurenAANomesCadastrados, naurenAjustarTamanhoAura, naurenAnimacoesDisponiveis, naurenAnimarAcao, naurenAnimarAcumulo, naurenAnimarCritico, naurenAnimarPassiva, naurenAuraTamanhoPendente, naurenAurasTocando, naurenCorCalcular, naurenCorCamadaAgora, naurenCorCondTocando, naurenCorConfig, naurenCorDaCondicao, naurenCorEntrada, naurenCorFixa, naurenCorFlash, naurenCorMatriz, naurenCorPode, naurenCorRGB, naurenCorTick, naurenCorTickLigado, naurenCorTirar, naurenCorTirarFiltro, naurenCorTokens, naurenDesligarAnimacaoAura, naurenDiametroAuraQuadrados, naurenEfeitosDaAura, naurenEfeitosDoSom, naurenEncerrarEfeitosSequencer, naurenEntradaAefx, naurenEntradaMenu, naurenEsperarMs, naurenInstalarSomSincronizado, naurenLigarAnimacaoAura, naurenMotionAlvo, naurenMotionAnotarEfeito, naurenMotionAnotarPreparo, naurenMotionAtacante, naurenMotionCasa, naurenMotionCondDebounce, naurenMotionCondTocando, naurenMotionCondicoesDepois, naurenMotionCondicoesDoAtor, naurenMotionContador, naurenMotionDeOutraTela, naurenMotionEfeitosRecentes, naurenMotionEhPreparo, naurenMotionEmTodos, naurenMotionEnviar, naurenMotionEvento, naurenMotionExecutar, naurenMotionForca, naurenMotionImpactoDoEfeito, naurenMotionMontarCondicao, naurenMotionParaOutrasTelas, naurenMotionPlanoDaAcao, naurenMotionPlanos, naurenMotionPode, naurenMotionPresetCondicao, naurenMotionReceberPlano, naurenMotionSincronizar, naurenMotionSincronizarCondicoes, naurenMotionTocar, naurenMotionToken, naurenMotionUltimoPlano, naurenMotionUuid, naurenMotionVistos, naurenPassivasAnimadas, naurenRaioEmanacaoMetros, naurenSomEsperarAnimacao, naurenSomSincronizadoAtivo, naurenTocarNaRegiao, naurenTocarNoToken, naurenTokenDoAtor, naurenTokenDoItem } from "./modulos/animacoes.mjs";
 import { NAUREN_TORRE_RETIRADOS, NAUREN_ALVEJADO_NO_ACERTO, NAUREN_ARMAS_COM_ALVEJADO, NAUREN_DIARIOS, NAUREN_ICONES_AUTOMATICOS, NAUREN_ICONES_INEXISTENTES, NAUREN_ICONES_SEMEADOS, NAUREN_ICONE_FRASCO, NAUREN_ICONE_MAGIA, NAUREN_MASCOTES_INICIAIS, NAUREN_OWNERSHIP_APENAS_MESTRE, NAUREN_PACKS_DEFINICAO, NAUREN_REGRAS_VERSAO, NAUREN_SEED_IDS_EQUIPAMENTO_INICIAL, NAUREN_SEED_IDS_INICIAIS_PADRAO, NAUREN_TORRE, NAUREN_TORRE_LOJAS, NAUREN_TORRE_NOTAS, NAUREN_TORRE_PIGMENTOS, NAUREN_TORRE_RARIDADES, NAUREN_TORRE_TIERS, NAUREN_TORRE_VERSAO, NAUREN_VERSAO_SEED_MASCOTES, NAUREN_VIDA_MASCOTE, naurenAliadosDoGrupo, naurenBuscarUuidsDoPack, naurenCaminhoImagemSubclasse, naurenConsumiveisSaindo, naurenCorrigirIconesSemeados, naurenDisponivelNoInicio, naurenDuasArmasPendente, naurenExpirarEscudo, naurenExtraEstaminaCondicoes, naurenFundoPersonalizado, naurenGarantirAtorNoPack, naurenGarantirEfeitoDeClasse, naurenGarantirEfeitoDeSubclasse, naurenGarantirHabilidadeDeClasse, naurenGarantirHabilidadeDeSubclasse, naurenGarantirItemNoPack, naurenGarantirPastaNoPack, naurenGatilhoDanoDeArea, naurenItensDoMascote, naurenMigrarAlvejadoArcos, naurenMigrarCanalizarPorNivel, naurenMigrarLoucuraManual, naurenObterOuCriarPacks, naurenPerguntarEscolhaAoReceber, naurenPreverDuasArmasGratis, naurenReconciliarMascote, naurenRolarAjustePopup, naurenSemearArmaduras, naurenSemearArmas, naurenSemearArmasDisparoCarregado, naurenSemearArmasModeloSubclasse, naurenSemearBestiario, naurenSemearClasseCacador, naurenSemearClasseDruida, naurenSemearClasseEmpireo, naurenSemearClasseGuerreiro, naurenSemearClasseLadino, naurenSemearClasseMago, naurenSemearClasseMistico, naurenSemearClasseSacerdote, naurenSemearCondicoes, naurenSemearEfeitosGuardas, naurenSemearHabilidadeCondensarMagia, naurenSemearHabilidadeDarPrioridade, naurenSemearHabilidadeGrimorio, naurenSemearHabilidadeSendoUmMago, naurenSemearHabilidadesCacador, naurenSemearHabilidadesDruida, naurenSemearHabilidadesEmpireo, naurenSemearHabilidadesGuerreiro, naurenSemearHabilidadesLadino, naurenSemearHabilidadesMistico, naurenSemearHabilidadesSacerdote, naurenSemearMagias, naurenSemearMascotes, naurenSemearMunicoes, naurenSemearPeculiaridades, naurenSemearPigmentos, naurenSemearRegras, naurenSemearRemedioEFrascos, naurenSemearSubclasseCacador, naurenSemearSubclasseCacadorBatedor, naurenSemearSubclasseCacadorMestreDasBestas, naurenSemearSubclasseCacadorSobrevivente, naurenSemearSubclasseDruida, naurenSemearSubclasseDruidaAndarilhosDasPeles, naurenSemearSubclasseDruidaCrescimento, naurenSemearSubclasseDruidaRestauradores, naurenSemearSubclasseEmpireo, naurenSemearSubclasseEmpireoPaixao, naurenSemearSubclasseEmpireoSombras, naurenSemearSubclasseEmpireoVirtude, naurenSemearSubclasseGuerreiro, naurenSemearSubclasseGuerreiroBerserker, naurenSemearSubclasseGuerreiroGuardiao, naurenSemearSubclasseGuerreiroJuramentado, naurenSemearSubclasseLadino, naurenSemearSubclasseLadinoArdiloso, naurenSemearSubclasseLadinoEgoista, naurenSemearSubclasseLadinoOportunista, naurenSemearSubclasseMago, naurenSemearSubclasseMagoNova, naurenSemearSubclasseMistico, naurenSemearSubclasseMisticoCaligrafia, naurenSemearSubclasseMisticoPintura, naurenSemearSubclasseMisticoPoesia, naurenSemearSubclasseSacerdote, naurenSemearSubclasseSacerdoteAgraciado, naurenSemearSubclasseSacerdoteHerege, naurenSemearSubclasseSacerdotePenitente, naurenSemearTorre, naurenTierTorre, naurenTorreTransformarAcao, naurenUuidsMascotes } from "./modulos/compendios.mjs";
 import { NAUREN_BARRA_CORES_PADRAO, NAUREN_CRIADOR_ATRIBUTOS, NAUREN_CRIADOR_ETAPAS, NAUREN_CRIADOR_VALORES_FIXOS, NaurenActorSheet, NaurenAlvoHelper, NaurenCriadorPersonagem, NaurenRegionHelper, naurenAdicionarItemNaFicha, naurenBonusModoExtra, naurenChecarLimiarEfeitoDireto, naurenChecarLimiarEvolucao, naurenLinhaModoExtra, naurenNumeroModo } from "./modulos/ficha-ator.mjs";
@@ -5595,7 +5596,7 @@ async function naurenHandleQueryReacaoPreAtaque({ actorUuid, itemId, atacanteNom
   };
   Hooks.on("renderDialogV2", onRender);
   try {
-    aceitou = await foundry.applications.api.DialogV2.confirm({
+    aceitou = await foundry.applications.api.DialogV2.confirm({ ...NAUREN_KIT_JANELA,
       window: { title: tituloPergunta },
       content: `<p><b>${atacanteNome}</b> vai atacar <b>${alvoNome}</b>.</p><p>Usar <b>${item.name}</b> para ${acaoTexto}${custoTexto}?</p>${seletor}`,
       rejectClose: false,
@@ -6168,7 +6169,7 @@ async function naurenDesfazerAcao(message, { confirmar = true } = {}) {
   if (!dif || dif.desfeito) return false;
   const linhas = naurenResumoDesfazer(dif);
   if (confirmar) {
-    const ok = await foundry.applications.api.DialogV2.confirm({ window: { title: "Desfazer esta Ação?" }, classes: ["nauren-dialogo"],
+    const ok = await foundry.applications.api.DialogV2.confirm({ ...NAUREN_KIT_JANELA, window: { title: "Desfazer esta Ação?" }, classes: ["nauren-dialogo", "nauren-kit"],
       content: `<p>Volta tudo ao que era antes da Ação:</p><ul>${linhas.map(l => `<li><b>${foundry.utils.escapeHTML(l.label)}</b>: ${foundry.utils.escapeHTML(l.value)}</li>`).join("")}</ul><p class="item-meta-hint">Contadores de turno, Prioridades já registradas e mensagens não voltam.</p>`,
       yes: { label: "Desfazer" }, no: { label: "Cancelar" }, rejectClose: false }).catch(() => false);
     if (!ok) return false;
@@ -7665,10 +7666,12 @@ Hooks.once("init", () => {
   });
   game.settings.register("nauren", "destinoPerguntar", {
     name: "Rerolagem com Dado de Destino",
-    hint: "Depois de cada d20 (ataque, teste de atributo, esquiva), oferecer rerolar gastando 1 Dado de Destino, antes de qualquer efeito acontecer. \"Só quando falharia\": em ataques, só pergunta se o total não supera a Defesa do alvo marcado; na esquiva, só se não esquivaria; testes de atributo sempre perguntam. Cada ficha também pode desligar a pergunta (aba Opções).",
+    hint: "Depois de cada d20 (ataque, teste de atributo, esquiva), mostrar o resultado e oferecer rerolar gastando 1 Dado de Destino, antes de qualquer efeito acontecer. Só 1 rerolagem de Destino por ação. Cada ficha também pode desligar a pergunta (aba Opções).",
     scope: "world", config: true, type: String, default: "sempre",
-    choices: { sempre: "Sempre perguntar", erraria: "Só quando falharia", nunca: "Nunca perguntar" }
+    choices: { sempre: "Sempre perguntar", nunca: "Nunca perguntar" }
   });
+  // 0.95: "Só quando falharia" saiu (revelava ao atacante se ia acertar): vira "Sempre perguntar".
+  Hooks.once("ready", () => { try { if (game.user.isGM && game.settings.get("nauren", "destinoPerguntar") === "erraria") game.settings.set("nauren", "destinoPerguntar", "sempre"); } catch (err) { /* ignora */ } });
   game.settings.register("nauren", "migracaoCardsGatilhoV1", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoLivro08PequenasV1", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoMisticoRevisaoV1", { scope: "world", config: false, type: Boolean, default: false });
@@ -9728,8 +9731,8 @@ async function naurenMoverSemMovimento(tokenDoc, origem, destino, distancia, cai
     <ul class="nauren-mov-motivos">${motivos.map(m => `<li><b>${esc(m.nome)}</b>: ${esc(m.texto)}</li>`).join("")}</ul>
     <p class="nauren-mov-pergunta">Mover mesmo assim (${Math.round(distancia)}m)? Fica registrado no chat.</p>
   </div>`;
-  const mover = await foundry.applications.api.DialogV2.confirm({
-    window: { title: `Sem Movimento · ${actor.name}` }, classes: ["nauren-janela-movimento"], position: { width: 420 }, content: conteudo,
+  const mover = await foundry.applications.api.DialogV2.confirm({ ...NAUREN_KIT_JANELA,
+    window: { title: `Sem Movimento · ${actor.name}` }, classes: ["nauren-janela-movimento", "nauren-kit"], position: { width: 420 }, content: conteudo,
     yes: { label: "Mover mesmo assim", icon: "fas fa-arrows-up-down-left-right" }, no: { label: "Não mover", default: true }, rejectClose: false
   }).catch(() => false);
   if (!mover) return;
@@ -9795,8 +9798,8 @@ async function naurenJanelaMovimento(tokenDoc, origem, destino, distancia) {
       b.querySelector(".nauren-mov-custo").innerHTML = b.dataset.escolha === "gratis" ? "" : `custa <b>${custo}</b> ${b.dataset.unidade}${tem !== null ? ` · você tem ${tem}` : ""}${falta ? ' <em>insuficiente</em>' : ""}`;
     });
   };
-  await foundry.applications.api.DialogV2.wait({
-    window: { title: `Movimento · ${actor.name}` }, classes: ["nauren-janela-movimento"], position: { width: 420 }, content: conteudo,
+  await foundry.applications.api.DialogV2.wait({ ...NAUREN_KIT_JANELA,
+    window: { title: `Movimento · ${actor.name}` }, classes: ["nauren-janela-movimento", "nauren-kit"], position: { width: 420 }, content: conteudo,
     buttons: [{ action: "cancelar", label: "Cancelar" }], rejectClose: false,
     render: (ev, dialog) => {
       const raiz = dialog?.element ?? document;
@@ -10773,7 +10776,7 @@ async function naurenOferecerItem(item, tokenDestino) {
   let quantidade = total;
   if (temQtd && total > 1) {
     const esc = foundry.utils.escapeHTML ?? (x => x);
-    quantidade = await foundry.applications.api.DialogV2.wait({
+    quantidade = await foundry.applications.api.DialogV2.wait({ ...NAUREN_KIT_JANELA,
       window: { title: `Entregar ${item.name}` }, position: { width: 360 },
       content: `<p>Quantas unidades de <b>${esc(item.name)}</b> entregar para <b>${esc(nomePara)}</b>?</p>
         <div class="nauren-entrega-qtd"><input type="number" name="qtd" min="1" max="${total}" value="1"><span>de ${total}</span></div>`,
@@ -10832,7 +10835,7 @@ async function naurenHandleQueryOferecerItem({ itemDados, quantidade, deNome, de
         </div>
       </div>
     </div>`;
-  const escolha = await foundry.applications.api.DialogV2.wait({
+  const escolha = await foundry.applications.api.DialogV2.wait({ ...NAUREN_KIT_JANELA,
     window: { title: "Item oferecido", icon: "fas fa-hand-holding" }, position: { width: 440 },
     content: conteudo,
     buttons: [
@@ -14520,7 +14523,7 @@ async function naurenReacoesPagasDefesa(actor, p, defesaAtual, linhas) {
     if ((p.ataqueTotal ?? 0) > defesa + maxR) { linhas.push(`${r.nome || item.name}: nem com o máximo (+${maxR}) a Defesa passaria do ataque ${p.ataqueTotal}; não foi usado`); continue; }
     const nomeR = r.nome || item.name;
     const custoTxt = r.recurso ? `${disp.custo} de ${disp.rec?.nome ?? r.recurso}` : "sem custo";
-    const usar = await foundry.applications.api.DialogV2.confirm({
+    const usar = await foundry.applications.api.DialogV2.confirm({ ...NAUREN_KIT_JANELA,
       window: { title: `${nomeR} — ${actor.name}` },
       content: `<p>Ataque <b>${p.ataqueTotal ?? 0}</b> contra sua Defesa <b>${defesa}</b>${p.atacante ? ` (de ${foundry.utils.escapeHTML?.(p.atacante) ?? p.atacante})` : ""}.</p><p>Usar <b>${nomeR}</b> (${item.name}): pagar ${custoTxt} para somar <b>${r.formula || "0"}</b> à Defesa?${(r.usosPorTurno ?? 0) > 0 ? ` (${r.usosPorTurno - naurenReacaoPagaUsosNoTurno(actor, item, idx)} de ${r.usosPorTurno} neste turno)` : ""}</p>`,
       yes: { label: `Pagar ${custoTxt}` }, no: { label: "Agora não", default: true }, rejectClose: false
@@ -14556,7 +14559,7 @@ async function naurenReacoesPagasDano(actor, dano, p) {
       const porPonto = Math.max(1, Number(r.formula) || 1);
       const maxPagar = Math.min(disp.rec?.valor ?? 0, Math.ceil(resta / porPonto));
       if (maxPagar <= 0) continue;
-      const res = await foundry.applications.api.DialogV2.prompt({
+      const res = await foundry.applications.api.DialogV2.prompt({ ...NAUREN_KIT_JANELA,
         window: { title: `${nomeR} — ${actor.name}` },
         content: `<p>Você vai sofrer <b>${resta}</b> de dano. <b>${nomeR}</b> (${item.name}): cada 1 de ${recNome} gasto reduz ${porPonto} de dano. Você tem ${disp.rec?.valor ?? 0}.</p>
           <div class="form-group"><label>Gastar</label><input type="number" name="pagar" value="0" min="0" max="${maxPagar}" step="1" autofocus></div>`,
@@ -14567,7 +14570,7 @@ async function naurenReacoesPagasDano(actor, dano, p) {
       if (!pagar) continue;
       reduz = Math.min(resta, pagar * porPonto);
     } else {
-      const usar = await foundry.applications.api.DialogV2.confirm({
+      const usar = await foundry.applications.api.DialogV2.confirm({ ...NAUREN_KIT_JANELA,
         window: { title: `${nomeR} — ${actor.name}` },
         content: `<p>Você vai sofrer <b>${resta}</b> de dano. Usar <b>${nomeR}</b> (${item.name}) e reduzir <b>${r.formula}</b>${r.recurso ? ` pagando ${disp.custo} de ${recNome}` : ""}?</p>`,
         yes: { label: "Reduzir" }, no: { label: "Agora não", default: true }, rejectClose: false
@@ -15107,7 +15110,7 @@ async function naurenEscolherFrasco(actor, titulo = "Frasco") {
   if (!lista.length) { ui.notifications.warn(`${actor.name} não tem Frascos preparados.`); return null; }
   if (lista.length === 1) return lista[0];
   const opcoes = lista.map(f => `<label class="nauren-frasco-opcao"><input type="radio" name="frasco" value="${f.id}"> <b>${foundry.utils.escapeHTML?.(f.name) ?? f.name}</b> <span>${naurenResumoFrasco(f.system.frasco)}</span></label>`).join("");
-  const id = await foundry.applications.api.DialogV2.prompt({
+  const id = await foundry.applications.api.DialogV2.prompt({ ...NAUREN_KIT_JANELA,
     window: { title: `${titulo}: qual Frasco?` },
     content: `<div class="nauren-frasco-escolha">${opcoes}</div>`,
     ok: { label: "Usar este", callback: (ev, btn) => btn.form?.querySelector?.("input[name=frasco]:checked")?.value ?? lista[0].id },
@@ -15258,7 +15261,7 @@ async function naurenAplicarEfeitoSimples(actor, ef, ctx = {}) {
       if (!negs.length) return `${nome}: nenhuma Condição para remover (${r.texto})`;
       let alvoC = negs[0];
       if (negs.length > 1) {
-        const id = await foundry.applications.api.DialogV2.prompt({
+        const id = await foundry.applications.api.DialogV2.prompt({ ...NAUREN_KIT_JANELA,
           window: { title: `${nome || "Frasco"}: de qual Condição tirar ${r.total}?` },
           content: `<div class="nauren-frasco-escolha">${negs.map((c, i) => `<label class="nauren-frasco-opcao"><input type="radio" name="cond" value="${c.id}" ${i === 0 ? "checked" : ""}> ${c.name}${c.system.acumulativel ? ` (${c.system.acumulos ?? 1})` : ""}</label>`).join("")}</div>`,
           ok: { label: "Remover", callback: (e, btn) => btn.form?.querySelector?.("input[name=cond]:checked")?.value ?? negs[0].id },
@@ -15325,7 +15328,7 @@ async function naurenAplicarEfeitoSimples(actor, ef, ctx = {}) {
       const lerForm = form => { const v = {}; let soma = 0; for (const a of atrs) { const n = Math.max(0, Math.round(Number(form?.querySelector?.(`[name="${a}"]`)?.value) || 0)); v[a] = n; soma += n; } return { v, soma }; };
       let dist = null;
       for (let tentativa = 0; tentativa < 3 && !dist; tentativa++) {
-        const res = await foundry.applications.api.DialogV2.prompt({
+        const res = await foundry.applications.api.DialogV2.prompt({ ...NAUREN_KIT_JANELA,
           window: { title: `${nome || "Pontos de atributo"}: ${total} ponto(s)` },
           content: `<p><b>${actor.name}</b> recebe <b>${total}</b> ponto(s) de atributo permanentes (${r.texto}). Distribua:</p><div class="nauren-pontos-atributo">${atrs.map((a, i) => `<label>${rot[a] ?? a} <input type="number" name="${a}" min="0" max="${total}" value="${i === 0 ? total : 0}"></label>`).join("")}</div>`,
           ok: { label: "Confirmar", callback: (e, btn) => lerForm(btn.form ?? btn.closest?.("form")) },
@@ -15381,7 +15384,7 @@ async function naurenEscolherPeculiaridade(titulo) {
   if (!lista.length) { ui.notifications.warn("Nenhuma Peculiaridade no compêndio."); return null; }
   const grupo = t => (/fardo/i.test(String(t ?? "")) ? "Fardos" : "Benefícios");
   const opcoes = ["Benefícios", "Fardos"].map(g => { const itens = lista.filter(e => grupo(e.system?.tipo) === g); return itens.length ? `<optgroup label="${g}">${itens.map(e => `<option value="${e.uuid}">${e.name}</option>`).join("")}</optgroup>` : ""; }).join("");
-  const uuid = await foundry.applications.api.DialogV2.prompt({
+  const uuid = await foundry.applications.api.DialogV2.prompt({ ...NAUREN_KIT_JANELA,
     window: { title: `${titulo}: qual Peculiaridade?` },
     content: `<p>Quem beber recebe esta Peculiaridade <b>para sempre</b> (uma vez por personagem).</p><select name="pec" class="nauren-select-largo">${opcoes}</select>`,
     ok: { label: "Preparar", callback: (e, btn) => btn.form?.querySelector?.("select[name=pec]")?.value ?? lista[0].uuid },
@@ -15461,7 +15464,7 @@ async function naurenProcessarFrascoNoAlvo(actor, f) {
     // Perfumista Mestre: pode trocar o colateral por um Perfume, pagando.
     const perf = mods.find(x => x.m.perfumes?.opcoes?.length);
     if (perf && await naurenFrascoPodePagar(actor, perf.m.perfumes)) {
-      const escolha = await foundry.applications.api.DialogV2.wait({
+      const escolha = await foundry.applications.api.DialogV2.wait({ ...NAUREN_KIT_JANELA,
         window: { title: `${perf.item.name}: trocar o colateral?` },
         content: `<p>O colateral sorteado foi <b>${linha.nome}</b> (${f.colateral.dado || "1d6"} = ${rT.total}).</p><p>Trocar por um Perfume pagando ${naurenFrascoTextoCusto(actor, perf.m.perfumes)}?</p>`,
         buttons: [...perf.m.perfumes.opcoes.map((o, i) => ({ action: `p${i}`, label: o.nome })), { action: "nao", label: "Manter o colateral", default: true }],
@@ -15626,7 +15629,7 @@ class NaurenObraPrima extends foundry.applications.api.HandlebarsApplicationMixi
     if (!tok) return ui.notifications.warn("Ponha o token do Inventor no mapa: a Obra Prima surge ao lado dele.");
     const anterior = naurenObraPrimaDe(this.actor);
     if (anterior) {
-      const ok = await foundry.applications.api.DialogV2.confirm({ window: { title: "Obra Prima" }, content: `<p>Só pode existir uma Obra Prima por vez. <b>${anterior.name}</b> será desfeita. Continuar?</p>`, rejectClose: false }).catch(() => false);
+      const ok = await foundry.applications.api.DialogV2.confirm({ ...NAUREN_KIT_JANELA, window: { title: "Obra Prima" }, content: `<p>Só pode existir uma Obra Prima por vez. <b>${anterior.name}</b> será desfeita. Continuar?</p>`, rejectClose: false }).catch(() => false);
       if (!ok) return;
     }
     const cfg = this.config;
@@ -15839,7 +15842,7 @@ async function naurenAbrirLoja(actor, habConstrucao, lojaHab) {
     const bloq = !ja && lojaFeitas.length >= limite;
     return `<label class="nauren-frasco-opcao"><input type="radio" name="arma" value="${a.id}" ${bloq ? "disabled" : ""}> <b>${a.name}</b> <span>${a.system.categoria || ""}${ja ? " · já melhorada (continua o projeto)" : ""}${bloq ? ` · limite de ${limite} armas (Inteligência)` : ""}</span></label>`;
   }).join("");
-  const id = await foundry.applications.api.DialogV2.prompt({
+  const id = await foundry.applications.api.DialogV2.prompt({ ...NAUREN_KIT_JANELA,
     window: { title: `${lojaHab?.name ?? "Loja de Invenções"}: qual arma?` },
     content: `<p>Escolha a arma que vai receber as características da sua tabela (${lojaFeitas.length} de ${limite} armas já melhoradas).</p><div class="nauren-frasco-escolha">${opcoes}</div>`,
     ok: { label: "Abrir na Bancada", callback: (e, btn) => btn.form?.querySelector?.("input[name=arma]:checked")?.value ?? null },
