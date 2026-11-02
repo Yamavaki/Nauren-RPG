@@ -7898,9 +7898,12 @@ Hooks.once("init", () => {
     hint: "Em Ações sem indicador de Prioridade informado, o card traz um painel recolhido para conceder Prioridade a quem o jogador escolher (aliados ou inimigos, quantos quiser, ou nenhum).",
     scope: "world", config: true, type: Boolean, default: true
   });
-  game.settings.register("nauren", "descricaoChatAberta", {
+  // 0.97.4: chave nova — a antiga ficou gravada como "ligada" em muitos navegadores (o Foundry salva
+  // todos os valores ao confirmar as configurações), então a descrição continuava abrindo sozinha.
+  game.settings.register("nauren", "descricaoChatAberta", { scope: "client", config: false, type: Boolean, default: false });
+  game.settings.register("nauren", "descricaoChatAbertaV2", {
     name: "Descrição aberta no card",
-    hint: "Mostra a descrição já aberta no card de uso. Desligado, ela fica recolhida e abre com um clique.",
+    hint: "Mostra a descrição já aberta no card de uso. Desligado (padrão), ela fica recolhida e abre com um clique.",
     scope: "client", config: true, type: Boolean, default: false
   });
   game.settings.register("nauren", "migracaoCamadasSubclasseV1", {
@@ -8957,7 +8960,7 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
  * quem está lendo, e liga os botões de Prioridade "aliado à escolha".
  */
 Hooks.on("renderChatMessageHTML", (message, html) => {
-  const aberta = game.settings.get("nauren", "descricaoChatAberta");
+  const aberta = game.settings.get("nauren", "descricaoChatAbertaV2");
   html.querySelectorAll("details.nrc-regra").forEach(d => { d.open = aberta; });
 
   // Cards de entidade das versões anteriores: a entidade agora é um token no mapa.
