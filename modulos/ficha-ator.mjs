@@ -32,6 +32,58 @@ const NAUREN_FICHA_CLASSES = {
 };
 const NAUREN_FICHA_CLASSE_NEUTRA = { cor: "#cca162", texto: "#f3d48f", pip: "losango", svg: '<path d="M12 2 4 6v6c0 5 3.5 8.5 8 10 4.5-1.5 8-5 8-10V6z"/>' };
 
+/* ===== 0.97: cores da ficha pelos Pigmentos (teoria das cores: primária = áreas grandes, secundária = detalhes) ===== */
+const NAUREN_FICHA_PIGMENTOS = {
+  Roxo: { a: "#a86ee0", d: "#26183a", c: "#d9bdf7", l: 1, hex: "#8f4bc2" },
+  Vermelho: { a: "#e0605c", d: "#3a1a1e", c: "#f3a3a0", l: 2, hex: "#c24b4b" },
+  Azul: { a: "#5f9be6", d: "#16243a", c: "#a9c8ff", l: 3, hex: "#4b7fc2" },
+  Dourado: { a: "#e0b257", d: "#33260f", c: "#ffe2a3", l: 4, hex: "#cca162" },
+  Rosa: { a: "#ec8fc4", d: "#36182b", c: "#f8cfe5", l: 5, hex: "#e88fc2" },
+  Verde: { a: "#4fcf7f", d: "#15301f", c: "#a8e6c0", l: 6, hex: "#4bc26f" },
+  Preto: { a: "#9aa3b0", d: "#101014", c: "#d0d5dc", l: 0, hex: "#2a2a2a", neutro: true, nome: "Ônix" },
+  Branco: { a: "#e8e4d8", d: "#2a2722", c: "#fbf8ef", l: 7, hex: "#e8e4d8", neutro: true, nome: "Pérola" }
+};
+/** Pigmento ("Azul", "Preto"...) de um item de cor: pelo nome; senão pela cor mais próxima. */
+function naurenFichaPigmentoDoItem(item) {
+  const nome = String(item?.name ?? "");
+  for (const k of Object.keys(NAUREN_FICHA_PIGMENTOS)) if (new RegExp(`\\b${k}\\b`, "i").test(nome)) return k;
+  const hex = String(item?.system?.corHex ?? "").replace("#", "");
+  if (!/^[0-9a-f]{6}$/i.test(hex)) return null;
+  const rgb = h => [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16));
+  const [r, g, b] = rgb(hex);
+  let melhor = null, dist = Infinity;
+  for (const [k, v] of Object.entries(NAUREN_FICHA_PIGMENTOS)) {
+    const [r2, g2, b2] = rgb(v.hex.slice(1));
+    const d = (r - r2) ** 2 + (g - g2) ** 2 + (b - b2) ** 2;
+    if (d < dist) { dist = d; melhor = k; }
+  }
+  return melhor;
+}
+/**
+ * Decide primária e secundária de um par de pigmentos (as regras do planejamento "ficha-acabamento-pigmentos"):
+ * mais escura = primária; Dourado/Preto/Branco junto de uma cor = secundária (metal); igual = monocromático;
+ * parecidas ou de choque = secundária no tom claro. Devolve as variáveis CSS.
+ */
+function naurenFichaPaleta(x, y, { inverter = false, manual = false } = {}) {
+  const T = NAUREN_FICHA_PIGMENTOS;
+  if (!T[x]) return null;
+  if (!T[y]) y = x === "Dourado" ? "Branco" : "Dourado";
+  let P = x, S = y, claro = false, fundoEscuro = false;
+  if (manual) { claro = x === y; }
+  else if (x === y) claro = true;
+  else if (T[x].neutro && T[y].neutro) { P = "Branco"; S = "Preto"; }
+  else if (T[x].neutro || T[y].neutro) { P = T[x].neutro ? y : x; S = T[x].neutro ? x : y; }
+  else if (x === "Dourado" || y === "Dourado") { P = x === "Dourado" ? y : x; S = "Dourado"; }
+  else {
+    P = T[x].l <= T[y].l ? x : y; S = P === x ? y : x;
+    if (["Verde+Vermelho", "Azul+Roxo", "Rosa+Vermelho", "Rosa+Roxo"].includes([P, S].sort().join("+"))) claro = true;
+  }
+  if (inverter && P !== S) [P, S] = [S, P];
+  if (P === "Preto" || S === "Preto") fundoEscuro = true;
+  const p = T[P], s = T[S];
+  return { primaria: P, secundaria: S, nomeP: p.nome ?? P, nomeS: s.nome ?? S, p: p.a, pd: p.d, pc: p.c, s: claro ? s.c : s.a, sc: s.c, fundoEscuro };
+}
+
 /** Chave da classe ("guerreiro", "mago"...) a partir do item de Classe (identifier ou nome sem acento). */
 function naurenFichaChaveClasse(item) {
   const bruto = String(item?.system?.identifier || item?.name || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
@@ -189,6 +241,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
   // lembrar manualmente pra não voltar sempre pra primeira aba.
   #abaAtiva = "inventario";
   #scrollLayout = 0;
+  #condicoesAbertas = false;
   #scrollColuna = 0;
   #scrollSheetBody = 0; // guarda a posição de rolagem de .sheet-body entre renders - o mecanismo nativo "scrollable" da V2 não estava restaurando corretamente pra um seletor aninhado (só funciona bem pro elemento raiz da PART inteira)
   // Modo Jogo (padrão) mostra só o valor FINAL já calculado (base + bônus/
@@ -1170,8 +1223,9 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
 
   /** 0.96: "+N" das Condições na coluna leva à lista completa (aba Características). */
   static onNsIrCondicoes(event, target) {
-    this.element.querySelector('.sheet-tabs .item[data-tab="caracteristicas"]')?.click();
-    requestAnimationFrame(() => this.element.querySelector('.ns-secao-condicoes')?.scrollIntoView({ block: "start", behavior: "smooth" }));
+    // 0.97: abre/fecha a lista inteira de Condições no painel Estado (a coluna rola e guarda a posição)
+    this.#condicoesAbertas = !this.#condicoesAbertas;
+    this.render();
   }
 
   static PARTS = {
@@ -1560,6 +1614,26 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     const vis = NAUREN_FICHA_CLASSES[chave] ?? NAUREN_FICHA_CLASSE_NEUTRA;
     const ns = {};
     ns.classe = { chave: chave || "neutra", ...vis, nome: context.classeEquipada?.name || sys.classe || "" };
+    // 0.97: cores da ficha — os 2 primeiros Pigmentos (ou o que o jogador escolheu em Opções)
+    {
+      const cfg = this.actor.getFlag("nauren", "coresFicha") ?? {};
+      const modo = cfg.modo || "auto";
+      const pigs = this.actor.items.filter(i => i.type === "cor").sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0))
+        .map(i => naurenFichaPigmentoDoItem(i)).filter(Boolean);
+      let pal = null;
+      if (modo === "manual" && NAUREN_FICHA_PIGMENTOS[cfg.p]) pal = naurenFichaPaleta(cfg.p, cfg.s || cfg.p, { manual: true });
+      else if (modo !== "classe" && pigs.length) pal = naurenFichaPaleta(pigs[0], pigs[1] ?? (pigs[0] === "Dourado" ? "Branco" : "Dourado"), { inverter: modo === "inverter" });
+      if (!pal) {
+        // Sem pigmento (ou "cores da classe"): cor da classe como primária, dourado como secundária
+        const cor = ns.classe.cor ?? "#cca162";
+        pal = { primaria: "", secundaria: "", nomeP: ns.classe.nome || "Classe", nomeS: "Dourado", p: cor, pd: "#241b31", pc: ns.classe.texto ?? "#f3d48f", s: "#e0b257", sc: "#ffe2a3", fundoEscuro: false };
+      }
+      const pegou = modo === "classe" ? "classe" : (modo === "manual" ? "manual" : (pigs.length ? modo : "sem"));
+      ns.cores = { ...pal, modo, origem: pegou, pigmentos: pigs.slice(0, 2).map(k => NAUREN_FICHA_PIGMENTOS[k]?.nome ?? k),
+        opcoes: Object.keys(NAUREN_FICHA_PIGMENTOS).map(k => ({ chave: k, nome: NAUREN_FICHA_PIGMENTOS[k].nome ?? k })),
+        manualP: cfg.p || pigs[0] || "Azul", manualS: cfg.s || pigs[1] || "Dourado",
+        estilo: `--ns-classe: ${pal.p}; --ns-classe-texto: ${pal.pc}; --ns-p: ${pal.p}; --ns-pd: ${pal.pd}; --ns-pc: ${pal.pc}; --ns-s: ${pal.s}; --ns-sc: ${pal.sc};` };
+    }
     const barra = k => context.barrasRecursos.find(b => b.chave === k) ?? {};
     ns.vida = barra("vida");
     ns.vida.baixa = ns.vida.max > 0 && ns.vida.value > 0 && ns.vida.value <= ns.vida.max / 4;
@@ -1590,9 +1664,14 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     });
     // Selos de Condição na coluna (as ativas primeiro; até 4, o resto vira "+N")
     const conds = (context.condicoes ?? []).filter(c => c.ativo !== false);
-    ns.condicoes = conds.slice(0, 4);
-    ns.condicoesMais = Math.max(0, conds.length - 4);
-    ns.condicoesMaisNomes = conds.slice(4).map(c => c.name).join(", ");
+    // 0.97: o painel Estado cresce com as Condições; acima de 8, "+N" abre/fecha a lista inteira ali mesmo
+    const limiteCond = 8;
+    const abertas = this.#condicoesAbertas || conds.length <= limiteCond + 1;
+    ns.condicoes = abertas ? conds : conds.slice(0, limiteCond);
+    ns.condicoesMais = abertas ? 0 : conds.length - limiteCond;
+    ns.condicoesMaisNomes = conds.slice(limiteCond).map(c => c.name).join(", ");
+    ns.condicoesPodeFechar = this.#condicoesAbertas && conds.length > limiteCond + 1;
+    ns.temCondicoes = conds.length > 0;
     // Card da Subclasse
     const pontos = Number(sys.pontosSubclasse?.value) || 0;
     const pontosMax = Number(sys.pontosSubclasse?.max) || 0;
@@ -15685,4 +15764,4 @@ async function naurenChecarLimiarEfeitoDireto(item, actor, atual, novo) {
 }
 
 
-export { naurenXpParaNivel, naurenNivelPeloXp, NAUREN_BARRA_CORES_PADRAO, NAUREN_CRIADOR_ATRIBUTOS, NAUREN_CRIADOR_ETAPAS, NAUREN_CRIADOR_VALORES_FIXOS, NaurenActorSheet, NaurenAlvoHelper, NaurenCriadorPersonagem, NaurenRegionHelper, naurenAdicionarItemNaFicha, naurenBonusModoExtra, naurenChecarLimiarEfeitoDireto, naurenChecarLimiarEvolucao, naurenLinhaModoExtra, naurenNumeroModo };
+export { naurenFichaPaleta, naurenFichaPigmentoDoItem, NAUREN_FICHA_PIGMENTOS, naurenXpParaNivel, naurenNivelPeloXp, NAUREN_BARRA_CORES_PADRAO, NAUREN_CRIADOR_ATRIBUTOS, NAUREN_CRIADOR_ETAPAS, NAUREN_CRIADOR_VALORES_FIXOS, NaurenActorSheet, NaurenAlvoHelper, NaurenCriadorPersonagem, NaurenRegionHelper, naurenAdicionarItemNaFicha, naurenBonusModoExtra, naurenChecarLimiarEfeitoDireto, naurenChecarLimiarEvolucao, naurenLinhaModoExtra, naurenNumeroModo };

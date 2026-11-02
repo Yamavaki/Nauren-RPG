@@ -1,8 +1,51 @@
-<div class="nauren-sheet ns2 ns-classe-{{ns.classe.chave}} {{#if modoFichaEdicao}}ns-editando{{/if}}" autocomplete="off" style="--ns-classe: {{ns.classe.cor}}; --ns-classe-texto: {{ns.classe.texto}};">
+<div class="nauren-sheet ns2 ns-classe-{{ns.classe.chave}} {{#if modoFichaEdicao}}ns-editando{{/if}} {{#if ns.cores.fundoEscuro}}ns-fundo-escuro{{/if}}" autocomplete="off" style="{{ns.cores.estilo}}">
+
+  <!-- FAIXA DO TOPO (0.97): nome, classe, XP e o Nível no estandarte -->
+  <header class="ns-faixa-topo">
+    <div class="ns-faixa-id">
+      <input class="char-name ns-nome" name="name" type="text" value="{{actor.name}}" placeholder="Nome do Personagem" aria-label="Nome do personagem" />
+      <div class="ns-classe-linha">
+        {{#if classeEquipada}}
+        <span class="ns-classe-nome" title="Definida pelo item de Classe na aba Características — remova-o de lá pra trocar">{{classeEquipada.name}}</span>
+        {{else}}
+        <input class="ns-classe-input" type="text" name="system.classe" value="{{system.classe}}" placeholder="Classe" aria-label="Classe">
+        {{/if}}
+        {{#if ns.subclasse.item}}
+        <span class="item-entry ns-sublink" data-item-id="{{ns.subclasse.item.id}}"><a data-action="itemEdit" title="Abrir a árvore de Subclasse">{{ns.subclasse.item.name}} ›</a></span>
+        {{/if}}
+      </div>
+    </div>
+    <div class="ns-xp">
+      {{#if isNpc}}
+      <label class="ns-mini" title="Categoria da criatura (1 a 4): dado de dano {{escalaMonstro.danoCat}}, +{{escalaMonstro.estCat}} de Estamina por ataque, tamanho de token. Valor Base pelo nível: {{system.valorBase}} (fórmulas: @categoria, @vb, @danoCat, @meioCat, @estCat).">Categoria
+        <select name="system.categoriaMonstro">{{selectOptions categoriaOpcoes selected=categoriaSelecionada}}</select>
+      </label>
+      <span class="ns-mini" title="Valor Base">VB {{system.valorBase}}</span>
+      {{/if}}
+      <label class="ns-mini" title="XP total acumulado (não zera ao subir de nível). Nível 2 = 200, 3 = 500, 4 = 900, 5 = 1400...">XP <input type="number" name="system.xp" value="{{system.xp}}" min="0" aria-label="XP total"></label>
+      {{#unless isNpc}}
+      <div class="ns-xp-progresso" title="{{xpInfo.total}} de {{xpInfo.proximo}} XP para o nível {{proximoNivelNumero}}">
+        <div class="ns-xp-barra"><div style="width: {{xpInfo.pct}}%;"></div></div>
+        <small>{{#if xpInfo.abaixo}}este XP é de nível {{xpInfo.nivelDoXp}}{{else}}{{#if podeSubirNivel}}{{#if xpInfo.niveisAMais}}dá para o nível {{xpInfo.nivelDoXp}}{{else}}pronto para o nível {{proximoNivelNumero}}{{/if}}{{else}}faltam {{xpInfo.faltam}} para o nível {{proximoNivelNumero}}{{/if}}{{/if}}</small>
+      </div>
+      {{/unless}}
+      {{#if podeSubirNivel}}
+      <a class="btn-subir-nivel ns-subir" data-action="subirNivel" title="Já tem {{xpInfo.total}} XP (o nível {{proximoNivelNumero}} pede {{xpProximoNivel}} no total) — sobe pro nível {{proximoNivelNumero}}"><i class="fas fa-arrow-up"></i> Subir de Nível</a>
+      {{/if}}
+    </div>
+    <div class="ns-estandarte {{#if podeSubirNivel}}pode-subir{{/if}}" title="Nível{{#if podeSubirNivel}} — já dá para subir para o nível {{proximoNivelNumero}}{{/if}}">
+      <div class="ns-estandarte-miolo">
+        <span class="ns-nivel-rotulo">NÍVEL</span>
+        {{#if modoFichaEdicao}}<input type="number" name="system.nivel" value="{{system.nivel}}" aria-label="Nível">{{else}}<b>{{system.nivel}}</b>{{/if}}
+        <i aria-hidden="true"></i>
+      </div>
+      {{#if podeSubirNivel}}<a class="ns-nivel-mais" data-action="subirNivel" title="Subir para o nível {{proximoNivelNumero}} ({{xpProximoNivel}} XP no total)">+</a>{{/if}}
+    </div>
+  </header>
 
   <div class="sheet-layout">
 
-    <!-- COLUNA DO HERÓI (0.96) -->
+    <!-- COLUNA DO HERÓI (0.96 / 0.97: painéis com moldura) -->
     <aside class="sidebar ns-coluna">
       {{#if modoFichaEdicao}}
       <div class="ns-faixa-edicao">
@@ -10,6 +53,8 @@
         <a class="ns-faixa-pronto" data-action="toggleModoFicha" title="Voltar a mostrar só os valores finais">Pronto</a>
       </div>
       {{/if}}
+
+      <section class="ns-painel ns-painel-heroi"><div class="ns-painel-dentro">
       <div class="ns-heroi">
         <div class="ns-retrato">
           <div class="profile-frame ns-retrato-moldura">
@@ -20,11 +65,6 @@
             {{/if}}
             {{#if owner}}{{#unless imagemModoToken}}<a class="nauren-enquadrar-btn" data-action="enquadrarRetrato" title="Enquadrar a imagem"><i class="fas fa-crop-simple"></i></a>{{/unless}}{{/if}}
           </div>
-          <div class="ns-nivel {{#if podeSubirNivel}}pode-subir{{/if}}" title="Nível{{#if podeSubirNivel}} — já dá para subir para o nível {{proximoNivelNumero}}{{/if}}">
-            <span class="ns-nivel-rotulo">NÍVEL</span>
-            {{#if modoFichaEdicao}}<input type="number" name="system.nivel" value="{{system.nivel}}" aria-label="Nível">{{else}}<b>{{system.nivel}}</b>{{/if}}
-          </div>
-          {{#if podeSubirNivel}}<a class="ns-nivel-mais" data-action="subirNivel" title="Subir para o nível {{proximoNivelNumero}} ({{xpProximoNivel}} XP no total)">+</a>{{/if}}
           {{#if ns.classe.nome}}
           <div class="ns-emblema" title="{{ns.classe.nome}}"><svg viewBox="0 0 24 24" aria-hidden="true">{{{ns.classe.svg}}}</svg></div>
           {{/if}}
@@ -41,36 +81,6 @@
         </div>
         {{/if}}
         {{/if}}
-
-        <input class="char-name ns-nome" name="name" type="text" value="{{actor.name}}" placeholder="Nome do Personagem" aria-label="Nome do personagem" />
-        <div class="ns-classe-linha">
-          {{#if classeEquipada}}
-          <span class="ns-classe-nome" title="Definida pelo item de Classe na aba Características — remova-o de lá pra trocar">{{classeEquipada.name}}</span>
-          {{else}}
-          <input class="ns-classe-input" type="text" name="system.classe" value="{{system.classe}}" placeholder="Classe" aria-label="Classe">
-          {{/if}}
-          {{#if ns.subclasse.item}}
-          <span class="item-entry ns-sublink" data-item-id="{{ns.subclasse.item.id}}"><a data-action="itemEdit" title="Abrir a árvore de Subclasse">{{ns.subclasse.item.name}} ›</a></span>
-          {{/if}}
-        </div>
-        <div class="ns-xp">
-          {{#if isNpc}}
-          <label class="ns-mini" title="Categoria da criatura (1 a 4): dado de dano {{escalaMonstro.danoCat}}, +{{escalaMonstro.estCat}} de Estamina por ataque, tamanho de token. Valor Base pelo nível: {{system.valorBase}} (fórmulas: @categoria, @vb, @danoCat, @meioCat, @estCat).">Categoria
-            <select name="system.categoriaMonstro">{{selectOptions categoriaOpcoes selected=categoriaSelecionada}}</select>
-          </label>
-          <span class="ns-mini" title="Valor Base">VB {{system.valorBase}}</span>
-          {{/if}}
-          <label class="ns-mini" title="XP total acumulado (não zera ao subir de nível). Nível 2 = 200, 3 = 500, 4 = 900, 5 = 1400...">XP <input type="number" name="system.xp" value="{{system.xp}}" min="0" aria-label="XP total"></label>
-          {{#unless isNpc}}
-          <div class="ns-xp-progresso" title="{{xpInfo.total}} de {{xpInfo.proximo}} XP para o nível {{proximoNivelNumero}}">
-            <div class="ns-xp-barra"><div style="width: {{xpInfo.pct}}%;"></div></div>
-            <small>{{#if xpInfo.abaixo}}este XP é de nível {{xpInfo.nivelDoXp}}{{else}}{{#if podeSubirNivel}}{{#if xpInfo.niveisAMais}}dá para o nível {{xpInfo.nivelDoXp}}{{/if}}{{else}}faltam {{xpInfo.faltam}} para o nível {{proximoNivelNumero}}{{/if}}{{/if}}</small>
-          </div>
-          {{/unless}}
-          {{#if podeSubirNivel}}
-          <a class="btn-subir-nivel ns-subir" data-action="subirNivel" title="Já tem {{xpInfo.total}} XP (o nível {{proximoNivelNumero}} pede {{xpProximoNivel}} no total) — sobe pro nível {{proximoNivelNumero}}"><i class="fas fa-arrow-up"></i> Subir de Nível</a>
-          {{/if}}
-        </div>
       </div>
 
       <div class="ns-defesas">
@@ -92,7 +102,10 @@
           {{#if modoFichaEdicao}}{{#if system.movimentoExtra}}<span class="ns-extra">{{ns.movimentoExtraTexto}} = {{system.movimentoTotal}}</span>{{/if}}{{/if}}
         </div>
       </div>
+      </div></section>
 
+      <section class="ns-painel ns-painel-estado"><div class="ns-painel-dentro">
+      <div class="ns-placa"><i aria-hidden="true"></i><span>Estado</span><i aria-hidden="true"></i></div>
       <div class="ns-contador ns-destino">
         <div class="ns-contador-cab">
           <span class="ns-rotulo">Destino</span>
@@ -111,7 +124,7 @@
         <div class="ns-marcadores ns-d20s ns-d20-unico"><span class="ns-pip ns-pip-d20 cheio"><svg viewBox="0 0 28 30" aria-hidden="true"><polygon points="14,1 27,8 27,22 14,29 1,22 1,8"/><polygon class="ns-d20-face" points="14,7 22,20 6,20"/></svg></span><div class="ns-regua"><div style="width: {{ns.destino.marc.pct}}%"></div></div></div>
         {{/if}}
       </div>
-
+      <div class="ns-divisor" aria-hidden="true"><i></i></div>
       <div class="ns-contador ns-estresse">
         <div class="ns-contador-cab">
           <span class="ns-rotulo">Estresse</span>
@@ -130,10 +143,10 @@
         <div class="ns-marcadores ns-losangos ns-d20-unico"><span class="ns-pip ns-pip-losango cheio"></span><div class="ns-regua ns-regua-estresse"><div style="width: {{ns.estresse.marc.pct}}%"></div></div></div>
         {{/if}}
       </div>
-
-      {{#if ns.condicoes.length}}
+      <div class="ns-divisor" aria-hidden="true"><i></i></div>
       <div class="ns-contador ns-condicoes">
         <span class="ns-rotulo">Condições</span>
+        {{#if ns.temCondicoes}}
         <div class="ns-selos">
           {{#each ns.condicoes as |c|}}
           <span class="item-entry ns-selo" data-item-id="{{c.id}}" title="{{c.name}}{{#if c.acumulativel}} ×{{c.acumulos}}{{/if}}
@@ -142,12 +155,18 @@ Clique para abrir">
             <a data-action="itemEdit" class="ns-selo-a"><img src="{{c.img}}" alt=""><span class="ns-selo-nome">{{c.name}}</span>{{#if c.acumulativel}}<b>{{c.acumulos}}</b>{{/if}}</a>
           </span>
           {{/each}}
-          {{#if ns.condicoesMais}}<a class="ns-selo ns-selo-mais" data-action="nsIrCondicoes" title="{{ns.condicoesMaisNomes}}">+{{ns.condicoesMais}} mais</a>{{/if}}
+          {{#if ns.condicoesMais}}<a class="ns-selo ns-selo-mais" data-action="nsIrCondicoes" title="Mostrar todas: {{ns.condicoesMaisNomes}}">+{{ns.condicoesMais}} mais</a>{{/if}}
+          {{#if ns.condicoesPodeFechar}}<a class="ns-selo ns-selo-mais" data-action="nsIrCondicoes" title="Mostrar menos">mostrar menos</a>{{/if}}
         </div>
+        {{else}}
+        <span class="ns-vazio">Nenhuma</span>
+        {{/if}}
       </div>
-      {{/if}}
+      </div></section>
 
       {{#if ns.subclasse}}
+      <section class="ns-painel ns-painel-sub"><div class="ns-painel-dentro">
+      <div class="ns-placa"><i aria-hidden="true"></i><span>Subclasse</span><i aria-hidden="true"></i></div>
       {{#if ns.subclasse.item}}
       {{#each ns.subclasse.lista as |sc|}}
       <div class="item-entry ns-sub-card {{#if ../ns.subclasse.temPontos}}ns-sub-pontos{{/if}}" data-item-id="{{sc.id}}">
@@ -165,20 +184,23 @@ Clique para abrir">
       {{else}}
       {{#if ns.subclasse.semArvore}}
       <div class="ns-sub-card ns-sub-vazio">
-        <b>Árvore de Subclasse</b>
         <small>Sua ficha ainda não tem a árvore da sua Classe.</small>
         <a class="ns-sub-btn" data-action="nsAdicionarSubclasse">Pegar a árvore de {{classeEquipada.name}}</a>
       </div>
+      {{else}}
+      <span class="ns-vazio">Escolha uma Classe primeiro.</span>
       {{/if}}
       {{/if}}
       {{#if modoFichaEdicao}}{{#if system.pontosSubclasse.max}}
       <label class="ns-mini ns-sub-edit">Pontos de Subclasse <input type="number" name="system.pontosSubclasse.value" value="{{system.pontosSubclasse.value}}" aria-label="Pontos de Subclasse disponíveis"> / <span title="{{system.tooltips.pontosSubclasse}}">{{system.pontosSubclasse.max}}</span></label>
       {{/if}}{{/if}}
+      </div></section>
       {{/if}}
 
       {{#if mascotes.length}}
+      <section class="ns-painel ns-painel-mascotes"><div class="ns-painel-dentro">
       <div class="nauren-mascotes-caixa ns-mascotes">
-        <span class="ns-rotulo">Mascotes</span>
+        <div class="ns-placa"><i aria-hidden="true"></i><span>Mascotes</span><i aria-hidden="true"></i></div>
         {{#each mascotes as |m|}}
         <div class="nauren-mascote-linha">
           <img src="{{m.img}}" class="nauren-mascote-img" alt="{{m.name}}">
@@ -198,12 +220,15 @@ Clique para abrir">
         <div class="nauren-mascote-dropzone"><i class="fas fa-hand-point-up"></i> Arraste um Ator aqui pra vincular como Mascote</div>
         {{/if}}
       </div>
+      </div></section>
       {{else}}
       {{#if modoFichaEdicao}}
+      <section class="ns-painel ns-painel-mascotes"><div class="ns-painel-dentro">
       <div class="nauren-mascotes-caixa ns-mascotes">
-        <span class="ns-rotulo">Mascotes</span>
+        <div class="ns-placa"><i aria-hidden="true"></i><span>Mascotes</span><i aria-hidden="true"></i></div>
         <div class="nauren-mascote-dropzone"><i class="fas fa-hand-point-up"></i> Arraste um Ator aqui pra vincular como Mascote</div>
       </div>
+      </div></section>
       {{/if}}
       {{/if}}
 
@@ -222,6 +247,7 @@ Clique para abrir">
     <!-- COLUNA DIREITA -->
     <main class="main-content">
       <div class="ns-topo">
+        <section class="ns-painel ns-painel-recursos"><div class="ns-painel-dentro">
         <div class="ns-recursos">
           <div class="ns-rec ns-rec-vida">
             <div class="ns-rec-cab">
@@ -284,6 +310,7 @@ Clique para abrir">
           </div>
         </div>
 
+        {{#if recursosCustomView.length}}<div class="ns-divisor" aria-hidden="true"><i></i></div>{{/if}}
         {{#each recursosCustomView as |barra|}}
         <div class="ns-faixa-classe ns-pip-forma-{{../ns.classe.pip}}" style="--ns-rec: {{barra.cor2}};">
           <span class="ns-faixa-icone"><i class="fas {{barra.icone}}"></i></span>
@@ -306,7 +333,9 @@ Clique para abrir">
           {{/if}}
         </div>
         {{/each}}
+        </div></section>
 
+        <div class="ns-placa ns-placa-atributos"><i aria-hidden="true"></i><span>Atributos</span><i aria-hidden="true"></i></div>
         <div class="ns-brasoes">
           {{#each nsAtributos as |a|}}
           <div class="ns-brasao {{#if a.buff}}buff{{/if}} {{#if a.debuff}}debuff{{/if}}" title="{{a.tooltip}}">
@@ -1201,6 +1230,27 @@ Clique para abrir">
           </section>
 
           <div class="ns-cards">
+          <section class="ns-card ns-card-largo ns-card-cores">
+            <header class="ns-card-cab"><span class="ns-card-icone"><i class="fas fa-palette"></i></span><div><b>Cores da ficha</b><small>{{#if (eq ns.cores.origem "sem")}}sem Pigmentos: usa a cor da classe{{else}}{{#if (eq ns.cores.origem "classe")}}usando a cor da classe{{else}}{{#if (eq ns.cores.origem "manual")}}escolhidas à mão{{else}}dos 2 primeiros Pigmentos: {{#each ns.cores.pigmentos}}{{this}}{{#unless @last}} + {{/unless}}{{/each}}{{/if}}{{/if}}{{/if}}</small></div></header>
+            <div class="ns-cores-linha">
+              <div class="ns-cores-amostra" title="Primária: molduras, títulos, faixa do topo"><span style="background: {{ns.cores.p}};"></span><small>Primária<br><b>{{ns.cores.nomeP}}</b></small></div>
+              <div class="ns-cores-amostra" title="Secundária: detalhes, botões, Nível, divisores"><span style="background: {{ns.cores.s}};"></span><small>Secundária<br><b>{{ns.cores.nomeS}}</b></small></div>
+              <label class="ns-campo-linha ns-cores-modo"><span>Usar</span>
+                <select name="flags.nauren.coresFicha.modo">
+                  <option value="auto" {{#if (eq ns.cores.modo "auto")}}selected{{/if}}>Automático (Pigmentos)</option>
+                  <option value="inverter" {{#if (eq ns.cores.modo "inverter")}}selected{{/if}}>Pigmentos, invertido</option>
+                  <option value="manual" {{#if (eq ns.cores.modo "manual")}}selected{{/if}}>Escolher à mão</option>
+                  <option value="classe" {{#if (eq ns.cores.modo "classe")}}selected{{/if}}>Cor da classe</option>
+                </select>
+              </label>
+            </div>
+            {{#if (eq ns.cores.modo "manual")}}
+            <div class="ns-cores-linha">
+              <label class="ns-campo-linha"><span>Primária</span><select name="flags.nauren.coresFicha.p">{{#each ns.cores.opcoes as |o|}}<option value="{{o.chave}}" {{#if (eq o.chave ../ns.cores.manualP)}}selected{{/if}}>{{o.nome}}</option>{{/each}}</select></label>
+              <label class="ns-campo-linha"><span>Secundária</span><select name="flags.nauren.coresFicha.s">{{#each ns.cores.opcoes as |o|}}<option value="{{o.chave}}" {{#if (eq o.chave ../ns.cores.manualS)}}selected{{/if}}>{{o.nome}}</option>{{/each}}</select></label>
+            </div>
+            {{/if}}
+          </section>
           <section class="ns-card">
             <header class="ns-card-cab"><span class="ns-card-icone"><i class="fas fa-dice-d20"></i></span><div><b>Rolagem</b><small>vale para todo teste de d20</small></div></header>
             <div class="ns-segmentado" role="radiogroup" aria-label="Modo de rolagem">
