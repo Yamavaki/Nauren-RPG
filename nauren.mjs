@@ -8057,7 +8057,7 @@ function naurenHudEsc(v) {
 function naurenHudHtml(c) {
   const e = naurenHudEsc;
   if (c.recolhido) {
-    return `<div class="nauren-hud-raiz recolhido"><button type="button" class="nauren-hud-expandir" data-action="recolher" aria-label="Mostrar o HUD de Combate">
+    return `<div class="nauren-hud-raiz recolhido nc2${c.monstro ? " nc-monstro" : ""}" style="${c.coresEstilo ?? ""}"><button type="button" class="nauren-hud-expandir" data-action="recolher" aria-label="Mostrar o HUD de Combate">
       <img src="${e(c.retrato)}" alt=""><span>${e(c.nome)}</span><i class="fas fa-chevron-up"></i></button></div>`;
   }
   const flutuanteEsq = c.testesAberto ? `
@@ -8098,8 +8098,9 @@ function naurenHudHtml(c) {
         ${b.chipCompacto ? `<span class="nauren-hud-chip duplo" title="${e(b.chip)}">${b.chipCompacto.map(p => `<span class="${p.classe}"><i class="fas ${p.icone}"></i>${e(String(p.valor))}</span>`).join("")}</span>` : b.chip ? `<span class="nauren-hud-chip ${b.chipClasse}">${e(b.chip)}</span>` : `<span class="nauren-hud-chip vazio"></span>`}
       </button>`).join("") : `<span class="nauren-hud-vazio">${e(c.vazio)}</span>`;
   const condicoes = c.condicoes.length ? c.condicoes.map(k => `
-      <div class="nauren-hud-cond${k.nova ? " nova" : ""}${k.postura ? " postura" : ""}" data-item-id="${e(k.id)}">
+      <div class="nauren-hud-cond${k.nova ? " nova" : ""}${k.postura ? " postura" : ""}${k.negativa ? " negativa" : ""}" data-item-id="${e(k.id)}">
         <img src="${e(k.img)}" alt="${e(k.nome)}" data-action="abrirItem">
+        <span class="nauren-hud-cond-nome" data-action="abrirItem">${e(k.nome)}</span>
         ${k.acumulos ? `<span class="nauren-hud-cond-num">${e(k.acumulos)}</span>` : ""}
         ${k.postura ? "" : `<button type="button" class="nauren-hud-cond-menos" data-action="condicaoMenos" aria-label="Tirar 1 acúmulo de ${e(k.nome)}"><i class="fas fa-minus"></i></button>`}
       </div>`).join("") + (c.condicoesExtra ? `<span class="nauren-hud-cond-mais" data-action="abrirFicha" title="Ver todas na ficha">+${c.condicoesExtra}</span>` : "") : `<span class="nauren-hud-vazio">Nenhuma</span>`;
@@ -8109,7 +8110,7 @@ function naurenHudHtml(c) {
       ${c.alvos.map(a => `<div class="nauren-hud-alvo${a.aliado ? " aliado" : ""}"><img src="${e(a.img)}" alt=""><span class="nauren-hud-alvo-nome">${e(a.nome)}</span>${a.aliado ? `<span class="nauren-hud-alvo-tag">${a.voce ? "você" : "aliado"}</span>` : ""}<button type="button" class="nauren-hud-alvo-x" data-action="removerAlvo" data-token-id="${e(a.id)}" aria-label="Desmarcar ${e(a.nome)}"><i class="fas fa-times"></i></button></div>`).join("")}
       ${c.alvosExtra ? `<span class="nauren-hud-alvos-mais">+${c.alvosExtra} marcado${c.alvosExtra > 1 ? "s" : ""}</span>` : ""}
     </div>` : "";
-  return `<div class="nauren-hud-raiz${c.expandido ? " expandido" : ""}" lang="pt-BR">
+  return `<div class="nauren-hud-raiz nc2${c.expandido ? " expandido" : ""}${c.coresEscuro ? " nc-fundo-escuro" : ""}${c.monstro ? " nc-monstro" : ""}" lang="pt-BR" style="${c.coresEstilo ?? ""}">
     ${flutuanteEsq}
     ${alvos}
     <div class="nauren-hud-dica" hidden></div>
@@ -8233,6 +8234,7 @@ class NaurenHudCombate extends foundry.applications.api.ApplicationV2 {
     const retrato = token?.document?.texture?.src || actor.img;
     const nomeClasse = classe ? classe.name : (actor.type === "npc" ? "NPC" : "");
     const c = { recolhido, nome: actor.name, retrato, classe: `Nv ${sys.nivel ?? 1}`, classeCompleta: `${nomeClasse}${nomeClasse ? " · " : ""}nível ${sys.nivel ?? 1}` };
+    { const est = naurenEstiloDoCard(actor); c.coresEstilo = est.estilo; c.coresEscuro = est.escuro; c.monstro = actor.type === "npc"; }
     if (recolhido) return c;
 
     const pct = (v, m) => m > 0 ? Math.max(0, Math.min(100, Math.round(100 * v / m))) : 0;
@@ -8402,7 +8404,7 @@ class NaurenHudCombate extends foundry.applications.api.ApplicationV2 {
       }
       const ac = i.system.acumulos ?? 1;
       this.#dicas.set(i.id, { nome: i.name, tipo: ac > 1 ? `Condição · ${ac} acúmulos` : "Condição", desc: naurenHudTextoSimples(i.system.descricao, 200), aviso: "", linha: "Clique para abrir · − tira 1 acúmulo" });
-      return { id: i.id, img: i.img, nome: i.name, acumulos: ac > 1 ? ac : "", nova: c._condNovas.includes(i.id) };
+      return { id: i.id, img: i.img, nome: i.name, acumulos: ac > 1 ? ac : "", nova: c._condNovas.includes(i.id), negativa: i.system.negativa !== "nao" && i.system.negativa !== false };
     });
 
     // Movimento: o que sobrou do último movimento (Movimento Continuado) sobre o deslocamento de uma ação.
@@ -13301,7 +13303,8 @@ class NaurenCarrosselTurnos extends foundry.applications.api.ApplicationV2 {
         derrotado: !!(c.isDefeated ?? c.defeated), oculto: !!(c.hidden || c.token?.hidden), semIniciativa: c.initiative === null || c.initiative === undefined,
         podeRolar: (c.initiative === null || c.initiative === undefined) && dono, barras, estado: est, conds: conds.slice(0, 3), condsMais: Math.max(0, conds.length - 3),
         prioridade: temPrioridade, dano, atrasoDano, entrando, atraso: Math.round(inicioEntrada - agoraE),
-        iniciativa: Number.isFinite(c.initiative) ? Math.floor(c.initiative) : null, tooltip: this.#tooltip(c, actor, est, dono, conds), inimigo: (c.token?.disposition ?? 0) < 0
+        iniciativa: Number.isFinite(c.initiative) ? Math.floor(c.initiative) : null, tooltip: this.#tooltip(c, actor, est, dono, conds), inimigo: (c.token?.disposition ?? 0) < 0,
+        cores: naurenEstiloDoCard(actor ?? null).estilo, monstro: actor?.type === "npc"
       });
     });
     return { gm, combate, iniciado: !!combate?.started, rodada: combate?.round ?? 0, combatentes, tamanho, modo, nomes, opacidade, fundo, novoCombate, escondeCenas,
@@ -13322,12 +13325,14 @@ class NaurenCarrosselTurnos extends foundry.applications.api.ApplicationV2 {
     const barraH = b => `<div class="nauren-car-hbar" title="${e(b.nome)} ${e(b.texto)}"><div style="width:${b.pct}%;background:linear-gradient(90deg,${e(b.cor1)},${e(b.cor2)})"></div></div>`;
     const itens = c.combatentes.map(k => {
       return `
-      <div class="nauren-car-item ${k.ativo ? "ativo" : ""} ${k.agiu ? "agiu" : ""} ${k.derrotado ? "derrotado" : ""} ${k.oculto ? "oculto" : ""} ${k.inimigo ? "inimigo" : "aliado"} ${k.entrando ? "entrando" : ""}"
-           data-id="${k.id}" data-action="focar" data-tooltip="${e(k.tooltip)}" data-tooltip-direction="DOWN" style="animation-delay:${k.atraso}ms" ${c.gm ? 'draggable="true"' : ""}>
+      <div class="nauren-car-item nc2 ${k.ativo ? "ativo" : ""} ${k.agiu ? "agiu" : ""} ${k.derrotado ? "derrotado" : ""} ${k.oculto ? "oculto" : ""} ${k.inimigo ? "inimigo" : "aliado"} ${k.entrando ? "entrando" : ""} ${k.monstro ? "nc-monstro" : ""}"
+           data-id="${k.id}" data-action="focar" data-tooltip="${e(k.tooltip)}" data-tooltip-direction="DOWN" style="animation-delay:${k.atraso}ms;${k.cores}" ${c.gm ? 'draggable="true"' : ""}>
+        ${k.ativo ? `<span class="nauren-car-vez">Vez</span>` : ""}
         <div class="nauren-car-bloco ${k.dano ? k.dano : ""}" style="width:${k.ativo ? WA : W}px;animation-delay:${k.atrasoDano}ms">
         <div class="nauren-car-card" style="height:${k.ativo ? HA : H}px">
           <img src="${e(k.img)}" alt="">
           <div class="nauren-car-sombra"></div>
+          <i class="nauren-car-lado" title="${k.inimigo ? "Inimigo" : "Aliado"}"></i>
           ${k.iniciativa !== null ? `<span class="nauren-car-ini" title="Iniciativa">${k.iniciativa}</span>` : ""}
           ${k.prioridade ? `<span class="nauren-car-p" title="Tem Prioridade para usar agora">P</span>` : ""}
           ${k.derrotado ? `<svg class="nauren-car-x" viewBox="0 0 56 56" aria-hidden="true"><line x1="14" y1="14" x2="42" y2="42"></line><line x1="42" y1="14" x2="14" y2="42"></line></svg>` : ""}

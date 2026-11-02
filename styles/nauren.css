@@ -5782,3 +5782,109 @@ img.nauren-criador-token.com-borda { border: none; border-radius: 0; background:
 .nauren-roll-card.nc2 .nc-alvo-meio > .nrc-res-nome { order: 0; }
 .nauren-roll-card.nc2 .nc-alvo-meio > .nc-selos { order: 1; }
 .nauren-roll-card.nc2 .nc-alvo-meio > .nrc-res-lista { order: 2; }
+
+/* ===================================================
+   0.97.5 — HUD DE COMBATE E BARRA DE TURNOS NO ESTILO DA FICHA
+   Cores do personagem (--nc-*), postas no HTML da HUD / de cada retrato da barra de turnos.
+   =================================================== */
+#nauren-hud-combate .nauren-hud-raiz.nc2 {
+  --nc-f: #1b1624;
+  --h-ouro: var(--nc-s); --h-borda2: color-mix(in srgb, var(--nc-p) 55%, #2a2338); --h-borda: color-mix(in srgb, var(--nc-p) 30%, #2a2338);
+  --h-painel: var(--nc-f); --h-painel2: color-mix(in srgb, var(--nc-pd) 35%, var(--nc-f)); --h-tinta: #15111b;
+}
+#nauren-hud-combate .nauren-hud-raiz.nc2.nc-fundo-escuro { --nc-f: #141317; }
+/* painéis: cantos chanfrados na primária, filete e triângulo na secundária */
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-painel {
+  position: relative; isolation: isolate; border: 0; border-radius: 0; box-shadow: none; background: color-mix(in srgb, var(--nc-p) 80%, #000);
+  clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px), 0 10px);
+  padding: 11px 10px 10px;
+}
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-painel::before {
+  content: ""; position: absolute; inset: 1.5px; z-index: -1; background: var(--h-painel);
+  clip-path: polygon(9.4px 0, calc(100% - 9.4px) 0, 100% 9.4px, 100% calc(100% - 9.4px), calc(100% - 9.4px) 100%, 9.4px 100%, 0 calc(100% - 9.4px), 0 9.4px);
+}
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-centro::before { background: linear-gradient(180deg, color-mix(in srgb, var(--nc-pd) 30%, var(--nc-f)), var(--nc-f)); }
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-painel::after {
+  content: ""; position: absolute; left: 50%; top: 0; width: 10px; height: 6px; margin-left: -5px; background: var(--nc-s); clip-path: polygon(0 0, 100% 0, 50% 100%); pointer-events: none;
+}
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-painel::before { box-shadow: inset 0 0 0 3px var(--h-painel), inset 0 0 0 4px color-mix(in srgb, var(--nc-s) 40%, transparent); }
+/* retrato: anel na primária + secundária (quadrado para monstro) */
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-retrato { border: 0; box-shadow: 0 0 0 2px var(--nc-p), 0 0 0 4px var(--nc-f), 0 0 0 5px var(--nc-s); margin: 3px; }
+#nauren-hud-combate .nauren-hud-raiz.nc2.nc-monstro .nauren-hud-retrato, #nauren-hud-combate .nauren-hud-raiz.nc2.nc-monstro .nauren-hud-expandir img { border-radius: 9px; }
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-nome { color: #fff; }
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-classe {
+  align-self: flex-start; font-size: 9.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #15111b; background: var(--nc-s);
+  padding: 1px 6px 4px; clip-path: polygon(0 0, 100% 0, 100% 72%, 50% 100%, 0 72%);
+}
+/* Estresse em losangos; Destino na secundária */
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-pip { width: 9px; height: 9px; border-radius: 1px; transform: rotate(45deg); border: 1.5px solid #e08a4a; margin: 0 1px; }
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-pip.cheio { background: #e08a4a; }
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-destino { color: var(--nc-sc); }
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-rot { color: var(--nc-sc); letter-spacing: .1em; }
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-botao-teste { border-radius: 999px; border: 1px solid color-mix(in srgb, var(--nc-s) 70%, #000); color: var(--nc-sc); background: color-mix(in srgb, var(--nc-s) 12%, var(--nc-f)); }
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-botao-teste.ativo, #nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-botao-teste:hover { background: var(--nc-s); color: #15111b; }
+/* abas: sublinhado na secundária */
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-abas { border-bottom: 1px solid var(--h-borda); }
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-aba.ativa { background: transparent; border-color: transparent; color: var(--nc-sc); box-shadow: inset 0 -2px 0 var(--nc-s); border-radius: 0; }
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-aba.favoritos { color: var(--nc-s); }
+/* botões de Ação: chanfrados, borda na primária; o do mouse brilha na secundária */
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-acao {
+  --borda-acao: color-mix(in srgb, var(--nc-p) 50%, #2a2338);
+  border: 1.5px solid transparent; border-radius: 0; box-shadow: none;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--nc-pd) 70%, var(--nc-f)), var(--nc-f)) padding-box, linear-gradient(var(--borda-acao), var(--borda-acao)) border-box;
+  clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px);
+}
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-acao:hover { --borda-acao: var(--nc-s); background: linear-gradient(180deg, color-mix(in srgb, var(--nc-s) 22%, var(--nc-f)), var(--nc-f)) padding-box, linear-gradient(var(--borda-acao), var(--borda-acao)) border-box; }
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-acao.equipado { --borda-acao: var(--nc-s); }
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-acao.ligado { --borda-acao: var(--h-ok); }
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-acao.fechada { --borda-acao: #5a4a7a; }
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-chip { background: #15111b; border: 1px solid var(--nc-s); color: var(--nc-sc); font-weight: 700; }
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-chip.mana { border-color: var(--h-mana); color: #c9d6ff; }
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-chip.ligado { border-color: #5f9d6c; color: #bfe8c8; }
+/* Condições: etiquetas com nome e acúmulos */
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-condicoes { height: auto; min-height: 24px; max-height: 76px; flex-wrap: wrap; gap: 4px; align-content: flex-start; padding: 2px 0 0; overflow-y: auto; scrollbar-width: thin; }
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-cond {
+  width: auto; max-width: 100%; height: 22px; display: inline-flex; align-items: center; gap: 4px; padding: 0 6px 0 2px; border-radius: 999px;
+  background: color-mix(in srgb, var(--nc-p) 14%, var(--nc-f)); border: 1px solid color-mix(in srgb, var(--nc-p) 55%, #000); color: var(--nc-pc);
+}
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-cond.negativa { background: #2a1a1c; border-color: #c2474f; color: #ffb4b8; }
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-cond.postura { border-color: var(--nc-s); color: var(--nc-sc); box-shadow: none; }
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-cond img { width: 17px; height: 17px; flex: none; border-radius: 50%; }
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-cond-nome { font-size: 10.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; cursor: pointer; }
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-cond-num { position: static; flex: none; min-width: 0; height: 14px; padding: 0 4px; border: 0; border-radius: 999px; background: #15111b; color: #fff; font-size: 9.5px; }
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-cond-menos { top: -4px; left: auto; right: -4px; }
+#nauren-hud-combate .nauren-hud-raiz.nc2.expandido .nauren-hud-condicoes { max-height: 190px; }
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-cond-mais { align-self: center; font-size: 11px; font-weight: 700; color: var(--nc-sc); cursor: pointer; }
+/* Encerrar turno: preenchido na secundária, pontas em losango */
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-botao-ouro { background: var(--nc-s); color: #15111b; border-radius: 0; letter-spacing: .05em; clip-path: polygon(7px 0, calc(100% - 7px) 0, 100% 50%, calc(100% - 7px) 100%, 7px 100%, 0 50%); }
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-botao-ouro:hover { background: var(--nc-sc); color: #15111b; }
+/* alvos marcados, testes e Prioridade: mesma moldura */
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-alvos, #nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-flutuante {
+  border-radius: 0; border: 1.5px solid color-mix(in srgb, var(--nc-p) 80%, #000); background: var(--nc-f); box-shadow: inset 0 0 0 3px var(--nc-f), inset 0 0 0 4px color-mix(in srgb, var(--nc-s) 40%, transparent);
+  clip-path: polygon(8px 0, calc(100% - 8px) 0, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0 calc(100% - 8px), 0 8px);
+}
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-alvos-limpar { border-radius: 999px; border: 1px solid color-mix(in srgb, var(--nc-s) 70%, #000); color: var(--nc-sc); background: color-mix(in srgb, var(--nc-s) 12%, var(--nc-f)); }
+/* HUD recolhida */
+#nauren-hud-combate .nauren-hud-raiz.nc2.recolhido .nauren-hud-expandir { border-color: color-mix(in srgb, var(--nc-p) 80%, #000); background: var(--nc-f, #1b1624); box-shadow: inset 0 0 0 2px #1b1624, inset 0 0 0 3px color-mix(in srgb, var(--nc-s) 45%, transparent); }
+#nauren-hud-combate .nauren-hud-raiz.nc2.recolhido .nauren-hud-expandir img { box-shadow: 0 0 0 1.5px var(--nc-s); }
+
+/* Barra de turnos: imagem e barras como antes; moldura chanfrada nas cores de cada um, "VEZ" e losango de aliado/inimigo */
+#nauren-carrossel .nauren-car-item.nc2 .nauren-car-bloco {
+  border: 0; border-radius: 0; padding: 2px; background: color-mix(in srgb, var(--nc-p) 85%, #000); box-shadow: none;
+  clip-path: polygon(7px 0, calc(100% - 7px) 0, 100% 7px, 100% calc(100% - 7px), calc(100% - 7px) 100%, 7px 100%, 0 calc(100% - 7px), 0 7px);
+}
+#nauren-carrossel .nauren-car-item.nc2 .nauren-car-card { clip-path: polygon(5.6px 0, calc(100% - 5.6px) 0, 100% 5.6px, 100% 100%, 0 100%, 0 5.6px); }
+#nauren-carrossel .nauren-car-item.nc2 .nauren-car-hbars { clip-path: polygon(0 0, 100% 0, 100% calc(100% - 5.6px), calc(100% - 5.6px) 100%, 5.6px 100%, 0 calc(100% - 5.6px)); padding-bottom: 2px; background: #0d0b14; }
+#nauren-carrossel .nauren-car-item.nc2:not(:has(.nauren-car-hbars)) .nauren-car-card { clip-path: polygon(5.6px 0, calc(100% - 5.6px) 0, 100% 5.6px, 100% calc(100% - 5.6px), calc(100% - 5.6px) 100%, 5.6px 100%, 0 calc(100% - 5.6px), 0 5.6px); }
+#nauren-carrossel .nauren-car-item.nc2.ativo { filter: drop-shadow(0 0 6px color-mix(in srgb, var(--nc-s) 80%, transparent)); }
+#nauren-carrossel .nauren-car-item.nc2.ativo .nauren-car-bloco { background: var(--nc-s); }
+#nauren-carrossel .nauren-car-item.nc2.oculto .nauren-car-bloco { background: repeating-linear-gradient(135deg, #a89bc4 0 4px, #3b3154 4px 8px); }
+#nauren-carrossel .nauren-car-item.nc2 .nauren-car-ini { border-color: color-mix(in srgb, var(--nc-s) 70%, #000); color: var(--nc-sc); }
+#nauren-carrossel .nauren-car-item.nc2.ativo .nauren-car-ini { top: 13px; }
+#nauren-carrossel .nauren-car-vez {
+  position: absolute; top: 0; left: 50%; z-index: 3; transform: translateX(-50%); padding: 0 8px 1px; pointer-events: none;
+  font-family: "Modesto Condensed", "Cinzel", Georgia, serif; font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; line-height: 13px;
+  color: #15111b; background: var(--nc-s, #cca162); clip-path: polygon(0 0, 100% 0, 88% 100%, 12% 100%);
+}
+#nauren-carrossel .nauren-car-lado { position: absolute; top: 5px; left: 5px; z-index: 2; width: 7px; height: 7px; transform: rotate(45deg); background: #4fcf7f; box-shadow: 0 0 0 1px rgba(0,0,0,.7); }
+#nauren-carrossel .nauren-car-item.inimigo .nauren-car-lado { background: #e0605c; }
