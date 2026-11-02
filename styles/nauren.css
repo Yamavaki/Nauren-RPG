@@ -5084,14 +5084,19 @@ img.nauren-criador-token.com-borda { border: none; border-radius: 0; background:
 /* ---------- Opções em cartões ---------- */
 .nauren-sheet.ns2 .ns-opcoes { display: flex; flex-direction: column; gap: 12px; }
 .nauren-sheet.ns2 .sheet-body .ns-opcoes.tab:not(.active) { display: none; }
-.nauren-sheet.ns2 .ns-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-items: start; }
+.nauren-sheet.ns2 .ns-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-items: stretch; }
+/* cartões lado a lado com a mesma altura */
+.nauren-sheet.ns2 .ns-opcoes-grade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 18px; }
+.nauren-sheet.ns2 .ns-opcoes-grade > .ns-opcao { border-top: 1px solid var(--ns-borda); }
+.nauren-sheet.ns2 .ns-opcoes-grade > .ns-opcao:nth-child(-n+2) { border-top: 0; }
+@container ficha (max-width: 700px) { .nauren-sheet.ns2 .ns-opcoes-grade { grid-template-columns: minmax(0, 1fr); } .nauren-sheet.ns2 .ns-opcoes-grade > .ns-opcao:nth-child(2) { border-top: 1px solid var(--ns-borda); } }
 .nauren-sheet.ns2 .ns-card { display: flex; flex-direction: column; gap: 10px; padding: 14px; border-radius: 14px; background: var(--ns-fundo2); border: 1px solid var(--ns-borda); box-sizing: border-box; min-width: 0; margin: 0; }
 .nauren-sheet.ns2 .ns-card-cab { display: flex; align-items: center; gap: 10px; }
 .nauren-sheet.ns2 .ns-card-cab > div { display: flex; flex-direction: column; flex: 1; min-width: 0; }
 .nauren-sheet.ns2 .ns-card-cab b { font-size: 15px; }
 .nauren-sheet.ns2 .ns-card-cab small { font-size: 11.5px; color: var(--ns-sub); }
 .nauren-sheet.ns2 .ns-card-icone { flex: none; width: 32px; height: 32px; border-radius: 50%; display: grid; place-content: center; background: var(--ns-fundo3); border: 1px solid var(--ns-ouro-borda); color: var(--ns-ouro); font-size: 13px; }
-.nauren-sheet.ns2 .ns-blocos { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 8px; }
+.nauren-sheet.ns2 .ns-blocos { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: 8px; }
 .nauren-sheet.ns2 .ns-bloco { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; height: 70px; padding: 0 6px; border-radius: 12px; background: var(--ns-fundo); border: 1px solid var(--ns-borda); color: var(--ns-texto); font-size: 12.5px; font-weight: 600; text-align: center; cursor: pointer; }
 .nauren-sheet.ns2 .ns-bloco i { font-size: 18px; color: var(--ns-ouro); }
 .nauren-sheet.ns2 .ns-bloco:hover { border-color: var(--ns-ouro); }

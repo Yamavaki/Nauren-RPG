@@ -1223,14 +1223,6 @@ Clique para abrir">
           </section>
 
           <section class="ns-card">
-            <header class="ns-card-cab"><span class="ns-card-icone"><i class="fas fa-moon"></i></span><div><b>Descanso</b><small>recarrega usos "por dia"</small></div></header>
-            <a class="ns-btn-principal btn-descansar" data-action="descansar"><i class="fas fa-moon"></i> Descansar</a>
-            <p class="ns-dica">Recarrega as Ações com usos "por dia". Não mexe em Vida, Mana, Estamina nem Estresse: isso fica com o Mestre.</p>
-            <a class="ns-btn-secundario" data-action="ressincronizarRecursosCustom" title="Atualiza cada item da ficha (vindo de Classe/Subclasse/Nível) pra versão mais atual do compêndio. Preserva rank investido, ativo/inativo, usos gastos, equipado e quantidade. Atualiza descrição, Gatilhos, Efeitos Vinculados, Ações e fórmulas. Também corrige barras de recurso próprio que não apareceram."><i class="fas fa-sync"></i> Ressincronizar com o Compêndio</a>
-            <p class="ns-dica">Use depois de uma atualização do sistema, se uma habilidade da classe ficou antiga. É seguro clicar a qualquer momento.</p>
-          </section>
-
-          <section class="ns-card">
             <header class="ns-card-cab"><span class="ns-card-icone"><i class="fas fa-lock"></i></span><div><b>Estresse permanente</b><small>espaços que nunca saem sozinhos</small></div></header>
             <div class="ns-perm-linha">
               <div class="ns-marcadores ns-losangos">{{#each ns.estresse.marc.itens}}<span class="ns-pip ns-pip-losango {{#if travado}}travado cheio{{/if}}"></span>{{/each}}</div>
@@ -1238,6 +1230,14 @@ Clique para abrir">
               <a class="ns-btn-secundario ns-btn-curto" data-action="estressePermanente"><i class="fas fa-pen"></i> Ajustar</a>
             </div>
             <p class="ns-dica">Descanso, cura e habilidades param nele.</p>
+          </section>
+
+          <section class="ns-card {{#if isNpc}}ns-card-largo{{/if}}">
+            <header class="ns-card-cab"><span class="ns-card-icone"><i class="fas fa-moon"></i></span><div><b>Descanso</b><small>recarrega usos "por dia"</small></div></header>
+            <a class="ns-btn-principal btn-descansar" data-action="descansar"><i class="fas fa-moon"></i> Descansar</a>
+            <p class="ns-dica">Recarrega as Ações com usos "por dia". Não mexe em Vida, Mana, Estamina nem Estresse: isso fica com o Mestre.</p>
+            <a class="ns-btn-secundario" data-action="ressincronizarRecursosCustom" title="Atualiza cada item da ficha (vindo de Classe/Subclasse/Nível) pra versão mais atual do compêndio. Preserva rank investido, ativo/inativo, usos gastos, equipado e quantidade. Atualiza descrição, Gatilhos, Efeitos Vinculados, Ações e fórmulas. Também corrige barras de recurso próprio que não apareceram."><i class="fas fa-sync"></i> Ressincronizar com o Compêndio</a>
+            <p class="ns-dica">Use depois de uma atualização do sistema, se uma habilidade da classe ficou antiga. É seguro clicar a qualquer momento.</p>
           </section>
 
           {{#unless isNpc}}
@@ -1268,7 +1268,7 @@ Clique para abrir">
           </section>
           {{/unless}}
 
-          <section class="ns-card">
+          <section class="ns-card ns-card-largo">
             <header class="ns-card-cab"><span class="ns-card-icone"><i class="fas fa-person-running"></i></span><div><b>Combate e janelas</b><small>passe o mouse para ver o que cada um faz</small></div></header>
             <label class="ns-campo-linha" title="Experimental. Só durante combate por turnos. Quando a distância andada desde o início do seu turno passa do Movimento, gasta 1 Estamina para renovar o deslocamento.">
               <span>Movimento em combate</span>
@@ -1279,6 +1279,7 @@ Clique para abrir">
                 <option value="manual" {{#if (eq system.modoMovimento "manual")}}selected{{/if}}>Manual (não cobra)</option>
               </select>
             </label>
+            <div class="ns-opcoes-grade">
             <label class="ns-opcao" title="Quando a Rodada do combate avança (não a cada turno), a Estamina de Combate volta pro máximo sozinha.">
               <input type="checkbox" name="system.recuperarEstaminaPorRodada" {{checked system.recuperarEstaminaPorRodada}}><span class="ns-chave" aria-hidden="true"></span>
               <span class="ns-opcao-texto"><b>Recuperar a Estamina de Combate a cada Rodada</b></span>
@@ -1303,6 +1304,7 @@ Clique para abrir">
               <span class="ns-chave {{#if system.usaModoMira}}ligado{{/if}}" aria-hidden="true"></span>
               <span class="ns-opcao-texto"><b>Modo de Mira</b></span>
             </a>
+            </div>
           </section>
 
           {{#if isNpc}}
