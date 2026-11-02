@@ -26,21 +26,27 @@
       {{#unless isNpc}}
       <div class="ns-xp-progresso" title="{{xpInfo.total}} de {{xpInfo.proximo}} XP para o nível {{proximoNivelNumero}}">
         <div class="ns-xp-barra"><div style="width: {{xpInfo.pct}}%;"></div></div>
-        <small>{{#if xpInfo.abaixo}}este XP é de nível {{xpInfo.nivelDoXp}}{{else}}{{#if podeSubirNivel}}{{#if xpInfo.niveisAMais}}dá para o nível {{xpInfo.nivelDoXp}}{{else}}pronto para o nível {{proximoNivelNumero}}{{/if}}{{else}}faltam {{xpInfo.faltam}} para o nível {{proximoNivelNumero}}{{/if}}{{/if}}</small>
+        <small>{{#if xpInfo.abaixo}}este XP é de nível {{xpInfo.nivelDoXp}}{{else}}{{#if podeSubirNivel}}<a class="ns-xp-subir" data-action="subirNivel" title="Subir para o nível {{proximoNivelNumero}}">{{#if xpInfo.niveisAMais}}dá para o nível {{xpInfo.nivelDoXp}}{{else}}pronto para o nível {{proximoNivelNumero}}{{/if}} · subir ›</a>{{else}}faltam {{xpInfo.faltam}} para o nível {{proximoNivelNumero}}{{/if}}{{/if}}</small>
       </div>
       {{/unless}}
-      {{#if podeSubirNivel}}
-      <a class="btn-subir-nivel ns-subir" data-action="subirNivel" title="Já tem {{xpInfo.total}} XP (o nível {{proximoNivelNumero}} pede {{xpProximoNivel}} no total) — sobe pro nível {{proximoNivelNumero}}"><i class="fas fa-arrow-up"></i> Subir de Nível</a>
-      {{/if}}
     </div>
-    <div class="ns-estandarte {{#if podeSubirNivel}}pode-subir{{/if}}" title="Nível{{#if podeSubirNivel}} — já dá para subir para o nível {{proximoNivelNumero}}{{/if}}">
+    {{#if podeSubirNivel}}{{#unless modoFichaEdicao}}
+    <a class="ns-estandarte pode-subir" data-action="subirNivel" title="Nível {{system.nivel}} — clique para subir para o nível {{proximoNivelNumero}} ({{xpProximoNivel}} XP no total)" aria-label="Subir para o nível {{proximoNivelNumero}}">
+      <span class="ns-estandarte-miolo">
+        <span class="ns-nivel-rotulo">NÍVEL</span>
+        <b>{{system.nivel}}</b>
+        <span class="ns-estandarte-seta" aria-hidden="true"></span>
+      </span>
+    </a>
+    {{/unless}}{{/if}}
+    {{#if ns.estandarteFixo}}
+    <div class="ns-estandarte" title="Nível">
       <div class="ns-estandarte-miolo">
         <span class="ns-nivel-rotulo">NÍVEL</span>
         {{#if modoFichaEdicao}}<input type="number" name="system.nivel" value="{{system.nivel}}" aria-label="Nível">{{else}}<b>{{system.nivel}}</b>{{/if}}
-        <i aria-hidden="true"></i>
       </div>
-      {{#if podeSubirNivel}}<a class="ns-nivel-mais" data-action="subirNivel" title="Subir para o nível {{proximoNivelNumero}} ({{xpProximoNivel}} XP no total)">+</a>{{/if}}
     </div>
+    {{/if}}
   </header>
 
   <div class="sheet-layout">

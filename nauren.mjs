@@ -12087,19 +12087,21 @@ Hooks.on("renderActorDirectory", (app, html) => {
 const naurenHudEscapar = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const NAUREN_HUD_RECURSOS_BASE = [
   // 0.96.2: mesmas cores vivas da ficha nova (verde, azul, vermelho bem saturados e contrastados)
-  { id: "vida", nome: "Vida", cor1: "#2f9e5c", cor2: "#5ff09a" },
-  { id: "estaminaCombate", nome: "Estamina", cor1: "#c23a36", cor2: "#ff6b5e" },
-  { id: "stress", nome: "Estresse", cor1: "#c46a2a", cor2: "#ffa95c" },
-  { id: "mana", nome: "Mana", cor1: "#2f6fd0", cor2: "#63b4ff" },
-  { id: "dadosDestino", nome: "Dados de Destino", cor1: "#7f4fd6", cor2: "#c39bff" },
+  // 0.97.1: exatamente os tons das barras da ficha (Vida #4caf50, Mana #4a90d9, Estamina #d24b45...)
+  { id: "vida", nome: "Vida", cor1: "#3e9a44", cor2: "#4caf50" },
+  { id: "estaminaCombate", nome: "Estamina", cor1: "#b93c37", cor2: "#d24b45" },
+  { id: "stress", nome: "Estresse", cor1: "#c9733a", cor2: "#e08a4a" },
+  { id: "mana", nome: "Mana", cor1: "#3b7cc4", cor2: "#4a90d9" },
+  { id: "dadosDestino", nome: "Dados de Destino", cor1: "#8459c9", cor2: "#9c6fe0" },
   { id: "escudo", nome: "Escudo", cor1: "#8b82b8", cor2: "#dcd4f2" }
 ];
 const NAUREN_HUD_FORMAS = { barra: "Barra", vertical: "Barra vertical", pontos: "Pontos", losangos: "Losangos", anel: "Anel em volta do token", numero: "Só o número" };
 const NAUREN_HUD_POSICOES = { abaixo: "Fora · abaixo", acima: "Fora · acima", esquerda: "Fora · esquerda", direita: "Fora · direita", dentroBase: "Dentro · base", dentroTopo: "Dentro · topo" };
 const NAUREN_HUD_PREENCHIMENTOS = { degrade: "Degradê (2 cores)", solida: "Cor única", faixas: "Cor por faixa (verde, amarelo, vermelho)" };
 const NAUREN_HUD_ROTULOS = { nunca: "Não mostrar", hover: "Só ao passar o mouse", sempre: "Sempre" };
-const NAUREN_HUD_VERSAO_PADRAO = 4;
-const NAUREN_HUD_CORES_ANTIGAS_V3 = { vida: ["#1f6b34", "#7fd88f"], estaminaCombate: ["#8a1f1f", "#e86a5a"], stress: ["#8f4bc2", "#c084fc"], mana: ["#2b4a8f", "#6f93e0"], dadosDestino: ["#8a6a2e", "#e2c27a"] }; // sobe quando os padrões mudam: listas gravadas antes recebem as cores/tamanhos novos
+const NAUREN_HUD_VERSAO_PADRAO = 5;
+const NAUREN_HUD_CORES_ANTIGAS_V3 = { vida: ["#1f6b34", "#7fd88f"], estaminaCombate: ["#8a1f1f", "#e86a5a"], stress: ["#8f4bc2", "#c084fc"], mana: ["#2b4a8f", "#6f93e0"], dadosDestino: ["#8a6a2e", "#e2c27a"] };
+const NAUREN_HUD_CORES_ANTIGAS_V4 = { vida: ["#2f9e5c", "#5ff09a"], estaminaCombate: ["#c23a36", "#ff6b5e"], stress: ["#c46a2a", "#ffa95c"], mana: ["#2f6fd0", "#63b4ff"], dadosDestino: ["#7f4fd6", "#c39bff"] }; // sobe quando os padrões mudam: listas gravadas antes recebem as cores/tamanhos novos
 const NAUREN_HUD_QUEM_VE = { dono: "Dono e Mestre", todos: "Todos", mestre: "Só o Mestre" };
 const NAUREN_HUD_QUANDO = { hover: "Ao passar o mouse", sempre: "Sempre", selecionado: "Ao selecionar o token", combate: "Só em combate", ferido: "Só quando está abaixo do máximo" };
 const NAUREN_HUD_ESTADO_CORES = ["#8fd19e", "#b9d18f", "#e0a24a", "#e07a3a", "#ff5a4a", "#a89bc4"];
@@ -12223,7 +12225,11 @@ function naurenHudBarrasDoToken(tokenOuDoc, { incluirEscondidas = true } = {}) {
     let ajuste = {};
     if (versao < 3) ajuste = { cor1: padrao.cor1, cor2: padrao.cor2, espessura: padrao.espessura, cantos: padrao.cantos, rotulo: "nunca", corContorno: padrao.corContorno, trocarCorBaixa: false };
     // 0.96.2 (versão 4): cores novas só para quem ainda estava com a cor padrão antiga; cor escolhida pelo jogador fica.
-    else if (versao < 4) { const velha = NAUREN_HUD_CORES_ANTIGAS_V3[b.recurso]; if (velha && b.cor1 === velha[0] && b.cor2 === velha[1]) ajuste = { cor1: padrao.cor1, cor2: padrao.cor2 }; }
+    else if (versao < 5) {
+      // cores novas só para quem ainda estava com uma cor padrão antiga (v3 ou v4); cor escolhida pelo jogador fica
+      const velhas = [NAUREN_HUD_CORES_ANTIGAS_V3[b.recurso], NAUREN_HUD_CORES_ANTIGAS_V4[b.recurso]].filter(Boolean);
+      if (velhas.some(v => String(b.cor1).toLowerCase() === v[0] && String(b.cor2).toLowerCase() === v[1])) ajuste = { cor1: padrao.cor1, cor2: padrao.cor2 };
+    }
     lista.push({ ...padrao, ...b, ...ajuste });
   }
   for (const r of recursos) if (!lista.some(b => b.recurso === r.id)) lista.push(naurenHudBarraPadrao(r));

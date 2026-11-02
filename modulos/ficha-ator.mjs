@@ -1672,6 +1672,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     ns.condicoesMaisNomes = conds.slice(limiteCond).map(c => c.name).join(", ");
     ns.condicoesPodeFechar = this.#condicoesAbertas && conds.length > limiteCond + 1;
     ns.temCondicoes = conds.length > 0;
+    ns.estandarteFixo = !context.podeSubirNivel || !!context.modoFichaEdicao;
     // Card da Subclasse
     const pontos = Number(sys.pontosSubclasse?.value) || 0;
     const pontosMax = Number(sys.pontosSubclasse?.max) || 0;

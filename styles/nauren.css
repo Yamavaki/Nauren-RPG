@@ -5482,3 +5482,36 @@ img.nauren-criador-token.com-borda { border: none; border-radius: 0; background:
 .nauren-sheet.ns2 .ns-card { background: var(--ns-painel); border: 1px solid color-mix(in srgb, var(--ns-p) 45%, #000); box-shadow: inset 0 0 0 3px var(--ns-painel), inset 0 0 0 4px color-mix(in srgb, var(--ns-s) 20%, transparent); }
 .nauren-sheet.ns2 .ns-card-icone { border-color: color-mix(in srgb, var(--ns-s) 60%, #000); color: var(--ns-s); }
 .nauren-sheet.ns2 .ns-card-cab b { color: var(--ns-texto); }
+/* 0.97.1: a borda do brasão é sempre a cor secundária (bônus/penalidade aparece só no número e no passar do mouse) */
+.nauren-sheet.ns2 .ns-brasao, .nauren-sheet.ns2 .ns-brasao.buff, .nauren-sheet.ns2 .ns-brasao.debuff { background: var(--ns-s); }
+/* 0.97.1: subir de nível = o próprio estandarte (sem botão verde): brilha, mostra a seta e é clicável */
+.nauren-sheet.ns2 a.ns-estandarte { display: block; cursor: pointer; text-decoration: none; }
+.nauren-sheet.ns2 a.ns-estandarte .ns-estandarte-miolo { background: linear-gradient(180deg, color-mix(in srgb, var(--ns-s) 35%, var(--ns-pd)), #1c1724); }
+.nauren-sheet.ns2 a.ns-estandarte:hover { filter: drop-shadow(0 0 12px color-mix(in srgb, var(--ns-s) 90%, transparent)) brightness(1.1); }
+.nauren-sheet.ns2 .ns-estandarte-seta { width: 12px; height: 7px; margin-top: 3px; background: var(--ns-s); clip-path: polygon(50% 0, 100% 100%, 0 100%); animation: ns-seta-sobe 1.4s ease-in-out infinite; }
+@keyframes ns-seta-sobe { 50% { transform: translateY(-3px); } }
+@media (prefers-reduced-motion: reduce) { .nauren-sheet.ns2 .ns-estandarte-seta { animation: none; } }
+.nauren-sheet.ns2 .ns-xp-subir { color: var(--ns-sc); font-weight: 700; cursor: pointer; text-decoration: underline dotted color-mix(in srgb, var(--ns-s) 70%, transparent); text-underline-offset: 3px; }
+.nauren-sheet.ns2 .ns-xp-subir:hover { color: #fff; }
+/* 0.97.1: painéis de classe (Invenções, Marcas, Análises, Grimório) no mesmo acabamento e nas cores dos Pigmentos */
+.nauren-sheet.ns2 .niv-grade {
+  --niv-painel: var(--ns-painel); --niv-painel2: color-mix(in srgb, var(--ns-pd) 35%, var(--ns-painel));
+  --niv-borda: color-mix(in srgb, var(--ns-p) 40%, #2a2338); --niv-ouro: var(--ns-s); --niv-suave: var(--ns-sub);
+}
+.nauren-sheet.ns2 .niv-painel, .nauren-sheet.ns2 .nauren-estudos, .nauren-sheet.ns2 .nauren-grimorio {
+  border: 1px solid color-mix(in srgb, var(--ns-p) 80%, #000); border-radius: 10px; background: var(--ns-painel);
+  box-shadow: inset 0 0 0 3px var(--ns-painel), inset 0 0 0 4px color-mix(in srgb, var(--ns-s) 50%, transparent);
+}
+.nauren-sheet.ns2 .niv-titulo, .nauren-sheet.ns2 .nauren-estudos .section-title, .nauren-sheet.ns2 .nauren-grimorio .section-title,
+.nauren-sheet.ns2 .nauren-grimorio-cab .section-title {
+  font-family: var(--ns-titulo); color: var(--ns-sc); letter-spacing: .1em; text-transform: uppercase; font-size: 13px;
+}
+.nauren-sheet.ns2 .nauren-estudos .section-title i, .nauren-sheet.ns2 .nauren-grimorio .section-title i { color: var(--ns-s); }
+.nauren-sheet.ns2 .niv-pip { background: color-mix(in srgb, var(--ns-p) 25%, #2a2338); }
+.nauren-sheet.ns2 .niv-pip.cheio { background: var(--ns-s); }
+.nauren-sheet.ns2 .niv-principal { background: var(--ns-s); color: #15111b; }
+.nauren-sheet.ns2 .niv-principal:hover:not(:disabled) { background: var(--ns-sc); }
+.nauren-sheet.ns2 .niv-secundario:hover:not(:disabled) { border-color: var(--ns-s); }
+.nauren-sheet.ns2 .niv-engrenagem { stroke: var(--ns-s); }
+.nauren-sheet.ns2 .nauren-estudo-alvo { border-color: color-mix(in srgb, var(--ns-p) 35%, #2a2338); }
+.nauren-sheet.ns2 .nauren-estudo-btn { border-color: color-mix(in srgb, var(--ns-s) 50%, #000); }
