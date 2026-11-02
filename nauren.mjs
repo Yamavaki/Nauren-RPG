@@ -2,7 +2,7 @@ import { NAUREN_HAB_MONSTROS, NAUREN_HAB_MONSTROS_VERSAO } from "./data/habilida
 import { NAUREN_KIT_JANELA } from "./modulos/janelas-kit.mjs";
 import { NAUREN_MOTION_ALVO_OPCOES, NAUREN_MOTION_CONDICAO_OPCOES, NAUREN_MOTION_ESPERA_EFEITO, NAUREN_MOTION_JANELA_EFEITOS, NAUREN_MOTION_SO_COR, NAUREN_MOTION_USUARIO_OPCOES, NAUREN_QUERY_MOTION, naurenAANomeReserva, naurenAANomeTemAnimacao, naurenAANomesCadastrados, naurenAjustarTamanhoAura, naurenAnimacoesDisponiveis, naurenAnimarAcao, naurenAnimarAcumulo, naurenAnimarCritico, naurenAnimarPassiva, naurenAuraTamanhoPendente, naurenAurasTocando, naurenCorCalcular, naurenCorCamadaAgora, naurenCorCondTocando, naurenCorConfig, naurenCorDaCondicao, naurenCorEntrada, naurenCorFixa, naurenCorFlash, naurenCorMatriz, naurenCorPode, naurenCorRGB, naurenCorTick, naurenCorTickLigado, naurenCorTirar, naurenCorTirarFiltro, naurenCorTokens, naurenDesligarAnimacaoAura, naurenDiametroAuraQuadrados, naurenEfeitosDaAura, naurenEfeitosDoSom, naurenEncerrarEfeitosSequencer, naurenEntradaAefx, naurenEntradaMenu, naurenEsperarMs, naurenInstalarSomSincronizado, naurenLigarAnimacaoAura, naurenMotionAlvo, naurenMotionAnotarEfeito, naurenMotionAnotarPreparo, naurenMotionAtacante, naurenMotionCasa, naurenMotionCondDebounce, naurenMotionCondTocando, naurenMotionCondicoesDepois, naurenMotionCondicoesDoAtor, naurenMotionContador, naurenMotionDeOutraTela, naurenMotionEfeitosRecentes, naurenMotionEhPreparo, naurenMotionEmTodos, naurenMotionEnviar, naurenMotionEvento, naurenMotionExecutar, naurenMotionForca, naurenMotionImpactoDoEfeito, naurenMotionMontarCondicao, naurenMotionParaOutrasTelas, naurenMotionPlanoDaAcao, naurenMotionPlanos, naurenMotionPode, naurenMotionPresetCondicao, naurenMotionReceberPlano, naurenMotionSincronizar, naurenMotionSincronizarCondicoes, naurenMotionTocar, naurenMotionToken, naurenMotionUltimoPlano, naurenMotionUuid, naurenMotionVistos, naurenPassivasAnimadas, naurenRaioEmanacaoMetros, naurenSomEsperarAnimacao, naurenSomSincronizadoAtivo, naurenTocarNaRegiao, naurenTocarNoToken, naurenTokenDoAtor, naurenTokenDoItem } from "./modulos/animacoes.mjs";
 import { NAUREN_TORRE_RETIRADOS, NAUREN_ALVEJADO_NO_ACERTO, NAUREN_ARMAS_COM_ALVEJADO, NAUREN_DIARIOS, NAUREN_ICONES_AUTOMATICOS, NAUREN_ICONES_INEXISTENTES, NAUREN_ICONES_SEMEADOS, NAUREN_ICONE_FRASCO, NAUREN_ICONE_MAGIA, NAUREN_MASCOTES_INICIAIS, NAUREN_OWNERSHIP_APENAS_MESTRE, NAUREN_PACKS_DEFINICAO, NAUREN_REGRAS_VERSAO, NAUREN_SEED_IDS_EQUIPAMENTO_INICIAL, NAUREN_SEED_IDS_INICIAIS_PADRAO, NAUREN_TORRE, NAUREN_TORRE_LOJAS, NAUREN_TORRE_NOTAS, NAUREN_TORRE_PIGMENTOS, NAUREN_TORRE_RARIDADES, NAUREN_TORRE_TIERS, NAUREN_TORRE_VERSAO, NAUREN_VERSAO_SEED_MASCOTES, NAUREN_VIDA_MASCOTE, naurenAliadosDoGrupo, naurenBuscarUuidsDoPack, naurenCaminhoImagemSubclasse, naurenConsumiveisSaindo, naurenCorrigirIconesSemeados, naurenDisponivelNoInicio, naurenDuasArmasPendente, naurenExpirarEscudo, naurenExtraEstaminaCondicoes, naurenFundoPersonalizado, naurenGarantirAtorNoPack, naurenGarantirEfeitoDeClasse, naurenGarantirEfeitoDeSubclasse, naurenGarantirHabilidadeDeClasse, naurenGarantirHabilidadeDeSubclasse, naurenGarantirItemNoPack, naurenGarantirPastaNoPack, naurenGatilhoDanoDeArea, naurenItensDoMascote, naurenMigrarAlvejadoArcos, naurenMigrarCanalizarPorNivel, naurenMigrarLoucuraManual, naurenObterOuCriarPacks, naurenPerguntarEscolhaAoReceber, naurenPreverDuasArmasGratis, naurenReconciliarMascote, naurenRolarAjustePopup, naurenSemearArmaduras, naurenSemearArmas, naurenSemearArmasDisparoCarregado, naurenSemearArmasModeloSubclasse, naurenSemearBestiario, naurenSemearClasseCacador, naurenSemearClasseDruida, naurenSemearClasseEmpireo, naurenSemearClasseGuerreiro, naurenSemearClasseLadino, naurenSemearClasseMago, naurenSemearClasseMistico, naurenSemearClasseSacerdote, naurenSemearCondicoes, naurenSemearEfeitosGuardas, naurenSemearHabilidadeCondensarMagia, naurenSemearHabilidadeDarPrioridade, naurenSemearHabilidadeGrimorio, naurenSemearHabilidadeSendoUmMago, naurenSemearHabilidadesCacador, naurenSemearHabilidadesDruida, naurenSemearHabilidadesEmpireo, naurenSemearHabilidadesGuerreiro, naurenSemearHabilidadesLadino, naurenSemearHabilidadesMistico, naurenSemearHabilidadesSacerdote, naurenSemearMagias, naurenSemearMascotes, naurenSemearMunicoes, naurenSemearPeculiaridades, naurenSemearPigmentos, naurenSemearRegras, naurenSemearRemedioEFrascos, naurenSemearSubclasseCacador, naurenSemearSubclasseCacadorBatedor, naurenSemearSubclasseCacadorMestreDasBestas, naurenSemearSubclasseCacadorSobrevivente, naurenSemearSubclasseDruida, naurenSemearSubclasseDruidaAndarilhosDasPeles, naurenSemearSubclasseDruidaCrescimento, naurenSemearSubclasseDruidaRestauradores, naurenSemearSubclasseEmpireo, naurenSemearSubclasseEmpireoPaixao, naurenSemearSubclasseEmpireoSombras, naurenSemearSubclasseEmpireoVirtude, naurenSemearSubclasseGuerreiro, naurenSemearSubclasseGuerreiroBerserker, naurenSemearSubclasseGuerreiroGuardiao, naurenSemearSubclasseGuerreiroJuramentado, naurenSemearSubclasseLadino, naurenSemearSubclasseLadinoArdiloso, naurenSemearSubclasseLadinoEgoista, naurenSemearSubclasseLadinoOportunista, naurenSemearSubclasseMago, naurenSemearSubclasseMagoNova, naurenSemearSubclasseMistico, naurenSemearSubclasseMisticoCaligrafia, naurenSemearSubclasseMisticoPintura, naurenSemearSubclasseMisticoPoesia, naurenSemearSubclasseSacerdote, naurenSemearSubclasseSacerdoteAgraciado, naurenSemearSubclasseSacerdoteHerege, naurenSemearSubclasseSacerdotePenitente, naurenSemearTorre, naurenTierTorre, naurenTorreTransformarAcao, naurenUuidsMascotes } from "./modulos/compendios.mjs";
-import { NAUREN_BARRA_CORES_PADRAO, NAUREN_CRIADOR_ATRIBUTOS, NAUREN_CRIADOR_ETAPAS, NAUREN_CRIADOR_VALORES_FIXOS, NaurenActorSheet, NaurenAlvoHelper, NaurenCriadorPersonagem, NaurenRegionHelper, naurenAdicionarItemNaFicha, naurenBonusModoExtra, naurenChecarLimiarEfeitoDireto, naurenChecarLimiarEvolucao, naurenLinhaModoExtra, naurenNumeroModo } from "./modulos/ficha-ator.mjs";
+import { naurenXpParaNivel, NAUREN_BARRA_CORES_PADRAO, NAUREN_CRIADOR_ATRIBUTOS, NAUREN_CRIADOR_ETAPAS, NAUREN_CRIADOR_VALORES_FIXOS, NaurenActorSheet, NaurenAlvoHelper, NaurenCriadorPersonagem, NaurenRegionHelper, naurenAdicionarItemNaFicha, naurenBonusModoExtra, naurenChecarLimiarEfeitoDireto, naurenChecarLimiarEvolucao, naurenLinhaModoExtra, naurenNumeroModo } from "./modulos/ficha-ator.mjs";
 import { CARGAS_FONTE_OPCOES, MODOS_ALVO, NAUREN_CONTAGEM_DISPOSICAO_OPCOES, NAUREN_CONTAGEM_DISPOSICAO_OPCOES_SEM_DONO, NAUREN_EMANACAO_EFEITO_OPCOES, NAUREN_EMANACAO_EVENTO_OPCOES, NAUREN_GATILHO_EFEITO_OPCOES, NAUREN_GATILHO_EVENTO_OPCOES, NAUREN_GATILHO_LIMITE_ESCOPO, NAUREN_GATILHO_MOMENTO_ACAO, NAUREN_REACAO_CUSTO_OPCOES, NAUREN_REACAO_PRE_ATAQUE_OPCOES, NAUREN_REACAO_QUEM_OPCOES, NAUREN_REACAO_RESISTIR_OPCOES, NAUREN_TEMPLATE_PERSISTENTE_EFEITO_OPCOES, NAUREN_TEMPLATE_PERSISTENTE_EVENTO_OPCOES, NAUREN_TOMA_PRIORIDADE_OPCOES, NOVO_BLOCO_PADRAO, NaurenItemSheet, NaurenSubclasseSheet, RECURSOS_ALVO, RECURSOS_PERIODICOS, RESETAR_NO_ESCOPO_OPCOES, TIPO_ITEM_LABEL, USOS_RESET_LABEL, USOS_RESET_OPCOES, USOS_RESET_POR_COMBATE, naurenChaveEscopoRelogio, naurenNotificarGanhoPerda, naurenOnAddRecurso, naurenOnRemoveRecurso, naurenVisaoGatilho, naurenWhisperAtor, naurenWhisperGMs, novaAcaoPadrao, novoEfeitoPeriodicoPadrao, novoGastoRecursoPadrao, novoPorRankPadrao } from "./modulos/ficha-item.mjs";
 import { NAUREN_BORDA_BITS_RESERVA, NAUREN_BORDA_DIAMETRO, NAUREN_BORDA_EFEITOS, NAUREN_BORDA_FOLGA, NAUREN_BORDA_MARCA, NAUREN_BORDA_PADRAO, NAUREN_BORDA_PEDRA_PADRAO, NAUREN_BORDA_SEG_POR_COR, naurenAbrirBorda, naurenAplicarEscalaEAjuste, naurenAvisarSeLinkBloqueado, naurenBordaAplicar, naurenBordaBits, naurenBordaCaixaImagem, naurenBordaCaixaVisual, naurenBordaCamadas, naurenBordaCamadasPrevia, naurenBordaCaminhoFolha, naurenBordaCarregarImagem, naurenBordaCenasAvisadas, naurenBordaChave, naurenBordaCodigo, naurenBordaConfig, naurenBordaContornoCasa, naurenBordaCoresNoTempo, naurenBordaCurvaPiscar, naurenBordaDadosPreparados, naurenBordaDadosToken, naurenBordaDesenhar, naurenBordaDesenharImagem, naurenBordaDesenharPedra, naurenBordaDesenharPrevia, naurenBordaDiametro, naurenBordaEhChave, naurenBordaEscalaPara, naurenBordaFalhas, naurenBordaFolha, naurenBordaFolhaPromessa, naurenBordaGarantirTextura, naurenBordaGerando, naurenBordaGerarCanvas, naurenBordaGerarRecorte, naurenBordaImagens, naurenBordaLinkDireto, naurenBordaLinkValido, naurenBordaLoader, naurenBordaMascara, naurenBordaMedirRaio, naurenBordaMisturarHex, naurenBordaMisturarLE, naurenBordaNoCache, naurenBordaPedraCanvas, naurenBordaPedraConfig, naurenBordaPedraNeutra, naurenBordaPedras, naurenBordaPintarTraco, naurenBordaPiscar, naurenBordaPrepararSujeito, naurenBordaPreviaDataUrl, naurenBordaPreviaDoAtor, naurenBordaPreviasCache, naurenBordaQuadros, naurenBordaRaioDoToken, naurenBordaRaios, naurenBordaRecorteCache, naurenBordaRegistrar, naurenBordaTamGrade, naurenBordaTamanhoTextura, naurenBordaTexturas, naurenBordaTickerCores, naurenBordaTokensDaFicha, naurenEhJanelaDoNauren, naurenEscalaInterface, naurenReaplicarEscalaInterface, naurenTextoLinkBloqueado } from "./modulos/borda-token.mjs";
 import { NAUREN_CAMPOS_ESTADO_ACAO, NAUREN_CAMPOS_ESTADO_ITEM, NAUREN_QUERY_AREA_AO_CRIAR, NAUREN_QUERY_DANO_COLISAO, NAUREN_QUERY_PRESENCA, NAUREN_QUERY_RESISTIR_AREA, NAUREN_SEEDS_LIVRO_08, naurenAplicarAreaEmTokens, naurenAplicarEfeitoTemplatePersistente, naurenAplicarEfeitoTemplatePersistenteBase, naurenAplicarTransformacaoToken, naurenAtorTemRecurso, naurenAtualizarCondicaoPresenca, naurenAtualizarItemDeMonstro, naurenAurasDeEstaminaSobreMim, naurenAvisarRoubo, naurenBuscarMascotesDe, naurenCalcularEmpurrao, naurenCelulasCobertas, naurenCelulasNaArea, naurenChecarCondicaoAoAtingirMax, naurenClamparRecursosAoMaximo, naurenColetarGatilhosTemplatePersistenteExternos, naurenConcederRecurso, naurenConcederRecursoAoAtacante, naurenCondicaoMostraIcone, naurenConfigurarSplatter, naurenDisjuntorGatilhos, naurenEmpurrarToken, naurenEmpurrarViaMestre, naurenGatilhosPorExecucao, naurenGravarMemoriaVida, naurenHandleQueryAreaAoCriar, naurenHandleQueryDanoColisao, naurenHandleQueryPresenca, naurenHandleQueryResistirArea, naurenMigrarAcimaSoContraAlvoV1, naurenMigrarAmbidestria0927, naurenMigrarBandoExtra09423, naurenMigrarBorda09224, naurenMigrarCacador09218, naurenMigrarCacador09219, naurenMigrarCaligrafiaV1, naurenMigrarCamadasSubclasseV1, naurenMigrarCatalisadorSemPesadoV1, naurenMigrarCustoMedoV1, naurenMigrarDisposicaoJogadoresV1, naurenMigrarDruida09214, naurenMigrarEfeitoPermanenteV1, naurenMigrarEmpireo09211, naurenMigrarEscudoDeMana0925, naurenMigrarGuerreiro09216, naurenMigrarGuerreiro09217, naurenMigrarHabilidadesMonstros09241, naurenMigrarImpetoFadigaCustoV1, naurenMigrarLacunas09240, naurenMigrarLadinoEstudosV1, naurenMigrarLadinoRevisaoV1, naurenMigrarLivro08ItensV1, naurenMigrarLivro08PequenasV1, naurenMigrarMagoAntigoV1, naurenMigrarMarcaCacadorV1, naurenMigrarMisticoRevisaoV1, naurenMigrarMotion09416, naurenMigrarMunicaoSemCuraV1, naurenMigrarPrereqColunaEsquerdaV1, naurenMigrarRegras0926, naurenMigrarRevisaoClasses092, naurenMigrarRevisaoMago0924, naurenMigrarSabedoria09215, naurenMigrarSacerdote09238, naurenMigrarSacerdote09239, naurenMigrarSanatio09413, naurenNomeRecurso, naurenOferecerSincronizacaoDeVersao, naurenPontoDentroDaRegiao, naurenPreencherRecursosNoMaximo, naurenProcessarEmanacoes, naurenProcessarEmanacoesSobre, naurenProcessarGatilhos, naurenProcessarGatilhosInterno, naurenProcessarTemplatesPersistentes, naurenRankDaCondicaoPeloPortador, naurenReaplicarUpgradesDeSubclasse, naurenReconciliarItemComCompendio, naurenReconciliarTodosOsItens, naurenReconjurarPendente, naurenRecursoEstaTravado, naurenRegistrarStatusDeCondicao, naurenRemoverIconeDaCondicao, naurenReverterTransformacaoToken, naurenRolarValoresTemplatePersistente, naurenSincronizarIconeDaCondicao, naurenSincronizarNivelDosMascotes, naurenSincronizarRecursosCustom, naurenTokenElegivelPorDisposicao, naurenTransferirRecursoDoAlvo } from "./modulos/icone-condicao-token.mjs";
@@ -7717,6 +7717,7 @@ Hooks.once("init", () => {
   game.settings.register("nauren", "migracaoSanatio09413", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoMotion09416", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoBandoExtra09423", { scope: "world", config: false, type: Boolean, default: false });
+  game.settings.register("nauren", "migracaoXpTotal0962", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "versaoMigrada", { scope: "world", config: false, type: String, default: "" }); // 0.94.22: versão do sistema já migrada neste mundo
   game.settings.register("nauren", "pesosEquipamentoOfensivo", {
     name: "Peso de cada tipo de arma no limite",
@@ -11336,6 +11337,7 @@ Hooks.once("ready", async () => {
     await passo("Sanatio do livro 0.8.1 (0.94.13)", () => naurenMigrarSanatio09413());
     await passo("Movimento dos tokens (0.94.16)", () => naurenMigrarMotion09416());
     await passo("Bando: bônus por cercar o alvo (0.94.23)", () => naurenMigrarBandoExtra09423());
+    await passo("XP passa a ser o total acumulado (0.96.2)", () => naurenMigrarXpTotal0962());
     await passo("Lacunas das outras classes (0.92.40)", () => naurenMigrarLacunas09240());
     await passo("Habilidades de Monstros: correções do catálogo", () => naurenMigrarHabilidadesMonstros09241());
     await passo("migração do Alvejado", () => naurenMigrarAlvejadoArcos());
@@ -12084,18 +12086,20 @@ Hooks.on("renderActorDirectory", (app, html) => {
 
 const naurenHudEscapar = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const NAUREN_HUD_RECURSOS_BASE = [
-  { id: "vida", nome: "Vida", cor1: "#1f6b34", cor2: "#7fd88f" },
-  { id: "estaminaCombate", nome: "Estamina", cor1: "#8a1f1f", cor2: "#e86a5a" },
-  { id: "stress", nome: "Estresse", cor1: "#8f4bc2", cor2: "#c084fc" },
-  { id: "mana", nome: "Mana", cor1: "#2b4a8f", cor2: "#6f93e0" },
-  { id: "dadosDestino", nome: "Dados de Destino", cor1: "#8a6a2e", cor2: "#e2c27a" },
+  // 0.96.2: mesmas cores vivas da ficha nova (verde, azul, vermelho bem saturados e contrastados)
+  { id: "vida", nome: "Vida", cor1: "#2f9e5c", cor2: "#5ff09a" },
+  { id: "estaminaCombate", nome: "Estamina", cor1: "#c23a36", cor2: "#ff6b5e" },
+  { id: "stress", nome: "Estresse", cor1: "#c46a2a", cor2: "#ffa95c" },
+  { id: "mana", nome: "Mana", cor1: "#2f6fd0", cor2: "#63b4ff" },
+  { id: "dadosDestino", nome: "Dados de Destino", cor1: "#7f4fd6", cor2: "#c39bff" },
   { id: "escudo", nome: "Escudo", cor1: "#8b82b8", cor2: "#dcd4f2" }
 ];
 const NAUREN_HUD_FORMAS = { barra: "Barra", vertical: "Barra vertical", pontos: "Pontos", losangos: "Losangos", anel: "Anel em volta do token", numero: "Só o número" };
 const NAUREN_HUD_POSICOES = { abaixo: "Fora · abaixo", acima: "Fora · acima", esquerda: "Fora · esquerda", direita: "Fora · direita", dentroBase: "Dentro · base", dentroTopo: "Dentro · topo" };
 const NAUREN_HUD_PREENCHIMENTOS = { degrade: "Degradê (2 cores)", solida: "Cor única", faixas: "Cor por faixa (verde, amarelo, vermelho)" };
 const NAUREN_HUD_ROTULOS = { nunca: "Não mostrar", hover: "Só ao passar o mouse", sempre: "Sempre" };
-const NAUREN_HUD_VERSAO_PADRAO = 3; // sobe quando os padrões mudam: listas gravadas antes recebem as cores/tamanhos novos
+const NAUREN_HUD_VERSAO_PADRAO = 4;
+const NAUREN_HUD_CORES_ANTIGAS_V3 = { vida: ["#1f6b34", "#7fd88f"], estaminaCombate: ["#8a1f1f", "#e86a5a"], stress: ["#8f4bc2", "#c084fc"], mana: ["#2b4a8f", "#6f93e0"], dadosDestino: ["#8a6a2e", "#e2c27a"] }; // sobe quando os padrões mudam: listas gravadas antes recebem as cores/tamanhos novos
 const NAUREN_HUD_QUEM_VE = { dono: "Dono e Mestre", todos: "Todos", mestre: "Só o Mestre" };
 const NAUREN_HUD_QUANDO = { hover: "Ao passar o mouse", sempre: "Sempre", selecionado: "Ao selecionar o token", combate: "Só em combate", ferido: "Só quando está abaixo do máximo" };
 const NAUREN_HUD_ESTADO_CORES = ["#8fd19e", "#b9d18f", "#e0a24a", "#e07a3a", "#ff5a4a", "#a89bc4"];
@@ -12215,7 +12219,11 @@ function naurenHudBarrasDoToken(tokenOuDoc, { incluirEscondidas = true } = {}) {
     if (!porRecurso.has(b.recurso)) continue;
     const padrao = naurenHudBarraPadrao(porRecurso.get(b.recurso));
     // Lista gravada com os padrões antigos (0.89.0): leva as cores, a espessura e o "sem número" novos.
-    const ajuste = antiga ? { cor1: padrao.cor1, cor2: padrao.cor2, espessura: padrao.espessura, cantos: padrao.cantos, rotulo: "nunca", corContorno: padrao.corContorno, trocarCorBaixa: false } : {};
+    const versao = fonte.versao ?? 1;
+    let ajuste = {};
+    if (versao < 3) ajuste = { cor1: padrao.cor1, cor2: padrao.cor2, espessura: padrao.espessura, cantos: padrao.cantos, rotulo: "nunca", corContorno: padrao.corContorno, trocarCorBaixa: false };
+    // 0.96.2 (versão 4): cores novas só para quem ainda estava com a cor padrão antiga; cor escolhida pelo jogador fica.
+    else if (versao < 4) { const velha = NAUREN_HUD_CORES_ANTIGAS_V3[b.recurso]; if (velha && b.cor1 === velha[0] && b.cor2 === velha[1]) ajuste = { cor1: padrao.cor1, cor2: padrao.cor2 }; }
     lista.push({ ...padrao, ...b, ...ajuste });
   }
   for (const r of recursos) if (!lista.some(b => b.recurso === r.id)) lista.push(naurenHudBarraPadrao(r));
@@ -13091,10 +13099,35 @@ class NaurenBarrasEditor extends foundry.applications.api.ApplicationV2 {
   }
 }
 /* NPC novo recebe o padrão do Mestre, se houver. */
+/**
+ * 0.96.2: o XP da ficha virou o TOTAL acumulado (antes zerava a cada nível). Quem já tinha XP guardado
+ * "dentro do nível" ganha o XP dos níveis que já passou: nível 6 com 120 → 2000 + 120.
+ */
+async function naurenMigrarXpTotal0962() {
+  if (game.settings.get("nauren", "migracaoXpTotal0962")) return;
+  const ajustar = async a => {
+    if (!a?.system || a.system.xp === undefined) return;
+    const nv = Number(a.system.nivel) || 1;
+    if (nv <= 1) return;
+    const novo = naurenXpParaNivel(nv) + (Number(a.system.xp) || 0);
+    await a.update({ "system.xp": novo }, { naurenMigracaoXp: true }).catch(err => console.warn("Nauren RPG | migração do XP", a.name, err));
+  };
+  for (const a of game.actors ?? []) await ajustar(a);
+  for (const cena of game.scenes ?? []) for (const t of cena.tokens) if (t.actor && !t.actorLink && t.delta?.system?.xp !== undefined) await ajustar(t.actor);
+  await game.settings.set("nauren", "migracaoXpTotal0962", true);
+}
+/** 0.96.2: subir o Nível na mão também sobe o XP total até o mínimo daquele nível (o XP nunca fica "de nível menor"). */
+Hooks.on("preUpdateActor", (actor, changes, options) => {
+  if (options?.naurenMigracaoXp) return;
+  const nv = foundry.utils.getProperty(changes, "system.nivel");
+  if (nv === undefined || foundry.utils.hasProperty(changes, "system.xp")) return;
+  const minimo = naurenXpParaNivel(nv);
+  if ((Number(actor.system?.xp) || 0) < minimo && Number(nv) > (Number(actor.system?.nivel) || 1)) foundry.utils.setProperty(changes, "system.xp", minimo);
+});
 Hooks.on("preCreateActor", (actor, data) => {
   if (actor.type !== "npc" || foundry.utils.getProperty(data, "flags.nauren.barras")) return;
   let padrao = null; try { padrao = game.settings.get("nauren", "barrasPadraoNpc"); } catch (err) { padrao = null; }
-  if (Array.isArray(padrao) && padrao.length) actor.updateSource({ "flags.nauren.barras": { lista: padrao } });
+  if (Array.isArray(padrao) && padrao.length) actor.updateSource({ "flags.nauren.barras": { lista: padrao, versao: NAUREN_HUD_VERSAO_PADRAO } });
 });
 
 /* =======================================================================

@@ -20,22 +20,11 @@ export function naurenKitEstadoD20(face, { critMin = 20 } = {}) {
 
 /** Dado d20 desenhado (SVG). estado: normal | critico | falha | rerolado. */
 export function naurenKitD20(face, estado = "normal", tamanho = 96) {
-  const cores = {
-    normal: { fundo: "#2d2440", borda: "#8f82a8", linha: "#5c4f78", tri: "none", txt: "#f4eefc" },
-    critico: { fundo: "#e0b257", borda: "#fff1c9", linha: "#a87a26", tri: "#f0c56a", txt: "#2a1a05" },
-    falha: { fundo: "#3a1d22", borda: "#c2474f", linha: "#6e2c33", tri: "none", txt: "#ffd0d3" },
-    rerolado: { fundo: "#33244a", borda: "#c9a2f2", linha: "#7a4fa8", tri: "none", txt: "#f4eefc" }
-  }[estado] ?? {};
+  // 0.96.2: desenhado só com HTML/CSS (clip-path). O conteúdo das janelas do Foundry V14 descarta <svg>,
+  // e o dado sumia (ficava só o rótulo "dado (d20)").
   const rotulo = estado === "critico" ? `${face} natural (crítico)` : estado === "falha" ? `${face} natural (falha crítica)` : `${face}`;
-  const fs = String(face ?? "?").length > 1 ? 32 : 36;
-  return `<svg class="nk-d20 nk-d20-${estado}" width="${tamanho}" height="${tamanho}" viewBox="0 0 120 120" role="img" aria-label="d20: ${esc(rotulo)}">
-    ${estado === "critico" ? `<circle cx="60" cy="60" r="58" fill="rgba(255,200,90,.14)"/>` : ""}
-    <polygon points="60,4 110,32 110,88 60,116 10,88 10,32" fill="${cores.fundo}" stroke="${cores.borda}" stroke-width="3"/>
-    <polygon points="60,30 96,86 24,86" fill="${cores.tri}" stroke="${cores.linha}" stroke-width="2"/>
-    <line x1="60" y1="4" x2="60" y2="30" stroke="${cores.linha}" stroke-width="2"/><line x1="110" y1="88" x2="96" y2="86" stroke="${cores.linha}" stroke-width="2"/><line x1="10" y1="88" x2="24" y2="86" stroke="${cores.linha}" stroke-width="2"/>
-    ${estado === "falha" ? `<polyline points="98,30 90,44 100,54 92,68" fill="none" stroke="#ff9aa1" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>` : ""}
-    <text x="60" y="66" text-anchor="middle" dominant-baseline="central" font-family="Signika, sans-serif" font-weight="700" font-size="${fs}" fill="${cores.txt}">${esc(face ?? "?")}</text>
-  </svg>`;
+  const longo = String(face ?? "?").length > 1 ? " nk-d20-longo" : "";
+  return `<span class="nk-d20 nk-d20-${estado}${longo}" style="--nk-d20-tam: ${Number(tamanho) || 96}px" role="img" aria-label="d20: ${esc(rotulo)}"><span class="nk-d20-borda"><span class="nk-d20-miolo"><span class="nk-d20-tri"><span></span></span><b>${esc(face ?? "?")}</b></span></span>${estado === "falha" ? `<span class="nk-d20-racha" aria-hidden="true"></span>` : ""}</span>`;
 }
 
 /**

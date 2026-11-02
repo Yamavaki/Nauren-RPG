@@ -21,14 +21,14 @@ const NAUREN_BARRA_CORES_PADRAO = {
 /* ===== 0.96: ficha nova — cor, emblema e formato dos marcadores por classe ===== */
 const NAUREN_FICHA_CLASSES = {
   guerreiro: { cor: "#d0623f", texto: "#f0a487", pip: "chama", svg: '<path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13 19 6-6"/><path d="m16 16 4 4"/><path d="m19 21 2-2"/>' },
-  mago: { cor: "#4f8fe0", texto: "#a9c8ff", pip: "pagina", svg: '<path d="m12 2 2.6 6.4L21 9l-5 4.4L17.5 20 12 16.6 6.5 20 8 13.4 3 9l6.4-.6z"/>' },
+  mago: { cor: "#4f8fe0", texto: "#a9c8ff", pip: "pagina", svg: '<path d="M12 2.5c-.6 3.6-3.3 9.2-5.8 14h11.6C15.3 11.7 12.6 6.1 12 2.5z"/><path d="M3 19.2c3.2 1.9 14.8 1.9 18 0"/><path d="M10.2 11.5l.6 1.3 1.3.6-1.3.6-.6 1.3-.6-1.3-1.3-.6 1.3-.6z"/>' },
   sacerdote: { cor: "#e8c04a", texto: "#f7dd8e", pip: "sol", svg: '<circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/>' },
-  ladino: { cor: "#7d93a8", texto: "#c3d2e0", pip: "lamina", svg: '<path d="M5 19 16 8l3-5-5 3L3 17z"/><path d="m7 13 4 4"/>' },
-  mistico: { cor: "#a46be0", texto: "#d9bdf7", pip: "losango", svg: '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>' },
+  ladino: { cor: "#7d93a8", texto: "#c3d2e0", pip: "lamina", svg: '<path d="M12 2l2.2 3v9.5h-4.4V5z"/><path d="M7 14.5h10"/><path d="M12 14.5v4.5"/><circle cx="12" cy="20.8" r="1.4"/>' },
+  mistico: { cor: "#a46be0", texto: "#d9bdf7", pip: "losango", svg: '<path d="m9.06 11.9 8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/>' },
   cacador: { cor: "#9cb34f", texto: "#d2e39a", pip: "flecha", svg: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>' },
   druida: { cor: "#4fb38a", texto: "#a8e6cf", pip: "folha", svg: '<path d="M5 19C5 10 10 4 20 4c0 10-6 15-15 15z"/><path d="M5 19 14 10"/>' },
-  inventor: { cor: "#c98a4b", texto: "#f0c99e", pip: "engrenagem", svg: '<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/>' },
-  empireo: { cor: "#e58fb0", texto: "#f6c4d8", pip: "losango", svg: '<path d="M12 21V9"/><path d="M12 9C9 5 5 4 2 5c1 4 5 7 10 7"/><path d="M12 9c3-4 7-5 10-4-1 4-5 7-10 7"/>' }
+  inventor: { cor: "#c98a4b", texto: "#f0c99e", pip: "engrenagem", svg: '<path d="M19.78 10.13 L22.41 10.60 L22.41 13.40 L19.78 13.87 L18.82 16.18 L20.35 18.37 L18.37 20.35 L16.18 18.82 L13.87 19.78 L13.40 22.41 L10.60 22.41 L10.13 19.78 L7.82 18.82 L5.63 20.35 L3.65 18.37 L5.18 16.18 L4.22 13.87 L1.59 13.40 L1.59 10.60 L4.22 10.13 L5.18 7.82 L3.65 5.63 L5.63 3.65 L7.82 5.18 L10.13 4.22 L10.60 1.59 L13.40 1.59 L13.87 4.22 L16.18 5.18 L18.37 3.65 L20.35 5.63 L18.82 7.82Z"/><circle cx="12" cy="12" r="3.2"/>' },
+  empireo: { cor: "#e58fb0", texto: "#f6c4d8", pip: "losango", svg: '<path d="M12 2.5 4.5 5.5v5.8c0 4.9 3.2 8.6 7.5 10.2 4.3-1.6 7.5-5.3 7.5-10.2V5.5z"/><path d="M12 7v10"/><path d="M8.3 10.8h7.4"/>' }
 };
 const NAUREN_FICHA_CLASSE_NEUTRA = { cor: "#cca162", texto: "#f3d48f", pip: "losango", svg: '<path d="M12 2 4 6v6c0 5 3.5 8.5 8 10 4.5-1.5 8-5 8-10V6z"/>' };
 
@@ -130,6 +130,22 @@ function naurenFichaSelosDoResumo(resumo, ativo = true) {
   });
   if (selos.length > 6) { const resto = selos.length - 5; return [...selos.slice(0, 5), { texto: `+${resto} mais`, tom: "" }]; }
   return selos;
+}
+
+/**
+ * 0.96.2: XP é o TOTAL acumulado (não zera ao subir). XP total para chegar ao nível L:
+ * soma de 100×k para k = 2..L → nível 2 = 200, 3 = 500, 4 = 900, 5 = 1400...
+ */
+function naurenXpParaNivel(nivel) {
+  const L = Math.max(1, Math.floor(Number(nivel) || 1));
+  return 50 * L * (L + 1) - 100;
+}
+/** Maior nível que esse XP total alcança. */
+function naurenNivelPeloXp(xp) {
+  const x = Math.max(0, Number(xp) || 0);
+  let L = 1;
+  while (L < 100 && naurenXpParaNivel(L + 1) <= x) L++;
+  return L;
 }
 
 class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMixin(foundry.applications.sheets.ActorSheetV2) {
@@ -1435,8 +1451,19 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     // Subir de Nível: botão só aparece quando já tem XP suficiente.
     // Fórmula do manual: pra ir do nível N pro N+1, precisa de (N+1) x 100 XP.
     context.proximoNivelNumero = (context.system.nivel || 1) + 1;
-    context.xpProximoNivel = context.proximoNivelNumero * 100;
-    context.podeSubirNivel = (context.system.xp || 0) >= context.xpProximoNivel;
+    // 0.96.2: XP total — barra de progresso dentro do nível atual e o nível que esse XP alcança
+    {
+      const nv = context.system.nivel || 1, xp = Number(context.system.xp) || 0;
+      const ini = naurenXpParaNivel(nv), fim = naurenXpParaNivel(nv + 1);
+      context.xpProximoNivel = fim;
+      context.podeSubirNivel = xp >= fim;
+      const nivelDoXp = naurenNivelPeloXp(xp);
+      context.xpInfo = {
+        total: xp, inicioNivel: ini, proximo: fim, faltam: Math.max(0, fim - xp),
+        pct: Math.max(0, Math.min(100, Math.round(((xp - ini) / Math.max(1, fim - ini)) * 100))),
+        nivelDoXp, niveisAMais: Math.max(0, nivelDoXp - nv), abaixo: xp < ini
+      };
+    }
 
     // CLASSE/SUBCLASSE: item de Classe equipado substitui a
     // exibição do campo de texto livre "system.classe" no cabeçalho (ver
@@ -3795,9 +3822,9 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     const sys = this.actor.system;
     const nivelAtual = sys.nivel || 1;
     const proximoNivel = nivelAtual + 1;
-    const custoXp = proximoNivel * 100;
+    const custoXp = naurenXpParaNivel(proximoNivel); // 0.96.2: XP total; não desconta
     if ((sys.xp || 0) < custoXp) {
-      ui.notifications.warn(`${this.actor.name} ainda não tem XP suficiente pra subir de nível (precisa de ${custoXp}).`);
+      ui.notifications.warn(`${this.actor.name} ainda não tem XP suficiente pra subir de nível (precisa de ${custoXp} XP no total).`);
       return;
     }
 
@@ -3807,8 +3834,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     // manualmente, pra nunca ter os dois fluxos fazendo a mesma coisa de
     // formas diferentes (e arriscar creditar/conceder em dobro).
     await this.actor.update({
-      "system.nivel": proximoNivel,
-      "system.xp": sys.xp - custoXp
+      "system.nivel": proximoNivel
     });
 
     ui.notifications.info(`${this.actor.name} subiu para o nível ${proximoNivel}!`);
@@ -15659,4 +15685,4 @@ async function naurenChecarLimiarEfeitoDireto(item, actor, atual, novo) {
 }
 
 
-export { NAUREN_BARRA_CORES_PADRAO, NAUREN_CRIADOR_ATRIBUTOS, NAUREN_CRIADOR_ETAPAS, NAUREN_CRIADOR_VALORES_FIXOS, NaurenActorSheet, NaurenAlvoHelper, NaurenCriadorPersonagem, NaurenRegionHelper, naurenAdicionarItemNaFicha, naurenBonusModoExtra, naurenChecarLimiarEfeitoDireto, naurenChecarLimiarEvolucao, naurenLinhaModoExtra, naurenNumeroModo };
+export { naurenXpParaNivel, naurenNivelPeloXp, NAUREN_BARRA_CORES_PADRAO, NAUREN_CRIADOR_ATRIBUTOS, NAUREN_CRIADOR_ETAPAS, NAUREN_CRIADOR_VALORES_FIXOS, NaurenActorSheet, NaurenAlvoHelper, NaurenCriadorPersonagem, NaurenRegionHelper, naurenAdicionarItemNaFicha, naurenBonusModoExtra, naurenChecarLimiarEfeitoDireto, naurenChecarLimiarEvolucao, naurenLinhaModoExtra, naurenNumeroModo };

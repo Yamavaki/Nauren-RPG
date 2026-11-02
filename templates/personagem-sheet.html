@@ -24,7 +24,7 @@
             <span class="ns-nivel-rotulo">NÍVEL</span>
             {{#if modoFichaEdicao}}<input type="number" name="system.nivel" value="{{system.nivel}}" aria-label="Nível">{{else}}<b>{{system.nivel}}</b>{{/if}}
           </div>
-          {{#if podeSubirNivel}}<a class="ns-nivel-mais" data-action="subirNivel" title="Subir para o nível {{proximoNivelNumero}} (precisa de {{xpProximoNivel}} XP)">+</a>{{/if}}
+          {{#if podeSubirNivel}}<a class="ns-nivel-mais" data-action="subirNivel" title="Subir para o nível {{proximoNivelNumero}} ({{xpProximoNivel}} XP no total)">+</a>{{/if}}
           {{#if ns.classe.nome}}
           <div class="ns-emblema" title="{{ns.classe.nome}}"><svg viewBox="0 0 24 24" aria-hidden="true">{{{ns.classe.svg}}}</svg></div>
           {{/if}}
@@ -60,9 +60,15 @@
           </label>
           <span class="ns-mini" title="Valor Base">VB {{system.valorBase}}</span>
           {{/if}}
-          <label class="ns-mini">XP <input type="number" name="system.xp" value="{{system.xp}}" aria-label="XP"></label>
+          <label class="ns-mini" title="XP total acumulado (não zera ao subir de nível). Nível 2 = 200, 3 = 500, 4 = 900, 5 = 1400...">XP <input type="number" name="system.xp" value="{{system.xp}}" min="0" aria-label="XP total"></label>
+          {{#unless isNpc}}
+          <div class="ns-xp-progresso" title="{{xpInfo.total}} de {{xpInfo.proximo}} XP para o nível {{proximoNivelNumero}}">
+            <div class="ns-xp-barra"><div style="width: {{xpInfo.pct}}%;"></div></div>
+            <small>{{#if xpInfo.abaixo}}este XP é de nível {{xpInfo.nivelDoXp}}{{else}}{{#if podeSubirNivel}}{{#if xpInfo.niveisAMais}}dá para o nível {{xpInfo.nivelDoXp}}{{/if}}{{else}}faltam {{xpInfo.faltam}} para o nível {{proximoNivelNumero}}{{/if}}{{/if}}</small>
+          </div>
+          {{/unless}}
           {{#if podeSubirNivel}}
-          <a class="btn-subir-nivel ns-subir" data-action="subirNivel" title="Precisa de {{xpProximoNivel}} XP no total — sobe pro nível {{proximoNivelNumero}}"><i class="fas fa-arrow-up"></i> Subir de Nível</a>
+          <a class="btn-subir-nivel ns-subir" data-action="subirNivel" title="Já tem {{xpInfo.total}} XP (o nível {{proximoNivelNumero}} pede {{xpProximoNivel}} no total) — sobe pro nível {{proximoNivelNumero}}"><i class="fas fa-arrow-up"></i> Subir de Nível</a>
           {{/if}}
         </div>
       </div>
@@ -1187,7 +1193,7 @@ Clique para abrir">
             <div class="ns-blocos">
               <a class="ns-bloco" data-action="abrirBarrasToken" title="Escolher quais recursos aparecem no token, a forma, as cores e quem vê"><i class="fas fa-bars-progress"></i><span>Barras do Token</span></a>
               <a class="ns-bloco" data-action="abrirRecursosHud" title="Escolher quais recursos aparecem no HUD de Combate (ex.: Energia no lugar da Mana)"><i class="fas fa-sliders"></i><span>Recursos do HUD</span></a>
-              <a class="ns-bloco {{#if bordaAtiva}}ativo{{/if}}" data-action="bordaToken" title="Enquadrar a imagem do token num círculo com a borda do Foundry, escolher cores e efeitos (pisca ao tomar dano ou ser curado)"><i class="fas fa-circle-dot"></i><span>Borda do Token</span></a>
+              <a class="ns-bloco" data-action="bordaToken" title="Enquadrar a imagem do token num círculo com a borda do Foundry, escolher cores e efeitos (pisca ao tomar dano ou ser curado)"><i class="fas fa-circle-dot"></i><span>Borda do Token</span></a>
               <a class="ns-bloco {{#if modoFichaEdicao}}ativo{{/if}}" data-action="toggleModoFicha" title="Mostrar os campos editáveis e o detalhamento de bônus"><i class="fas fa-pen"></i><span>{{#if modoFichaEdicao}}Sair da edição{{else}}Editar Ficha{{/if}}</span></a>
               {{#unless isNpc}}<a class="ns-bloco" data-action="reabrirCriador" title="Reabrir o Criador de Personagem"><i class="fas fa-hat-wizard"></i><span>Criador de Personagem</span></a>{{/unless}}
               {{#if isNpc}}<a class="ns-bloco" data-action="abrirCriadorMonstro" title="Montar esta criatura pelo Criador de Monstros e NPCs"><i class="fas fa-dragon"></i><span>Criador de Monstros</span></a>{{/if}}
@@ -1235,9 +1241,9 @@ Clique para abrir">
           <section class="ns-card {{#if isNpc}}ns-card-largo{{/if}}">
             <header class="ns-card-cab"><span class="ns-card-icone"><i class="fas fa-moon"></i></span><div><b>Descanso</b><small>recarrega usos "por dia"</small></div></header>
             <a class="ns-btn-principal btn-descansar" data-action="descansar"><i class="fas fa-moon"></i> Descansar</a>
-            <p class="ns-dica">Recarrega as Ações com usos "por dia". Não mexe em Vida, Mana, Estamina nem Estresse: isso fica com o Mestre.</p>
+            <p class="ns-dica">Recarrega os usos "por dia". Vida, Mana, Estamina e Estresse ficam com o Mestre.</p>
             <a class="ns-btn-secundario" data-action="ressincronizarRecursosCustom" title="Atualiza cada item da ficha (vindo de Classe/Subclasse/Nível) pra versão mais atual do compêndio. Preserva rank investido, ativo/inativo, usos gastos, equipado e quantidade. Atualiza descrição, Gatilhos, Efeitos Vinculados, Ações e fórmulas. Também corrige barras de recurso próprio que não apareceram."><i class="fas fa-sync"></i> Ressincronizar com o Compêndio</a>
-            <p class="ns-dica">Use depois de uma atualização do sistema, se uma habilidade da classe ficou antiga. É seguro clicar a qualquer momento.</p>
+            <p class="ns-dica">Depois de atualizar o sistema: traz a versão nova das habilidades da classe.</p>
           </section>
 
           {{#unless isNpc}}
@@ -1466,11 +1472,7 @@ Clique para abrir">
 
           {{#if isNpc}}
           <div class="nauren-ref-formulas ns-card ns-card-largo">
-            <a class="nauren-ref-formulas-header" data-action="toggleEscalaPorNivel">
-              <i class="fas {{#if escalaPorNivelAberta}}fa-chevron-down{{else}}fa-chevron-right{{/if}}"></i>
-              <i class="fas fa-chart-line"></i> Escala por Nível
-              <span class="nauren-ref-formulas-hint">Atributos e Defesa que mudam sozinhos com o Nível (monstros/NPCs)</span>
-            </a>
+            <a class="nauren-ref-formulas-header ns-card-cab ns-card-dobra" data-action="toggleEscalaPorNivel"><span class="ns-card-icone"><i class="fas fa-chart-line"></i></span><div><b>Escala por Nível</b><small>Atributos e Defesa que mudam sozinhos com o Nível (monstros/NPCs)</small></div><i class="fas {{#if escalaPorNivelAberta}}fa-chevron-up{{else}}fa-chevron-down{{/if}} ns-seta"></i></a>
             {{#if escalaPorNivelAberta}}
             <div class="nauren-ref-formulas-body">
               <div class="field" style="margin-bottom: 8px;">
@@ -1533,11 +1535,7 @@ Clique para abrir">
           {{/if}}
 
           <div class="nauren-ref-formulas ns-card ns-card-largo">
-            <a class="nauren-ref-formulas-header" data-action="toggleReferenciaFormulas">
-              <i class="fas {{#if referenciaFormulasAberta}}fa-chevron-down{{else}}fa-chevron-right{{/if}}"></i>
-              <i class="fas fa-book"></i> Consultar Fórmulas
-              <span class="nauren-ref-formulas-hint">Todos os "@" que podem ser usados em fórmulas de Dano, Cura, Ataque e Modificadores</span>
-            </a>
+            <a class="nauren-ref-formulas-header ns-card-cab ns-card-dobra" data-action="toggleReferenciaFormulas"><span class="ns-card-icone"><i class="fas fa-book"></i></span><div><b>Consultar Fórmulas</b><small>Todos os "@" que podem ser usados em fórmulas de Dano, Cura, Ataque e Modificadores</small></div><i class="fas {{#if referenciaFormulasAberta}}fa-chevron-up{{else}}fa-chevron-down{{/if}} ns-seta"></i></a>
             {{#if referenciaFormulasAberta}}
             <div class="nauren-ref-formulas-body">
               <p class="item-meta-hint" style="margin: 0 0 10px;">
