@@ -18,6 +18,46 @@ const NAUREN_BARRA_CORES_PADRAO = {
   dadosDestino: { cor1: "#3d1b4d", cor2: "#9c5fc7" }
 };
 
+/* ===== 0.96: ficha nova — cor, emblema e formato dos marcadores por classe ===== */
+const NAUREN_FICHA_CLASSES = {
+  guerreiro: { cor: "#d0623f", texto: "#f0a487", pip: "chama", svg: '<path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13 19 6-6"/><path d="m16 16 4 4"/><path d="m19 21 2-2"/>' },
+  mago: { cor: "#4f8fe0", texto: "#a9c8ff", pip: "pagina", svg: '<path d="m12 2 2.6 6.4L21 9l-5 4.4L17.5 20 12 16.6 6.5 20 8 13.4 3 9l6.4-.6z"/>' },
+  sacerdote: { cor: "#e8c04a", texto: "#f7dd8e", pip: "sol", svg: '<circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/>' },
+  ladino: { cor: "#7d93a8", texto: "#c3d2e0", pip: "lamina", svg: '<path d="M5 19 16 8l3-5-5 3L3 17z"/><path d="m7 13 4 4"/>' },
+  mistico: { cor: "#a46be0", texto: "#d9bdf7", pip: "losango", svg: '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>' },
+  cacador: { cor: "#9cb34f", texto: "#d2e39a", pip: "flecha", svg: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>' },
+  druida: { cor: "#4fb38a", texto: "#a8e6cf", pip: "folha", svg: '<path d="M5 19C5 10 10 4 20 4c0 10-6 15-15 15z"/><path d="M5 19 14 10"/>' },
+  inventor: { cor: "#c98a4b", texto: "#f0c99e", pip: "engrenagem", svg: '<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/>' },
+  empireo: { cor: "#e58fb0", texto: "#f6c4d8", pip: "losango", svg: '<path d="M12 21V9"/><path d="M12 9C9 5 5 4 2 5c1 4 5 7 10 7"/><path d="M12 9c3-4 7-5 10-4-1 4-5 7-10 7"/>' }
+};
+const NAUREN_FICHA_CLASSE_NEUTRA = { cor: "#cca162", texto: "#f3d48f", pip: "losango", svg: '<path d="M12 2 4 6v6c0 5 3.5 8.5 8 10 4.5-1.5 8-5 8-10V6z"/>' };
+
+/** Chave da classe ("guerreiro", "mago"...) a partir do item de Classe (identifier ou nome sem acento). */
+function naurenFichaChaveClasse(item) {
+  const bruto = String(item?.system?.identifier || item?.name || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+  return Object.keys(NAUREN_FICHA_CLASSES).find(k => bruto.startsWith(k)) ?? "";
+}
+
+/**
+ * Marcadores de um contador (Estamina, Destino, Estresse, recursos da classe): uma forma por ponto enquanto
+ * couber; acima de `limiteBlocos` vira blocos finos (até `limiteFinos`); acima disso, barra com o número.
+ * "travados" = os primeiros N (Estresse permanente). Cada item sabe o valor que um clique nele define.
+ */
+function naurenFichaMarcadores(valor, max, { limiteBlocos = 10, limiteFinos = 20, travados = 0 } = {}) {
+  const v = Math.max(0, Math.round(Number(valor) || 0));
+  const m = Math.max(0, Math.round(Number(max) || 0));
+  const pct = m > 0 ? Math.max(0, Math.min(100, (v / m) * 100)) : 0;
+  const modo = m <= limiteBlocos ? "blocos" : m <= limiteFinos ? "finos" : "barra";
+  const itens = modo === "barra" ? [] : Array.from({ length: m }, (_, i) => ({
+    cheio: i < v,
+    travado: i < travados,
+    // clicar no último cheio esvazia ele; em qualquer outro, enche até ali
+    alvo: (i + 1 === v) ? i : i + 1,
+    grupo: modo === "finos" && (i + 1) % 5 === 0 && i + 1 < m
+  }));
+  return { valor: v, max: m, pct, modo, itens, excedente: v > m ? v - m : 0 };
+}
+
 /**
  * Adiciona um item (já resolvido, ex: vindo de fromUuid) na ficha de um
  * Ator - função INDEPENDENTE (não método de nenhuma classe específica)
@@ -66,6 +106,32 @@ function naurenLinhaModoExtra(soma) {
   return { label: `${soma > 0 ? "Facilidade" : "Dificuldade"} ×${n} (${n - 1} a mais)`, value: `${b > 0 ? "+" : "−"}${Math.abs(b)}` };
 }
 
+/**
+ * 0.96: "Bônus de Dano -2, Bônus de Bloqueio +2" → selos [{texto:"Dano −2", tom:"ruim"}, {texto:"Bloqueio +2", tom:"bom"}].
+ * Vírgula dentro de parênteses não separa. Efeito desligado fica com selos neutros.
+ */
+function naurenFichaSelosDoResumo(resumo, ativo = true) {
+  const texto = String(resumo ?? "").trim();
+  if (!texto) return [];
+  const partes = []; let prof = 0, atual = "";
+  for (let i = 0; i < texto.length; i++) {
+    const c = texto[i];
+    if (c === "(") prof++; else if (c === ")") prof = Math.max(0, prof - 1);
+    if (c === "," && prof === 0) { if (atual.trim()) partes.push(atual.trim()); atual = ""; continue; }
+    atual += c;
+  }
+  if (atual.trim()) partes.push(atual.trim());
+  const selos = partes.map(p => {
+    const curto = p.replace(/^Bônus de /i, "").replace(/\s-(\d)/g, " \u2212$1");
+    const m = p.match(/([+\-\u2212])\s*\d[\d.,]*\s*$/) || p.match(/\s([+\-\u2212])\s*\d/);
+    let tom = "";
+    if (ativo && m) tom = m[1] === "+" ? "bom" : "ruim";
+    return { texto: curto, tom };
+  });
+  if (selos.length > 6) { const resto = selos.length - 5; return [...selos.slice(0, 5), { texto: `+${resto} mais`, tom: "" }]; }
+  return selos;
+}
+
 class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMixin(foundry.applications.sheets.ActorSheetV2) {
   /** 0.94: botões da aba Invenções - usam a Ação do item como o HUD. */
   static async onInvUsar(ev, t) {
@@ -106,6 +172,8 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
   // como _onRender roda do zero a cada atualização de dado, precisamos
   // lembrar manualmente pra não voltar sempre pra primeira aba.
   #abaAtiva = "inventario";
+  #scrollLayout = 0;
+  #scrollColuna = 0;
   #scrollSheetBody = 0; // guarda a posição de rolagem de .sheet-body entre renders - o mecanismo nativo "scrollable" da V2 não estava restaurando corretamente pra um seletor aninhado (só funciona bem pro elemento raiz da PART inteira)
   // Modo Jogo (padrão) mostra só o valor FINAL já calculado (base + bônus/
   // efeitos/pigmentos) de Estamina/Defesa/Movimento/Atributos, num quadrado
@@ -1017,9 +1085,78 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
       enquadrarRetrato: NaurenActorSheet.onEnquadrarRetrato,
       bordaToken: NaurenActorSheet.onBordaToken,
       desvincularMascote: NaurenActorSheet.onDesvincularMascote,
-      toggleReferenciaFormulas: NaurenActorSheet.onToggleReferenciaFormulas
+      toggleReferenciaFormulas: NaurenActorSheet.onToggleReferenciaFormulas,
+      nsMarcador: NaurenActorSheet.onNsMarcador,
+      nsAdicionarSubclasse: NaurenActorSheet.onNsAdicionarSubclasse,
+      nsIrCondicoes: NaurenActorSheet.onNsIrCondicoes,
+      nsPasso: NaurenActorSheet.onNsPasso
     }
   };
+
+  /** 0.96: clicar num marcador (Estamina, Destino, Estresse, recurso da classe) define o valor até ali. */
+  static async onNsMarcador(event, target) {
+    event.stopPropagation();
+    if (!this.isEditable) return;
+    const campo = target.dataset.campo;
+    const alvo = Number(target.dataset.alvo);
+    if (!campo || !Number.isFinite(alvo)) return;
+    await this._nsDefinirRecurso(campo, alvo);
+  }
+
+  /** Grava um valor de recurso respeitando máximo, mínimo, Estresse permanente e o array dos recursos da classe. */
+  async _nsDefinirRecurso(campo, novo) {
+    const sys = this.actor.system;
+    const sufixo = campo.endsWith(".valor") ? ".valor" : ".value";
+    const max = foundry.utils.getProperty(sys, campo.replace(sufixo, ".max"));
+    const atual = foundry.utils.getProperty(sys, campo) ?? 0;
+    let v = Math.round(Number(novo) || 0);
+    if (Number.isFinite(max)) v = Math.min(max, v);
+    v = Math.max(campo === "stress.value" ? (Number(sys.estressePermanente) || 0) : 0, v);
+    if (v === atual) return;
+    const m = campo.match(/^recursosCustom\.(\d+)\.valor$/);
+    if (m) {
+      const lista = foundry.utils.deepClone(sys.recursosCustom ?? []);
+      const entrada = lista[Number(m[1])];
+      if (!entrada) return;
+      const antes = entrada.valor ?? 0;
+      entrada.valor = v;
+      await this.actor.update({ "system.recursosCustom": lista });
+      await naurenChecarCondicaoAoAtingirMax(this.actor, entrada.id, entrada, antes, v);
+      return;
+    }
+    await this.actor.update({ [`system.${campo}`]: v });
+  }
+
+  /** 0.96: botões −/+ das Opções (Crítico a partir de, Falha crítica até). */
+  static async onNsPasso(event, target) {
+    if (!this.isEditable) return;
+    const campo = target.dataset.campo;
+    const delta = Number(target.dataset.delta) || 0;
+    const min = Number(target.dataset.min ?? -Infinity), max = Number(target.dataset.max ?? Infinity);
+    const atual = Number(foundry.utils.getProperty(this.actor.system, campo)) || 0;
+    const v = Math.max(min, Math.min(max, atual + delta));
+    if (v !== atual) await this.actor.update({ [`system.${campo}`]: v });
+  }
+
+  /** 0.96: personagem com Classe mas sem a árvore de Subclasse — pega a árvore da classe no compêndio. */
+  static async onNsAdicionarSubclasse(event, target) {
+    const classe = this.actor.items.find(i => i.type === "classe");
+    const identifier = classe?.system?.identifier;
+    if (!identifier) { ui.notifications.warn("Equipe uma Classe primeiro."); return; }
+    const packs = await naurenObterOuCriarPacks();
+    await packs.subclasses.getIndex({ fields: ["system.classeIdentifier"] });
+    const entrada = packs.subclasses.index.find(i => i.system?.classeIdentifier === identifier);
+    const item = entrada ? await fromUuid(entrada.uuid).catch(() => null) : null;
+    if (!item) { ui.notifications.warn(`Não achei a árvore de Subclasse de ${classe.name} no compêndio.`); return; }
+    const criados = await naurenAdicionarItemNaFicha(this.actor, item);
+    criados?.[0]?.sheet?.render(true);
+  }
+
+  /** 0.96: "+N" das Condições na coluna leva à lista completa (aba Características). */
+  static onNsIrCondicoes(event, target) {
+    this.element.querySelector('.sheet-tabs .item[data-tab="caracteristicas"]')?.click();
+    requestAnimationFrame(() => this.element.querySelector('.ns-secao-condicoes')?.scrollIntoView({ block: "start", behavior: "smooth" }));
+  }
 
   static PARTS = {
     body: { template: "systems/nauren/templates/personagem-sheet.html", scrollable: [".sheet-body"] }
@@ -1381,7 +1518,107 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     context.mostrarPeculiaridades = !context.isNpc || !!context.peculiaridades?.length;
     context.mostrarClasse = !context.isNpc || !!context.classes?.length;
     context.mostrarSubclasse = !context.isNpc || !!context.subclasses?.length;
+    this._prepararFichaNova(context);
     return context;
+  }
+
+  /**
+   * 0.96 — dados de exibição da ficha nova (só leitura do que já foi calculado acima):
+   * classe (cor/emblema), marcadores de Estamina/Destino/Estresse e recursos da classe,
+   * selos de Condição da coluna, card da Subclasse, grupos de Habilidades e Efeitos.
+   */
+  _prepararFichaNova(context) {
+    const sys = this.actor.system;
+    const chave = naurenFichaChaveClasse(context.classeEquipada);
+    const vis = NAUREN_FICHA_CLASSES[chave] ?? NAUREN_FICHA_CLASSE_NEUTRA;
+    const ns = {};
+    ns.classe = { chave: chave || "neutra", ...vis, nome: context.classeEquipada?.name || sys.classe || "" };
+    const barra = k => context.barrasRecursos.find(b => b.chave === k) ?? {};
+    ns.vida = barra("vida");
+    ns.vida.baixa = ns.vida.max > 0 && ns.vida.value > 0 && ns.vida.value <= ns.vida.max / 4;
+    ns.vida.caido = ns.vida.max > 0 && ns.vida.value <= 0;
+    ns.mana = barra("mana");
+    ns.estamina = { ...barra("estaminaCombate"), marc: naurenFichaMarcadores(sys.estaminaCombate?.value, sys.estaminaCombate?.max) };
+    ns.destino = { ...barra("dadosDestino"), marc: naurenFichaMarcadores(sys.dadosDestino?.value, sys.dadosDestino?.max, { limiteBlocos: 6, limiteFinos: 6 }) };
+    const perm = Math.max(0, Number(sys.estressePermanente) || 0);
+    ns.estresse = { marc: naurenFichaMarcadores(sys.stress?.value, sys.stress?.max, { limiteBlocos: 8, limiteFinos: 8, travados: perm }), permanente: perm };
+    for (const r of context.recursosCustomView ?? []) r.marc = naurenFichaMarcadores(r.value, r.max);
+    const sinal = v => `${Number(v) >= 0 ? "+" : "\u2212"}${Math.abs(Number(v) || 0)}`;
+    ns.defesaExtraTexto = sinal(sys.defesaExtra);
+    ns.movimentoExtraTexto = sinal(sys.movimentoExtra);
+    // Atributos em brasão: total já com bônus; borda verde/laranja quando um efeito soma/tira
+    const nomesAttr = { forca: ["Força", "For"], agilidade: ["Agilidade", "Agi"], inteligencia: ["Inteligência", "Int"], destino: ["Destino", "Des"], estamina: ["Estamina", "Est"] };
+    context.nsAtributos = Object.entries(nomesAttr).map(([k, [nome, curto]]) => {
+      const base = Number(sys.atributos?.[k]?.value) || 0;
+      const total = Number(sys.atributosTotais?.[k] ?? base);
+      const extra = Number(sys.atributosExtra?.[k]) || 0;
+      return {
+        chave: k, nome, curto, base, total, extra,
+        extraTexto: `${extra >= 0 ? "+" : "−"}${Math.abs(extra)}`,
+        buff: extra > 0, debuff: extra < 0,
+        grande: String(total).length >= 3,
+        gastaDestino: k === "destino",
+        tooltip: sys.tooltips?.[k] ?? ""
+      };
+    });
+    // Selos de Condição na coluna (as ativas primeiro; até 4, o resto vira "+N")
+    const conds = (context.condicoes ?? []).filter(c => c.ativo !== false);
+    ns.condicoes = conds.slice(0, 4);
+    ns.condicoesMais = Math.max(0, conds.length - 4);
+    ns.condicoesMaisNomes = conds.slice(4).map(c => c.name).join(", ");
+    // Card da Subclasse
+    const pontos = Number(sys.pontosSubclasse?.value) || 0;
+    const pontosMax = Number(sys.pontosSubclasse?.max) || 0;
+    const sub = context.subclasses?.[0] ?? null;
+    ns.subclasse = context.isNpc && !sub ? null : {
+      item: sub, varias: (context.subclasses?.length ?? 0) > 1, lista: context.subclasses ?? [],
+      pontos, investidos: Math.max(0, pontosMax - pontos), temPontos: pontos > 0,
+      pontosTexto: pontos === 1 ? "ponto para gastar" : "pontos para gastar",
+      umInvestido: Math.max(0, pontosMax - pontos) === 1,
+      semArvore: !sub && !!context.classeEquipada, semClasse: !sub && !context.classeEquipada
+    };
+    // Habilidades: Ações / Reações / Sempre ativas
+    const est = Number(sys.estaminaCombate?.value) || 0, mana = Number(sys.mana?.value) || 0;
+    const nivel = sys.nivel || 1;
+    const prepararLinha = e => {
+      const a = e.acaoAtiva;
+      if (a) {
+        const ce = naurenResolverPorNivel(a.custoEstaminaPorNivel, nivel, "valor") ?? a.custoEstamina ?? 0;
+        const cm = naurenResolverPorNivel(a.custoManaPorNivel, nivel, "valor") ?? a.custoMana ?? 0;
+        e.nsCustos = [];
+        if (ce > 0) e.nsCustos.push({ texto: `${ce} Estamina`, falta: ce > est, tem: est });
+        if (cm > 0) e.nsCustos.push({ texto: `${cm} Mana`, falta: cm > mana, tem: mana, mana: true });
+        if (a.alcance && !/^0?\s*m?$/i.test(String(a.alcance).trim())) e.nsAlcance = String(a.alcance);
+      }
+      const c = e.cargasInfo;
+      if (c && !c.semConsumivel && c.cargasMax > 0 && c.cargasMax <= 8) {
+        e.nsUsos = Array.from({ length: c.cargasMax }, (_, i) => ({ cheio: i < c.cargasAtual }));
+      }
+      e.nsSemUsos = !!(c && !c.semConsumivel && c.cargasMax > 0 && c.cargasAtual <= 0);
+      return e;
+    };
+    const grupos = { acoes: [], reacoes: [], passivas: [] };
+    for (const h of context.habilidades ?? []) {
+      prepararLinha(h);
+      const acoes = h.system?.acoes ?? [];
+      if (acoes.some(a => a.reacaoPreAtaque)) grupos.reacoes.push(h);
+      else if (h.acaoAtiva) grupos.acoes.push(h);
+      else grupos.passivas.push(h);
+    }
+    ns.habGrupos = [
+      { chave: "acoes", titulo: "Ações", itens: grupos.acoes },
+      { chave: "reacoes", titulo: "Reações", itens: grupos.reacoes },
+      { chave: "passivas", titulo: "Sempre ativas", itens: grupos.passivas }
+    ].filter(g => g.itens.length);
+    for (const lista of ["armas", "armaduras", "consumiveis", "magias"]) for (const e of context[lista] ?? []) prepararLinha(e);
+    // Efeitos: ligados em cima, desligados embaixo; Rank em marcadores
+    for (const ef of context.efeitos ?? []) {
+      ef.nsRank = ef.temRank && ef.rankMax <= 10 ? Array.from({ length: ef.rankMax }, (_, i) => ({ cheio: i < ef.rankAtual })) : null;
+      ef.nsSelos = naurenFichaSelosDoResumo(ef.resumo, ef.ativo);
+    }
+    ns.efeitosLigados = (context.efeitos ?? []).filter(e => e.ativo);
+    ns.efeitosDesligados = (context.efeitos ?? []).filter(e => !e.ativo);
+    context.ns = ns;
   }
 
   /**
@@ -2049,6 +2286,17 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     // 0.93.2: a coluna da direita rola inteira (o cabeçalho sobe, as abas ficam grudadas no topo).
     const rolavel = this.element.querySelector('.main-content') ?? this.element.querySelector('.sheet-body');
     if (!rolavel) return;
+    // 0.96: em janela estreita a ficha inteira (coluna + conteúdo) rola junto em .sheet-layout — guarda essa também.
+    const layout = this.element.querySelector('.nauren-sheet.ns2 .sheet-layout');
+    if (layout) {
+      layout.scrollTop = this.#scrollLayout;
+      layout.addEventListener('scroll', () => { this.#scrollLayout = layout.scrollTop; });
+    }
+    const coluna = this.element.querySelector('.nauren-sheet.ns2 .ns-coluna');
+    if (coluna) {
+      coluna.scrollTop = this.#scrollColuna;
+      coluna.addEventListener('scroll', () => { this.#scrollColuna = coluna.scrollTop; });
+    }
     rolavel.scrollTop = this.#scrollSheetBody;
     const marcar = () => rolavel.classList.toggle("rolou", rolavel.scrollTop > 40);
     marcar();
@@ -2057,7 +2305,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
       marcar();
     });
     const subir = this.element.querySelector('.nauren-subir-topo');
-    subir?.addEventListener('click', ev => { ev.preventDefault(); ev.stopPropagation(); rolavel.scrollTo({ top: 0, behavior: "smooth" }); });
+    subir?.addEventListener('click', ev => { ev.preventDefault(); ev.stopPropagation(); rolavel.scrollTo({ top: 0, behavior: "smooth" }); layout?.scrollTo({ top: 0, behavior: "smooth" }); });
   }
 
   /** Rola um teste de Atributo ou Meta-atributo (clique no botão de dado da lista, ou no card do Meta-atributo). */

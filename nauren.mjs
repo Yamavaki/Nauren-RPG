@@ -7996,7 +7996,7 @@ function naurenProximoCombatente(combate) {
 }
 const NAUREN_HUD_TESTES = [["forca", "Força"], ["agilidade", "Agilidade"], ["estamina", "Estamina"], ["inteligencia", "Inteligência"], ["destino", "Destino"],
   ["poderAtaque", "Pd. Ataque"], ["poderMagia", "Pd. Magia"], ["vitalidade", "Vitalidade"], ["espirito", "Espírito"]];
-const NAUREN_HUD_ABAS = [["favoritos", "★"], ["armas", "Armas"], ["magias", "Magias"], ["habilidades", "Habilidades"], ["efeitos", "Efeitos"], ["consumiveis", "Consumíveis"]];
+const NAUREN_HUD_ABAS = [["favoritos", "★"], ["armas", "Armas"], ["magias", "Magias"], ["habilidades", "Habilidades"], ["efeitos", "Efeitos"], ["consumiveis", "Mochila"]];
 
 function naurenHudTextoSimples(html, max = 240) {
   const t = String(html ?? "").replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim();
@@ -8259,7 +8259,7 @@ class NaurenHudCombate extends foundry.applications.api.ApplicationV2 {
     const abaValida = this.#aba && (this.#aba === "favoritos" || listas[this.#aba]?.length);
     if (!abaValida) this.#aba = listas.favoritos.length ? "favoritos" : (disponiveis.find(([id]) => id !== "favoritos")?.[0] ?? "favoritos");
     c.abas = disponiveis.map(([id, nome]) => ({ id, nome, ativa: id === this.#aba }));
-    c.vazio = this.#aba === "favoritos" ? "Arraste itens da ficha para cá, ou clique com o botão direito num botão de outra aba para fixá-lo." : "Sem Ações, Efeitos nem Consumíveis.";
+    c.vazio = this.#aba === "favoritos" ? "Arraste itens da ficha para cá, ou clique com o botão direito num botão de outra aba para fixá-lo." : "Sem Ações, Efeitos nem itens na Mochila.";
     if (g && this.#aba === "magias") c.grimorio = { texto: g.paginas.length ? `${g.inicio + 1}–${g.inicio + g.abertas.length} de ${g.paginas.length}` : "vazio", podeVoltar: g.inicio > 0, podeAvancar: g.inicio < g.maxInicio };
 
     this.#dicas = new Map();
