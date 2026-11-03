@@ -7205,3 +7205,65 @@ li.chat-message.ncc-card > .message-content { padding-top: 0 !important; }
 .nauren-sheet.ns2 .ns-arte-op input[type="checkbox"] { width: 18px; height: 18px; margin: 0; cursor: pointer; }
 .nauren-sheet.ns2 .ns-arte-botoes { display: inline-flex; gap: 6px; }
 .nauren-sheet.ns2 .ns-bloco.ns-bloco-mini { min-height: 30px; padding: 4px 10px; flex-direction: row; gap: 6px; font-size: 12.5px; }
+/* 0.100.3: a borda de fora (retas + diagonais) passa a ser um anel recortado (polygon evenodd): sem as pontinhas
+   que os degradês das diagonais deixavam nos cantos em alguns navegadores (Firefox) e escalas de interface. */
+.application.nauren-kit.nc2::before,
+.application.nc-moldura.nc2::before,
+.nauren-deflexao-card.nc2::before,
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-alvos::after,
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-flutuante::after,
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-acao::after,
+.nauren-criador .nc2 .ncr-amostra-card::after {
+  --anel-k: calc(var(--mc) + var(--mbw) * .4142);
+  background: var(--mb) !important;
+  clip-path: polygon(evenodd,
+    var(--mc) 0, calc(100% - var(--mc)) 0, 100% var(--mc), 100% calc(100% - var(--mc)), calc(100% - var(--mc)) 100%, var(--mc) 100%, 0 calc(100% - var(--mc)), 0 var(--mc), var(--mc) 0,
+    var(--anel-k) var(--mbw), var(--mbw) var(--anel-k), var(--mbw) calc(100% - var(--anel-k)), var(--anel-k) calc(100% - var(--mbw)), calc(100% - var(--anel-k)) calc(100% - var(--mbw)), calc(100% - var(--mbw)) calc(100% - var(--anel-k)), calc(100% - var(--mbw)) var(--anel-k), calc(100% - var(--anel-k)) var(--mbw), var(--anel-k) var(--mbw));
+}
+/* 0.100.3 — Tooltip do token (nome, estado de vida, condições) nas cores e na moldura da ficha de quem está embaixo do mouse */
+#nauren-token-tooltip.nc2 {
+  --nc-f: #1b1624; --mc: 7px; --mbw: 1.5px; --mb: color-mix(in srgb, var(--nc-p) 80%, #000);
+  border: 0; border-radius: 0; box-shadow: none; padding: 8px 13px 9px; min-width: 150px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--nc-pd) 42%, var(--nc-f)), var(--nc-f) 70%);
+  clip-path: polygon(7px 0, calc(100% - 7px) 0, 100% 7px, 100% calc(100% - 7px), calc(100% - 7px) 100%, 7px 100%, 0 calc(100% - 7px), 0 7px);
+}
+#nauren-token-tooltip.nc2.nc-fundo-escuro { --nc-f: #141317; }
+#nauren-token-tooltip.nc2::before { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 2;
+  --anel-k: calc(var(--mc) + var(--mbw) * .4142); background: var(--mb);
+  clip-path: polygon(evenodd,
+    var(--mc) 0, calc(100% - var(--mc)) 0, 100% var(--mc), 100% calc(100% - var(--mc)), calc(100% - var(--mc)) 100%, var(--mc) 100%, 0 calc(100% - var(--mc)), 0 var(--mc), var(--mc) 0,
+    var(--anel-k) var(--mbw), var(--mbw) var(--anel-k), var(--mbw) calc(100% - var(--anel-k)), var(--anel-k) calc(100% - var(--mbw)), calc(100% - var(--anel-k)) calc(100% - var(--mbw)), calc(100% - var(--mbw)) calc(100% - var(--anel-k)), calc(100% - var(--mbw)) var(--anel-k), calc(100% - var(--anel-k)) var(--mbw), var(--anel-k) var(--mbw)); }
+#nauren-token-tooltip.nc2::after { content: ""; position: absolute; inset: 4px; border: 1px solid color-mix(in srgb, var(--nc-s) 30%, transparent); pointer-events: none; }
+#nauren-token-tooltip.nc2 .nome { display: flex; align-items: center; gap: 7px; font: 700 16px/1.2 "Modesto Condensed", "Cinzel", Georgia, serif; letter-spacing: .03em; color: #fff;
+  padding-bottom: 4px; margin-bottom: 4px; border-bottom: 1px solid color-mix(in srgb, var(--nc-s) 45%, transparent); white-space: nowrap; }
+#nauren-token-tooltip.nc2 .nome::before { content: ""; flex: none; width: 6px; height: 6px; transform: rotate(45deg); background: var(--nc-s); }
+#nauren-token-tooltip.nc2 .nome .num { font: 400 11px Signika, sans-serif; color: var(--nc-pc); letter-spacing: 0; }
+#nauren-token-tooltip.nc2 .estado { font-weight: 700; }
+#nauren-token-tooltip.nc2 .estado .num { color: var(--nc-pc); }
+#nauren-token-tooltip.nc2 .conds { color: #d8cfe6; margin-top: 6px; gap: 4px 5px; }
+#nauren-token-tooltip.nc2 .conds span { padding: 2px 7px 2px 3px; background: color-mix(in srgb, var(--nc-pd) 45%, #000 20%); border: 1px solid color-mix(in srgb, var(--nc-p) 40%, transparent); border-radius: 3px; }
+#nauren-token-tooltip.nc2 .conds img { width: 15px; height: 15px; }
+
+/* 0.100.3 — "Ver arte do personagem / do token" (janela de imagem do Foundry) na moldura da ficha;
+   a arte com a borda do sistema e a placa do nome, igual à arte ao passar o mouse */
+.application.na-popout.nc2 { --nc-f: #1b1624; background: var(--nc-f) !important; }
+.application.na-popout.nc2.nc-fundo-escuro { --nc-f: #141317; }
+.application.na-popout.nc2 > .window-content { flex: 1 1 auto; min-height: 0; padding: 12px 12px 14px; background: radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--nc-pd) 40%, transparent), transparent 70%), var(--nc-f); overflow: hidden; display: flex; flex-direction: column; }
+.application.na-popout .na-pop-original { display: contents; }
+.application.na-popout .na-pop-original > figcaption, .application.na-popout .na-pop-original > .image-caption { display: none; }
+.application.na-popout .na-pop { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+.application.na-popout .na-pop .na-arte-caixa { position: relative; flex: 1 1 auto; min-height: 0; }
+.application.na-popout .na-pop img, .application.na-popout .na-pop video { display: block; width: 100%; height: 100%; max-width: none; max-height: none; object-fit: contain; border: 0; margin: 0; }
+.application.na-popout .na-moldura .na-arte-borda { position: absolute; inset: 0; padding: 2px; background: color-mix(in srgb, var(--nc-p, #a86ee0) 85%, #000);
+  clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px), 0 14px); }
+.application.na-popout .na-moldura .na-arte-img { width: 100%; height: 100%; background: #0e0b13; overflow: hidden;
+  clip-path: polygon(13.2px 0, calc(100% - 13.2px) 0, 100% 13.2px, 100% calc(100% - 13.2px), calc(100% - 13.2px) 100%, 13.2px 100%, 0 calc(100% - 13.2px), 0 13.2px); }
+.application.na-popout .na-moldura .na-arte-filete { position: absolute; inset: 7px; border: 1px solid color-mix(in srgb, var(--nc-s, #e0b257) 55%, transparent); pointer-events: none; }
+.application.na-popout .na-moldura .na-arte-placa { position: absolute; left: 2px; right: 2px; bottom: 2px; padding: 34px 18px 14px; display: flex; flex-direction: column; gap: 2px; pointer-events: none;
+  background: linear-gradient(transparent, color-mix(in srgb, var(--nc-pd, #26183a) 55%, rgba(8, 6, 12, .94)) 60%);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 13.2px), calc(100% - 13.2px) 100%, 13.2px 100%, 0 calc(100% - 13.2px)); }
+.application.na-popout .na-arte-placa b { font: 700 24px/1.15 "Modesto Condensed", "Cinzel", Georgia, serif; letter-spacing: .03em; color: #fff; text-shadow: 0 1px 3px rgba(0, 0, 0, .8); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.application.na-popout .na-arte-placa small, .application.na-popout .na-arte-nome small { font: 700 11px/1.2 Signika, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--nc-sc, #ffe2a3); }
+.application.na-popout .na-recorte .na-arte-caixa { filter: drop-shadow(0 6px 14px rgba(0, 0, 0, .65)); }
+.application.na-popout .na-recorte .na-arte-nome { flex: none; margin-top: 6px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1px; color: #fff;
+  font: 700 22px/1.15 "Modesto Condensed", "Cinzel", Georgia, serif; letter-spacing: .03em; text-shadow: 0 0 3px #000, 0 1px 3px #000; }

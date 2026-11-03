@@ -120,7 +120,7 @@ function obstaculos() {
   // Só as peças que de fato aparecem (não os contêineres, que no V14 podem ocupar a altura toda da tela,
   // como o das notificações do chat): carrossel, HUD, barra das cenas, ferramentas, jogadores, hotbar,
   // cada notificação do chat e o tooltip do token.
-  const sel = "#nauren-carrossel .nauren-car-raiz, #nauren-hud-combate .nauren-hud-raiz, #scene-navigation, #navigation, #scene-controls, #controls, #players, #hotbar, #chat-notifications li, #chat-notifications .chat-message, #nauren-token-tooltip.visivel";
+  const sel = "#nauren-carrossel .nauren-car-raiz, #nauren-hud-combate .nauren-hud-raiz, #scene-navigation, #navigation, #scene-controls, #controls, #players, #hotbar, #chat-notifications li, #chat-notifications .chat-message";
   const vh = window.innerHeight;
   return [...document.querySelectorAll(sel)].map(retangulo).filter(r => r && r.h < vh * 0.6);
 }
@@ -157,6 +157,15 @@ function calcularPosicao(w, h, posicao, token) {
   }
   // Se desviar jogaria a arte para fora da tela, fica no canto escolhido mesmo.
   if (y + h > vh - m + 1 || y < m - 1) y = y0;
+  // Não cobre o token do mouse: passa para o outro canto (de cima ↔ de baixo) do mesmo lado.
+  if (token && posicao !== "token") {
+    const t = pontoNaTela(token), caixaT = { x: t.x, y: t.y, r: t.r, b: t.b };
+    if (cruza({ x, y, w, h }, caixaT)) {
+      const yAlt = desce ? vh - m - h : m;
+      let ok = !cruza({ x, y: yAlt, w, h }, caixaT) && !obs.some(o => cruza({ x, y: yAlt, w, h }, o));
+      if (ok) y = yAlt;
+    }
+  }
   x = Math.max(m, Math.min(vw - m - w, x));
   y = Math.max(m, Math.min(vh - m - h, y));
   return { x: Math.round(x), y: Math.round(y) };
@@ -258,6 +267,48 @@ async function naurenMostrarArteATodos(token) {
   ui.notifications.info(`Arte de ${token.document.name} mostrada para ${n} jogador(es).`);
 }
 
+
+/* ---------- 0.100.3: janela "Ver arte" do Foundry (ImagePopout) no padrão do sistema ----------
+ * Moldura da ficha (chanfro, barra listrada) nas cores do dono da imagem; a arte ganha a borda do sistema
+ * (ou fica sem moldura, se for recortada/redonda) e a placa com o nome. Vale também quando o Mestre usa
+ * "Mostrar aos Jogadores": quem recebe abre a mesma janela, com as mesmas cores. */
+function donoDaImagem(app) {
+  const uuid = app?.options?.uuid;
+  if (!uuid) return null;
+  let d = null; try { d = fromUuidSync(uuid, { strict: false }); } catch (err) { d = null; }
+  if (!d) return null;
+  if (d.documentName === "Actor") return d;
+  return d.actor ?? (d.parent?.documentName === "Actor" ? d.parent : null);
+}
+async function pintarImagemPopout(app, raiz) {
+  const ator = donoDaImagem(app);
+  const { estilo, escuro } = naurenEstiloDoCard(ator ?? null);
+  for (const par of estilo.split(";").map(x => x.trim()).filter(Boolean)) { const [k, v] = par.split(":").map(x => x.trim()); raiz.style.setProperty(k, v); }
+  raiz.classList.add("nc2", "nc-moldura", "na-popout");
+  raiz.classList.toggle("nc-fundo-escuro", escuro);
+  raiz.classList.toggle("nc-monstro", ator?.type === "npc");
+  const oculto = ator && !game.user.isGM && naurenNomeOculto({ actor: ator });
+  const nome = oculto ? NOME_OCULTO : (ator?.name ?? app.options?.caption ?? app.title ?? "");
+  if (oculto) { const t = raiz.querySelector(".window-header .window-title"); if (t) t.textContent = NOME_OCULTO; raiz.querySelectorAll("figcaption, .image-caption").forEach(c => { c.textContent = ""; }); raiz.querySelectorAll(".window-content img[alt]").forEach(i => { i.alt = ""; }); }
+  const corpo = raiz.querySelector(".window-content");
+  const midia = corpo?.querySelector("img, video");
+  if (!corpo || !midia || corpo.querySelector(".na-pop")) return;
+  const src = midia.currentSrc || midia.getAttribute("src") || app.options?.src || "";
+  const info = src ? await analisar(src) : null;
+  const modo = ator?.flags?.nauren?.moldura ?? "auto";
+  const recorte = modo === "nunca" ? true : modo === "sempre" ? false : !!info?.recorte;
+  const sub = oculto ? "" : subtitulo(ator);
+  const caixa = document.createElement("div");
+  caixa.className = `na-pop ${recorte ? "na-recorte" : "na-moldura"}`;
+  caixa.innerHTML = recorte
+    ? `<div class="na-arte-caixa"></div>${nome ? `<div class="na-arte-nome">${ESC(nome)}${sub ? `<small>${ESC(sub)}</small>` : ""}</div>` : ""}`
+    : `<div class="na-arte-caixa"><div class="na-arte-borda"><div class="na-arte-img"></div></div><i class="na-arte-filete"></i>${nome ? `<div class="na-arte-placa"><b>${ESC(nome)}</b>${sub ? `<small>${ESC(sub)}</small>` : ""}</div>` : ""}</div>`;
+  const lugar = midia.closest("figure") ?? midia.parentElement;
+  lugar.before(caixa);
+  (caixa.querySelector(".na-arte-img") ?? caixa.querySelector(".na-arte-caixa")).append(midia);
+  lugar.classList.add("na-pop-original");
+}
+
 /* ---------- registro ---------- */
 function naurenArteInit() {
   const reg = (k, d) => game.settings.register("nauren", k, d);
@@ -271,6 +322,15 @@ function naurenArteInit() {
     choices: { mundo: "A do mundo", "sup-dir": "Canto de cima, ao lado do chat", "inf-dir": "Canto de baixo, ao lado do chat", "sup-esq": "Canto de cima, à esquerda", "inf-esq": "Canto de baixo, à esquerda", token: "Junto do token" } });
   reg("arteHoverTamanho", { name: "Arte: tamanho", scope: "client", config: true, type: String, default: "medio", choices: { pequeno: "Pequeno", medio: "Médio", grande: "Grande" } });
   reg("arteHoverAtraso", { name: "Arte: espera para aparecer (ms)", hint: "Tempo com o mouse parado em cima do token antes de a arte aparecer.", scope: "client", config: true, type: Number, default: 250, range: { min: 0, max: 1000, step: 50 } });
+  Hooks.on("renderApplicationV2", (app, el) => {
+    try {
+      const IP = foundry.applications?.apps?.ImagePopout;
+      const raiz = app?.element ?? el;
+      if (!raiz?.classList) return;
+      if (!((IP && app instanceof IP) || raiz.classList.contains("image-popout"))) return;
+      pintarImagemPopout(app, raiz).catch(err => console.warn("Nauren RPG | janela da arte", err));
+    } catch (err) { console.warn("Nauren RPG | janela da arte", err); }
+  });
   CONFIG.queries ??= {};
   CONFIG.queries[QUERY_MOSTRAR] = async ({ tokenUuid, segundos } = {}) => {
     const doc = await fromUuid(tokenUuid).catch(() => null);

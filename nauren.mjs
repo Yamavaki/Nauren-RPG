@@ -12915,6 +12915,7 @@ function naurenHudMostrarTooltip(token) {
   el.innerHTML = `<div class="nome">${esc(nomeT)}${game.user.isGM && naurenNomeOculto(token) ? ` <span class="num" title="Os jogadores veem &quot;Desconhecido&quot;">(oculto)</span>` : ""}</div>
     <div class="estado" style="color:${est.cor}">${esc(est.texto)}${numeros ? ` <span class="num">${value}/${max}${escudo > 0 ? ` +${escudo}` : ""}</span>` : ""}</div>
     ${conds.length ? `<div class="conds">${conds.map(c => `<span><img src="${esc(c.img)}" alt="">${esc(c.nome)}${c.acumulos ? ` ${c.acumulos}` : ""}</span>`).join("")}</div>` : ""}`;
+  naurenPintarJanela(el, actor); // 0.100.3: cores e moldura chanfrada da ficha de quem está embaixo do mouse
   document.body.append(el);
   const p = naurenHudPontoNaTela(token.center.x, token.y - 6);
   el.style.left = `${Math.round(p.x)}px`; el.style.top = `${Math.round(p.y)}px`;
