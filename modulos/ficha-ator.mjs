@@ -172,6 +172,16 @@ function naurenLinhasDoCard(linhas = []) {
   });
 }
 
+/** 0.98: frase curta que explica por que cada Pigmento virou primária ou secundária (criador de personagem). */
+function naurenExplicarPaleta(pal, pigs = []) {
+  if (!pal?.primaria) return "Escolha 2 Pigmentos para ver as cores da sua ficha.";
+  const T = NAUREN_FICHA_PIGMENTOS, n = k => T[k]?.nome ?? k;
+  const [x, y] = pigs;
+  if (x && y && x === y) return `Mesmo Pigmento duas vezes: ${n(pal.primaria)} nas molduras e um tom claro dele nos detalhes.`;
+  const metal = [pal.secundaria].find(k => ["Dourado", "Preto", "Branco"].includes(k));
+  if (metal) return `${n(pal.primaria)} fica nas molduras e painéis (primária). ${n(metal)} vira o "metal" dos detalhes, botões e totais (secundária).`;
+  return `${n(pal.primaria)} é a mais escura: fica nas molduras e painéis (primária). ${n(pal.secundaria)} entra nos detalhes, botões e totais (secundária).`;
+}
 /** Chave da classe ("guerreiro", "mago"...) a partir do item de Classe (identifier ou nome sem acento). */
 function naurenFichaChaveClasse(item) {
   const bruto = String(item?.system?.identifier || item?.name || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
@@ -6451,7 +6461,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     let dados = null;
     try {
       await foundry.applications.api.DialogV2.wait({
-        ...NK.NAUREN_KIT_JANELA,
+        ...NK.naurenKitJanela(this.actor),
         window: { title: `${item.name} — confirmar uso` },
         content,
         buttons: [{
@@ -6544,6 +6554,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
    * antes o dano lia o valor já gasto e saía 0).
    */
   async _executarAcao(item, idx) {
+    NK.naurenKitDefinirAtor(this.actor);
     // 0.94.22: Desfazer - foto antes da Ação (só na de fora; repetições entram na mesma).
     const fotoExterna = !this._fotoDesfazer;
     if (fotoExterna) { try { this._fotoDesfazer = { foto: naurenFotoCenaDesfazer(this.actor), desde: Date.now() }; } catch (err) { this._fotoDesfazer = { foto: null, desde: Date.now() }; } }
@@ -11120,7 +11131,7 @@ class NaurenCriadorPersonagem extends foundry.applications.api.HandlebarsApplica
   static DEFAULT_OPTIONS = {
     id: "nauren-criador-{id}",
     classes: ["nauren-rpg", "nauren-criador"],
-    position: { width: 760, height: 680 },
+    position: { width: 1000, height: 720 },
     window: { title: "Criador de Personagem", resizable: true, minimizable: false },
     actions: {
       removerUmaPeculiaridade: NaurenCriadorPersonagem.onRemoverUmaPeculiaridade,
@@ -11145,7 +11156,8 @@ class NaurenCriadorPersonagem extends foundry.applications.api.HandlebarsApplica
       modoAtributos: NaurenCriadorPersonagem.onModoAtributos,
       ajustarAtributo: NaurenCriadorPersonagem.onAjustarAtributo,
       limparAtributos: NaurenCriadorPersonagem.onLimparAtributos,
-      abrirFichaManual: NaurenCriadorPersonagem.onAbrirFichaManual
+      abrirFichaManual: NaurenCriadorPersonagem.onAbrirFichaManual,
+      inverterCoresCriador: NaurenCriadorPersonagem.onInverterCoresCriador
     }
   };
 
@@ -11220,6 +11232,7 @@ class NaurenCriadorPersonagem extends foundry.applications.api.HandlebarsApplica
       context[`marcoAtivo${i}`] = etapa === i;
       // Etapas já passadas viram atalho (clicar volta direto para ela).
       context[`marcoFeito${i}`] = i < etapa && etapa < NAUREN_CRIADOR_ETAPAS.length;
+      context[`marcoOk${i}`] = i < etapa; // 0.98: ✓ também no resumo final
     }
 
     if (etapa === 0) {
@@ -11403,7 +11416,61 @@ class NaurenCriadorPersonagem extends foundry.applications.api.HandlebarsApplica
         concedidos: this.actor.items.filter(i => ["habilidade", "magia"].includes(i.type)).map(i => i.name).slice(0, 8).join(", ")
       };
     }
+    // 0.98: cores ao vivo (Roxo + Dourado até escolher os Pigmentos) e a coluna "Sua ficha".
+    {
+      const pigsItens = this.actor.items.filter(i => i.type === "cor").sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0));
+      const pigs = pigsItens.map(i => naurenFichaPigmentoDoItem(i)).filter(Boolean);
+      const modo = this.actor.getFlag("nauren", "coresFicha")?.modo || "auto";
+      const pal = pigs.length ? naurenFichaPaleta(pigs[0], pigs[1] ?? (pigs[0] === "Dourado" ? "Branco" : "Dourado"), { inverter: modo === "inverter" }) : naurenFichaPaleta("Roxo", "Dourado");
+      context.cores = { estilo: `--nc-p: ${pal.p}; --nc-pd: ${pal.pd}; --nc-pc: ${pal.pc}; --nc-s: ${pal.s}; --nc-sc: ${pal.sc};`, escuro: !!pal.fundoEscuro,
+        temPigmentos: pigs.length > 0, nomeP: pal.nomeP, nomeS: pal.nomeS, invertido: modo === "inverter", explicacao: naurenExplicarPaleta(pigs.length >= 2 ? pal : null, pigs) };
+      const atrsBase = this.actor.system.atributos ?? {};
+      const atrsVal = { ...Object.fromEntries(Object.entries(atrsBase).map(([k, v]) => [k, v?.value ?? v])), ...(etapa === 0 && this._atributosDigitados ? this._atributosDigitados : {}) };
+      const classeItem = this.actor.items.find(i => i.type === "classe");
+      const uuidSel = this.actor.getFlag("nauren", "criadorClasseSelecionada") || null;
+      let classeNome = classeItem?.name ?? "";
+      if (!classeNome && uuidSel) { try { classeNome = fromUuidSync(uuidSel, { strict: false })?.name ?? ""; } catch (err) { classeNome = ""; } }
+      const chave = naurenFichaChaveClasse(classeItem ?? { name: classeNome });
+      const vis = NAUREN_FICHA_CLASSES[chave] ?? null;
+      context.ficha = {
+        nome: this.actor.name, img: this._imgRetratoEscolhida ?? this.actor.img ?? "icons/svg/mystery-man.svg",
+        classe: classeNome, classeCor: vis?.cor ?? "", classeSvg: vis?.svg ?? "",
+        atributos: NAUREN_CRIADOR_ATRIBUTOS.map(c => ({ curto: { forca: "FOR", agilidade: "AGI", estamina: "EST", inteligencia: "INT", destino: "DES" }[c.chave], valor: Number(atrsVal[c.chave]) || 0 })),
+        pigmentos: pigsItens.map((i, k) => ({ nome: i.name.replace(/^Pigmento\s+/i, ""), cor: NAUREN_FICHA_PIGMENTOS[naurenFichaPigmentoDoItem(i)]?.a ?? (i.system?.corHex || "#888"), ordem: k === 0 ? "Primária" : "Secundária" })),
+        peculiaridades: this.actor.items.filter(i => i.type === "peculiaridade").length,
+        equipamento: this.actor.items.filter(i => ["arma", "armadura"].includes(i.type) && i.getFlag("nauren", "escolhaEquipamentoCriador")).length
+      };
+      if (pigs.length >= 2) {
+        // A ordem na coluna segue a paleta (a mais escura, o metal ou a invertida decidem a primária).
+        let jaP = false;
+        context.ficha.pigmentos = pigsItens.map((it, k) => {
+          const chaveP = naurenFichaPigmentoDoItem(it);
+          const ehP = !jaP && chaveP === pal.primaria; if (ehP) jaP = true;
+          return { ...context.ficha.pigmentos[k], ordem: ehP ? "Primária" : "Secundária" };
+        }).sort((a, b) => (a.ordem === "Primária" ? 0 : 1) - (b.ordem === "Primária" ? 0 : 1));
+      }
+      if (etapa === 2 && context.pigmentos) {
+        const ordemPorUuid = new Map(pigsItens.map((i, k) => [i.getFlag("nauren", "origemUuid") || i.getFlag("core", "sourceId"), k]));
+        context.pigmentos = context.pigmentos.map(p => {
+          const k = naurenFichaPigmentoDoItem({ name: p.nome, system: { corHex: p.corHex } });
+          const o = ordemPorUuid.get(p.uuid);
+          return { ...p, gema: NAUREN_FICHA_PIGMENTOS[k]?.a ?? p.corHex, nomeCurto: p.nome.replace(/^Pigmento\s+/i, ""), ordem: o === 0 ? "1ª cor" : o === 1 ? "2ª cor" : "" };
+        });
+        context.podeInverter = pigs.length >= 2 && pigs[0] !== pigs[1];
+      }
+      if (etapa === 3 && context.classes) {
+        context.classes = context.classes.map(c => { const v = NAUREN_FICHA_CLASSES[naurenFichaChaveClasse({ name: c.nome })]; return { ...c, cor: v?.cor ?? "#cca162", svg: v?.svg ?? NAUREN_FICHA_CLASSE_NEUTRA.svg }; });
+        if (context.classeSelecionada) { const v = NAUREN_FICHA_CLASSES[naurenFichaChaveClasse({ name: context.classeSelecionada.nome })]; context.classeSelecionada.cor = v?.cor ?? "#cca162"; context.classeSelecionada.svg = v?.svg ?? NAUREN_FICHA_CLASSE_NEUTRA.svg; }
+      }
+    }
     return context;
+  }
+
+  /** 0.98: troca qual Pigmento é a cor principal (vale também para a ficha, cards e HUD). */
+  static async onInverterCoresCriador() {
+    const atual = this.actor.getFlag("nauren", "coresFicha") ?? {};
+    await this.actor.setFlag("nauren", "coresFicha", { ...atual, modo: atual.modo === "inverter" ? "auto" : "inverter" });
+    this.render();
   }
 
   _onRender(context, options) {
@@ -14170,6 +14237,7 @@ class NaurenAlvoHelper {
 
 
   static async _popupReacao(actor, p, opts) {
+    NK.naurenKitDefinirAtor(actor);
     // BUG CORRIGIDO: a checagem antiga só olhava se EXISTIAM outros
     // Mestres ativos, mas nunca se EU MESMO (quem está processando esta
     // reação agora) sou Mestre - isso fazia o popup ser enviado TAMBÉM
@@ -14338,7 +14406,9 @@ class NaurenAlvoHelper {
     let cabecalhoP = "";
     if (p.houveAtaque || mostrarReacaoDano) {
       const vem = [danoP > 0 ? `<b>${danoP} de dano</b>` : "", ...condsQueVem.map(c => `<b>${escP(c)}</b>`)].filter(Boolean).join(" + ");
-      cabecalhoP = `<div class="nk-cab nk-tom-ruim">
+      let atacanteUuidP = "";
+      try { atacanteUuidP = p.atacanteTokenUuid ? (fromUuidSync(p.atacanteTokenUuid)?.actor?.uuid ?? "") : ""; } catch (err) { atacanteUuidP = ""; }
+      cabecalhoP = `<div class="nk-cab nk-tom-ruim nk-cab-atacante"${atacanteUuidP ? ` data-nc-ator="${atacanteUuidP}"` : ""}>
         <div class="nk-avatar" aria-hidden="true">${escP(String(p.atacante ?? "?").charAt(0))}</div>
         <div class="nk-cab-texto"><div class="nk-cab-titulo">${escP(p.atacante ?? "Alguém")} ${p.houveAtaque ? "ataca você" : "usa uma Ação em você"}</div>
           <div class="nk-cab-sub">${escP(String(p.nomeAcao ?? "").replace(/^(.+?) — (.+)$/, (m, a, b) => a.includes(b) ? a : m))}${vem ? ` · ${p.houveAtaque ? "se acertar: " : ""}${vem}` : ""}</div></div>
@@ -14640,7 +14710,7 @@ class NaurenAlvoHelper {
     if (!ehConsequencia) { naurenHudAlvos.set(actor.uuid, { de: p.atacante ?? "Alguém", acao: p.nomeAcao ?? "uma Ação", houveAtaque: !!p.houveAtaque }); NaurenHudCombate.atualizar(); }
     try {
       await foundry.applications.api.DialogV2.wait({
-        ...NK.NAUREN_KIT_JANELA,
+        ...NK.naurenKitJanela(actor),
         window: { title: `${actor.name} — reagir?` },
         content,
         buttons: [{

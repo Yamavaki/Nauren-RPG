@@ -2317,7 +2317,7 @@ async function naurenOferecerDestino(actor, resultado, { titulo = "", tipo = "te
       { action: "manter", label: podeRerolar ? `Manter o ${total}` : "Continuar", default: true }
     ];
     const escolha = await foundry.applications.api.DialogV2.wait({
-      ...kit.NAUREN_KIT_JANELA,
+      ...kit.naurenKitJanela(actor),
       window: { title: `Rolagem: ${titulo || "d20"} — ${actor.name}` },
       content: conteudo,
       buttons: botoes,

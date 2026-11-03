@@ -5896,3 +5896,308 @@ img.nauren-criador-token.com-borda { border: none; border-radius: 0; background:
 #nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-pip { margin: 0; }
 #nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-botao-teste { padding: 0 9px; margin-left: auto; }
 #nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-botao-ouro { font-size: 14px; letter-spacing: .04em; padding: 0 16px; overflow: hidden; text-overflow: ellipsis; }
+
+/* ===================================================
+   0.98 — JANELAS DO KIT NO ESTILO DA FICHA, NAS CORES DE QUEM AGE
+   (--nc-* postas pelo hook renderApplicationV2; recursos mantêm as cores próprias)
+   =================================================== */
+.application.nauren-kit.nc2 {
+  --nc-f: #1b1624;
+  --nk-fundo: var(--nc-f); --nk-painel: color-mix(in srgb, var(--nc-pd) 30%, #1e1829); --nk-painel2: color-mix(in srgb, var(--nc-pd) 45%, #221a2e);
+  --nk-linha: color-mix(in srgb, var(--nc-p) 26%, #2e2640); --nk-linha2: color-mix(in srgb, var(--nc-p) 48%, #2e2640);
+  --nk-ouro: var(--nc-s); --nk-ouro-claro: var(--nc-sc);
+  border: 1.5px solid color-mix(in srgb, var(--nc-p) 80%, #000) !important; border-radius: 0 !important;
+  clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px), 0 10px);
+}
+.application.nauren-kit.nc2.nc-fundo-escuro { --nc-f: #141317; }
+.application.nauren-kit.nc2::after { content: ""; position: absolute; inset: 3.5px; border: 1px solid color-mix(in srgb, var(--nc-s) 38%, transparent); pointer-events: none; z-index: 50; }
+/* barra de título: faixa listrada na primária escura + linha da secundária */
+.application.nauren-kit.nc2 > .window-header {
+  background: repeating-linear-gradient(135deg, var(--nc-pd) 0 10px, color-mix(in srgb, var(--nc-pd) 78%, #000) 10px 20px) !important;
+  border-bottom: 2px solid var(--nc-s); color: #fff; padding-left: 16px;
+}
+.application.nauren-kit.nc2 > .window-header .window-title { font-family: "Modesto Condensed", "Cinzel", Georgia, serif; font-size: 17px; font-weight: 700; letter-spacing: .03em; color: #fff; display: flex; align-items: center; gap: 8px; }
+.application.nauren-kit.nc2 > .window-header .window-title::before { content: ""; flex: none; width: 7px; height: 7px; transform: rotate(45deg); background: var(--nc-s); }
+.application.nauren-kit.nc2 > .window-header button, .application.nauren-kit.nc2 > .window-header a { color: var(--nc-pc); }
+/* títulos de seção em placa: ◆ TÍTULO ── */
+.application.nauren-kit.nc2 .nk-secao { display: flex; align-items: center; gap: 7px; color: var(--nc-sc); font-family: "Modesto Condensed", "Cinzel", Georgia, serif; font-size: 13.5px; letter-spacing: .1em; }
+.application.nauren-kit.nc2 .nk-secao::before { content: ""; flex: none; width: 6px; height: 6px; transform: rotate(45deg); background: var(--nc-s); }
+.application.nauren-kit.nc2 .nk-secao::after { content: ""; flex: 1 1 24px; min-width: 24px; height: 1.5px; background: linear-gradient(90deg, var(--nc-p), transparent); }
+.application.nauren-kit.nc2 .nk-secao span { font-family: Signika, sans-serif; font-size: 12px; letter-spacing: 0; text-transform: none; }
+.application.nauren-kit.nc2 .nk-secao-linha > .nk-secao { flex: 1; }
+.application.nauren-kit.nc2 .nk-secao-destino { color: #d9bdf7; }
+.application.nauren-kit.nc2 .nk-secao-destino::before { background: #9c6ad6; }
+/* cabeçalho de quem age: anel nas duas cores */
+.application.nauren-kit.nc2 .nk-cab { background: linear-gradient(90deg, color-mix(in srgb, var(--nc-pd) 85%, #000), var(--nk-painel)); border: 1px solid color-mix(in srgb, var(--nc-p) 55%, #000); border-radius: 10px; }
+.application.nauren-kit.nc2 .nk-avatar { background: #2b2140; color: #fff; box-shadow: 0 0 0 2px var(--nc-p), 0 0 0 4px var(--nc-f), 0 0 0 5px var(--nc-s); margin: 4px; }
+.application.nauren-kit.nc2 .nc-monstro .nk-avatar, .application.nauren-kit.nc2.nc-monstro .nk-cab:not(.nk-cab-atacante) .nk-avatar { border-radius: 9px; }
+.application.nauren-kit.nc2 .nk-cab-sub { color: var(--nc-pc); }
+/* faixa de quem ataca: nas cores DELE (o hook pinta o elemento com data-nc-ator) */
+.application.nauren-kit.nc2 .nk-cab.nk-cab-atacante { border-color: color-mix(in srgb, var(--nc-p) 70%, #000); background: linear-gradient(90deg, color-mix(in srgb, var(--nc-pd) 92%, #000), #1a1520); }
+.application.nauren-kit.nc2 .nk-cab-atacante .nk-cab-numero small { color: var(--nc-sc); }
+.application.nauren-kit.nc2 .nk-cab-atacante .nk-cab-numero b { color: #fff; }
+.application.nauren-kit.nc2 .nk-cab-atacante .nk-cab-numero.nk-critico b { color: #ffe2a3; }
+/* blocos, opções e escolhas */
+.application.nauren-kit.nc2 .nk-bloco, .application.nauren-kit.nc2 .nk-fontes-caixa, .application.nauren-kit.nc2 .nk-condicao { border-radius: 10px; }
+.application.nauren-kit.nc2 .nk-bloco-ataque .nk-tag, .application.nauren-kit.nc2 .nk-bloco-teste .nk-tag { background: var(--nc-s); color: #15111b; }
+.application.nauren-kit.nc2 .nk-opcao { border-radius: 10px; }
+.application.nauren-kit.nc2 .nk-opcao:has(input:checked) { background: color-mix(in srgb, var(--nc-s) 9%, var(--nk-painel)); box-shadow: 0 0 0 1px color-mix(in srgb, var(--nc-s) 35%, transparent); }
+.application.nauren-kit.nc2 .nk-opcao input, .application.nauren-kit.nc2 .nk-gasto input, .application.nauren-kit.nc2 .nk-desligar input { accent-color: var(--nc-s); }
+.application.nauren-kit.nc2 .nk-chip:not(.nk-chip-buff):not(.nk-chip-debuff):not(.nk-chip-destino) { border-color: color-mix(in srgb, var(--nc-s) 60%, #000); color: var(--nc-sc); background: color-mix(in srgb, var(--nc-s) 10%, var(--nc-f)); }
+.application.nauren-kit.nc2 .nk-seg span { border-radius: 0; }
+.application.nauren-kit.nc2 .nk-segmentos { gap: 0; border: 1px solid var(--nk-linha2); border-radius: 999px; overflow: hidden; }
+.application.nauren-kit.nc2 .nk-seg span { border: 0; border-right: 1px solid var(--nk-linha); min-height: 40px; background: transparent; }
+.application.nauren-kit.nc2 .nk-seg:last-child span { border-right: 0; }
+.application.nauren-kit.nc2 .nk-seg:has(input:checked) span { border: 0; background: var(--nc-s); color: #15111b; }
+.application.nauren-kit.nc2 .nk-seg-fac:has(input:checked) span { background: #5fbf9a; color: #0f1d17; }
+.application.nauren-kit.nc2 .nk-seg-dif:has(input:checked) span { background: #e08a4a; color: #24130a; }
+.application.nauren-kit.nc2 .nk-total { border-color: var(--nc-s); color: var(--nc-sc); background: #15111b; }
+.application.nauren-kit.nc2 .nk-chance-barra span { background: var(--nc-s); }
+/* rodapé: principal preenchido na secundária com pontas em losango; o texto nunca sai do botão */
+.application.nauren-kit.nc2 .form-footer { background: var(--nc-f); border-top: 1px solid var(--nk-linha); padding: 12px 18px 15px; }
+.application.nauren-kit.nc2 .form-footer button { min-height: 44px; height: auto; padding: 8px 16px; line-height: 1.2; white-space: normal; overflow-wrap: anywhere; border-radius: 999px; border-color: color-mix(in srgb, var(--nc-s) 55%, #2e2640); color: var(--nc-sc); }
+.application.nauren-kit.nc2 .form-footer button:hover { border-color: var(--nc-s); color: #fff; background: color-mix(in srgb, var(--nc-s) 12%, transparent); }
+.application.nauren-kit.nc2 .form-footer button.default, .application.nauren-kit.nc2 .form-footer button[autofocus], .application.nauren-kit.nc2 .form-footer button.nk-principal {
+  background: var(--nc-s); border: 0; color: #15111b; border-radius: 0; padding: 8px 26px; letter-spacing: .02em;
+  clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 14px 100%, 0 50%);
+}
+.application.nauren-kit.nc2 .form-footer button.default:hover, .application.nauren-kit.nc2 .form-footer button[autofocus]:hover, .application.nauren-kit.nc2 .form-footer button.nk-principal:hover { background: var(--nc-sc); color: #15111b; }
+.application.nauren-kit.nc2 .form-footer button.nk-destino-btn { background: transparent; border: 1px solid #9c6ad6; color: #d9bdf7; }
+.application.nauren-kit.nc2 .form-footer button.nk-destino-btn:hover { background: #9c6ad6; color: #160d20; }
+.application.nauren-kit.nc2 .form-footer button i { margin-right: 6px; }
+
+/* ===================================================
+   0.98 — CRIADOR DE PERSONAGEM NO ESTILO DA FICHA
+   Começa Roxo + Dourado; ao escolher os Pigmentos, a janela inteira muda (--nc-* no corpo).
+   =================================================== */
+.nauren-criador .window-content { background: #15111c; padding: 0; }
+.nauren-criador .nauren-criador-corpo.nc2 {
+  --nc-f: #1b1624; --ncr-linha: color-mix(in srgb, var(--nc-p) 24%, #2e2640); --ncr-linha2: color-mix(in srgb, var(--nc-p) 45%, #2e2640);
+  --ncr-texto: #ece6f5; --ncr-suave: #b3a6c9; --ncr-painel: color-mix(in srgb, var(--nc-pd) 28%, #1e1829);
+  container: criador / inline-size; padding: 16px 20px 16px; gap: 14px; color: var(--ncr-texto);
+  background: radial-gradient(120% 60% at 50% 0%, color-mix(in srgb, var(--nc-pd) 55%, transparent), transparent 70%), #15111c;
+}
+.nauren-criador .nauren-criador-corpo.nc2.nc-fundo-escuro { --nc-f: #141317; }
+/* passos em faixas */
+.nauren-criador .nc2 .ncr-passos { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; margin: 0; flex-shrink: 0; }
+.nauren-criador .nc2 .ncr-passo {
+  display: flex; align-items: center; justify-content: center; gap: 8px; min-width: 0; height: 36px; padding: 0 14px 0 18px;
+  font-size: 13px; font-weight: 700; color: #8f82a8; background: #1e1829; text-decoration: none;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%, 12px 50%);
+}
+.nauren-criador .nc2 .ncr-passo:first-child { clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%); padding-left: 12px; }
+.nauren-criador .nc2 .ncr-passo > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.nauren-criador .nc2 .ncr-passo > i { flex: none; width: 16px; height: 16px; transform: rotate(45deg); border: 1.5px solid currentColor; display: grid; place-items: center; font-style: normal; box-sizing: border-box; }
+.nauren-criador .nc2 .ncr-passo > i b { transform: rotate(-45deg); font-size: 9.5px; line-height: 1; }
+.nauren-criador .nc2 .ncr-passo.feito { color: var(--nc-sc); background: color-mix(in srgb, var(--nc-pd) 85%, #1e1829); cursor: pointer; text-decoration: none; }
+.nauren-criador .nc2 .ncr-passo.feito > i { background: var(--nc-s); border-color: var(--nc-s); color: #15111b; }
+.nauren-criador .nc2 .ncr-passo.feito:hover { color: #fff; }
+.nauren-criador .nc2 .ncr-passo.ativo { color: #15111b; background: var(--nc-s); }
+/* duas colunas: Sua ficha + passo atual */
+.nauren-criador .nc2 .ncr-layout { flex: 1; min-height: 0; display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 18px; }
+.nauren-criador .nc2 .ncr-principal { min-width: 0; min-height: 0; display: flex; flex-direction: column; }
+/* painel com moldura: cantos chanfrados na primária, filete na secundária */
+.nauren-criador .nc2 .ncr-ficha {
+  position: relative; isolation: isolate; min-height: 0; overflow-y: auto; scrollbar-width: thin; box-sizing: border-box;
+  display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 16px 14px; text-align: center;
+  background: color-mix(in srgb, var(--nc-p) 80%, #000);
+  clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px), 0 10px);
+}
+.nauren-criador .nc2 .ncr-ficha::before { content: ""; position: absolute; inset: 1.5px; z-index: -1; background: var(--nc-f); box-shadow: inset 0 0 0 3px var(--nc-f), inset 0 0 0 4px color-mix(in srgb, var(--nc-s) 40%, transparent);
+  clip-path: polygon(9.4px 0, calc(100% - 9.4px) 0, 100% 9.4px, 100% calc(100% - 9.4px), calc(100% - 9.4px) 100%, 9.4px 100%, 0 calc(100% - 9.4px), 0 9.4px); }
+.nauren-criador .nc2 .ncr-placa { display: flex; align-items: center; gap: 7px; align-self: stretch; margin: 2px 0; font-family: "Modesto Condensed", "Cinzel", Georgia, serif; font-size: 13.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--nc-sc); }
+.nauren-criador .nc2 .ncr-placa > i { flex: none; width: 6px; height: 6px; transform: rotate(45deg); background: var(--nc-s); }
+.nauren-criador .nc2 .ncr-placa::after { content: ""; flex: 1; height: 1.5px; background: linear-gradient(90deg, var(--nc-p), transparent); }
+.nauren-criador .nc2 .ncr-retrato { width: 84px; height: 84px; border-radius: 50%; overflow: hidden; margin: 6px 0 4px; flex: none; box-shadow: 0 0 0 2px var(--nc-p), 0 0 0 5px var(--nc-f), 0 0 0 6px var(--nc-s); background: #2b2140; }
+.nauren-criador .nc2 .ncr-retrato img { width: 100%; height: 100%; object-fit: cover; border: 0; }
+.nauren-criador .nc2 .ncr-nome { font-family: "Modesto Condensed", "Cinzel", Georgia, serif; font-size: 22px; font-weight: 700; color: #fff; line-height: 1.1; max-width: 100%; overflow-wrap: anywhere; }
+.nauren-criador .nc2 .ncr-classe { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; color: var(--nc-pc); }
+.nauren-criador .nc2 .ncr-classe svg { width: 16px; height: 16px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.nauren-criador .nc2 .ncr-cores { align-self: stretch; display: flex; flex-direction: column; gap: 6px; }
+.nauren-criador .nc2 .ncr-cor { display: flex; align-items: center; gap: 9px; padding: 6px 9px; border-radius: 8px; background: var(--ncr-painel); border: 1px solid var(--ncr-linha); text-align: left; }
+.nauren-criador .nc2 .ncr-cor > i { flex: none; width: 14px; height: 14px; transform: rotate(45deg); border-radius: 2px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.3); }
+.nauren-criador .nc2 .ncr-cor > span { display: flex; flex-direction: column; font-size: 12.5px; font-weight: 700; line-height: 1.2; min-width: 0; }
+.nauren-criador .nc2 .ncr-cor small { font-size: 9.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ncr-suave); }
+.nauren-criador .nc2 .ncr-cor-vazia > i { border: 1.5px dashed #6d5f8a; }
+.nauren-criador .nc2 .ncr-cor-vazia > span { color: var(--ncr-suave); font-weight: 400; }
+.nauren-criador .nc2 .ncr-brasoes { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; align-self: stretch; margin-top: 2px; }
+.nauren-criador .nc2 .ncr-brasao { padding: 1.5px; box-sizing: border-box; background: var(--nc-s); clip-path: polygon(0 0, 100% 0, 100% 72%, 50% 100%, 0 72%); height: 52px; }
+.nauren-criador .nc2 .ncr-brasao > div { height: 100%; display: flex; flex-direction: column; align-items: center; padding-top: 6px; gap: 1px; box-sizing: border-box;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--nc-p) 42%, var(--nc-f)), color-mix(in srgb, var(--nc-pd) 85%, var(--nc-f)) 75%); clip-path: polygon(0 0, 100% 0, 100% 72%, 50% 100%, 0 72%); }
+.nauren-criador .nc2 .ncr-brasao span { font-size: 8.5px; font-weight: 700; letter-spacing: .06em; color: #d6cce6; text-transform: uppercase; }
+.nauren-criador .nc2 .ncr-brasao b { font-size: 17px; color: #fff; line-height: 1.1; }
+.nauren-criador .nc2 .ncr-contas { align-self: stretch; display: flex; flex-direction: column; gap: 0; margin-top: 2px; }
+.nauren-criador .nc2 .ncr-contas > span { display: flex; justify-content: space-between; padding: 6px 2px; font-size: 12px; color: var(--ncr-suave); border-bottom: 1px solid var(--ncr-linha); }
+.nauren-criador .nc2 .ncr-contas > span:last-child { border-bottom: 0; }
+.nauren-criador .nc2 .ncr-contas b { color: #fff; }
+.nauren-criador .nc2 .ncr-nota { margin: auto 0 0; font-size: 11px; color: #8f82a8; }
+/* cabeçalho de cada passo */
+.nauren-criador .nc2 .nauren-criador-etapa { padding: 2px 6px 6px 2px; scrollbar-width: thin; }
+.nauren-criador .nc2 .ncr-cabecalho { display: flex; flex-direction: column; gap: 4px; margin: 0 0 14px; padding-bottom: 12px; border-bottom: 1px solid var(--ncr-linha); }
+.nauren-criador .nc2 .ncr-cabecalho .nauren-criador-titulo { justify-content: flex-start; margin: 0; font-family: "Modesto Condensed", "Cinzel", Georgia, serif; font-size: 26px; font-weight: 700; color: #fff; letter-spacing: .02em; }
+.nauren-criador .nc2 .ncr-cabecalho p { margin: 0; font-size: 13px; color: var(--ncr-suave); line-height: 1.45; }
+.nauren-criador .nc2 .ncr-cabecalho p b { color: var(--nc-sc); }
+.nauren-criador .nc2 .item-meta-hint { color: var(--ncr-suave); font-size: 12.5px; line-height: 1.45; }
+.nauren-criador .nc2 .nauren-criador-etapa > .ncr-placa { margin: 18px 0 12px; }
+/* nome e imagens */
+.nauren-criador .nc2 .nauren-criador-nome { display: flex; flex-direction: column; gap: 6px; margin: 0 0 14px; }
+.nauren-criador .nc2 .nauren-criador-nome label { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--nc-sc); }
+.nauren-criador .nc2 .nauren-criador-nome label i { display: none; }
+.nauren-criador .nc2 input[type="text"], .nauren-criador .nc2 input[type="number"] { background: #120e18; border: 1px solid var(--ncr-linha2); border-radius: 8px; color: var(--ncr-texto); }
+.nauren-criador .nc2 .nauren-criador-nome input { height: 40px; font-size: 16px; padding: 0 12px; }
+.nauren-criador .nc2 input:focus { outline: none; border-color: var(--nc-s); box-shadow: 0 0 0 2px color-mix(in srgb, var(--nc-s) 30%, transparent); }
+.nauren-criador .nc2 .nauren-criador-imagens { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 0; }
+.nauren-criador .nc2 .nauren-criador-imagem { display: flex; gap: 14px; align-items: flex-start; padding: 14px; border-radius: 10px; background: var(--ncr-painel); border: 1px solid var(--ncr-linha); min-width: 0; }
+.nauren-criador .nc2 .nauren-criador-imagem > img { flex: none; width: 76px; height: 76px; object-fit: cover; border-radius: 10px; border: 0; box-shadow: 0 0 0 2px var(--nc-p), 0 0 0 4px var(--nc-f), 0 0 0 5px var(--nc-s); margin: 5px; }
+.nauren-criador .nc2 .nauren-criador-imagem > img.nauren-criador-token { border-radius: 50%; }
+.nauren-criador .nc2 .nauren-criador-imagem > div { display: flex; flex-direction: column; gap: 6px; min-width: 0; flex: 1; }
+.nauren-criador .nc2 .nauren-criador-imagem label { font-size: 14px; font-weight: 700; color: #fff; }
+.nauren-criador .nc2 .nauren-criador-imagem .item-meta-hint { margin: 0; font-size: 11.5px; }
+.nauren-criador .nc2 .nauren-criador-imagem button { width: auto; align-self: flex-start; min-height: 30px; height: auto; padding: 4px 12px; line-height: 1.2; white-space: normal; text-align: left; }
+.nauren-criador .nc2 .nauren-criador-imagem .nauren-criador-link { height: 30px; font-size: 12px; padding: 0 8px; width: 100%; box-sizing: border-box; }
+/* botões: contorno (secundária) e principal preenchido com pontas em losango */
+.nauren-criador .nc2 button, .nauren-criador .nc2 .btn-add, .nauren-criador .nc2 .nauren-criador-modo-chip, .nauren-criador .nc2 .ncr-botao-linha {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--nc-s) 55%, #2e2640);
+  background: color-mix(in srgb, var(--nc-s) 8%, transparent); color: var(--nc-sc); font-weight: 700; font-size: 12.5px; cursor: pointer; text-decoration: none; box-shadow: none;
+}
+.nauren-criador .nc2 button:hover, .nauren-criador .nc2 .btn-add:hover, .nauren-criador .nc2 .ncr-botao-linha:hover { border-color: var(--nc-s); color: #fff; background: color-mix(in srgb, var(--nc-s) 16%, transparent); }
+.nauren-criador .nc2 button i, .nauren-criador .nc2 .btn-add i { color: inherit; margin: 0; }
+.nauren-criador .nc2 .nauren-criador-borda.ativa { background: var(--nc-s); color: #15111b; border-color: var(--nc-s); }
+.nauren-criador .nc2 .nauren-criador-rodape { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--ncr-linha); gap: 12px; }
+.nauren-criador .nc2 .nauren-criador-rodape .btn-add { min-height: 40px; padding: 6px 18px; }
+.nauren-criador .nc2 .nauren-criador-rodape .nauren-criador-btn-avancar {
+  min-height: 42px; padding: 6px 30px; font-size: 14px; letter-spacing: .02em; color: #15111b; background: var(--nc-s); border: 0; border-radius: 0;
+  clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 14px 100%, 0 50%); white-space: nowrap;
+}
+.nauren-criador .nc2 .nauren-criador-rodape .nauren-criador-btn-avancar:hover { background: var(--nc-sc); color: #15111b; }
+.nauren-criador .nc2 .nauren-criador-contador { margin: 10px 0 0; font-size: 12px; color: var(--ncr-suave); }
+.nauren-criador .nc2 .nauren-criador-contador b { color: var(--nc-sc); }
+/* atributos: o valor fica num brasão, com − e + ao lado */
+.nauren-criador .nc2 .nauren-criador-modos { max-width: none; gap: 12px; }
+.nauren-criador .nc2 .nauren-criador-modo { border-radius: 10px; border: 1px solid var(--ncr-linha2); background: var(--ncr-painel); padding: 16px 14px; }
+.nauren-criador .nc2 .nauren-criador-modo:hover { border-color: var(--nc-s); transform: none; }
+.nauren-criador .nc2 .nauren-criador-modo > i, .nauren-criador .nc2 .nauren-criador-modo span b { color: var(--nc-s); }
+.nauren-criador .nc2 .nauren-criador-modo-barra { gap: 8px; margin: 0 0 14px; }
+.nauren-criador .nc2 .nauren-criador-modo-chip { padding: 5px 14px; }
+.nauren-criador .nc2 .nauren-criador-modo-chip.ativo { background: var(--nc-s); color: #15111b; border-color: var(--nc-s); }
+.nauren-criador .nc2 .nauren-criador-modo-limpar { color: var(--ncr-suave); font-size: 12px; }
+.nauren-criador .nc2 .nauren-criador-pool { gap: 10px; margin: 0 0 4px; }
+.nauren-criador .nc2 .nauren-criador-pool-rotulo { color: var(--ncr-suave); font-size: 12px; }
+.nauren-criador .nc2 .nauren-criador-ficha-valor {
+  width: 44px; height: 44px; border: 0; border-radius: 0; box-shadow: none; font-size: 18px; color: #15111b;
+  background: linear-gradient(135deg, var(--nc-sc), var(--nc-s) 60%); clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+}
+.nauren-criador .nc2 .nauren-criador-ficha-valor.escolhida { background: #fff; transform: scale(1.12); box-shadow: none; }
+.nauren-criador .nc2 .nauren-criador-ficha-valor.usada { opacity: .28; filter: grayscale(.7); }
+.nauren-criador .nc2 .nauren-criador-atributos-grid.principal { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; max-width: none; }
+.nauren-criador .nc2 .nauren-criador-atributos-grid.principal .nauren-criador-atributo-campo {
+  gap: 8px; padding: 14px 8px 12px; border-radius: 10px; background: var(--ncr-painel); border: 1px solid var(--ncr-linha); min-width: 0;
+}
+.nauren-criador .nc2 .nauren-criador-atributos-grid.principal .nauren-criador-atributo-campo:hover { border-color: var(--ncr-linha2); }
+.nauren-criador .nc2 .nauren-criador-atributos-grid.principal.esperando-valor .nauren-criador-atributo-campo { border-color: var(--nc-s); border-style: dashed; }
+.nauren-criador .nc2 .nauren-criador-atributo-campo.alvo-drop, .nauren-criador .nc2 .nauren-criador-atributo-campo.piscou { border-color: var(--nc-s) !important; box-shadow: 0 0 12px color-mix(in srgb, var(--nc-s) 50%, transparent); }
+.nauren-criador .nc2 .nauren-criador-atributo-icone { display: none; }
+.nauren-criador .nc2 .nauren-criador-atributos-grid.principal label { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--nc-sc); }
+.nauren-criador .nc2 .nauren-criador-atributo-valor { grid-template-columns: 24px minmax(0, 52px) 24px; justify-content: center; gap: 6px; }
+.nauren-criador .nc2 .nauren-criador-atributo-valor button { width: 24px; height: 24px; min-height: 0; padding: 0; font-size: 15px; border-radius: 50%; }
+.nauren-criador .nc2 .nauren-criador-atributos-grid.principal .nauren-criador-atributo-campo input {
+  height: 58px; padding: 0 0 12px; font-size: 24px; font-weight: 700; color: #fff; border: 0; border-radius: 0;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--nc-p) 45%, var(--nc-f)), color-mix(in srgb, var(--nc-pd) 85%, var(--nc-f)) 75%);
+  clip-path: polygon(0 0, 100% 0, 100% 72%, 50% 100%, 0 72%); box-shadow: inset 0 2px 0 var(--nc-s);
+}
+.nauren-criador .nc2 .nauren-criador-atributo-desc { font-size: 11px; color: var(--ncr-suave); }
+.nauren-criador .nc2 .nauren-criador-previa { max-width: none; margin: 14px 0 0; padding: 10px; gap: 8px; border-radius: 10px; border: 1px solid var(--ncr-linha); background: var(--ncr-painel); }
+.nauren-criador .nc2 .nauren-criador-previa > span { background: #120e18; border: 1px solid var(--ncr-linha); border-radius: 8px; padding: 5px 8px; min-width: 76px; }
+.nauren-criador .nc2 .nauren-criador-previa > .nauren-criador-previa-titulo { color: var(--nc-sc); background: none; border: 0; }
+.nauren-criador .nc2 .nauren-criador-dados-linha .nauren-criador-dado { border-radius: 10px; border: 1px solid var(--ncr-linha2); background: var(--ncr-painel); }
+.nauren-criador .nc2 .nauren-criador-dados-linha .nauren-criador-dado.rolado { border-color: var(--nc-s); }
+/* cartões (Peculiaridades, Pigmentos, Classe, Equipamento) */
+.nauren-criador .nc2 .nauren-criador-cards-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+.nauren-criador .nc2 .nauren-criador-card {
+  position: relative; gap: 6px; padding: 14px 10px 12px; border-radius: 10px; border: 1px solid var(--ncr-linha); background: var(--ncr-painel); min-height: 0; min-width: 0;
+}
+.nauren-criador .nc2 .nauren-criador-card:hover { border-color: var(--ncr-linha2); }
+.nauren-criador .nc2 .nauren-criador-card.selecionado { border-color: var(--nc-s); background: color-mix(in srgb, var(--nc-s) 9%, var(--ncr-painel)); box-shadow: 0 0 0 1px color-mix(in srgb, var(--nc-s) 45%, transparent); }
+.nauren-criador .nc2 .nauren-criador-card.bloqueado { opacity: .38; }
+.nauren-criador .nc2 .nauren-criador-card img { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; }
+.nauren-criador .nc2 .nauren-criador-card .nauren-criador-card-nome { font-size: 13px; font-weight: 700; color: #fff; line-height: 1.25; overflow-wrap: anywhere; }
+.nauren-criador .nc2 .nauren-criador-card .nauren-criador-card-resumo { font-size: 11px; color: var(--ncr-suave); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.nauren-criador .nc2 .nauren-criador-card .nauren-criador-card-tipo { background: color-mix(in srgb, var(--nc-s) 12%, #15111b); color: var(--nc-sc); border: 1px solid color-mix(in srgb, var(--nc-s) 45%, transparent); }
+.nauren-criador .nc2 .nauren-criador-card-recomendado { border-color: color-mix(in srgb, var(--nc-s) 45%, var(--ncr-linha)); }
+.nauren-criador .nc2 .nauren-criador-selo-recomendado { top: -1px; right: 8px; border-radius: 0 0 6px 6px; padding: 1px 8px 2px; background: var(--nc-s); color: #15111b; font-size: 9.5px; }
+.nauren-criador .nc2 .nauren-criador-equip-grupo.recomendado { background: color-mix(in srgb, var(--nc-s) 5%, transparent); border: 1px solid color-mix(in srgb, var(--nc-s) 35%, transparent); padding: 14px; border-radius: 12px; }
+.nauren-criador .nc2 .nauren-criador-equip-cabecalho { color: var(--nc-sc); font-size: 14px; margin: 0 0 8px; }
+.nauren-criador .nc2 .nauren-criador-equip-cabecalho i { color: var(--nc-s); }
+.nauren-criador .nc2 .nauren-criador-equip-dica { background: #120e18; border-left-color: var(--nc-s); color: #d6cce6; font-size: 12px; padding: 8px 11px; }
+.nauren-criador .nc2 .nauren-criador-equip-dica i { color: var(--nc-s); }
+.nauren-criador .nc2 .nauren-criador-sorteio-btn { border-radius: 999px; }
+/* pigmentos: gema na cor de cada um, 1ª e 2ª cor marcadas */
+.nauren-criador .nc2 .ncr-pigmentos { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+.nauren-criador .nc2 .ncr-pigmento { padding-top: 18px; }
+.nauren-criador .nc2 .ncr-pigmento.selecionado { border-color: var(--gema); box-shadow: 0 0 0 1px var(--gema), 0 0 14px color-mix(in srgb, var(--gema) 30%, transparent); background: color-mix(in srgb, var(--gema) 8%, var(--ncr-painel)); }
+.nauren-criador .nc2 .ncr-gema.nauren-criador-card-swatch { width: 34px; height: 34px; border: 0; border-radius: 5px; transform: rotate(45deg); margin: 4px 0 8px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--gema) 55%, #fff), var(--gema) 50%, color-mix(in srgb, var(--gema) 55%, #000)); box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.25), 0 0 12px color-mix(in srgb, var(--gema) 45%, transparent); }
+.nauren-criador .nc2 .ncr-ordem { position: absolute; top: -1px; left: 50%; transform: translateX(-50%); padding: 1px 10px 2px; border-radius: 0 0 7px 7px; font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #15111b; background: var(--gema); white-space: nowrap; }
+.nauren-criador .nc2 .ncr-como-fica { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; align-items: stretch; }
+.nauren-criador .nc2 .ncr-explica { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; padding: 14px 16px; border-radius: 10px; background: var(--ncr-painel); border: 1px solid var(--ncr-linha); }
+.nauren-criador .nc2 .ncr-explica > b { font-size: 15px; color: var(--nc-sc); }
+.nauren-criador .nc2 .ncr-explica p { margin: 0; font-size: 13px; line-height: 1.5; color: var(--ncr-texto); }
+.nauren-criador .nc2 .ncr-explica small { font-size: 11.5px; color: var(--ncr-suave); margin-top: auto; }
+.nauren-criador .nc2 .ncr-botao-linha { padding: 5px 14px; margin: 2px 0; }
+.nauren-criador .nc2 .ncr-botao-linha.ativo { background: var(--nc-s); color: #15111b; }
+.nauren-criador .nc2 .ncr-amostras { display: flex; gap: 12px; align-items: center; }
+.nauren-criador .nc2 .ncr-amostra-card { width: 150px; box-sizing: border-box; border: 1.5px solid color-mix(in srgb, var(--nc-p) 80%, #000); background: var(--nc-f); clip-path: polygon(8px 0, calc(100% - 8px) 0, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0 calc(100% - 8px), 0 8px); }
+.nauren-criador .nc2 .ncr-amostra-topo { padding: 6px 10px; font-family: "Modesto Condensed", "Cinzel", Georgia, serif; font-size: 13px; font-weight: 700; color: #fff; background: repeating-linear-gradient(135deg, var(--nc-pd) 0 10px, color-mix(in srgb, var(--nc-pd) 78%, #000) 10px 20px); border-bottom: 2px solid var(--nc-s); }
+.nauren-criador .nc2 .ncr-amostra-conta { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 8px 12px; font-size: 13px; }
+.nauren-criador .nc2 .ncr-d20 { width: 30px; height: 33px; display: grid; place-items: center; background: #8f82a8; clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); }
+.nauren-criador .nc2 .ncr-d20 b { width: 26px; height: 29px; display: grid; place-items: center; background: #2d2440; font-size: 12px; clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); }
+.nauren-criador .nc2 .ncr-total { min-width: 32px; height: 32px; display: grid; place-items: center; border: 2px solid var(--nc-s); border-radius: 7px; color: var(--nc-sc); font-weight: 700; font-size: 16px; background: #15111b; }
+.nauren-criador .nc2 .ncr-amostra-col { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.nauren-criador .nc2 .ncr-amostra-botao { padding: 7px 18px; font-size: 11.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #15111b; background: var(--nc-s); white-space: nowrap; clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 10px 100%, 0 50%); }
+.nauren-criador .nc2 .ncr-amostra-col .ncr-brasao { width: 46px; }
+/* classe: ícone e cor da classe */
+.nauren-criador .nc2 .ncr-emblema { width: 48px; height: 48px; flex: none; display: grid; place-items: center; border-radius: 50%; background: color-mix(in srgb, var(--classe) 16%, #15111b); box-shadow: 0 0 0 2px var(--classe); margin: 2px 0 6px; }
+.nauren-criador .nc2 .ncr-emblema svg { width: 24px; height: 24px; fill: none; stroke: var(--classe); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.nauren-criador .nc2 .ncr-emblema.grande { width: 60px; height: 60px; }
+.nauren-criador .nc2 .ncr-emblema.grande svg { width: 30px; height: 30px; }
+.nauren-criador .nc2 .ncr-classe-card.selecionado { border-color: var(--classe); box-shadow: 0 0 0 1px var(--classe), 0 0 16px color-mix(in srgb, var(--classe) 25%, transparent); background: color-mix(in srgb, var(--classe) 7%, var(--ncr-painel)); }
+.nauren-criador .nc2 .nauren-criador-classe-detalhe { grid-template-columns: 64px minmax(0, 1fr); gap: 14px; margin-top: 14px; padding: 14px 16px; border-radius: 10px; border: 1px solid var(--classe); background: color-mix(in srgb, var(--classe) 6%, var(--ncr-painel)); }
+.nauren-criador .nc2 .nauren-criador-classe-detalhe-nome { font-family: "Modesto Condensed", "Cinzel", Georgia, serif; font-size: 20px; color: #fff; }
+.nauren-criador .nc2 .nauren-criador-classe-detalhe p { font-size: 13px; line-height: 1.5; color: #d6cce6; margin-top: 6px; }
+/* pronto */
+.nauren-criador .nc2 .nauren-criador-conclusao { align-items: stretch; text-align: left; justify-content: flex-start; gap: 0; }
+.nauren-criador .nc2 .nauren-criador-conclusao > .item-meta-hint { text-align: left !important; margin-top: 12px; }
+.nauren-criador .nc2 .nauren-criador-resumo { max-width: none; padding: 16px 18px; border-radius: 10px; background: var(--ncr-painel); border: 1px solid var(--ncr-linha2); }
+.nauren-criador .nc2 .nauren-criador-resumo-topo img { width: 56px; height: 56px; border-radius: 50%; border: 0; box-shadow: 0 0 0 2px var(--nc-p), 0 0 0 4px var(--nc-f), 0 0 0 5px var(--nc-s); margin: 5px; }
+.nauren-criador .nc2 .nauren-criador-resumo-topo b { font-family: "Modesto Condensed", "Cinzel", Georgia, serif; font-size: 22px; color: #fff; }
+.nauren-criador .nc2 .nauren-criador-resumo-topo span { color: var(--nc-pc); font-size: 13px; }
+.nauren-criador .nc2 .nauren-criador-resumo-atributos { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin: 14px 0 10px; }
+.nauren-criador .nc2 .nauren-criador-resumo-atributos .ncr-brasao { height: 62px; }
+.nauren-criador .nc2 .nauren-criador-resumo-atributos .ncr-brasao b { font-size: 21px; }
+.nauren-criador .nc2 .nauren-criador-resumo p { margin: 0; padding: 7px 2px; font-size: 13px; color: #d6cce6; border-top: 1px solid var(--ncr-linha); }
+.nauren-criador .nc2 .nauren-criador-resumo p b { color: var(--nc-sc); }
+/* janela estreita: "Sua ficha" some e os passos encolhem */
+@container criador (max-width: 760px) {
+  .nauren-criador .nc2 .ncr-layout { grid-template-columns: minmax(0, 1fr); }
+  .nauren-criador .nc2 .ncr-ficha { display: none; }
+  .nauren-criador .nc2 .ncr-passo > span { display: none; }
+  .nauren-criador .nc2 .ncr-passo.ativo > span { display: inline; }
+  .nauren-criador .nc2 .nauren-criador-atributos-grid.principal { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .nauren-criador .nc2 .ncr-como-fica { grid-template-columns: minmax(0, 1fr); }
+  .nauren-criador .nc2 .nauren-criador-imagens { grid-template-columns: minmax(0, 1fr); }
+}
+/* 0.98 — acertos do criador (fotos) */
+.nauren-criador .nc2 .nauren-criador-nome { align-items: stretch; max-width: none; margin: 0 0 16px; }
+.nauren-criador .nc2 .nauren-criador-nome input { text-align: left; border: 1px solid var(--ncr-linha2); background: #120e18; font-size: 17px; }
+.nauren-criador .nc2 .nauren-criador-grade-classes:has(.nauren-criador-card.selecionado) .nauren-criador-card:not(.selecionado) { opacity: .7; filter: saturate(.6); }
+.nauren-criador .nc2 .nauren-criador-grade-classes:has(.nauren-criador-card.selecionado) .nauren-criador-card:not(.selecionado):hover { opacity: 1; filter: none; }
+.nauren-criador .nc2 .nauren-criador-rodape .btn-add:not(.nauren-criador-btn-avancar) { height: 40px; min-height: 0; padding: 0 20px; line-height: 1; white-space: nowrap; }
+.nauren-criador .nc2 .nauren-criador-rodape .nauren-criador-btn-avancar { height: 42px; min-height: 0; line-height: 1; }
+.nauren-criador .nc2 .ncr-cabecalho + .item-meta-hint { text-align: left !important; margin: -4px 0 14px !important; }
+.nauren-criador .nc2 .nauren-criador-resumo-atributos { grid-template-columns: repeat(5, minmax(0, 76px)); justify-content: start; }
+.nauren-criador .nc2 .nauren-criador-resumo-atributos .ncr-brasao span { background: none; padding: 0; border-radius: 0; display: inline; min-width: 0; font-size: 8.5px; }
+.nauren-criador .nc2 .nauren-criador-resumo-atributos .ncr-brasao > div { padding-top: 8px; }
+.nauren-criador .nc2 .nauren-criador-previa { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; padding: 12px; }
+.nauren-criador .nc2 .nauren-criador-previa > .nauren-criador-previa-titulo { grid-column: 1 / -1; justify-content: flex-start; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; padding: 0 2px; }
+.nauren-criador .nc2 .nauren-criador-previa > span:not(.nauren-criador-previa-titulo) { min-width: 0; }
+.nauren-criador .nc2 .nauren-criador-previa small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }

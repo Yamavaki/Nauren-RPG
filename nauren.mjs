@@ -6258,6 +6258,32 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
   } catch (err) { console.warn("Nauren RPG | cores do card", err); }
 });
 
+/* 0.98 — Janelas do kit (Confirmar uso, Rolagem, Reagir, escolhas...) nas cores de quem age. */
+function naurenAtorDaJanela(app) {
+  const uuid = app?.options?.naurenAtorUuid;
+  if (uuid) { try { const a = fromUuidSync(uuid, { strict: false }); if (a) return a.actor ?? a; } catch (err) { /* segue */ } }
+  return canvas?.tokens?.controlled?.find?.(t => t.actor?.isOwner)?.actor ?? game.user?.character ?? null;
+}
+function naurenPintarJanela(el, ator) {
+  if (!el) return;
+  const { estilo, escuro } = naurenEstiloDoCard(ator);
+  for (const par of estilo.split(";").map(x => x.trim()).filter(Boolean)) { const [k, v] = par.split(":").map(x => x.trim()); el.style.setProperty(k, v); }
+  el.classList.add("nc2");
+  el.classList.toggle("nc-fundo-escuro", escuro);
+  el.classList.toggle("nc-monstro", ator?.type === "npc");
+}
+Hooks.on("renderApplicationV2", (app, el) => {
+  try {
+    const raiz = app?.element ?? el;
+    if (!raiz?.classList?.contains("nauren-kit")) return;
+    naurenPintarJanela(raiz, naurenAtorDaJanela(app));
+    raiz.querySelectorAll("[data-nc-ator]").forEach(x => {
+      let a = null; try { a = fromUuidSync(x.dataset.ncAtor, { strict: false }); a = a?.actor ?? a; } catch (err) { a = null; }
+      if (a) naurenPintarJanela(x, a);
+    });
+  } catch (err) { console.warn("Nauren RPG | cores da janela", err); }
+});
+
 async function naurenPostarCard({ ator = null, titulo, icone = "", fonte = "", linhas = [], descricao = "", flags = {}, prioridade = null }) {
   const templateData = {
     title: titulo,

@@ -8,7 +8,12 @@
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[c]));
 
 /** Classes e tamanho padrão de toda janela do kit (passar no DialogV2). */
-export const NAUREN_KIT_JANELA = { classes: ["nauren-kit"], position: { width: 540 } };
+// 0.98: a janela usa as cores de quem age (Pigmentos). Quem chama pode dizer o ator (naurenKitJanela(ator));
+// senão vale o último ator marcado com naurenKitDefinirAtor (início de uma Ação, de uma reação...).
+let naurenKitAtorCorrente = null;
+export function naurenKitDefinirAtor(ator) { naurenKitAtorCorrente = ator?.uuid ?? null; }
+export const NAUREN_KIT_JANELA = { classes: ["nauren-kit"], position: { width: 540 }, get naurenAtorUuid() { return naurenKitAtorCorrente; } };
+export function naurenKitJanela(ator) { return { ...NAUREN_KIT_JANELA, naurenAtorUuid: ator?.uuid ?? naurenKitAtorCorrente }; }
 
 /** Estado do d20 a partir da face: "critico" (20), "falha" (1) ou "normal". */
 export function naurenKitEstadoD20(face, { critMin = 20 } = {}) {

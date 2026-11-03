@@ -1,19 +1,34 @@
-<div class="nauren-criador-corpo">
+<div class="nauren-criador-corpo nc2 {{#if cores.escuro}}nc-fundo-escuro{{/if}}" style="{{cores.estilo}}">
 
-  <!-- Barra de progresso: 5 marcos, o atual destacado - sempre simétrica
-       (largura igual entre marcos), sem depender do texto de cada nome. -->
-  <div class="nauren-criador-progresso">
-    <div class="nauren-criador-progresso-trilha">
-      <div class="nauren-criador-progresso-preenchido" style="width: {{progressoPct}}%;"></div>
+  <!-- 0.98: passos em faixas (feito ✓, atual preenchido, próximos apagados); os feitos voltam com um clique. -->
+  <nav class="nauren-criador-progresso ncr-passos" aria-label="Passos do criador">
+    <span class="nauren-criador-marco ncr-passo {{#if marcoAtivo0}}ativo{{/if}} {{#if marcoOk0}}feito{{/if}}" {{#if marcoFeito0}}data-action="irParaEtapa" data-etapa="0" title="Voltar para Atributos"{{/if}}><i><b>{{#if marcoOk0}}✓{{else}}1{{/if}}</b></i><span>Atributos</span></span>
+    <span class="nauren-criador-marco ncr-passo {{#if marcoAtivo1}}ativo{{/if}} {{#if marcoOk1}}feito{{/if}}" {{#if marcoFeito1}}data-action="irParaEtapa" data-etapa="1" title="Voltar para Peculiaridades"{{/if}}><i><b>{{#if marcoOk1}}✓{{else}}2{{/if}}</b></i><span>Peculiaridades</span></span>
+    <span class="nauren-criador-marco ncr-passo {{#if marcoAtivo2}}ativo{{/if}} {{#if marcoOk2}}feito{{/if}}" {{#if marcoFeito2}}data-action="irParaEtapa" data-etapa="2" title="Voltar para Pigmentos"{{/if}}><i><b>{{#if marcoOk2}}✓{{else}}3{{/if}}</b></i><span>Pigmentos</span></span>
+    <span class="nauren-criador-marco ncr-passo {{#if marcoAtivo3}}ativo{{/if}} {{#if marcoOk3}}feito{{/if}}" {{#if marcoFeito3}}data-action="irParaEtapa" data-etapa="3" title="Voltar para Classe"{{/if}}><i><b>{{#if marcoOk3}}✓{{else}}4{{/if}}</b></i><span>Classe</span></span>
+    <span class="nauren-criador-marco ncr-passo {{#if marcoAtivo4}}ativo{{/if}} {{#if marcoOk4}}feito{{/if}}" {{#if marcoFeito4}}data-action="irParaEtapa" data-etapa="4" title="Voltar para Equipamento"{{/if}}><i><b>{{#if marcoOk4}}✓{{else}}5{{/if}}</b></i><span>Equipamento</span></span>
+  </nav>
+
+  <div class="ncr-layout">
+  <!-- Coluna "Sua ficha": muda na hora a cada escolha -->
+  <aside class="ncr-ficha">
+    <div class="ncr-placa"><i></i><span>Sua ficha</span></div>
+    <div class="ncr-retrato"><img src="{{ficha.img}}" alt="" data-previa="retrato-mini"></div>
+    <div class="ncr-nome">{{ficha.nome}}</div>
+    <div class="ncr-classe">{{#if ficha.classe}}{{#if ficha.classeSvg}}<svg viewBox="0 0 24 24" aria-hidden="true" style="stroke: {{ficha.classeCor}};">{{{ficha.classeSvg}}}</svg>{{/if}}{{ficha.classe}} · nível 1{{else}}Classe ainda não escolhida{{/if}}</div>
+    <div class="ncr-cores">
+      {{#each ficha.pigmentos as |p|}}<span class="ncr-cor"><i style="background: {{p.cor}};"></i><span><small>{{p.ordem}}</small>{{p.nome}}</span></span>{{else}}<span class="ncr-cor ncr-cor-vazia"><i></i><span><small>Cores</small>escolha 2 Pigmentos</span></span>{{/each}}
     </div>
-    <div class="nauren-criador-progresso-marcos">
-      <span class="nauren-criador-marco {{#if marcoAtivo0}}ativo{{/if}} {{#if marcoFeito0}}feito{{/if}}" {{#if marcoFeito0}}data-action="irParaEtapa" data-etapa="0" title="Voltar para Atributos"{{/if}}>1. Atributos</span>
-      <span class="nauren-criador-marco {{#if marcoAtivo1}}ativo{{/if}} {{#if marcoFeito1}}feito{{/if}}" {{#if marcoFeito1}}data-action="irParaEtapa" data-etapa="1" title="Voltar para Peculiaridades"{{/if}}>2. Peculiaridades</span>
-      <span class="nauren-criador-marco {{#if marcoAtivo2}}ativo{{/if}} {{#if marcoFeito2}}feito{{/if}}" {{#if marcoFeito2}}data-action="irParaEtapa" data-etapa="2" title="Voltar para Pigmentos"{{/if}}>3. Pigmentos</span>
-      <span class="nauren-criador-marco {{#if marcoAtivo3}}ativo{{/if}} {{#if marcoFeito3}}feito{{/if}}" {{#if marcoFeito3}}data-action="irParaEtapa" data-etapa="3" title="Voltar para Classe"{{/if}}>4. Classe</span>
-      <span class="nauren-criador-marco {{#if marcoAtivo4}}ativo{{/if}} {{#if marcoFeito4}}feito{{/if}}" {{#if marcoFeito4}}data-action="irParaEtapa" data-etapa="4" title="Voltar para Equipamento"{{/if}}>5. Equipamento</span>
+    <div class="ncr-brasoes">
+      {{#each ficha.atributos as |a|}}<div class="ncr-brasao"><div><span>{{a.curto}}</span><b>{{a.valor}}</b></div></div>{{/each}}
     </div>
-  </div>
+    <div class="ncr-contas">
+      <span>Peculiaridades<b>{{ficha.peculiaridades}}</b></span>
+      <span>Equipamentos<b>{{ficha.equipamento}}</b></span>
+    </div>
+    <p class="ncr-nota">Muda na hora a cada escolha.</p>
+  </aside>
+  <div class="ncr-principal">
 
   {{#if estaNaEtapa0}}
   <div class="nauren-criador-etapa">
@@ -45,7 +60,7 @@
         </div>
       </div>
     </div>
-    <h2 class="nauren-criador-titulo"><i class="fas fa-dice-d6"></i> Seus atributos</h2>
+    <div class="ncr-placa"><i></i><span>Seus atributos</span></div>
     {{#if semModo}}
     <p class="item-meta-hint" style="text-align: center; margin-bottom: 12px;">Como você quer gerar seus 5 valores?</p>
     <div class="nauren-criador-modos">
@@ -118,10 +133,7 @@
 
   {{#if estaNaEtapa1}}
   <div class="nauren-criador-etapa">
-    <h2 class="nauren-criador-titulo"><i class="fas fa-dna"></i> Peculiaridades</h2>
-    <p class="item-meta-hint" style="text-align: center; margin-bottom: 12px;">
-      Escolha de <b>0 a 3</b> pares. Para cada par: escolha um lado (Benefício ou Fardo) e <b>role o D10</b> para o outro (ou vice-versa). Só é possível ter a mesma Peculiaridade 2 vezes.
-    </p>
+    <div class="ncr-cabecalho"><h2 class="nauren-criador-titulo">Peculiaridades</h2><p>Escolha de <b>0 a 3</b> pares. Para cada par: escolha um lado (Benefício ou Fardo) e <b>role o D10</b> para o outro (ou vice-versa). A mesma Peculiaridade vale no máximo 2 vezes.</p></div>
     <div class="nauren-criador-sorteio">
       <a class="nauren-criador-sorteio-btn beneficio" data-action="rolarPeculiaridade" data-tipo="beneficio"><i class="fas fa-dice-d20"></i> Rolar Benefício <small>d10</small></a>
       <a class="nauren-criador-sorteio-btn fardo" data-action="rolarPeculiaridade" data-tipo="fardo"><i class="fas fa-dice-d20"></i> Rolar Fardo <small>d10</small></a>
@@ -154,18 +166,29 @@
 
   {{#if estaNaEtapa2}}
   <div class="nauren-criador-etapa">
-    <h2 class="nauren-criador-titulo"><i class="fas fa-palette"></i> Pigmentos</h2>
-    <p class="item-meta-hint" style="text-align: center; margin-bottom: 12px;">
-      Escolha exatamente <b>2</b> - suas duas cores favoritas.
-    </p>
-    <div class="nauren-criador-cards-grid">
+    <div class="ncr-cabecalho"><h2 class="nauren-criador-titulo">Pigmentos</h2><p>Escolha <b>2</b>: suas duas cores favoritas. Elas viram as cores da sua ficha, dos seus cards e da HUD.</p></div>
+    <div class="nauren-criador-cards-grid ncr-pigmentos">
       {{#each pigmentos as |p|}}
-      <div class="nauren-criador-card {{#if p.selecionado}}selecionado{{/if}} {{#if p.bloqueado}}bloqueado{{/if}}" data-action="toggleCardPigmento" data-uuid="{{p.uuid}}">
-        <span class="nauren-criador-card-swatch" style="background: {{p.corHex}};"></span>
-        <span class="nauren-criador-card-nome">{{p.nome}}</span>
+      <div class="nauren-criador-card ncr-pigmento {{#if p.selecionado}}selecionado{{/if}} {{#if p.bloqueado}}bloqueado{{/if}}" data-action="toggleCardPigmento" data-uuid="{{p.uuid}}" style="--gema: {{p.gema}};" title="{{p.resumo}}">
+        {{#if p.ordem}}<span class="ncr-ordem">{{p.ordem}}</span>{{/if}}
+        <span class="nauren-criador-card-swatch ncr-gema"></span>
+        <span class="nauren-criador-card-nome">{{p.nomeCurto}}</span>
         <span class="nauren-criador-card-resumo">{{p.resumo}}</span>
       </div>
       {{/each}}
+    </div>
+    <div class="ncr-placa"><i></i><span>Como fica</span></div>
+    <div class="ncr-como-fica">
+      <div class="ncr-explica">
+        <b>{{#if cores.temPigmentos}}{{cores.nomeP}} + {{cores.nomeS}}{{else}}Roxo + Dourado (padrão){{/if}}</b>
+        <p>{{cores.explicacao}}</p>
+        {{#if podeInverter}}<a class="ncr-botao-linha {{#if cores.invertido}}ativo{{/if}}" data-action="inverterCoresCriador"><i class="fas fa-right-left"></i> {{#if cores.invertido}}Desfazer a troca{{else}}Trocar as cores{{/if}}</a>{{/if}}
+        <small>Depois dá para mudar na ficha, em Opções › Cores da ficha.</small>
+      </div>
+      <div class="ncr-amostras" aria-hidden="true">
+        <div class="ncr-amostra-card"><div class="ncr-amostra-topo">◆ Card</div><div class="ncr-amostra-conta"><span class="ncr-d20"><b>14</b></span><b>+5 =</b><span class="ncr-total">19</span></div></div>
+        <div class="ncr-amostra-col"><span class="ncr-amostra-botao">Encerrar turno</span><div class="ncr-brasao"><div><span>FOR</span><b>3</b></div></div></div>
+      </div>
     </div>
   </div>
   <p class="nauren-criador-contador">Selecionados: <b>{{pigmentosContagem}}</b> / 2</p>
@@ -177,7 +200,7 @@
 
   {{#if estaNaEtapa3}}
   <div class="nauren-criador-etapa">
-    <h2 class="nauren-criador-titulo"><i class="fas fa-hat-wizard"></i> Classe</h2>
+    <div class="ncr-cabecalho"><h2 class="nauren-criador-titulo">Classe</h2></div>
     {{#if temClasse}}
     <p class="item-meta-hint" style="text-align: center; margin-bottom: 12px;">
       Sua Classe já está definida: <b>{{classeAtualNome}}</b>. Continue para revisar o Equipamento.
@@ -188,16 +211,16 @@
     </p>
     <div class="nauren-criador-cards-grid nauren-criador-grade-classes">
       {{#each classes as |c|}}
-      <div class="nauren-criador-card {{#if c.selecionado}}selecionado{{/if}}" data-action="escolherClasse" data-uuid="{{c.uuid}}" title="{{c.textoCompleto}}">
-        <img src="{{c.img}}">
+      <div class="nauren-criador-card ncr-classe-card {{#if c.selecionado}}selecionado{{/if}}" data-action="escolherClasse" data-uuid="{{c.uuid}}" title="{{c.textoCompleto}}" style="--classe: {{c.cor}};">
+        <span class="ncr-emblema"><svg viewBox="0 0 24 24" aria-hidden="true">{{{c.svg}}}</svg></span>
         <span class="nauren-criador-card-nome">{{c.nome}}</span>
         <span class="nauren-criador-card-resumo">{{c.resumo}}</span>
       </div>
       {{/each}}
     </div>
     {{#if classeSelecionada}}
-    <div class="nauren-criador-classe-detalhe">
-      <img src="{{classeSelecionada.img}}">
+    <div class="nauren-criador-classe-detalhe" style="--classe: {{classeSelecionada.cor}};">
+      <span class="ncr-emblema grande"><svg viewBox="0 0 24 24" aria-hidden="true">{{{classeSelecionada.svg}}}</svg></span>
       <div>
         <b class="nauren-criador-classe-detalhe-nome">{{classeSelecionada.nome}}</b>
         <p>{{classeSelecionada.descricao}}</p>
@@ -221,7 +244,7 @@
 
   {{#if estaNaEtapa4}}
   <div class="nauren-criador-etapa">
-    <h2 class="nauren-criador-titulo"><i class="fas fa-shield-alt"></i> Equipamento</h2>
+    <div class="ncr-cabecalho"><h2 class="nauren-criador-titulo">Equipamento</h2></div>
     <p class="item-meta-hint" style="text-align: center; margin-bottom: 12px;">
       Escolha até <b>{{equipamentoMax}}</b> {{#if limiteUm}}item{{else}}itens{{/if}} - a quantidade depende do seu Destino (1-2 → 1 item, 3-4 → 2, 5-6 → 3, 7-8 → 4). Para trocar, clique no item escolhido para desmarcar.
     </p>
@@ -274,12 +297,11 @@
 
   {{#if estaNoResumo}}
   <div class="nauren-criador-etapa nauren-criador-conclusao">
-    <i class="fas fa-check-circle"></i>
-    <h2 class="nauren-criador-titulo">Personagem pronto!</h2>
+    <div class="ncr-cabecalho"><h2 class="nauren-criador-titulo">Personagem pronto!</h2><p>Confira tudo antes de concluir. As cores já são as da sua ficha.</p></div>
     <div class="nauren-criador-resumo">
       <div class="nauren-criador-resumo-topo"><img src="{{resumo.img}}"><div><b>{{resumo.nome}}</b><span>{{resumo.classe}}</span></div></div>
       <div class="nauren-criador-resumo-atributos">
-        {{#each resumo.atributos as |a|}}<span><small>{{a.nome}}</small><b>{{a.valor}}</b></span>{{/each}}
+        {{#each resumo.atributos as |a|}}<div class="ncr-brasao"><div><span>{{a.nome}}</span><b>{{a.valor}}</b></div></div>{{/each}}
       </div>
       <p><b>Peculiaridades:</b> {{resumo.peculiaridades}}</p>
       <p><b>Pigmentos:</b> {{resumo.pigmentos}}</p>
@@ -294,4 +316,6 @@
   </div>
   {{/if}}
 
+  </div>
+  </div>
 </div>
