@@ -7267,3 +7267,10 @@ li.chat-message.ncc-card > .message-content { padding-top: 0 !important; }
 .application.na-popout .na-recorte .na-arte-caixa { filter: drop-shadow(0 6px 14px rgba(0, 0, 0, .65)); }
 .application.na-popout .na-recorte .na-arte-nome { flex: none; margin-top: 6px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1px; color: #fff;
   font: 700 22px/1.15 "Modesto Condensed", "Cinzel", Georgia, serif; letter-spacing: .03em; text-shadow: 0 0 3px #000, 0 1px 3px #000; }
+/* 0.100.4: abrir uma janela do kit "desenhava" as caixas devagar no navegador. Os botões do Foundry animam
+   fundo/borda/sombra; como as cores do sistema entram logo depois de abrir, o navegador animava os 5 degradês
+   do chanfro (e o recorte) a partir do botão padrão. Aqui só a cor do texto e o brilho animam. */
+.application.nc2 :is(button, a.button, input, select, textarea, label, .nk-cab, .nk-bloco, .nk-opcao, .nk-gasto, .nk-destino, .nk-faixa, .nk-vidadano, .nk-condicao, .nk-fontes-caixa, .nk-ajustes, .nk-escolha-card, .nauren-mov-opcao, .nauren-mov-resumo > div, .nauren-escolha-lista, .nauren-escolha-ver, .nauren-criador-escolha-btn),
+.nauren-deflexao-card.nc2 :is(button, a), .nauren-roll-card.nc2 :is(button, a) {
+  transition-property: color, opacity, filter !important; transition-duration: .12s !important;
+}
