@@ -6276,3 +6276,75 @@ img.nauren-criador-token.com-borda { border: none; border-radius: 0; background:
 .nauren-rpg.sheet.item .nauren-sheet > header .nauren-cor-escolher input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 50%; }
 .nauren-rpg.sheet.item .nauren-sheet > header .nauren-cor-escolher:hover { color: var(--n-texto); border-color: var(--n-ouro); }
 .nauren-sheet.ns2 .ns-faixa-pips { flex: 0 0 auto; }
+
+/* ===================================================
+   0.98.4 — MOLDURA CHANFRADA COMPLETA
+   O recorte dos cantos (clip-path) cortava a borda e o filete justo na diagonal.
+   Agora a borda e o filete são desenhados no fundo de uma camada por cima, com os
+   trechos diagonais acompanhando o corte. Variáveis por peça:
+   --mc chanfro da caixa · --mb/--mbw cor/espessura da borda · --mr/--md/--mrw cor/recuo/espessura do filete
+   =================================================== */
+.application.nauren-kit.nc2::after,
+.nauren-roll-card.nc2::after,
+.nauren-deflexao-card.nc2::after,
+.nauren-sheet.ns2 .ns-painel-dentro::before,
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-painel::before,
+.nauren-criador .nc2 .ncr-ficha::before,
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-alvos::after,
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-flutuante::after,
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-acao::after,
+.nauren-criador .nc2 .ncr-amostra-card::after {
+  --mb-p: calc(var(--mc, 8px) * .7071);
+  --mb-q: calc(var(--mc, 8px) + var(--mbw, 0px) * 1.4142);
+  --mb-st: calc(var(--mc, 8px) + var(--mbw, 0px) * .4142);
+  --mr-p: calc(var(--mc, 8px) * .7071 - var(--md, 4px) * .4142);
+  --mr-q: calc(var(--mc, 8px) + (var(--md, 4px) + var(--mrw, 1px)) * 1.4142 - var(--md, 4px) * 2);
+  --mr-st: calc(var(--mc, 8px) + (var(--md, 4px) + var(--mrw, 1px)) * .4142);
+  border: 0 !important; border-radius: 0 !important; box-shadow: none !important;
+  background:
+    linear-gradient(135deg, transparent calc(var(--mb-p) - .3px), var(--mb, transparent) calc(var(--mb-p) + .3px), var(--mb, transparent) calc(var(--mb-p) + var(--mbw, 0px) - .3px), transparent calc(var(--mb-p) + var(--mbw, 0px) + .3px)) 0px 0px / var(--mb-q) var(--mb-q) no-repeat,
+    linear-gradient(225deg, transparent calc(var(--mb-p) - .3px), var(--mb, transparent) calc(var(--mb-p) + .3px), var(--mb, transparent) calc(var(--mb-p) + var(--mbw, 0px) - .3px), transparent calc(var(--mb-p) + var(--mbw, 0px) + .3px)) 100% 0px / var(--mb-q) var(--mb-q) no-repeat,
+    linear-gradient(315deg, transparent calc(var(--mb-p) - .3px), var(--mb, transparent) calc(var(--mb-p) + .3px), var(--mb, transparent) calc(var(--mb-p) + var(--mbw, 0px) - .3px), transparent calc(var(--mb-p) + var(--mbw, 0px) + .3px)) 100% 100% / var(--mb-q) var(--mb-q) no-repeat,
+    linear-gradient(45deg, transparent calc(var(--mb-p) - .3px), var(--mb, transparent) calc(var(--mb-p) + .3px), var(--mb, transparent) calc(var(--mb-p) + var(--mbw, 0px) - .3px), transparent calc(var(--mb-p) + var(--mbw, 0px) + .3px)) 0px 100% / var(--mb-q) var(--mb-q) no-repeat,
+    linear-gradient(var(--mb, transparent), var(--mb, transparent)) var(--mb-st) 0px / calc(100% - 2 * var(--mb-st)) var(--mbw, 0px) no-repeat,
+    linear-gradient(var(--mb, transparent), var(--mb, transparent)) var(--mb-st) 100% / calc(100% - 2 * var(--mb-st)) var(--mbw, 0px) no-repeat,
+    linear-gradient(var(--mb, transparent), var(--mb, transparent)) 0px var(--mb-st) / var(--mbw, 0px) calc(100% - 2 * var(--mb-st)) no-repeat,
+    linear-gradient(var(--mb, transparent), var(--mb, transparent)) 100% var(--mb-st) / var(--mbw, 0px) calc(100% - 2 * var(--mb-st)) no-repeat,
+    linear-gradient(135deg, transparent calc(var(--mr-p) - .3px), var(--mr, transparent) calc(var(--mr-p) + .3px), var(--mr, transparent) calc(var(--mr-p) + var(--mrw, 1px) - .3px), transparent calc(var(--mr-p) + var(--mrw, 1px) + .3px)) var(--md, 4px) var(--md, 4px) / var(--mr-q) var(--mr-q) no-repeat,
+    linear-gradient(225deg, transparent calc(var(--mr-p) - .3px), var(--mr, transparent) calc(var(--mr-p) + .3px), var(--mr, transparent) calc(var(--mr-p) + var(--mrw, 1px) - .3px), transparent calc(var(--mr-p) + var(--mrw, 1px) + .3px)) calc(100% - var(--md, 4px)) var(--md, 4px) / var(--mr-q) var(--mr-q) no-repeat,
+    linear-gradient(315deg, transparent calc(var(--mr-p) - .3px), var(--mr, transparent) calc(var(--mr-p) + .3px), var(--mr, transparent) calc(var(--mr-p) + var(--mrw, 1px) - .3px), transparent calc(var(--mr-p) + var(--mrw, 1px) + .3px)) calc(100% - var(--md, 4px)) calc(100% - var(--md, 4px)) / var(--mr-q) var(--mr-q) no-repeat,
+    linear-gradient(45deg, transparent calc(var(--mr-p) - .3px), var(--mr, transparent) calc(var(--mr-p) + .3px), var(--mr, transparent) calc(var(--mr-p) + var(--mrw, 1px) - .3px), transparent calc(var(--mr-p) + var(--mrw, 1px) + .3px)) var(--md, 4px) calc(100% - var(--md, 4px)) / var(--mr-q) var(--mr-q) no-repeat,
+    linear-gradient(var(--mr, transparent), var(--mr, transparent)) var(--mr-st) var(--md, 4px) / calc(100% - 2 * var(--mr-st)) var(--mrw, 1px) no-repeat,
+    linear-gradient(var(--mr, transparent), var(--mr, transparent)) var(--mr-st) calc(100% - var(--md, 4px)) / calc(100% - 2 * var(--mr-st)) var(--mrw, 1px) no-repeat,
+    linear-gradient(var(--mr, transparent), var(--mr, transparent)) var(--md, 4px) var(--mr-st) / var(--mrw, 1px) calc(100% - 2 * var(--mr-st)) no-repeat,
+    linear-gradient(var(--mr, transparent), var(--mr, transparent)) calc(100% - var(--md, 4px)) var(--mr-st) / var(--mrw, 1px) calc(100% - 2 * var(--mr-st)) no-repeat,
+    var(--m-img, none);
+  background-color: var(--m-cor, transparent);
+}
+/* janelas do kit: a borda sai do elemento e vai para a camada da moldura (fica por cima do cabeçalho listrado) */
+.application.nauren-kit.nc2 { border: 0 !important; --mc: 10px; --mb: color-mix(in srgb, var(--nc-p) 80%, #000); --mbw: 1.5px; --mr: color-mix(in srgb, var(--nc-s) 38%, var(--nc-f)); --md: 3.5px; }
+.application.nauren-kit.nc2::after { inset: 0; }
+/* cards do chat: borda já é a camada de trás; só o filete */
+.nauren-roll-card.nc2 { --mc: 8px; --mr: color-mix(in srgb, var(--nc-s) 42%, var(--nc-fundo)); --md: 4px; }
+.nauren-roll-card.nc2::after { inset: 0; }
+.nauren-deflexao-card.nc2 { border: 0 !important; --mc: 8px; --mb: color-mix(in srgb, var(--nc-p) 80%, #000); --mbw: 1.5px; --mr: color-mix(in srgb, var(--nc-s) 45%, var(--nc-fundo)); --md: 4px; }
+.nauren-deflexao-card.nc2::after { inset: 0; }
+/* painéis da ficha */
+.nauren-sheet.ns2 .ns-painel-dentro { --mc: 9.5px; --mr: color-mix(in srgb, var(--ns-s) 55%, var(--ns-painel)); --md: 4px; }
+.nauren-sheet.ns2 .ns-painel-dentro::before { inset: 0; }
+/* HUD: painéis (a camada de trás já é o fundo; o filete entra nela) */
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-painel { --mc: 9.4px; --mr: color-mix(in srgb, var(--nc-s) 40%, var(--h-painel)); --md: 3px; --m-cor: var(--h-painel); }
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-centro { --m-img: linear-gradient(180deg, color-mix(in srgb, var(--nc-pd) 30%, var(--nc-f)), var(--nc-f)); }
+/* HUD: alvos, testes e Prioridade */
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-alvos, #nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-flutuante {
+  border: 0; box-shadow: none; padding: 10px 12px; --mc: 8px; --mb: color-mix(in srgb, var(--nc-p) 80%, #000); --mbw: 1.5px; --mr: color-mix(in srgb, var(--nc-s) 40%, var(--nc-f)); --md: 4.5px;
+}
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-alvos::after, #nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-flutuante::after { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+/* HUD: botões de Ação */
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-acao { border: 0; padding: 8.5px 4.5px 6.5px; background: linear-gradient(180deg, color-mix(in srgb, var(--nc-pd) 70%, var(--nc-f)), var(--nc-f)); --mc: 6px; --mb: var(--borda-acao); --mbw: 1.5px; }
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-acao:hover { background: linear-gradient(180deg, color-mix(in srgb, var(--nc-s) 22%, var(--nc-f)), var(--nc-f)); }
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-acao::after { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+/* Criador: painel "Sua ficha" e a amostra de card */
+.nauren-criador .nc2 .ncr-ficha { --mc: 9.4px; --mr: color-mix(in srgb, var(--nc-s) 40%, var(--nc-f)); --md: 3px; --m-cor: var(--nc-f); }
+.nauren-criador .nc2 .ncr-amostra-card { position: relative; border: 0; --mc: 8px; --mb: color-mix(in srgb, var(--nc-p) 80%, #000); --mbw: 1.5px; }
+.nauren-criador .nc2 .ncr-amostra-card::after { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 2; }
