@@ -126,29 +126,27 @@ function aplicar(message, html) {
   html.classList.toggle("ncc-escuro", !!escuro);
   if (autor?.color) html.style.setProperty("--ncc-jogador", autor.color.css ?? String(autor.color));
 
-  // Retrato + balão.
-  const av = document.createElement("div");
-  av.className = "ncc-av";
-  av.innerHTML = `<img src="${ESC(retratoDe(message, tipo))}" alt="">`;
-  const balao = document.createElement("div");
-  balao.className = "ncc-balao";
-  while (html.firstChild) balao.appendChild(html.firstChild);
-  html.append(av, balao);
-
-  // Cabeçalho: nome + jogador (+ etiqueta) à esquerda, hora/lixeira à direita.
+  // Um card só: retrato pequeno no cabeçalho (nome · jogador · hora/lixeira numa linha) e o texto embaixo, na largura toda.
   const nome = cab?.querySelector(".message-sender");
-  if (nome && autor) {
-    const jog = document.createElement("span");
-    jog.className = "ncc-jogador";
-    // Fora do jogo só para jogadores: o texto do Mestre sem personagem é narração, sem etiqueta.
-    const rotuloTipo = tipo === "ooc" && !autor.isGM ? "fora do jogo" : "";
-    if (tipo === "ooc" && autor.isGM) html.classList.add("ncc-mestre");
-    const mostrarJog = autor.name && autor.name !== nome.textContent.trim();
-    jog.innerHTML = `${mostrarJog ? `<i style="background:${ESC(autor.color?.css ?? autor.color ?? "#888")}"></i>${ESC(autor.name)}` : ""}${rotuloTipo ? `<b>${rotuloTipo}</b>` : ""}`;
-    if (jog.innerHTML) nome.after(jog);
+  if (cab) {
+    const img = document.createElement("img");
+    img.className = "ncc-av"; img.alt = ""; img.src = retratoDe(message, tipo);
+    cab.prepend(img);
+    const quem = document.createElement("span");
+    quem.className = "ncc-quem";
+    if (nome) quem.appendChild(nome);
+    if (autor) {
+      const rotuloTipo = tipo === "ooc" && !autor.isGM ? "fora do jogo" : "";
+      if (tipo === "ooc" && autor.isGM) html.classList.add("ncc-mestre");
+      const mostrarJog = autor.name && autor.name !== (nome?.textContent ?? "").trim();
+      const jog = document.createElement("span");
+      jog.className = "ncc-jogador";
+      jog.innerHTML = `${mostrarJog ? `<i style="background:${ESC(autor.color?.css ?? autor.color ?? "#888")}"></i>${ESC(autor.name)}` : ""}${rotuloTipo ? `<b>${rotuloTipo}</b>` : ""}`;
+      if (jog.innerHTML) quem.appendChild(jog);
+    }
+    img.after(quem);
   }
   if (tipo === "emote") {
-    // /me: o texto já pode vir com o nome; a linha do nome some e o texto fica em itálico.
     const txt = html.querySelector(".message-content")?.textContent?.trim() ?? "";
     const alias = message.speaker?.alias ?? "";
     if (alias && !txt.startsWith(alias)) html.querySelector(".message-content")?.insertAdjacentHTML("afterbegin", `<b class="ncc-emote-nome">${ESC(alias)}</b> `);
@@ -156,16 +154,21 @@ function aplicar(message, html) {
   if (tipo === "rolagem") {
     const nat = d20Natural(message);
     if (nat) html.classList.add(nat === "crit" ? "ncc-crit" : "ncc-falha");
-    // O detalhe dos dados fica sempre aberto (compacto).
     html.querySelectorAll(".dice-tooltip").forEach(t => t.classList.add("expanded", "ncc-aberto"));
   }
-  if (continuaDaAnterior(message, tipo)) html.classList.add("ncc-cont");
+  if (continuaDaAnterior(message, tipo)) {
+    // Continuação: encosta na mensagem de cima e vira uma faixa do mesmo card.
+    html.classList.add("ncc-cont");
+    const ligar = () => { const ant = html.previousElementSibling; if (ant?.classList?.contains("ncc")) ant.classList.add("ncc-segue"); };
+    requestAnimationFrame(ligar); setTimeout(ligar, 120);
+  }
 }
 
 /* ---------- balão em cima do token ---------- */
 function pintarBalao(el) {
   try {
     if (!ligado() || !el?.classList?.contains?.("chat-bubble") || el.dataset.ncc) return;
+    document.body.classList.add("ncc-chat");
     el.dataset.ncc = "1";
     const id = el.dataset.tokenId ?? (String(el.id ?? "").match(/[A-Za-z0-9]{16}/)?.[0]);
     const tk = id ? canvas?.tokens?.get?.(id) : null;
@@ -196,6 +199,6 @@ function naurenChatInit() {
 }
 
 Hooks.on("renderChatMessageHTML", (message, html) => { try { aplicar(message, html); } catch (err) { console.warn("Nauren RPG | chat", err); } });
-Hooks.once("ready", () => { try { observarBaloes(); } catch (err) { console.warn("Nauren RPG | balões", err); } });
+Hooks.once("ready", () => { try { if (ligado()) document.body.classList.add("ncc-chat"); observarBaloes(); } catch (err) { console.warn("Nauren RPG | balões", err); } });
 
 export { naurenChatInit, pintarBalao as naurenChatPintarBalao };
