@@ -7124,3 +7124,23 @@ li.chat-message.ncc.ncc-cont > .message-header { flex-wrap: nowrap; padding-top:
   --cci: 8.4px; padding: 8px 14px 9px; background: color-mix(in srgb, var(--nc-pd, #26183a) 78%, #120e18);
   clip-path: polygon(var(--cci) 0, calc(100% - var(--cci)) 0, 100% var(--cci), 100% calc(100% - var(--cci)), calc(100% - var(--cci)) 100%, var(--cci) 100%, 0 calc(100% - var(--cci)), 0 var(--cci));
 }
+/* 0.99.6: cards do sistema sem a linha de cima. O nome já está no card; hora e lixeira aparecem num selo
+   pequeno no canto de cima ao passar o mouse (e o clique direito continua com o menu do Foundry).
+   Sussurro e rolagem cega continuam sempre à vista, no mesmo canto. */
+li.chat-message.ncc-card { position: relative; }
+li.chat-message.ncc-card > .message-header {
+  position: absolute !important; top: 6px; right: 8px; z-index: 6; margin: 0 !important; padding: 2px 6px !important;
+  pointer-events: none; background: none; transition: background .15s;
+}
+li.chat-message.ncc-card > .message-header .message-sender { display: none !important; }
+li.chat-message.ncc-card > .message-header .message-metadata > :not(.ncc-selo) { opacity: 0; transition: opacity .15s; }
+li.chat-message.ncc-card:hover > .message-header, li.chat-message.ncc-card:focus-within > .message-header {
+  pointer-events: auto; background: rgba(12, 9, 18, .88); box-shadow: 0 0 0 1px color-mix(in srgb, var(--nc-s, #e0b257) 45%, transparent);
+}
+li.chat-message.ncc-card:hover > .message-header .message-metadata > *, li.chat-message.ncc-card:focus-within > .message-header .message-metadata > * { opacity: 1; }
+li.chat-message.ncc-card > .message-header .ncc-selo { pointer-events: auto; }
+li.chat-message.ncc-card > .message-content { padding-top: 0 !important; }
+@media (hover: none) {
+  li.chat-message.ncc-card > .message-header .message-metadata > :not(.ncc-selo) { opacity: .55; }
+  li.chat-message.ncc-card > .message-header { pointer-events: auto; }
+}
