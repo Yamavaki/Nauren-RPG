@@ -6,8 +6,8 @@
     {{#if isCor}}
     <!-- Pigmento: o ícone é um círculo na cor escolhida, não uma imagem enviada -->
     <div style="flex-shrink: 0; text-align: center;">
-      <div style="width: 100px; height: 100px; border-radius: 50%; border: 5px solid {{system.corHex}}; background: {{system.corHex}};"></div>
-      <input type="color" name="system.corHex" value="{{system.corHex}}" title="Escolher a cor do Pigmento" style="margin-top: 8px; width: 60px; height: 28px; border-radius: 4px; cursor: pointer; padding: 2px;">
+      <div class="nauren-cor-retrato" style="background: {{system.corHex}};"></div>
+      <label class="nauren-cor-escolher" title="Escolher a cor do Pigmento"><input type="color" name="system.corHex" value="{{system.corHex}}"><span>Trocar cor</span></label>
     </div>
     {{else}}
     <!-- Imagem (clique para trocar) -->
@@ -2165,7 +2165,7 @@
     </p>
   </div>
 
-  <div style="border-radius: 8px; padding: 15px; margin-bottom: 15px;">
+  <div class="item-meta-box nauren-caixa-secao">
     <h4 style="margin: 0 0 6px;">Combate</h4>
     <div class="field-grid cols-3">
       <div class="field"><label>Bônus de Ataque</label><input type="text" name="system.ataque" value="{{system.ataque}}"></div>
@@ -2249,11 +2249,11 @@
     </p>
   </div>
 
-  <div style="border-radius: 8px; padding: 15px; margin-bottom: 15px;">
+  <div class="item-meta-box nauren-caixa-secao">
+    <h4 class="nauren-caixa-titulo">Modificadores</h4>
     <p class="item-meta-hint" style="margin: 0 0 8px;">Se a condição for acumulável, cada modificador que SOMA ("+"/"-") vale <b>por acúmulo</b> (ex.: Defesa "-1" com 3 acúmulos = -3); um modificador que trava não multiplica pelos acúmulos.</p>
     <p class="item-meta-hint" style="margin: 0 0 10px;"><b>Como preencher "Valor":</b> "+2" ou "-3" <b>soma</b> (ou subtrai) do valor normal — é o jeito de sempre (um número puro sem sinal, tipo "10", também soma). Começando com "=" (ex.: "=0", "=10"), <b>trava</b> o campo exatamente nesse valor, ignorando tudo mais (ex.: "=0" em Força representa uma paralisia total). Pode usar "@atributo" para referenciar outro valor do personagem (ex.: "=@inteligencia" trava sempre igual à Inteligência atual), e "@rank" para referenciar o Rank desta própria Condição, se ela tiver um (ex.: "+@rank*2").</p>
 
-    <label style="display: block; margin-bottom: 6px;">Modificadores</label>
     <p class="item-meta-hint" style="margin: 0 0 6px;">"Dado Extra de Dano/Cura" aceita um dado (1d8) ou "auto" (o maior dado que já está na fórmula).</p>
     {{#each system.modificadores as |mod modIndex|}}
     <div class="item-meta-box" style="margin-bottom: 8px; padding: 10px;">
@@ -2280,7 +2280,7 @@
     <a class="btn-add" data-action="addModificador">+ Adicionar modificador</a>
   </div>
 
-  <div class="form-group">
+  <div class="form-group item-meta-box nauren-caixa-linha">
     <label title="Fórmula (aceita &quot;@rank&quot; desta Condição) somada ao teto de níveis de Crescimento de qualquer Ação com Crescimento ligado, enquanto quem tem esta Condição estiver com ela ativa - não precisa saber qual Magia de antemão (ex.: Forma Arauto Lunar, Druida: 'Pode usar Crescimento duas vezes por magia'). Vazio = sem bônus.">Teto de Crescimento Extra (enquanto ativa)</label>
     <input type="text" name="system.crescimentoMaxNivelExtra" value="{{system.crescimentoMaxNivelExtra}}" placeholder="ex.: 1">
   </div>

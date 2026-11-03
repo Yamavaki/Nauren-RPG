@@ -320,7 +320,7 @@ Clique para abrir">
         {{#each recursosCustomView as |barra|}}
         <div class="ns-faixa-classe ns-pip-forma-{{../ns.classe.pip}}" style="--ns-rec: {{barra.cor2}};">
           <span class="ns-faixa-icone"><i class="fas {{barra.icone}}"></i></span>
-          <span class="ns-faixa-nome">{{barra.label}}</span>
+          <span class="ns-faixa-nome" title="{{barra.label}}">{{barra.label}}</span>
           <a class="nauren-barra-config ns-faixa-trava" data-action="alternarTravaRecursoCustom" data-index="{{barra.index}}" title="Trava: {{barra.travaManual}} (clique pra alternar auto/travado/destravado) - {{#if barra.travadoAgora}}TRAVADO agora{{else}}livre agora{{/if}}"><i class="fas {{#if barra.travadoAgora}}fa-lock{{else}}fa-lock-open{{/if}} {{#if barra.travadoAgora}}travado{{/if}}"></i></a>
           {{#if barra.marc.itens.length}}
           <div class="ns-marcadores ns-faixa-pips ns-modo-{{barra.marc.modo}}">

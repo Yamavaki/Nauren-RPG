@@ -6240,3 +6240,39 @@ img.nauren-criador-token.com-borda { border: none; border-radius: 0; background:
 /* 0.98.2: a moldura do retrato do item fica na caixa (antes ficava na imagem e a caixa cortava a borda de baixo e da direita) */
 .nauren-rpg.sheet.item .nauren-sheet > header .nauren-item-retrato { box-sizing: border-box; border: 1.5px solid var(--n-ouro); box-shadow: 0 0 0 3px var(--n-tinta), 0 0 0 4px color-mix(in srgb, var(--n-ouro) 35%, transparent); margin: 4px; }
 .nauren-rpg.sheet.item .nauren-sheet > header .nauren-item-retrato img { border: 0 !important; border-radius: 0 !important; margin: 0; }
+/* 0.98.3: revisão geral de alinhamento */
+/* "4 / 4": o inline-flex comia o espaço antes da barra */
+.nauren-sheet.ns2 a.nauren-barra-track.ns-num { gap: .28em; align-items: baseline; }
+/* nome do recurso da classe: quebra em até 2 linhas em vez de cortar com "…" */
+.nauren-sheet.ns2 .ns-faixa-nome { flex: 0 1 auto; min-width: 0; white-space: normal; line-height: 1.15; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; overflow-wrap: break-word; }
+/* botão "Pegar a árvore de …": respiro nas laterais e quebra de linha se o nome for comprido */
+.nauren-sheet.ns2 .ns-sub-btn { height: auto; min-height: 34px; padding: 6px 12px; text-align: center; line-height: 1.2; box-sizing: border-box; }
+/* ficha de item: texto dos nomes não encosta na borda do campo */
+.nauren-rpg.sheet.item .nauren-sheet > header input[name="name"],
+.nauren-rpg.sheet.item .nauren-sheet input[data-field^="acoes."][data-field$=".nome"] { padding-left: 10px !important; padding-right: 10px !important; box-sizing: border-box; }
+/* blocos da Ação: rótulo numa coluna só, sem quebrar "Escolhas e extras" em duas linhas */
+.nauren-rpg.sheet.item:not(.nauren-subclasse-sheet) .nauren-sheet .nauren-bloco > summary.nauren-bloco-cab { grid-template-columns: 12px 22px 140px minmax(0, 1fr); }
+.nauren-rpg.sheet.item:not(.nauren-subclasse-sheet) .nauren-sheet .nauren-bloco-titulo { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* botões "+ Adicionar …": tamanho de botão de verdade, alinhados com o resto */
+.nauren-rpg.sheet .nauren-sheet .btn-add { display: inline-flex; align-items: center; gap: 6px; min-height: 30px; padding: 5px 14px; border-radius: 8px; font-size: 12.5px; line-height: 1.2; box-sizing: border-box; border-color: color-mix(in srgb, var(--n-ouro) 70%, transparent) !important; }
+/* caixas de seção que antes ficavam soltas (Modificadores, Combate do Pigmento, Teto de Crescimento) */
+.nauren-rpg.sheet.item .nauren-sheet .nauren-caixa-secao { padding: 12px 14px; margin-bottom: 12px; }
+.nauren-rpg.sheet.item .nauren-sheet .nauren-caixa-secao > h4, .nauren-rpg.sheet.item .nauren-sheet .nauren-caixa-titulo { margin: 0 0 8px; font-size: 14px; font-weight: 700; color: var(--n-texto); border: 0; }
+.nauren-rpg.sheet.item .nauren-sheet .nauren-caixa-linha { display: flex; align-items: center; gap: 12px; padding: 10px 14px; margin-bottom: 12px; }
+.nauren-rpg.sheet.item .nauren-sheet .nauren-caixa-linha > label { flex: 1 1 auto; margin: 0; }
+.nauren-rpg.sheet.item .nauren-sheet .nauren-caixa-linha > input { flex: 0 0 160px; }
+/* Criador de Monstros: "Deslocamento" cabia apertado e encostava na conta */
+.nauren-criador-monstro .nmc-calc-linha { grid-template-columns: 86px minmax(0, 1fr) auto; column-gap: 8px; }
+.nauren-criador-monstro .nmc-calc-linha span { overflow-wrap: anywhere; }
+.nauren-cronometro .nauren-cronometro-barra i { margin: 0; }
+/* número do d20 do kit: a cor vem do estado do dado (crítico = texto escuro no ouro); regras gerais de "b" das janelas não podem pintar por cima */
+.nk-d20 b { color: var(--nk-d20-txt) !important; }
+.nauren-rpg.sheet.item .nauren-sheet .nauren-opcao-campo > input, .nauren-rpg.sheet.item .nauren-sheet .nauren-opcao-campo > select { box-sizing: border-box; max-width: 100%; min-width: 0; }
+/* Pigmento: círculo com a mesma moldura do retrato dos outros itens, e o seletor de cor como um botão pequeno alinhado embaixo */
+.nauren-rpg.sheet.item .nauren-sheet > header .nauren-cor-retrato { width: 92px; height: 92px; margin: 4px; border-radius: 50%; border: 1.5px solid var(--n-ouro); box-shadow: 0 0 0 3px var(--n-tinta), 0 0 0 4px color-mix(in srgb, var(--n-ouro) 35%, transparent), inset 0 -10px 18px rgba(0,0,0,.25); box-sizing: border-box; }
+.nauren-rpg.sheet.item .nauren-sheet > header .nauren-cor-escolher { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; padding: 3px 10px 3px 4px; border-radius: 999px; border: 1px solid var(--n-borda); background: var(--n-tinta); cursor: pointer; font-size: 11.5px; color: var(--n-suave); }
+.nauren-rpg.sheet.item .nauren-sheet > header .nauren-cor-escolher input[type="color"] { width: 20px; height: 20px; min-height: 0; padding: 0; border: 0; border-radius: 50%; background: none; cursor: pointer; }
+.nauren-rpg.sheet.item .nauren-sheet > header .nauren-cor-escolher input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+.nauren-rpg.sheet.item .nauren-sheet > header .nauren-cor-escolher input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 50%; }
+.nauren-rpg.sheet.item .nauren-sheet > header .nauren-cor-escolher:hover { color: var(--n-texto); border-color: var(--n-ouro); }
+.nauren-sheet.ns2 .ns-faixa-pips { flex: 0 0 auto; }
