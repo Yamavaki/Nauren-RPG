@@ -7006,3 +7006,53 @@ body.ncc-chat .chat-bubble::after {
 }
 li.chat-message.ncc { box-sizing: border-box; width: auto; max-width: 100%; }
 li.chat-message.ncc * { box-sizing: border-box; }
+/* 0.99.4: card do sistema — borda inteira também nas diagonais (a borda é a camada de trás, o fundo chanfrado vai por cima)
+   e o cabeçalho listrado recortado nos cantos de cima, para não cobrir a diagonal. */
+.nauren-roll-card.nc2 {
+  --cc: 8px; --cbw: 1.5px; --ck: calc(var(--cc) * .7071 - var(--cbw) * .4142);
+  padding: 0 !important; border: var(--cbw) solid transparent !important;
+  background:
+    linear-gradient(135deg, transparent var(--ck), var(--nc-fundo) 0) top left / 51% 51% no-repeat padding-box,
+    linear-gradient(225deg, transparent var(--ck), var(--nc-fundo) 0) top right / 51% 51% no-repeat padding-box,
+    linear-gradient(315deg, transparent var(--ck), var(--nc-fundo) 0) bottom right / 51% 51% no-repeat padding-box,
+    linear-gradient(45deg, transparent var(--ck), var(--nc-fundo) 0) bottom left / 51% 51% no-repeat padding-box,
+    linear-gradient(color-mix(in srgb, var(--nc-p) 80%, #000), color-mix(in srgb, var(--nc-p) 80%, #000)) border-box !important;
+}
+.nauren-roll-card.nc2::before { display: none !important; }
+.nauren-roll-card.nc2::after { inset: 2.5px; }
+.nauren-roll-card.nc2 > header.nrc-toggle, .nauren-roll-card.nc2 > .nc-fita:first-child {
+  clip-path: polygon(6.9px 0, calc(100% - 6.9px) 0, 100% 6.9px, 100% 100%, 0 100%, 0 6.9px);
+}
+/* nada do Foundry puxa o card para cima nem corta a borda de cima */
+li.chat-message.ncc-card { overflow: visible !important; }
+li.chat-message.ncc-card > .message-content { margin: 0 !important; padding: 1px 0 0 !important; overflow: visible !important; position: relative; z-index: 1; }
+li.chat-message.ncc-card > .message-header { position: relative; z-index: 0; margin: 0 !important; height: auto; }
+/* 0.99.4: balão próprio em cima do token (camada #ncc-baloes dentro do #hud, nas coordenadas do mapa) */
+#ncc-baloes { position: absolute; left: 0; top: 0; width: 0; height: 0; pointer-events: none; z-index: 60; }
+.ncc-bolha2 {
+  position: absolute; width: max-content; max-width: 340px; pointer-events: none;
+  transform-origin: 50% 100%; transform: translate(-50%, calc(-100% - 14px)) scale(calc(var(--ncc-escala, 1) * .92));
+  opacity: 0; transition: opacity .25s ease, transform .25s ease;
+  padding: 9px 15px 10px; isolation: isolate;
+  color: #fff; font: 500 15px/1.4 Signika, system-ui, sans-serif; text-align: center; text-shadow: 0 1px 2px rgba(0, 0, 0, .65);
+  overflow-wrap: anywhere;
+}
+.ncc-bolha2.ncc-entra { opacity: 1; transform: translate(-50%, calc(-100% - 14px)) scale(var(--ncc-escala, 1)); }
+.ncc-bolha2.ncc-sai { opacity: 0; transition: opacity .4s ease; }
+.ncc-bolha2::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  --cc: 9px; --cbw: 1.5px; --ck: calc(var(--cc) * .7071 - var(--cbw) * .4142);
+  --cbg: color-mix(in srgb, var(--nc-pd, #26183a) 78%, #120e18); --cbd: var(--nc-p, #a86ee0);
+  border: var(--cbw) solid transparent;
+  background:
+    linear-gradient(135deg, transparent var(--ck), var(--cbg) 0) top left / 51% 51% no-repeat padding-box,
+    linear-gradient(225deg, transparent var(--ck), var(--cbg) 0) top right / 51% 51% no-repeat padding-box,
+    linear-gradient(315deg, transparent var(--ck), var(--cbg) 0) bottom right / 51% 51% no-repeat padding-box,
+    linear-gradient(45deg, transparent var(--ck), var(--cbg) 0) bottom left / 51% 51% no-repeat padding-box,
+    linear-gradient(var(--cbd), var(--cbd)) border-box;
+  clip-path: polygon(var(--cc) 0, calc(100% - var(--cc)) 0, 100% var(--cc), 100% calc(100% - var(--cc)), calc(100% - var(--cc)) 100%, var(--cc) 100%, 0 calc(100% - var(--cc)), 0 var(--cc));
+}
+.ncc-bolha2::after { content: ""; position: absolute; left: 50%; top: 100%; width: 16px; height: 10px; margin: -1px 0 0 -8px; background: var(--nc-p, #a86ee0); clip-path: polygon(0 0, 100% 0, 50% 100%); }
+.ncc-bolha2-texto { position: relative; }
+.ncc-bolha2-texto p { margin: 0; }
+.ncc-bolha2-texto i, .ncc-bolha2-texto em { color: var(--nc-sc, #ffe2a3); }

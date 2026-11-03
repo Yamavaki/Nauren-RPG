@@ -189,6 +189,78 @@ function observarBaloes() {
   obs.observe(document.body, { childList: true, subtree: true });
 }
 
+/* ---------- balão próprio: surge em cima do token, fica parado e some ----------
+   O balão do Foundry rola o texto longo dentro de uma caixa de altura fixa e se mede antes do nosso estilo.
+   Com a opção ligada, o sistema desenha o balão: centralizado exatamente em cima do token, com o texto todo,
+   parado por um tempo que cresce com o tamanho do texto, e sai em fade. Segue o token se ele andar. */
+const baloes = new Map(); // tokenId → { el, token, timer }
+function camadaBaloes() {
+  const hud = document.getElementById("hud");
+  if (!hud) return null;
+  let c = document.getElementById("ncc-baloes");
+  if (!c) { c = document.createElement("div"); c.id = "ncc-baloes"; hud.appendChild(c); }
+  return c;
+}
+function posicionarBalao(b) {
+  const t = b.token;
+  if (!t?.document || t.destroyed) return;
+  const d = t.document, g = canvas.grid?.size || canvas.dimensions?.size || 100;
+  const w = (Number(d.width) || 1) * g;
+  const x = (Number(d.x) || 0) + w / 2;
+  const y = Number(d.y) || 0;
+  const zoom = canvas.stage?.scale?.x || 1;
+  const escala = Math.min(2.6, Math.max(1, 1 / zoom)); // de longe o texto continua legível
+  b.el.style.left = `${x}px`;
+  b.el.style.top = `${y}px`;
+  b.el.style.setProperty("--ncc-escala", escala);
+}
+function tempoDoBalao(texto) {
+  const n = String(texto ?? "").replace(/<[^>]*>/g, "").trim().length;
+  return Math.min(16000, Math.max(3500, 2200 + n * 55));
+}
+async function naurenBalao(token, mensagem, opcoes = {}) {
+  const tk = token?.object ?? token; // TokenDocument ou Token
+  if (!tk?.document) return null;
+  if (opcoes.requireVisible && !tk.visible) return null;
+  const camada = camadaBaloes();
+  if (!camada) return null;
+  const antigo = baloes.get(tk.id);
+  if (antigo) { clearTimeout(antigo.timer); antigo.el.remove(); baloes.delete(tk.id); }
+  const el = document.createElement("div");
+  el.className = `ncc-bolha2 ${opcoes.cssClasses?.join?.(" ") ?? ""}`;
+  el.dataset.tokenId = tk.id;
+  el.innerHTML = `<div class="ncc-bolha2-texto">${mensagem}</div>`;
+  const { estilo, escuro } = naurenEstiloDoCard(tk.actor ?? null);
+  el.style.cssText += estilo;
+  el.classList.toggle("ncc-escuro", !!escuro);
+  camada.appendChild(el);
+  const b = { el, token: tk, timer: null };
+  baloes.set(tk.id, b);
+  posicionarBalao(b);
+  requestAnimationFrame(() => el.classList.add("ncc-entra"));
+  if (opcoes.pan && tk.center) canvas.animatePan?.({ x: tk.center.x, y: tk.center.y, duration: 500 });
+  b.timer = setTimeout(() => {
+    el.classList.add("ncc-sai");
+    setTimeout(() => { el.remove(); if (baloes.get(tk.id) === b) baloes.delete(tk.id); }, 450);
+  }, tempoDoBalao(mensagem));
+  return el;
+}
+function instalarBalaoProprio() {
+  const CB = foundry.canvas?.animation?.ChatBubbles;
+  if (!CB?.prototype?.say || CB.prototype._naurenSay) return;
+  const original = CB.prototype.say;
+  CB.prototype._naurenSay = original;
+  CB.prototype.say = async function (token, message, options = {}) {
+    if (!ligado()) return original.call(this, token, message, options);
+    try { return await naurenBalao(token, message, options); }
+    catch (err) { console.warn("Nauren RPG | balão", err); return original.call(this, token, message, options); }
+  };
+  const reposicionar = () => { for (const b of baloes.values()) posicionarBalao(b); };
+  Hooks.on("refreshToken", t => { const b = baloes.get(t.id); if (b) posicionarBalao(b); });
+  Hooks.on("canvasPan", reposicionar);
+  Hooks.on("canvasTearDown", () => { for (const b of baloes.values()) { clearTimeout(b.timer); b.el.remove(); } baloes.clear(); });
+}
+
 function naurenChatInit() {
   game.settings.register("nauren", "chatNauren", {
     name: "Chat no estilo Nauren",
@@ -199,6 +271,6 @@ function naurenChatInit() {
 }
 
 Hooks.on("renderChatMessageHTML", (message, html) => { try { aplicar(message, html); } catch (err) { console.warn("Nauren RPG | chat", err); } });
-Hooks.once("ready", () => { try { if (ligado()) document.body.classList.add("ncc-chat"); observarBaloes(); } catch (err) { console.warn("Nauren RPG | balões", err); } });
+Hooks.once("ready", () => { try { if (ligado()) document.body.classList.add("ncc-chat"); observarBaloes(); instalarBalaoProprio(); } catch (err) { console.warn("Nauren RPG | balões", err); } });
 
-export { naurenChatInit, pintarBalao as naurenChatPintarBalao };
+export { naurenChatInit, pintarBalao as naurenChatPintarBalao, naurenBalao as naurenChatBalao };
