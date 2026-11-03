@@ -6284,6 +6284,7 @@ img.nauren-criador-token.com-borda { border: none; border-radius: 0; background:
    quadrado, com a ponta encostando na diagonal, como antes. Variáveis: --mc chanfro · --mb cor · --mbw espessura
    =================================================== */
 .application.nauren-kit.nc2::before,
+.application.nc-moldura.nc2::before,
 .nauren-deflexao-card.nc2::before,
 #nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-alvos::after,
 #nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-flutuante::after,
@@ -6795,3 +6796,198 @@ img.nauren-criador-token.com-borda { border: none; border-radius: 0; background:
 .na-bau .na-detalhe { min-height: 0; }
 .na-det-qtd { display: flex; flex-direction: column; line-height: 1.2; }
 .na-det-qtd small { font-size: 11.5px; color: var(--nk-suave); }
+
+/* ===================================================
+   0.99.2 — FICHAS (personagem, PNJ, Armazenamento) NA MOLDURA DO SISTEMA
+   Chanfro com a borda de fora nas diagonais, filete quadrado por dentro, barra listrada nas cores do dono
+   e o canto de arrastar desenhado dentro do chanfro (o recorte cortava o triângulo do Foundry).
+   =================================================== */
+.application.nc-moldura.nc2 {
+  border: 0 !important; border-radius: 0 !important;
+  --mc: 12px; --mb: color-mix(in srgb, var(--nc-p) 80%, #000); --mbw: 1.5px;
+  clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px), 0 12px);
+  box-shadow: none !important;
+}
+.application.nc-moldura.nc2::before { z-index: 61; }
+.application.nc-moldura.nc2::after { content: ""; position: absolute; inset: 5px; border: 1px solid color-mix(in srgb, var(--nc-s) 36%, transparent); pointer-events: none; z-index: 60; }
+.application.nc-moldura.nc2 > .window-header {
+  background: repeating-linear-gradient(135deg, var(--nc-pd) 0 10px, color-mix(in srgb, var(--nc-pd) 78%, #000) 10px 20px) !important;
+  border-bottom: 2px solid var(--nc-s) !important; color: #fff; padding: 0 12px 0 18px; min-height: 34px; border-radius: 0 !important;
+}
+.application.nc-moldura.nc2 > .window-header .window-title { font-family: "Modesto Condensed", "Cinzel", Georgia, serif; font-size: 17px; font-weight: 700; letter-spacing: .03em; color: #fff; display: flex; align-items: center; gap: 8px; }
+.application.nc-moldura.nc2 > .window-header .window-title::before { content: ""; flex: none; width: 7px; height: 7px; transform: rotate(45deg); background: var(--nc-s); }
+.application.nc-moldura.nc2 > .window-header .window-icon { display: none; }
+.application.nc-moldura.nc2 > .window-header button, .application.nc-moldura.nc2 > .window-header a { color: var(--nc-pc); min-width: 28px; min-height: 28px; }
+.application.nc-moldura.nc2 > .window-header button:hover, .application.nc-moldura.nc2 > .window-header a:hover { color: #fff; text-shadow: 0 0 6px var(--nc-s); }
+/* canto de arrastar: três traços paralelos à diagonal, dentro do chanfro */
+.application.nc2 > .window-resize-handle, .application.nc-moldura > .window-resize-handle {
+  position: absolute; right: 7px; bottom: 7px; width: 15px; height: 15px; z-index: 70; border: 0 !important; border-radius: 0; box-shadow: none;
+  background: linear-gradient(135deg, transparent 0 46%, var(--nc-s, #e0b257) 46% 53%, transparent 53% 63%, var(--nc-s, #e0b257) 63% 70%, transparent 70% 80%, var(--nc-s, #e0b257) 80% 87%, transparent 87%) !important;
+  opacity: .7; cursor: nwse-resize;
+}
+.application.nc2 > .window-resize-handle > *, .application.nc-moldura > .window-resize-handle > * { display: none; }
+.application.nc2 > .window-resize-handle::before, .application.nc2 > .window-resize-handle::after { display: none; }
+.application.nc2 > .window-resize-handle:hover { opacity: 1; filter: drop-shadow(0 0 3px var(--nc-s, #e0b257)); }
+
+/* ===================================================
+   0.99.2 — CHAT NO ESTILO NAUREN (modulos/chat.mjs). Prefixo ncc-.
+   O <li> do Foundry fica sem moldura; cards do sistema aparecem sozinhos e as demais mensagens viram
+   retrato + balão chanfrado nas cores de quem fala (--nc-p, --nc-pd, --nc-pc, --nc-s, --nc-sc).
+   =================================================== */
+li.chat-message.ncc {
+  background: none !important; border: 0 !important; box-shadow: none !important; border-radius: 0 !important;
+  padding: 0 !important; margin: 0 0 10px !important; color: #ece6f5; font-family: Signika, system-ui, sans-serif;
+  --ncc-texto: #ece6f5; --ncc-suave: #b3a6c9;
+}
+li.chat-message.ncc::before, li.chat-message.ncc::after { display: none !important; }
+li.chat-message.ncc .message-content { padding: 0; margin: 0; color: var(--ncc-texto); font-size: 14px; line-height: 1.45; overflow-wrap: anywhere; }
+li.chat-message.ncc .message-content p { margin: 0 0 4px; }
+li.chat-message.ncc .message-content p:last-child { margin-bottom: 0; }
+li.chat-message.ncc .message-content img { max-width: 100%; height: auto; border: 0; }
+li.chat-message.ncc .message-buttons:empty { display: none; }
+/* hora, lixeira e selos: sempre visíveis, pequenos */
+li.chat-message.ncc .message-metadata { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; flex: 0 0 auto; font-size: 11px; color: var(--ncc-suave); line-height: 1; }
+li.chat-message.ncc .message-metadata .message-timestamp { color: var(--ncc-suave); font-size: 11px; }
+li.chat-message.ncc .message-metadata a, li.chat-message.ncc .message-metadata button { color: var(--ncc-suave); font-size: 11px; opacity: .85; background: none; border: 0; padding: 0 1px; width: auto; height: auto; min-height: 0; line-height: 1; box-shadow: none; }
+li.chat-message.ncc .message-metadata a:hover, li.chat-message.ncc .message-metadata button:hover { color: #ff9aa1; opacity: 1; }
+.ncc-selo { display: inline-flex; align-items: center; gap: 4px; padding: 1px 6px; font-size: 10.5px; font-weight: 600; color: var(--nc-sc, #ffe2a3); border: 1px solid color-mix(in srgb, var(--nc-s, #e0b257) 55%, transparent); background: color-mix(in srgb, var(--nc-s, #e0b257) 12%, transparent); white-space: nowrap; max-width: 140px; overflow: hidden; text-overflow: ellipsis; }
+.ncc-selo i { font-size: 9px; }
+li.chat-message.ncc .whisper-to { display: none; }
+
+/* ---- card do sistema: só o card, com a linha fina em cima ---- */
+li.chat-message.ncc-card .message-header.ncc-linha { display: flex; align-items: center; gap: 6px; padding: 0 6px 3px; margin: 0; background: none; border: 0; min-height: 0; }
+li.chat-message.ncc-card .message-header.ncc-linha .message-sender { flex: 1 1 auto; min-width: 0; margin: 0; font-size: 11px; font-weight: 600; color: #cfc4e0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-transform: none; font-family: Signika, sans-serif; letter-spacing: 0; }
+li.chat-message.ncc-card .message-header.ncc-linha .flavor-text { display: none; }
+li.chat-message.ncc-card .message-content > * { margin-top: 0; }
+
+/* ---- falas, fora do jogo, rolagens, tabelas: retrato + balão ---- */
+li.chat-message.ncc:not(.ncc-card) { display: grid !important; grid-template-columns: 36px minmax(0, 1fr); gap: 8px; align-items: start; }
+.ncc-av { width: 36px; height: 36px; padding: 2px; box-sizing: border-box; background: var(--nc-p, #a86ee0);
+  clip-path: polygon(7px 0, calc(100% - 7px) 0, 100% 7px, 100% calc(100% - 7px), calc(100% - 7px) 100%, 7px 100%, 0 calc(100% - 7px), 0 7px); }
+.ncc-av img { width: 100%; height: 100%; object-fit: cover; border: 0; display: block; background: #1b1624;
+  clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px); }
+.ncc-balao {
+  --cc: 8px; --cbw: 1.5px; --ck: calc(var(--cc) * .7071 - var(--cbw) * .4142);
+  --cbg: color-mix(in srgb, var(--nc-pd, #26183a) 60%, #1b1624); --cbd: color-mix(in srgb, var(--nc-p, #a86ee0) 75%, #000);
+  position: relative; min-width: 0; padding: 7px 11px 9px; border: var(--cbw) solid transparent;
+  background:
+    linear-gradient(135deg, transparent var(--ck), var(--cbg) 0) top left / 51% 51% no-repeat padding-box,
+    linear-gradient(225deg, transparent var(--ck), var(--cbg) 0) top right / 51% 51% no-repeat padding-box,
+    linear-gradient(315deg, transparent var(--ck), var(--cbg) 0) bottom right / 51% 51% no-repeat padding-box,
+    linear-gradient(45deg, transparent var(--ck), var(--cbg) 0) bottom left / 51% 51% no-repeat padding-box,
+    linear-gradient(var(--cbd), var(--cbd)) border-box;
+  clip-path: polygon(var(--cc) 0, calc(100% - var(--cc)) 0, 100% var(--cc), 100% calc(100% - var(--cc)), calc(100% - var(--cc)) 100%, var(--cc) 100%, 0 calc(100% - var(--cc)), 0 var(--cc));
+}
+li.chat-message.ncc-escuro .ncc-balao { --cbg: color-mix(in srgb, var(--nc-pd, #26183a) 40%, #141317); }
+li.chat-message.ncc .ncc-balao > .message-header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; padding: 0; margin: 0 0 4px; background: none; border: 0; min-height: 0; }
+li.chat-message.ncc .ncc-balao .message-sender { margin: 0; flex: 0 1 auto; min-width: 0; font: 700 15px/1.2 "Modesto Condensed", "Cinzel", Georgia, serif; letter-spacing: .02em; color: var(--nc-pc, #d9bdf7); text-transform: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ncc-jogador { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--ncc-suave); white-space: nowrap; }
+.ncc-jogador i { width: 7px; height: 7px; transform: rotate(45deg); flex: none; }
+.ncc-jogador b { font-weight: 600; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: var(--nc-sc, #ffe2a3); padding: 0 5px; border: 1px solid color-mix(in srgb, var(--nc-s, #e0b257) 45%, transparent); }
+li.chat-message.ncc .ncc-balao > .message-header .flavor-text { order: 10; flex: 1 1 100%; margin: 2px 0 0; font-size: 13px; font-weight: 600; color: var(--nc-sc, #ffe2a3); font-style: normal; }
+/* agrupadas: retrato e nome só na primeira; as seguintes encostam e ganham um traço de ligação */
+li.chat-message.ncc.ncc-cont { margin-top: -6px !important; }
+li.chat-message.ncc.ncc-cont .ncc-av { visibility: hidden; height: 6px; }
+li.chat-message.ncc.ncc-cont .ncc-av::after { content: ""; }
+li.chat-message.ncc.ncc-cont .ncc-balao { padding-top: 6px; }
+li.chat-message.ncc.ncc-cont .ncc-balao > .message-header { position: absolute; top: 6px; right: 10px; margin: 0; }
+li.chat-message.ncc.ncc-cont .ncc-balao > .message-header .message-sender,
+li.chat-message.ncc.ncc-cont .ncc-balao > .message-header .ncc-jogador { display: none; }
+li.chat-message.ncc.ncc-cont .ncc-balao > .message-content { padding-right: 62px; }
+li.chat-message.ncc.ncc-cont { position: relative; }
+li.chat-message.ncc.ncc-cont::before { display: block !important; content: ""; position: absolute; left: 17px; top: -6px; bottom: 50%; width: 2px; background: color-mix(in srgb, var(--nc-p, #a86ee0) 55%, transparent); }
+/* fora do jogo */
+li.chat-message.ncc-ooc .ncc-balao { --cbg: #1d1a24; --cbd: #3b3452; }
+li.chat-message.ncc-ooc .ncc-balao .message-sender { color: #d6cce6; font-family: Signika, sans-serif; font-size: 13.5px; font-weight: 700; }
+li.chat-message.ncc-ooc .ncc-av { background: var(--ncc-jogador, #6b5f86); }
+/* sussurro */
+li.chat-message.ncc-sussurro:not(.ncc-card) .ncc-balao { --cbd: color-mix(in srgb, var(--nc-s, #e0b257) 70%, #000); --cbg: color-mix(in srgb, var(--nc-pd, #26183a) 35%, #17131d);
+  background-image: none; }
+li.chat-message.ncc-sussurro:not(.ncc-card) .ncc-balao .message-content { font-style: italic; color: #e6def2; }
+/* emote */
+li.chat-message.ncc-emote .ncc-balao { --cbg: transparent; background: none; clip-path: none; border: 0; border-left: 2px solid var(--nc-s, #e0b257); padding: 4px 10px; }
+li.chat-message.ncc-emote .ncc-balao > .message-header { position: absolute; top: 4px; right: 0; }
+li.chat-message.ncc-emote .ncc-balao > .message-header .message-sender, li.chat-message.ncc-emote .ncc-balao > .message-header .ncc-jogador { display: none; }
+li.chat-message.ncc-emote .message-content { font-style: italic; color: var(--nc-pc, #d9bdf7); padding-right: 60px; }
+.ncc-emote-nome { font-style: normal; font-family: "Modesto Condensed", "Cinzel", serif; color: var(--nc-sc, #ffe2a3); }
+
+/* ---- rolagens do Foundry (/r, /gmr, /br, /sr, iniciativa…) ---- */
+li.chat-message.ncc .dice-roll { margin: 2px 0 0; cursor: default; }
+li.chat-message.ncc .dice-roll .dice-flavor { font-size: 13px; font-weight: 600; color: var(--nc-sc, #ffe2a3); margin: 0 0 6px; text-align: left; }
+li.chat-message.ncc .dice-roll .dice-result { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "formula total" "dados total"; gap: 6px 10px; align-items: center; margin: 0; }
+li.chat-message.ncc .dice-roll .dice-formula { grid-area: formula; margin: 0; padding: 3px 8px; border: 1px solid color-mix(in srgb, var(--nc-p, #a86ee0) 45%, transparent); background: rgba(0, 0, 0, .28); color: #e6def2; font: 600 13px/1.3 "Signika", sans-serif; text-align: left; border-radius: 0; box-shadow: none; overflow-wrap: anywhere; }
+li.chat-message.ncc .dice-roll .dice-tooltip { grid-area: dados; display: block !important; margin: 0; padding: 0; background: none; border: 0; box-shadow: none; }
+li.chat-message.ncc .dice-roll .dice-tooltip .tooltip-part { margin: 0; padding: 0; border: 0; background: none; }
+li.chat-message.ncc .dice-roll .dice-tooltip .tooltip-part + .tooltip-part { margin-top: 4px; }
+li.chat-message.ncc .dice-roll .dice-tooltip .dice { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 0; border: 0; background: none; }
+li.chat-message.ncc .dice-roll .dice-tooltip .part-header { display: inline-flex; gap: 6px; align-items: baseline; margin: 0; padding: 0; border: 0; font-size: 11px; color: var(--ncc-suave); background: none; flex: 0 0 auto; }
+li.chat-message.ncc .dice-roll .dice-tooltip .part-header .part-total { color: #cfc4e0; font-weight: 700; }
+li.chat-message.ncc .dice-roll .dice-tooltip .part-header .part-flavor { font-style: italic; }
+li.chat-message.ncc .dice-roll .dice-rolls { display: flex; flex-wrap: wrap; gap: 4px; margin: 0; padding: 0; list-style: none; }
+li.chat-message.ncc .dice-roll .dice-rolls .roll {
+  position: relative; float: none; width: 26px; height: 26px; margin: 0; padding: 0; line-height: 26px; text-align: center;
+  font: 700 13px/26px Signika, sans-serif; color: #f4eefc; background: color-mix(in srgb, var(--nc-pd, #26183a) 70%, #000) !important;
+  border: 0; box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--nc-p, #a86ee0) 70%, transparent);
+  clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px);
+}
+li.chat-message.ncc .dice-roll .dice-rolls .roll::before, li.chat-message.ncc .dice-roll .dice-rolls .roll::after { display: none; }
+li.chat-message.ncc .dice-roll .dice-rolls .roll.max { color: #2a1a05; background: var(--nc-s, #e0b257) !important; box-shadow: none; }
+li.chat-message.ncc .dice-roll .dice-rolls .roll.min { color: #ffd0d3; background: #4a1d24 !important; box-shadow: inset 0 0 0 1.5px #c2474f; }
+li.chat-message.ncc .dice-roll .dice-rolls .roll.discarded, li.chat-message.ncc .dice-roll .dice-rolls .roll.rerolled { opacity: .4; text-decoration: line-through; }
+li.chat-message.ncc .dice-roll .dice-total {
+  grid-area: total; margin: 0; min-width: 52px; height: 52px; padding: 0 10px; box-sizing: border-box; display: grid; place-items: center;
+  font: 700 28px/1 "Modesto Condensed", "Cinzel", Georgia, serif; color: #fff; text-shadow: none;
+  background: color-mix(in srgb, var(--nc-pd, #26183a) 80%, #000); border: 0; border-radius: 0;
+  box-shadow: inset 0 0 0 1.5px var(--nc-s, #e0b257), inset 0 0 0 4px color-mix(in srgb, var(--nc-pd, #26183a) 80%, #000), inset 0 0 0 5px color-mix(in srgb, var(--nc-s, #e0b257) 35%, transparent);
+  clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px), 0 10px);
+}
+li.chat-message.ncc-crit .dice-roll .dice-total { background: var(--nc-s, #e0b257); color: #2a1a05; box-shadow: inset 0 0 0 1.5px #fff1c9; }
+li.chat-message.ncc-falha .dice-roll .dice-total { background: #3a1d22; color: #ffd0d3; box-shadow: inset 0 0 0 1.5px #c2474f; }
+li.chat-message.ncc-crit .ncc-balao::after, li.chat-message.ncc-falha .ncc-balao::after { position: absolute; right: 12px; bottom: 3px; font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+li.chat-message.ncc-crit .ncc-balao::after { content: "20 natural"; color: var(--nc-sc, #ffe2a3); }
+li.chat-message.ncc-falha .ncc-balao::after { content: "1 natural"; color: #ff9aa1; }
+li.chat-message.ncc-crit .ncc-balao, li.chat-message.ncc-falha .ncc-balao { padding-bottom: 16px; }
+/* várias rolagens na mesma mensagem */
+li.chat-message.ncc .dice-roll + .dice-roll { margin-top: 8px; padding-top: 8px; border-top: 1px solid color-mix(in srgb, var(--nc-p, #a86ee0) 30%, transparent); }
+/* sorteio de tabela */
+li.chat-message.ncc .table-draw .table-description { font-size: 12.5px; color: var(--ncc-suave); margin: 0 0 6px; }
+li.chat-message.ncc .table-draw .table-results { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+li.chat-message.ncc .table-draw .table-result { display: flex; align-items: center; gap: 8px; padding: 5px 8px; border: 0; background: rgba(0, 0, 0, .25); box-shadow: inset 2px 0 0 var(--nc-s, #e0b257); }
+li.chat-message.ncc .table-draw .table-result img { width: 28px; height: 28px; border: 0; flex: none; }
+li.chat-message.ncc .table-draw .table-result .result-text { font-size: 13.5px; color: var(--ncc-texto); }
+/* rolagem e link no meio do texto */
+li.chat-message.ncc a.inline-roll, li.chat-message.ncc a.content-link {
+  display: inline-flex; align-items: center; gap: 4px; padding: 0 6px; margin: 0 1px; border: 1px solid color-mix(in srgb, var(--nc-s, #e0b257) 55%, transparent); border-radius: 0;
+  background: color-mix(in srgb, var(--nc-s, #e0b257) 12%, rgba(0, 0, 0, .25)); color: var(--nc-sc, #ffe2a3); font-weight: 600; white-space: nowrap; line-height: 1.35;
+}
+li.chat-message.ncc a.inline-roll i, li.chat-message.ncc a.content-link i { color: var(--nc-s, #e0b257); }
+li.chat-message.ncc a.inline-roll.critical { background: var(--nc-s, #e0b257); color: #2a1a05; }
+li.chat-message.ncc a.inline-roll.fumble { background: #3a1d22; color: #ffd0d3; border-color: #c2474f; }
+/* rolagem cega para quem não é o Mestre */
+li.chat-message.ncc-cega .dice-roll .dice-total { color: var(--ncc-suave); }
+
+/* ---- balão em cima do token ---- */
+.chat-bubble.ncc-bolha { background: none !important; border: 0 !important; box-shadow: none !important; border-radius: 0 !important; padding: 0 0 9px !important; overflow: visible; }
+.chat-bubble.ncc-bolha::before { display: none !important; }
+.chat-bubble.ncc-bolha .bubble-content {
+  --cc: 8px; --cbw: 1.5px; --ck: calc(var(--cc) * .7071 - var(--cbw) * .4142);
+  --cbg: color-mix(in srgb, var(--nc-pd, #26183a) 72%, #120e18); --cbd: var(--nc-p, #a86ee0);
+  display: block; padding: 8px 14px 9px; border: var(--cbw) solid transparent; border-radius: 0; box-shadow: none;
+  background:
+    linear-gradient(135deg, transparent var(--ck), var(--cbg) 0) top left / 51% 51% no-repeat padding-box,
+    linear-gradient(225deg, transparent var(--ck), var(--cbg) 0) top right / 51% 51% no-repeat padding-box,
+    linear-gradient(315deg, transparent var(--ck), var(--cbg) 0) bottom right / 51% 51% no-repeat padding-box,
+    linear-gradient(45deg, transparent var(--ck), var(--cbg) 0) bottom left / 51% 51% no-repeat padding-box,
+    linear-gradient(var(--cbd), var(--cbd)) border-box !important;
+  clip-path: polygon(var(--cc) 0, calc(100% - var(--cc)) 0, 100% var(--cc), 100% calc(100% - var(--cc)), calc(100% - var(--cc)) 100%, var(--cc) 100%, 0 calc(100% - var(--cc)), 0 var(--cc));
+  color: #fff; font: 500 16px/1.35 Signika, system-ui, sans-serif; text-align: center; text-shadow: 0 1px 2px rgba(0, 0, 0, .6);
+}
+.chat-bubble.ncc-bolha .bubble-content i, .chat-bubble.ncc-bolha .bubble-content em { color: var(--nc-sc, #ffe2a3); }
+.chat-bubble.ncc-bolha::after {
+  display: block !important; content: ""; position: absolute; left: 50%; bottom: 0; width: 14px; height: 10px; margin-left: -7px; border: 0;
+  background: var(--nc-p, #a86ee0); clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+li.chat-message.ncc .dice-roll .dice-tooltip .tooltip-part:only-child .part-header { display: none; }
+li.chat-message.ncc-mestre .ncc-balao { --cbg: color-mix(in srgb, #26183a 60%, #1b1624); --cbd: color-mix(in srgb, #e0b257 70%, #000); }
+li.chat-message.ncc-mestre .ncc-balao .message-sender { color: #ffe2a3; font-family: "Modesto Condensed", "Cinzel", Georgia, serif; font-size: 15px; }
+li.chat-message.ncc-mestre .ncc-av { background: #e0b257; }
