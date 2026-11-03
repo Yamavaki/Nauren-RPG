@@ -34,7 +34,7 @@ const F = () => foundry.data.fields;
 
 class NaurenArmazenamentoData extends foundry.abstract.TypeDataModel {
   static defineSchema() {
-    const { StringField, NumberField, BooleanField, ArrayField, ObjectField } = F();
+    const { StringField, NumberField, BooleanField, ArrayField, ObjectField, SchemaField } = F();
     const num = (initial, extra = {}) => new NumberField({ initial, nullable: false, ...extra });
     return {
       modo: new StringField({ initial: "bau", choices: ["bau", "loja"] }),
@@ -61,7 +61,16 @@ class NaurenArmazenamentoData extends foundry.abstract.TypeDataModel {
       pagaPercent: num(50, { min: 0, max: 1000, integer: true }),
       caixa: num(0, { min: 0, max: NAUREN_QUANTIDADE_MAXIMA, integer: true }),
       caixaSemLimite: new BooleanField({ initial: true }),
-      registro: new ArrayField(new ObjectField())
+      registro: new ArrayField(new ObjectField()),
+      // Ponto no mapa (vale para todas as Regiões que apontam para este armazenamento).
+      mapa: new SchemaField({
+        icone: new StringField({ initial: "bau" }),
+        imagem: new StringField({ initial: "" }),
+        tamanho: num(0.8, { min: 0.2, max: 4 }),     // em quadrados da cena
+        rotuloSempre: new BooleanField({ initial: false }),
+        soNaVisao: new BooleanField({ initial: true }),
+        abrirAoEntrar: new BooleanField({ initial: false })
+      })
     };
   }
 }
@@ -508,9 +517,9 @@ class NaurenArmazemJanela extends foundry.applications.api.ApplicationV2 {
     super({ id: `nauren-armazem-${armazem.id}`, window: { title: armazem.name }, naurenAtorUuid: ator?.uuid ?? null, ...opcoes.app });
     this.armazem = armazem;
     this.ator = ator;
+    this._naurenAtorUuid = ator?.uuid ?? null; // as opções do V14 ficam travadas depois de criadas: a cor segue este campo
     this.regiaoUuid = opcoes.regiaoUuid ?? null;
     this.estado = { filtro: "tudo", busca: "", sel: null, qtd: {}, aba: "comprar", processando: null, aviso: null, mochilaSel: null };
-    this.options.naurenAtorUuid = ator?.uuid ?? null;
   }
   get title() { return this.armazem?.name ?? "Armazenamento"; }
 
@@ -534,7 +543,7 @@ class NaurenArmazemJanela extends foundry.applications.api.ApplicationV2 {
     const el = this.element;
     el.querySelectorAll(".na-busca-in").forEach(inp => inp.addEventListener("input", foundry.utils.debounce(() => { this.estado.busca = inp.value; this.render(); }, 180)));
     el.querySelectorAll(".na-qtd-in").forEach(inp => inp.addEventListener("change", () => { this.estado.qtd[inp.dataset.id] = Math.max(1, naurenLerNumero(inp.value) || 1); this.render(); }));
-    el.querySelectorAll("select.na-ator").forEach(sel => sel.addEventListener("change", () => { this.ator = game.actors.get(sel.value) ?? this.ator; this.options.naurenAtorUuid = this.ator?.uuid; this.render(); }));
+    el.querySelectorAll("select.na-ator").forEach(sel => sel.addEventListener("change", () => { this.ator = game.actors.get(sel.value) ?? this.ator; this._naurenAtorUuid = this.ator?.uuid ?? null; this.render(); }));
     // Arrastar entre o baú e a mochila.
     el.querySelectorAll("[data-arrasta]").forEach(x => x.addEventListener("dragstart", ev => { ev.dataTransfer.setData("text/plain", JSON.stringify({ naurenArmazem: x.dataset.arrasta, id: x.dataset.id })); }));
     for (const zona of el.querySelectorAll("[data-solta]")) {
@@ -611,7 +620,7 @@ class NaurenArmazemJanela extends foundry.applications.api.ApplicationV2 {
       detalhe = `<div class="na-detalhe">
         <div class="na-det-cab">${icone(sel)}<div><b>${ESC(sel.name)}</b><div class="na-chips">${chips(sel)}</div></div></div>
         <p class="na-det-txt">${ESC(textoCurto(sel.system?.descricao, 220)) || "<i>Sem descrição.</i>"}</p>
-        ${ehPilha(sel) && q > 1 ? `<div class="na-det-linha"><span>Quantos <small>(de ${fmt(q)})</small></span>${this.#stepper(sel.id, q, n)}</div>` : ""}
+        ${ehPilha(sel) && q > 1 ? `<div class="na-det-linha"><span class="na-det-qtd">Quantos<small>tem ${fmt(q)}</small></span>${this.#stepper(sel.id, q, n)}</div>` : ""}
         <button type="button" class="na-btn na-principal na-largo" data-action="pegar" data-id="${sel.id}" ${!podeP || proc || !game.users.activeGM ? "disabled" : ""}>${proc === sel.id ? "Processando…" : !s.podePegar && !gm ? "Este baú não deixa pegar" : `Pegar${ehPilha(sel) && n > 1 ? ` ${fmt(n)}` : ""}`}</button>
       </div>`;
     }
@@ -764,7 +773,10 @@ class NaurenArmazemSheet extends foundry.applications.sheets.ActorSheetV2 {
       desfazer: NaurenArmazemSheet.#onDesfazer,
       verComoJogador: NaurenArmazemSheet.#onVerComoJogador,
       mostrar: NaurenArmazemSheet.#onMostrar,
-      editarImagem: NaurenArmazemSheet.#onEditarImagem
+      editarImagem: NaurenArmazemSheet.#onEditarImagem,
+      colocarNoMapa: NaurenArmazemSheet.#onColocarNoMapa,
+      irPonto: NaurenArmazemSheet.#onIrPonto,
+      tirarPonto: NaurenArmazemSheet.#onTirarPonto
     }
   };
   estado = { aba: "itens", filtro: "tudo", busca: "", buscaQuem: "", verTodos: false };
@@ -865,45 +877,76 @@ class NaurenArmazemSheet extends foundry.applications.sheets.ActorSheetV2 {
   }
 
   #configurar() {
-    const s = this.actor.system;
-    const chk = (nome, v, rot, extra = "") => `<label class="na-sw"><input type="checkbox" name="${nome}" ${v ? "checked" : ""} ${extra}><i></i><span>${rot}</span></label>`;
-    const numero = (nome, v, extra = "", suf = "") => `<span class="na-num"><input type="number" name="${nome}" value="${v}" ${extra}>${suf ? `<em>${suf}</em>` : ""}</span>`;
+    const s = this.actor.system, loja = s.modo === "loja", m = s.mapa ?? {};
+    // Linha de opção: texto à esquerda, controle à direita (tudo alinhado na mesma coluna).
+    const op = (rot, dica, ctl, extra = "") => `<div class="na-op ${extra}"><div class="na-op-txt"><b>${rot}</b>${dica ? `<small>${dica}</small>` : ""}</div><div class="na-op-ctl">${ctl}</div></div>`;
+    const sw = (nome, v, extra = "") => `<label class="na-sw"><input type="checkbox" name="${nome}" ${v ? "checked" : ""} ${extra}><i></i></label>`;
+    const num = (nome, v, extra = "", suf = "", pre = "") => `<span class="na-num">${pre ? `<em class="na-pre">${pre}</em>` : ""}<input type="number" name="${nome}" value="${v}" ${extra}><em>${suf || "&nbsp;"}</em></span>`;
+    const sel = (nome, opcoes, v) => `<select name="${nome}">${opcoes.map(([k, r]) => `<option value="${ESC(k)}" ${String(k) === String(v) ? "selected" : ""}>${ESC(r)}</option>`).join("")}</select>`;
     // Quem pode abrir: busca + etiquetas (até 3) + "+N".
     const jogadores = (game.users?.contents ?? [...(game.users ?? [])]).filter(u => !u.isGM);
     const escolhidos = (s.escolhidos ?? []).map(id => game.users.get(id)).filter(Boolean);
     const mostrar = this.estado.verTodos ? escolhidos : escolhidos.slice(0, 3);
     const termo = this.estado.buscaQuem.toLocaleLowerCase("pt-BR");
     const sugestoes = termo ? jogadores.filter(u => !(s.escolhidos ?? []).includes(u.id) && (u.name.toLocaleLowerCase("pt-BR").includes(termo) || (u.character?.name ?? "").toLocaleLowerCase("pt-BR").includes(termo))).slice(0, 6) : [];
-    const quem = `<div class="na-seg na-seg-3">${[["todos", "Todos"], ["escolhidos", "Escolhidos"], ["mestre", "Só o Mestre"]].map(([k, r]) => `<button type="button" class="${s.quemAbre === k ? "on" : ""}" data-action="quem" data-quem="${k}">${r}</button>`).join("")}</div>
-      ${s.quemAbre === "escolhidos" ? `
+    const escolhidosHtml = s.quemAbre !== "escolhidos" ? "" : `<div class="na-escolhidos">
       ${busca(this.estado.buscaQuem, "Procurar jogador ou personagem…").replace("na-busca-in", "na-busca-quem").replace('data-foco="busca"', 'data-foco="quem"')}
       ${sugestoes.length ? `<div class="na-sugestoes">${sugestoes.map(u => `<a data-action="addEscolhido" data-id="${u.id}"><b>${ESC(u.name)}</b>${u.character ? ` <small>${ESC(u.character.name)}</small>` : ""}</a>`).join("")}</div>` : ""}
-      <div class="na-tags">${mostrar.map(u => `<span class="na-tag">${ESC(u.name)}<a data-action="tirarEscolhido" data-id="${u.id}" title="Tirar">✕</a></span>`).join("")}${!this.estado.verTodos && escolhidos.length > 3 ? `<a class="na-tag na-tag-mais" data-action="verTodos">+${escolhidos.length - 3}</a>` : ""}${this.estado.verTodos && escolhidos.length > 3 ? `<a class="na-tag na-tag-mais" data-action="verTodos">menos</a>` : ""}${!escolhidos.length ? `<span class="na-dica">Ninguém escolhido ainda: procure acima.</span>` : ""}</div>
-      <p class="na-dica">${escolhidos.length} escolhido(s) · as etiquetas mostram até 3, o resto fica em "+N".</p>` : ""}
-      <div class="na-linha-sw">${chk("system.podePegar", s.podePegar, s.modo === "loja" ? "Comprar" : "Pegar")}${chk("system.podeGuardar", s.podeGuardar, s.modo === "loja" ? "Vender" : "Guardar")}</div>`;
+      <div class="na-tags">${mostrar.map(u => `<span class="na-tag">${ESC(u.name)}<a data-action="tirarEscolhido" data-id="${u.id}" title="Tirar">✕</a></span>`).join("")}${!this.estado.verTodos && escolhidos.length > 3 ? `<a class="na-tag na-tag-mais" data-action="verTodos" title="Ver todos">+${escolhidos.length - 3}</a>` : ""}${this.estado.verTodos && escolhidos.length > 3 ? `<a class="na-tag na-tag-mais" data-action="verTodos">menos</a>` : ""}${!escolhidos.length ? `<span class="na-dica">Ninguém escolhido ainda: procure acima.</span>` : ""}</div>
+    </div>`;
     const moedas = [...new Set(["Florins", s.moeda, ...(game.items?.contents ?? []).filter(i => naurenEhMoeda(i)).map(i => i.name)].filter(Boolean))];
+    // Pontos no mapa desta cena.
+    const pontos = canvas?.scene ? pontosDaCena(canvas.scene).filter(p => p.comportamento.system.armazem === this.actor.uuid) : [];
+    const outras = (game.scenes?.contents ?? []).filter(c => c !== canvas?.scene && pontosDaCena(c).some(p => p.comportamento.system.armazem === this.actor.uuid)).length;
+    const icones = [...Object.entries(ICONES).map(([k, v]) => [k, v.rotulo]), ["proprio", "Imagem do armazenamento"], ["imagem", "Outra imagem"]];
     return `<div class="na-config">
       <section class="na-caixa"><h3>Espaços</h3>
-        <div class="na-2"><label class="na-campo"><span>Quantos espaços</span>${numero("system.espacos", s.espacos, `min="1" max="500" ${s.semLimite ? "disabled" : ""}`)}</label>
-        <label class="na-campo"><span>Máximo por pilha</span>${numero("system.maxPilha", s.maxPilha, `min="0"`)}</label></div>
-        ${chk("system.semLimite", s.semLimite, "Sem limite de espaços")}
-        <p class="na-dica">Uma pilha (ex.: 30 flechas) ocupa 1 espaço. Máximo por pilha 0 = sem limite.</p></section>
-      <section class="na-caixa"><h3>Quem pode abrir</h3>${quem}</section>
+        ${op("Quantos espaços", "uma pilha ocupa 1", num("system.espacos", s.espacos, `min="1" max="500" ${s.semLimite ? "disabled" : ""}`))}
+        ${op("Sem limite de espaços", "", sw("system.semLimite", s.semLimite))}
+        ${op("Máximo por pilha", "0 = sem limite", num("system.maxPilha", s.maxPilha, `min="0"`))}
+      </section>
+      <section class="na-caixa"><h3>Quem pode abrir</h3>
+        <div class="na-seg na-seg-3">${[["todos", "Todos"], ["escolhidos", "Escolhidos"], ["mestre", "Só o Mestre"]].map(([k, r]) => `<button type="button" class="${s.quemAbre === k ? "on" : ""}" data-action="quem" data-quem="${k}">${r}</button>`).join("")}</div>
+        ${escolhidosHtml}
+        ${op(loja ? "Pode comprar" : "Pode pegar", "", sw("system.podePegar", s.podePegar))}
+        ${op(loja ? "Pode vender" : "Pode guardar", loja ? "só com a compra de volta ligada" : "", sw("system.podeGuardar", s.podeGuardar))}
+      </section>
       <section class="na-caixa"><h3>Tranca e distância</h3>
-        <div class="na-linha-sw">${chk("system.trancado", s.trancado, "Trancado")}${chk("system.gastaChave", s.gastaChave, "Gasta a chave")}</div>
-        <label class="na-campo"><span>Abre com o item (nome exato)</span><input type="text" name="system.chave" value="${ESC(s.chave)}" placeholder="ex.: Chave de Ferro (vazio = só o Mestre abre)"></label>
-        <div class="na-linha-sw na-sep">${chk("system.exigirDistancia", s.exigirDistancia, "Exigir distância")}${numero("system.distancia", s.distancia, `min="0" step="0.5" ${s.exigirDistancia ? "" : "disabled"}`, "m")}</div>
-        <p class="na-dica">Desligado: abre de qualquer lugar. Ligado: o jogador precisa de um token a essa distância do ponto no mapa.</p></section>
-      <section class="na-caixa ${s.modo === "loja" ? "" : "na-apagada"}"><h3>Loja <small>· só no modo Loja</small></h3>
-        <div class="na-2"><label class="na-campo"><span>Moeda</span><select name="system.moeda">${moedas.map(m => `<option value="${ESC(m)}" ${m === s.moeda ? "selected" : ""}>${ESC(m)}</option>`).join("")}</select></label>
-        <label class="na-campo"><span>Ajuste de todos os preços</span>${numero("system.ajustePreco", s.ajustePreco, `min="0" max="10000"`, "%")}</label></div>
-        <div class="na-2 na-sep"><div>${chk("system.compraDeVolta", s.compraDeVolta, "Compra de volta")}</div>
-        <label class="na-campo"><span>Paga do preço</span>${numero("system.pagaPercent", s.pagaPercent, `min="0" max="1000" ${s.compraDeVolta ? "" : "disabled"}`, "%")}</label></div>
-        <div class="na-2"><label class="na-campo"><span>Caixa da loja</span><span class="na-num"><em class="na-pre">ƒ</em><input type="number" name="system.caixa" value="${s.caixa}" min="0" ${s.caixaSemLimite ? "disabled" : ""}></span></label>
-        <div class="na-fim">${chk("system.caixaSemLimite", s.caixaSemLimite, "Caixa sem limite")}</div></div>
-        <label class="na-campo"><span>Frase da loja (aparece no topo)</span><input type="text" name="system.frase" value="${ESC(s.frase)}" placeholder="ex.: Aço bom não é barato."></label></section>
+        ${op("Trancado", "", sw("system.trancado", s.trancado))}
+        ${op("Abre com o item", "nome exato · vazio = só o Mestre abre", `<input type="text" name="system.chave" value="${ESC(s.chave)}" placeholder="ex.: Chave de Ferro">`, "na-op-largo")}
+        ${op("Gasta a chave ao abrir", "", sw("system.gastaChave", s.gastaChave))}
+        ${op("Exigir distância", "desligado: abre de qualquer lugar", sw("system.exigirDistancia", s.exigirDistancia))}
+        ${op("Distância máxima", "de um token do jogador até o ponto", num("system.distancia", s.distancia, `min="0" step="0.5" ${s.exigirDistancia ? "" : "disabled"}`, "m"), s.exigirDistancia ? "" : "na-op-off")}
+      </section>
+      <section class="na-caixa ${loja ? "" : "na-apagada"}"><h3>Loja ${loja ? "" : "<small>· só no modo Loja</small>"}</h3>
+        ${op("Moeda", "", sel("system.moeda", moedas.map(x => [x, x]), s.moeda))}
+        ${op("Ajuste dos preços", "promoção ou inflação", num("system.ajustePreco", s.ajustePreco, `min="0" max="10000"`, "%"))}
+        ${op("Compra de volta", "compra o que ela também vende", sw("system.compraDeVolta", s.compraDeVolta))}
+        ${op("Paga do preço", "", num("system.pagaPercent", s.pagaPercent, `min="0" max="1000" ${s.compraDeVolta ? "" : "disabled"}`, "%"), s.compraDeVolta ? "" : "na-op-off")}
+        ${op("Caixa sem limite", "", sw("system.caixaSemLimite", s.caixaSemLimite))}
+        ${op("Caixa da loja", "", num("system.caixa", s.caixa, `min="0" ${s.caixaSemLimite ? "disabled" : ""}`, "", "ƒ"), s.caixaSemLimite ? "na-op-off" : "")}
+        ${op("Frase da loja", "aparece no topo", `<input type="text" name="system.frase" value="${ESC(s.frase)}" placeholder="ex.: Aço bom não é barato.">`, "na-op-largo")}
+      </section>
       <section class="na-caixa na-larga"><h3>No mapa</h3>
-        <p class="na-dica">O ponto no mapa é uma Região com o comportamento <b>"Nauren: Armazenamento"</b>: desenhe a Região, adicione o comportamento e arraste este armazenamento para ele. Lá ficam o ícone, o nome ao passar o mouse e se aparece só na visão do jogador. Um mesmo armazenamento pode estar em várias cenas.</p></section>
+        <div class="na-mapa">
+          <div class="na-mapa-op">
+            ${op("Ícone", "", sel("system.mapa.icone", icones, m.icone ?? "bau"))}
+            ${m.icone === "imagem" ? op("Imagem", "caminho do arquivo", `<input type="text" name="system.mapa.imagem" value="${ESC(m.imagem ?? "")}" placeholder="icons/...">`, "na-op-largo") : ""}
+            ${op("Tamanho", "em quadrados", num("system.mapa.tamanho", m.tamanho ?? 0.8, `min="0.2" max="4" step="0.1"`, "qd"))}
+            ${op("Nome sempre visível", "senão, ao passar o mouse", sw("system.mapa.rotuloSempre", m.rotuloSempre))}
+          </div>
+          <div class="na-mapa-op">
+            ${op("Só na visão do jogador", "igual às portas", sw("system.mapa.soNaVisao", m.soNaVisao !== false))}
+            ${op("Abrir ao entrar", "quando um token do jogador entra", sw("system.mapa.abrirAoEntrar", m.abrirAoEntrar))}
+            <div class="na-mapa-acao">
+              <button type="button" class="na-btn na-principal" data-action="colocarNoMapa" ${canvas?.scene ? "" : "disabled"}><i class="fas fa-location-dot"></i> Colocar no mapa</button>
+              <span class="na-dica">${pontos.length ? `${pontos.length} ponto(s) nesta cena` : "Nenhum ponto nesta cena"}${outras ? ` · em mais ${outras} cena(s)` : ""}</span>
+            </div>
+            ${pontos.map(({ regiao }) => `<div class="na-ponto"><i class="fas fa-location-dot"></i><span>${ESC(regiao.name)}</span><a class="na-ic-btn" data-action="irPonto" data-id="${regiao.id}" title="Mostrar no mapa"><i class="fas fa-crosshairs"></i></a><a class="na-ic-btn" data-action="tirarPonto" data-id="${regiao.id}" title="Tirar do mapa"><i class="fas fa-trash"></i></a></div>`).join("")}
+          </div>
+        </div>
+        <p class="na-dica">"Colocar no mapa": clique no lugar do mapa (Esc cancela). O sistema cria a Região com o nome deste armazenamento e o comportamento pronto. Um mesmo armazenamento pode estar em várias cenas.</p>
+      </section>
     </div>`;
   }
 
@@ -943,6 +986,15 @@ class NaurenArmazemSheet extends foundry.applications.sheets.ActorSheetV2 {
     }
     ui.notifications.info(n ? `Aberto para ${n} jogador(es).` : "Nenhum jogador conectado pode abrir este armazenamento.");
   }
+  static #onColocarNoMapa() { naurenArmazemColocarNoMapa(this.actor, this); }
+  static #onIrPonto(ev, el) {
+    const r = canvas?.scene?.regions?.get(el.dataset.id); const ret = retanguloDaRegiao(r);
+    if (ret) canvas.animatePan?.({ x: ret.x + ret.w / 2, y: ret.y + ret.h / 2, scale: Math.max(canvas.stage?.scale?.x ?? 1, 1) });
+  }
+  static async #onTirarPonto(ev, el) {
+    const r = canvas?.scene?.regions?.get(el.dataset.id); if (!r) return;
+    await r.delete(); this.render();
+  }
   static #onEditarImagem() {
     const FP = foundry.applications.apps?.FilePicker?.implementation ?? foundry.applications.apps?.FilePicker;
     if (!FP) return;
@@ -953,32 +1005,64 @@ class NaurenArmazemSheet extends foundry.applications.sheets.ActorSheetV2 {
 /* ============================ PONTO NO MAPA (Região) ============================ */
 class NaurenArmazemComportamento extends (foundry.data?.regionBehaviors?.RegionBehaviorType ?? foundry.abstract.TypeDataModel) {
   static defineSchema() {
-    const { StringField, NumberField, BooleanField, DocumentUUIDField } = F();
-    const uuid = DocumentUUIDField ? new DocumentUUIDField({ type: "Actor", label: "Armazenamento", hint: "Arraste aqui o ator do tipo Armazenamento (baú ou loja)." }) : new StringField({ initial: "", label: "Armazenamento" });
-    return {
-      armazem: uuid,
-      icone: new StringField({ initial: "bau", label: "Ícone", choices: Object.fromEntries([...Object.entries(ICONES).map(([k, v]) => [k, v.rotulo]), ["imagem", "Imagem própria"]]) }),
-      imagem: new StringField({ initial: "", label: "Imagem própria", hint: "Caminho de uma imagem (só quando o ícone for \"Imagem própria\")." }),
-      tamanho: new NumberField({ initial: 40, min: 16, max: 160, integer: true, label: "Tamanho do ícone (px)" }),
-      rotulo: new StringField({ initial: "", label: "Nome ao passar o mouse", hint: "Vazio = o nome do armazenamento." }),
-      rotuloSempre: new BooleanField({ initial: false, label: "Nome sempre visível" }),
-      soNaVisao: new BooleanField({ initial: true, label: "Só aparece na visão do jogador", hint: "Igual às portas: o ícone só aparece quando um token do jogador vê o lugar." }),
-      abrirAoEntrar: new BooleanField({ initial: false, label: "Abrir sozinho quando um token entra na região" })
-    };
+    const { StringField, DocumentUUIDField } = F();
+    // A aparência do ponto (ícone, tamanho, nome, visão, abrir ao entrar) fica no próprio armazenamento (aba Configurar).
+    const uuid = DocumentUUIDField ? new DocumentUUIDField({ type: "Actor", label: "Armazenamento", hint: "O ator do tipo Armazenamento (baú ou loja). Ícone e opções ficam na ficha dele, aba Configurar." }) : new StringField({ initial: "", label: "Armazenamento" });
+    return { armazem: uuid };
   }
   static events = { [globalThis.CONST?.REGION_EVENTS?.TOKEN_ENTER ?? "tokenEnter"]: NaurenArmazemComportamento.#aoEntrar };
   /** Abrir sozinho quando um token do jogador entra (roda no computador de quem moveu). */
   static async #aoEntrar(event) {
     try {
-      if (!this.abrirAoEntrar) return;
-      const u = event.user;
+      const u = event?.user;
       if (u && u !== game.user && u.id !== game.user.id) return;
+      if (game.user.isGM) return;
       const tk = event.data?.token;
-      if (!tk?.actor || !tk.actor.testUserPermission?.(game.user, "OWNER") || game.user.isGM) return;
+      if (!tk?.actor || !ehDono(tk.actor, game.user)) return;
       const armazem = this.armazem ? await fromUuid(this.armazem) : null;
-      if (armazem) NaurenArmazemJanela.abrir(armazem, { ator: tk.actor, regiaoUuid: this.parent?.parent?.uuid ?? this.region?.uuid });
+      if (!armazem?.system?.mapa?.abrirAoEntrar) return;
+      NaurenArmazemJanela.abrir(armazem, { ator: tk.actor, regiaoUuid: this.parent?.parent?.uuid ?? this.region?.uuid });
     } catch (err) { console.warn("Nauren RPG | abrir ao entrar", err); }
   }
+}
+
+/** "Colocar no mapa": o Mestre clica no lugar e o sistema cria a Região (1 quadrado) com o comportamento pronto. */
+let colocando = null;
+function naurenArmazemColocarNoMapa(armazem, ficha = null) {
+  if (!game.user.isGM || !canvas?.ready || !canvas.scene) return ui.notifications.warn("Abra uma cena para colocar o ponto.");
+  colocando?.cancelar?.();
+  ficha?.minimize?.();
+  ui.notifications.info(`Clique no mapa onde fica "${armazem.name}". Esc ou botão direito cancela.`);
+  const palco = canvas.stage;
+  const fim = () => { palco.off("pointerdown", aoClicar); document.removeEventListener("keydown", aoTecla, true); colocando = null; ficha?.maximize?.(); };
+  const aoTecla = ev => { if (ev.key === "Escape") { ev.stopPropagation(); fim(); ui.notifications.info("Cancelado."); } };
+  const aoClicar = async ev => {
+    if (ev.button === 2) { fim(); ui.notifications.info("Cancelado."); return; }
+    if (ev.button !== 0) return;
+    ev.stopPropagation?.();
+    const pos = ev.getLocalPosition ? ev.getLocalPosition(palco) : ev.data?.getLocalPosition?.(palco);
+    fim();
+    if (!pos) return;
+    const g = canvas.grid?.size || canvas.dimensions?.size || 100;
+    let tl = { x: Math.floor(pos.x / g) * g, y: Math.floor(pos.y / g) * g };
+    try { const p = canvas.grid.getTopLeftPoint?.(pos); if (p) tl = p; } catch (err) { /* segue com a conta simples */ }
+    const n = pontosDaCena(canvas.scene).filter(x => x.comportamento.system.armazem === armazem.uuid).length;
+    try {
+      await canvas.scene.createEmbeddedDocuments("Region", [{
+        name: n ? `${armazem.name} (${n + 1})` : armazem.name,
+        color: "#e0b257",
+        visibility: CONST.REGION_VISIBILITY?.LAYER ?? 0,
+        shapes: [{ type: "rectangle", x: Math.round(tl.x), y: Math.round(tl.y), width: g, height: g }],
+        behaviors: [{ type: "armazenamento", name: armazem.name, system: { armazem: armazem.uuid } }],
+        flags: { nauren: { armazem: armazem.uuid } }
+      }]);
+      ui.notifications.info(`"${armazem.name}" colocado no mapa.`);
+    } catch (err) { console.error("Nauren RPG | colocar no mapa", err); ui.notifications.error(`Não deu para criar a Região: ${err.message}`); }
+    ficha?.render?.();
+  };
+  palco.on("pointerdown", aoClicar);
+  document.addEventListener("keydown", aoTecla, true);
+  colocando = { cancelar: fim };
 }
 
 /** Comportamentos de armazenamento (ativos) de uma cena: [{ regiao, comportamento }]. */
@@ -1004,39 +1088,41 @@ async function desenharIcones() {
     camada.sortableChildren = true;
     (canvas.controls ?? canvas.interface ?? canvas.stage).addChild(camada);
     for (const { regiao, comportamento } of pontos) {
-      const cfg = comportamento.system;
       const ret = retanguloDaRegiao(regiao);
       if (!ret) continue;
-      const cx = ret.x + ret.w / 2, cy = ret.y + ret.h / 2, tam = cfg.tamanho || 40;
-      const armazem = await fromUuid(cfg.armazem).catch(() => null);
+      const armazem = await fromUuid(comportamento.system.armazem).catch(() => null);
       if (!armazem) continue;
+      const cfg = armazem.system.mapa ?? {};
+      const grade = canvas.grid?.size || canvas.dimensions?.size || 100;
+      const cx = ret.x + ret.w / 2, cy = ret.y + ret.h / 2, tam = Math.round(grade * (Number(cfg.tamanho) || 0.8));
       const ic = new PIXI_.Container();
       ic.position.set(cx, cy);
       ic.eventMode = "static"; ic.cursor = "pointer";
-      ic.hitArea = new PIXI_.Rectangle(-tam / 2 - 4, -tam / 2 - 4, tam + 8, tam + 8);
+      ic.hitArea = new PIXI_.Rectangle(-tam / 2 - 6, -tam / 2 - 6, tam + 12, tam + 12);
       const fundo = new PIXI_.Graphics();
       const corte = tam * 0.22, m = tam / 2 + 3;
-      fundo.beginFill(0x1b1524, 0.86).lineStyle(2, 0xe0b257, 1);
+      fundo.beginFill(0x1b1524, 0.88).lineStyle(Math.max(2, tam * 0.04), 0xe0b257, 1);
       fundo.drawPolygon([-m + corte, -m, m - corte, -m, m, -m + corte, m, m - corte, m - corte, m, -m + corte, m, -m, m - corte, -m, -m + corte]);
       fundo.endFill();
       ic.addChild(fundo);
-      const src = cfg.icone === "imagem" && cfg.imagem ? cfg.imagem : (ICONES[cfg.icone]?.img ?? armazem.img);
+      const src = cfg.icone === "imagem" && cfg.imagem ? cfg.imagem : cfg.icone === "proprio" ? armazem.img : (ICONES[cfg.icone]?.img ?? armazem.img);
       try {
         const tex = await foundry.canvas.loadTexture(src).catch(() => null);
-        if (tex) { const sp = new PIXI_.Sprite(tex); sp.anchor.set(0.5); sp.width = sp.height = tam * 0.82; ic.addChild(sp); }
+        if (tex) { const sp = new PIXI_.Sprite(tex); sp.anchor.set(0.5); const k = Math.min(tam * 0.84 / (tex.width || 1), tam * 0.84 / (tex.height || 1)); sp.scale.set(k); ic.addChild(sp); }
       } catch (err) { /* sem imagem: fica só a moldura */ }
       if (armazem.system.trancado) {
-        const cad = new PIXI_.Graphics(); cad.beginFill(0xe0b257).drawCircle(m - 2, -m + 2, 7).endFill(); ic.addChild(cad);
-        const t = new PIXI_.Text("🔒", { fontSize: 9 }); t.anchor.set(0.5); t.position.set(m - 2, -m + 2); ic.addChild(t);
+        const r0 = Math.max(7, tam * 0.16);
+        const cad = new PIXI_.Graphics(); cad.beginFill(0x1b1524).lineStyle(2, 0xe0b257).drawCircle(m - 2, -m + 2, r0).endFill(); ic.addChild(cad);
+        const t = new PIXI_.Text("🔒", { fontSize: Math.round(r0 * 1.2) }); t.anchor.set(0.5); t.position.set(m - 2, -m + 2); ic.addChild(t);
       }
-      const nome = cfg.rotulo || armazem.name;
-      const rotulo = new PIXI_.Text(nome, { fontFamily: "Signika", fontSize: 14, fill: 0xf4ead1, stroke: 0x000000, strokeThickness: 3 });
+      const nome = armazem.name;
+      const rotulo = new PIXI_.Text(nome, { fontFamily: "Signika", fontSize: Math.max(14, Math.round(grade * 0.2)), fill: 0xf4ead1, stroke: 0x000000, strokeThickness: 4 });
       rotulo.anchor.set(0.5, 0); rotulo.position.set(0, m + 4); rotulo.visible = !!cfg.rotuloSempre;
       ic.addChild(rotulo);
       ic.on("pointerover", () => { rotulo.visible = true; fundo.tint = 0xfff2c9; });
       ic.on("pointerout", () => { rotulo.visible = !!cfg.rotuloSempre; fundo.tint = 0xffffff; });
       ic.on("pointerdown", ev => { ev.stopPropagation?.(); naurenArmazemClicarPonto(regiao, comportamento); });
-      ic.naurenPonto = { cx, cy, soNaVisao: cfg.soNaVisao, regiao };
+      ic.naurenPonto = { cx, cy, soNaVisao: cfg.soNaVisao !== false, regiao };
       camada.addChild(ic);
     }
     atualizarVisibilidade();
@@ -1091,4 +1177,4 @@ function naurenArmazemHooks() {
   Hooks.on("sightRefresh", () => atualizarVisibilidade());
 }
 
-export { NaurenArmazenamentoData, NaurenArmazemComportamento, NaurenArmazemJanela, NaurenArmazemSheet, naurenArmazemInit, naurenArmazemHooks, naurenArmazemPedir, naurenArmazemExecutar, naurenArmazemClicarPonto, pontosDaCena as naurenArmazemPontosDaCena, distanciaAtorRegiao as naurenArmazemDistancia, precoFinal as naurenArmazemPreco };
+export { NaurenArmazenamentoData, NaurenArmazemComportamento, NaurenArmazemJanela, NaurenArmazemSheet, naurenArmazemInit, naurenArmazemHooks, naurenArmazemPedir, naurenArmazemExecutar, naurenArmazemClicarPonto, naurenArmazemColocarNoMapa, pontosDaCena as naurenArmazemPontosDaCena, distanciaAtorRegiao as naurenArmazemDistancia, precoFinal as naurenArmazemPreco };

@@ -6501,8 +6501,9 @@ img.nauren-criador-token.com-borda { border: none; border-radius: 0; background:
 .item-controls .item-luz:hover { color: #ffb15e; }
 .item-controls .item-luz.acesa { color: #ff9c3a; text-shadow: 0 0 6px rgba(255,156,58,.55); }
 /* 0.99: moeda — quantidade grande editável na linha da Mochila */
-.item-charges .nauren-qtd-moeda { width: 11ch; min-width: 0; height: 22px; padding: 0 6px; text-align: right; font-variant-numeric: tabular-nums; font-size: 12.5px; background: rgba(0,0,0,.2); border: 1px solid rgba(255,255,255,.12); color: inherit; border-radius: 0; }
-.item-charges .nauren-qtd-moeda:focus { border-color: var(--n-ouro, #d8b45a); outline: none; }
+.item-charges .nauren-qtd-moeda, .nauren-sheet .item-charges input.nauren-qtd-moeda, .nauren-sheet.ns2 .ns-card .item-charges input.nauren-qtd-moeda[type="text"], .nauren-sheet.ns2 .item-charges input.nauren-qtd-moeda[type="text"] { all: unset; box-sizing: content-box; width: 11ch; min-width: 4ch; height: 20px; line-height: 20px; padding: 0 2px; text-align: center; font: inherit; font-weight: 600; font-variant-numeric: tabular-nums; color: inherit; background: transparent !important; border: 0 !important; border-bottom: 1px dashed transparent !important; border-radius: 0; box-shadow: none !important; cursor: text; }
+.item-charges .nauren-qtd-moeda:hover { border-bottom-color: color-mix(in srgb, currentColor 35%, transparent) !important; }
+.item-charges .nauren-qtd-moeda:focus { border-bottom: 1px solid var(--n-ouro, #d8b45a) !important; outline: none; }
 .nauren-sheet.ns2 .item-controls a.item-luz { color: var(--ns-apagado); }
 .nauren-sheet.ns2 .item-controls a.item-luz.acesa, .item-controls a.item-luz.acesa { color: #ff9c3a; text-shadow: 0 0 6px rgba(255,156,58,.55); }
 
@@ -6752,3 +6753,45 @@ img.nauren-criador-token.com-borda { border: none; border-radius: 0; background:
 .na-caixa-loja { margin-left: auto; display: inline-flex; align-items: baseline; gap: 6px; white-space: nowrap; }
 .na-caixa-loja .na-moeda { font-size: 16px; }
 .na-venda .na-tem { font-size: 13px; }
+
+/* 0.99.1: Configurar do armazenamento em linhas (texto à esquerda, controle alinhado à direita) */
+.na-config { align-items: stretch; }
+.na-caixa { gap: 0; }
+.na-caixa h3 { margin-bottom: 6px; }
+.na-caixa > .na-seg { margin: 2px 0 8px; }
+.na-op { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 12px; min-height: 42px; padding: 6px 0; border-top: 1px solid color-mix(in srgb, var(--nk-linha) 70%, transparent); }
+.na-caixa h3 + .na-op, .na-seg + .na-op, .na-escolhidos + .na-op, .na-mapa-op > .na-op:first-child { border-top: 0; }
+.na-op-txt { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.na-op-txt b { font-weight: 600; font-size: 13.5px; color: var(--nk-texto); }
+.na-op-txt small { font-size: 11.5px; color: var(--nk-suave); line-height: 1.3; }
+.na-op-ctl { display: flex; align-items: center; justify-content: flex-end; }
+.na-op-ctl .na-num { width: 128px; }
+.na-op-ctl .na-num input { flex: 1 1 auto; min-width: 0; }
+.na-op-ctl .na-num em { width: 16px; text-align: left; }
+.na-op-ctl select { width: 168px; height: 32px !important; }
+.na-op-largo { grid-template-columns: 1fr; gap: 6px; }
+.na-op-largo .na-op-ctl { justify-content: stretch; }
+.na-op-largo .na-op-ctl input { width: 100%; height: 32px !important; }
+.na-op-off .na-op-txt { opacity: .5; }
+.na-sw { justify-content: flex-end; }
+.na-escolhidos { display: flex; flex-direction: column; gap: 8px; padding-bottom: 8px; }
+.na-num em.na-pre { position: static; padding: 0 4px 0 0; }
+.na-mapa { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; }
+.na-mapa-op { display: flex; flex-direction: column; min-width: 0; }
+.na-mapa-acao { display: flex; align-items: center; gap: 12px; padding: 10px 0 6px; border-top: 1px solid color-mix(in srgb, var(--nk-linha) 70%, transparent); flex-wrap: wrap; }
+.na-mapa-acao .na-btn i { margin-right: 6px; }
+.na-mapa-acao .na-btn { display: inline-flex; align-items: center; }
+.na-ponto { display: grid; grid-template-columns: 16px minmax(0, 1fr) 28px 28px; align-items: center; gap: 8px; padding: 4px 0; font-size: 13px; color: var(--nk-texto); }
+.na-ponto > i { color: var(--nk-ouro); font-size: 12px; }
+.na-ponto span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.na-caixa.na-larga > .na-dica { margin-top: 8px; }
+@container (max-width: 560px) { .na-mapa { grid-template-columns: 1fr; } }
+.na-op-ctl .na-num { width: 150px; position: relative; }
+.na-op-ctl .na-num input { width: 100%; padding-right: 28px !important; padding-left: 22px !important; }
+.na-op-ctl .na-num em { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); width: auto; padding: 0; pointer-events: none; z-index: 1; }
+.na-op-ctl .na-num em.na-pre { left: 10px; right: auto; font-family: serif; font-style: italic; color: var(--nk-ouro-claro, #ffd98a); }
+.na-op-ctl select { width: 150px; }
+.na-bau { align-items: stretch; }
+.na-bau .na-detalhe { min-height: 0; }
+.na-det-qtd { display: flex; flex-direction: column; line-height: 1.2; }
+.na-det-qtd small { font-size: 11.5px; color: var(--nk-suave); }

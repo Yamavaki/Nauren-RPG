@@ -6407,8 +6407,8 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
 
 /* 0.98 — Janelas do kit (Confirmar uso, Rolagem, Reagir, escolhas...) nas cores de quem age. */
 function naurenAtorDaJanela(app) {
-  if (app?.options?.naurenSistema) return null;
-  const uuid = app?.options?.naurenAtorUuid;
+  if (app?.options?.naurenSistema || app?._naurenSistema) return null;
+  const uuid = app?._naurenAtorUuid ?? app?.options?.naurenAtorUuid;
   if (uuid) { try { const a = fromUuidSync(uuid, { strict: false }); if (a) return a.actor ?? a; } catch (err) { /* segue */ } }
   return canvas?.tokens?.controlled?.find?.(t => t.actor?.isOwner)?.actor ?? game.user?.character ?? null;
 }
@@ -6431,7 +6431,8 @@ Hooks.on("renderApplicationV2", (app, el) => {
     if (!cl || cl.contains("nauren-kit")) return;
     // 0.98.6: diálogos do próprio Foundry (Criar Ator/Item/Pasta, confirmações…) ganham o molde das janelas do sistema, nas cores do sistema
     const DV2 = foundry.applications?.api?.DialogV2;
-    if (DV2 && app instanceof DV2) { if (app.options) app.options.naurenSistema = true; cl.add("nauren-kit"); return; }
+    // As opções do V14 ficam travadas (não aceitam campo novo): a marca vai na própria janela.
+    if (DV2 && app instanceof DV2) { app._naurenSistema = true; cl.add("nauren-kit"); return; }
     const ehItem = cl.contains("nauren-rpg") && cl.contains("sheet") && cl.contains("item");
     if (NAUREN_TELAS_MESTRE.some(c => cl.contains(c))) { naurenPintarJanela(raiz, null); cl.add("nc-tela"); return; }
     if (!ehItem && !NAUREN_TELAS_PROPRIAS.some(c => cl.contains(c))) return;
