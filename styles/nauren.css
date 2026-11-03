@@ -5888,3 +5888,11 @@ img.nauren-criador-token.com-borda { border: none; border-radius: 0; background:
 }
 #nauren-carrossel .nauren-car-lado { position: absolute; top: 5px; left: 5px; z-index: 2; width: 7px; height: 7px; transform: rotate(45deg); background: #4fcf7f; box-shadow: 0 0 0 1px rgba(0,0,0,.7); }
 #nauren-carrossel .nauren-car-item.inimigo .nauren-car-lado { background: #e0605c; }
+/* 0.97.6: folga para o botão Testes e o Encerrar turno dentro das molduras novas */
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-esquerda { width: 250px; }
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-direita { width: 196px; }
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-esquerda .nauren-hud-rot { letter-spacing: .04em; }
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-linha-final { gap: 6px; padding-right: 3px; }
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-pip { margin: 0; }
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-botao-teste { padding: 0 9px; margin-left: auto; }
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-botao-ouro { font-size: 14px; letter-spacing: .04em; padding: 0 16px; overflow: hidden; text-overflow: ellipsis; }
