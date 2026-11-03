@@ -6,7 +6,7 @@ import { NAUREN_MASCOTES_INICIAIS, NAUREN_PACKS_DEFINICAO, NAUREN_VERSAO_SEED_MA
 import { NaurenAlvoHelper, NaurenRegionHelper } from "./ficha-ator.mjs";
 import { naurenAnimarPassiva, naurenMotionEmTodos } from "./animacoes.mjs";
 import { naurenBordaConfig, naurenBordaDadosPreparados } from "./borda-token.mjs";
-import { NAUREN_KIT_JANELA } from "./janelas-kit.mjs";
+import { NAUREN_KIT_JANELA, naurenKitJanela, naurenKitSistema } from "./janelas-kit.mjs";
 /** 0.95: ofertas de gatilho dizem o que aconteceu antes de perguntar. */
 function naurenOfertaPrefixo(item, rotuloEvento) {
   const r = String(rotuloEvento ?? "").replace(/\s*\(.*\)\s*$/, "");
@@ -940,7 +940,7 @@ async function naurenMigrarHabilidadesMonstros09241() {
   const packC = game.packs.find(p => p.metadata.label === "Nauren - Condições e Venenos");
   const pecUuids = new Set();
   for (const seed of NAUREN_CM_PECS.map(p => p[5]).filter(Boolean)) { const u = packC ? await naurenUuidPorSeed(packC, seed) : null; if (u) pecUuids.add(u); }
-  const sim = await foundry.applications.api.DialogV2.confirm({
+  const sim = await foundry.applications.api.DialogV2.confirm({ ...naurenKitSistema(),
     window: { title: "Habilidades de Monstros atualizadas" },
     content: `<p>O catálogo de Habilidades de Monstros recebeu correções. <b>${nAtores}</b> criatura(s) feitas no Criador têm <b>${pendentes.length}</b> habilidade(s) da versão anterior.</p>
       <p>Atualizar agora? Ficam mantidos: a escala da Categoria, as Peculiaridades nos ataques, usos gastos, rank e se a habilidade está ligada. A versão anterior de cada item fica guardada nele.</p>`,
@@ -1325,7 +1325,7 @@ async function naurenOferecerSincronizacaoDeVersao() {
   const atores = game.actors.filter(a => ["personagem", "npc"].includes(a.type) && !a.getFlag("nauren", "entidade"));
   await game.settings.set("nauren", "versaoItensSincronizados", versao);
   if (!atores.length) return;
-  const sim = await foundry.applications.api.DialogV2.confirm({
+  const sim = await foundry.applications.api.DialogV2.confirm({ ...naurenKitSistema(),
     window: { title: `Nauren RPG atualizado para ${versao}` },
     content: `<p>Os compêndios já foram atualizados. Quer levar as mudanças para os itens que os <b>${atores.length} personagens e NPCs</b> do mundo já têm?</p>
       <p>É o mesmo que clicar em <b>"Ressincronizar com o Compêndio"</b> em cada ficha: mantém ranks investidos, usos gastos e recursos, e só atualiza as regras/configurações dos itens.</p>
@@ -3234,7 +3234,7 @@ async function naurenHandleQueryResistirArea({ actorUuid, custo, nomeArea }) {
   const d = await fromUuid(actorUuid).catch(() => null);
   const a = d?.actor ?? d;
   if (!a || (a.system.estaminaCombate?.value ?? 0) < custo) return false;
-  const sim = await foundry.applications.api.DialogV2.confirm({ window: { title: nomeArea }, content: `<p><b>${a.name}</b> está em <b>${nomeArea}</b>. Gastar <b>${custo} Estamina</b> para resistir?</p>`,
+  const sim = await foundry.applications.api.DialogV2.confirm({ ...naurenKitJanela(a), window: { title: nomeArea }, content: `<p><b>${a.name}</b> está em <b>${nomeArea}</b>. Gastar <b>${custo} Estamina</b> para resistir?</p>`,
     yes: { label: `Resistir (−${custo} Estamina)` }, no: { label: "Não" }, rejectClose: false }).catch(() => false);
   if (sim) await a.update({ "system.estaminaCombate.value": (a.system.estaminaCombate?.value ?? 0) - custo });
   return !!sim;

@@ -857,7 +857,7 @@ function naurenBotoesDeFormula(raiz, { actor = null, item = null, so = null } = 
       const html = `<div class="nauren-formulas-lista">${grupos.map(g => `<h4>${esc(g.categoria)}</h4>${g.itens.filter(i => String(i.token).startsWith("@")).map(i =>
         `<a class="nauren-formula-termo" data-token="${esc(i.token)}"><code>${esc(i.token)}</code><span>${esc(i.desc)}</span></a>`).join("")}`).join("")}</div>`;
       let escolhido = null;
-      await foundry.applications.api.DialogV2.wait({
+      await foundry.applications.api.DialogV2.wait({ ...NK.naurenKitSistema(),
         window: { title: "Termos de fórmula" }, position: { width: 560 }, content: html,
         buttons: [{ action: "fechar", label: "Fechar" }], rejectClose: false,
         render: (e, dialog) => {

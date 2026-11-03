@@ -13,6 +13,8 @@ const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": 
 let naurenKitAtorCorrente = null;
 export function naurenKitDefinirAtor(ator) { naurenKitAtorCorrente = ator?.uuid ?? null; }
 export const NAUREN_KIT_JANELA = { classes: ["nauren-kit"], position: { width: 540 }, get naurenAtorUuid() { return naurenKitAtorCorrente; } };
+/** Janelas do Mestre / do sistema (sem personagem): Roxo + Dourado. */
+export function naurenKitSistema() { return { ...NAUREN_KIT_JANELA, naurenAtorUuid: null, naurenSistema: true }; }
 export function naurenKitJanela(ator) { return { ...NAUREN_KIT_JANELA, naurenAtorUuid: ator?.uuid ?? naurenKitAtorCorrente }; }
 
 /** Estado do d20 a partir da face: "critico" (20), "falha" (1) ou "normal". */

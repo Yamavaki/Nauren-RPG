@@ -1,4 +1,5 @@
 /* Nauren RPG — Ficha de Item (NaurenItemSheet). Separado do nauren.mjs na 0.94.22. */
+import { naurenKitJanela, naurenKitSistema } from "./janelas-kit.mjs";
 import { ARMADURA_TIPOS, ARMA_TIPOS, ATRIBUTOS_BASE_OPCOES, ATRIBUTOS_BONUS, HABILIDADE_CATEGORIAS, NAUREN_CAMPOS_MODIFICADOR_OPCOES, NAUREN_CAPACIDADES, NAUREN_EQUIPAMENTO_CLASSE_LIVRO, NAUREN_EQUIP_CATEGORIAS, NAUREN_LOGICA_CONDICOES_OPCOES, NAUREN_MODOS_DURACAO, NAUREN_MODOS_MODIFICADOR_EXTERNO_OPCOES, NAUREN_MOMENTOS_PERIODICOS, NAUREN_PAGAR_CUSTO_OPCOES, NAUREN_PAGAR_RECURSO_OPCOES, NAUREN_PRIORIDADE_DISPOSICAO, NAUREN_PRIORIDADE_INDICADORES, NAUREN_PRIORIDADE_INDICADORES_ACAO, NAUREN_PRIORIDADE_QUEM_RECEBE, NaurenCondicaoData, NaurenEfeitoData, NaurenGrupoHelper, NaurenHabilidadeData, NaurenMagiaData, NaurenSubclasseHelper, TEMPLATE_FORMATOS, campoCondicaoAplicada, campoModificador, campoModificadorExterno, campoRecursoDeclarado, naurenAjustarListasLargas, naurenBotoesDeFormula, naurenCategoriaDaArma, naurenClassificarCampoAcao, naurenCombatenteEhDoAtor, naurenCondicaoDoSistemaPorNome, naurenCondicaoNegativa, naurenGruposExclusivosConhecidos, naurenModificacoesRecebidas, naurenModoDuracaoCondicao, naurenMomentoEfeitoPeriodico, naurenMostrarNomesDosCamposUuid, naurenMunicoesCompativeis, naurenNomeParaUuid, naurenOpcoesDeCampoParaModificadorExterno, naurenPersistirDetalhesAbertos, naurenPesoOfensivo, naurenPostarCard, naurenProcessarEmanacoes, naurenProcessarGatilhos, naurenRecursosCustomConhecidos, naurenResumoDaAcao, naurenResumoEquipamentoClasse, naurenResumoModificador, naurenResumoPrioridadeAcao, naurenSincronizarRecursosCustom, naurenUsarAcalanto } from "../nauren.mjs";
 import { NAUREN_MOTION_CONDICAO_OPCOES, naurenMotionPresetCondicao } from "./animacoes.mjs";
 import { NAUREN_TORRE_LOJAS, NAUREN_TORRE_PIGMENTOS, NAUREN_TORRE_RARIDADES, NAUREN_TORRE_TIERS, naurenDisponivelNoInicio, naurenTierTorre } from "./compendios.mjs";
@@ -2450,7 +2451,7 @@ class NaurenItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
 
   static async onTirarTorre() {
     if (!game.user.isGM) return;
-    const ok = await foundry.applications.api.DialogV2.confirm({ window: { title: "Tirar da Torre Infinita" }, content: "<p>Remover os dados da Torre deste item? O bot deixa de reconhecê-lo.</p>", rejectClose: false }).catch(() => false);
+    const ok = await foundry.applications.api.DialogV2.confirm({ ...naurenKitSistema(), window: { title: "Tirar da Torre Infinita" }, content: "<p>Remover os dados da Torre deste item? O bot deixa de reconhecê-lo.</p>", rejectClose: false }).catch(() => false);
     if (ok) await this.document.unsetFlag("nauren", "torre");
   }
 
@@ -3597,7 +3598,7 @@ class NaurenSubclasseSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
   static async onResetarSubclasse(event, target) {
     const actor = this.item.actor;
     if (!actor) return;
-    const confirmar = await foundry.applications.api.DialogV2.confirm({
+    const confirmar = await foundry.applications.api.DialogV2.confirm({ ...naurenKitJanela(this.item?.actor ?? null),
       window: { title: "Resetar Subclasse?" },
       content: `<p>Isso vai remover todos os itens concedidos por <b>${this.item.name}</b>, zerar o rank de todos os nós, e devolver os pontos investidos nela. Confirma?</p>`,
       rejectClose: false

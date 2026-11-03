@@ -1,5 +1,5 @@
 import { NAUREN_HAB_MONSTROS, NAUREN_HAB_MONSTROS_VERSAO } from "./data/habilidades-monstros.mjs";
-import { NAUREN_KIT_JANELA } from "./modulos/janelas-kit.mjs";
+import { NAUREN_KIT_JANELA, naurenKitJanela, naurenKitSistema } from "./modulos/janelas-kit.mjs";
 import { NAUREN_MOTION_ALVO_OPCOES, NAUREN_MOTION_CONDICAO_OPCOES, NAUREN_MOTION_ESPERA_EFEITO, NAUREN_MOTION_JANELA_EFEITOS, NAUREN_MOTION_SO_COR, NAUREN_MOTION_USUARIO_OPCOES, NAUREN_QUERY_MOTION, naurenAANomeReserva, naurenAANomeTemAnimacao, naurenAANomesCadastrados, naurenAjustarTamanhoAura, naurenAnimacoesDisponiveis, naurenAnimarAcao, naurenAnimarAcumulo, naurenAnimarCritico, naurenAnimarPassiva, naurenAuraTamanhoPendente, naurenAurasTocando, naurenCorCalcular, naurenCorCamadaAgora, naurenCorCondTocando, naurenCorConfig, naurenCorDaCondicao, naurenCorEntrada, naurenCorFixa, naurenCorFlash, naurenCorMatriz, naurenCorPode, naurenCorRGB, naurenCorTick, naurenCorTickLigado, naurenCorTirar, naurenCorTirarFiltro, naurenCorTokens, naurenDesligarAnimacaoAura, naurenDiametroAuraQuadrados, naurenEfeitosDaAura, naurenEfeitosDoSom, naurenEncerrarEfeitosSequencer, naurenEntradaAefx, naurenEntradaMenu, naurenEsperarMs, naurenInstalarSomSincronizado, naurenLigarAnimacaoAura, naurenMotionAlvo, naurenMotionAnotarEfeito, naurenMotionAnotarPreparo, naurenMotionAtacante, naurenMotionCasa, naurenMotionCondDebounce, naurenMotionCondTocando, naurenMotionCondicoesDepois, naurenMotionCondicoesDoAtor, naurenMotionContador, naurenMotionDeOutraTela, naurenMotionEfeitosRecentes, naurenMotionEhPreparo, naurenMotionEmTodos, naurenMotionEnviar, naurenMotionEvento, naurenMotionExecutar, naurenMotionForca, naurenMotionImpactoDoEfeito, naurenMotionMontarCondicao, naurenMotionParaOutrasTelas, naurenMotionPlanoDaAcao, naurenMotionPlanos, naurenMotionPode, naurenMotionPresetCondicao, naurenMotionReceberPlano, naurenMotionSincronizar, naurenMotionSincronizarCondicoes, naurenMotionTocar, naurenMotionToken, naurenMotionUltimoPlano, naurenMotionUuid, naurenMotionVistos, naurenPassivasAnimadas, naurenRaioEmanacaoMetros, naurenSomEsperarAnimacao, naurenSomSincronizadoAtivo, naurenTocarNaRegiao, naurenTocarNoToken, naurenTokenDoAtor, naurenTokenDoItem } from "./modulos/animacoes.mjs";
 import { NAUREN_TORRE_RETIRADOS, NAUREN_ALVEJADO_NO_ACERTO, NAUREN_ARMAS_COM_ALVEJADO, NAUREN_DIARIOS, NAUREN_ICONES_AUTOMATICOS, NAUREN_ICONES_INEXISTENTES, NAUREN_ICONES_SEMEADOS, NAUREN_ICONE_FRASCO, NAUREN_ICONE_MAGIA, NAUREN_MASCOTES_INICIAIS, NAUREN_OWNERSHIP_APENAS_MESTRE, NAUREN_PACKS_DEFINICAO, NAUREN_REGRAS_VERSAO, NAUREN_SEED_IDS_EQUIPAMENTO_INICIAL, NAUREN_SEED_IDS_INICIAIS_PADRAO, NAUREN_TORRE, NAUREN_TORRE_LOJAS, NAUREN_TORRE_NOTAS, NAUREN_TORRE_PIGMENTOS, NAUREN_TORRE_RARIDADES, NAUREN_TORRE_TIERS, NAUREN_TORRE_VERSAO, NAUREN_VERSAO_SEED_MASCOTES, NAUREN_VIDA_MASCOTE, naurenAliadosDoGrupo, naurenBuscarUuidsDoPack, naurenCaminhoImagemSubclasse, naurenConsumiveisSaindo, naurenCorrigirIconesSemeados, naurenDisponivelNoInicio, naurenDuasArmasPendente, naurenExpirarEscudo, naurenExtraEstaminaCondicoes, naurenFundoPersonalizado, naurenGarantirAtorNoPack, naurenGarantirEfeitoDeClasse, naurenGarantirEfeitoDeSubclasse, naurenGarantirHabilidadeDeClasse, naurenGarantirHabilidadeDeSubclasse, naurenGarantirItemNoPack, naurenGarantirPastaNoPack, naurenGatilhoDanoDeArea, naurenItensDoMascote, naurenMigrarAlvejadoArcos, naurenMigrarCanalizarPorNivel, naurenMigrarLoucuraManual, naurenObterOuCriarPacks, naurenPerguntarEscolhaAoReceber, naurenPreverDuasArmasGratis, naurenReconciliarMascote, naurenRolarAjustePopup, naurenSemearArmaduras, naurenSemearArmas, naurenSemearArmasDisparoCarregado, naurenSemearArmasModeloSubclasse, naurenSemearBestiario, naurenSemearClasseCacador, naurenSemearClasseDruida, naurenSemearClasseEmpireo, naurenSemearClasseGuerreiro, naurenSemearClasseLadino, naurenSemearClasseMago, naurenSemearClasseMistico, naurenSemearClasseSacerdote, naurenSemearCondicoes, naurenSemearEfeitosGuardas, naurenSemearHabilidadeCondensarMagia, naurenSemearHabilidadeDarPrioridade, naurenSemearHabilidadeGrimorio, naurenSemearHabilidadeSendoUmMago, naurenSemearHabilidadesCacador, naurenSemearHabilidadesDruida, naurenSemearHabilidadesEmpireo, naurenSemearHabilidadesGuerreiro, naurenSemearHabilidadesLadino, naurenSemearHabilidadesMistico, naurenSemearHabilidadesSacerdote, naurenSemearMagias, naurenSemearMascotes, naurenSemearMunicoes, naurenSemearPeculiaridades, naurenSemearPigmentos, naurenSemearRegras, naurenSemearRemedioEFrascos, naurenSemearSubclasseCacador, naurenSemearSubclasseCacadorBatedor, naurenSemearSubclasseCacadorMestreDasBestas, naurenSemearSubclasseCacadorSobrevivente, naurenSemearSubclasseDruida, naurenSemearSubclasseDruidaAndarilhosDasPeles, naurenSemearSubclasseDruidaCrescimento, naurenSemearSubclasseDruidaRestauradores, naurenSemearSubclasseEmpireo, naurenSemearSubclasseEmpireoPaixao, naurenSemearSubclasseEmpireoSombras, naurenSemearSubclasseEmpireoVirtude, naurenSemearSubclasseGuerreiro, naurenSemearSubclasseGuerreiroBerserker, naurenSemearSubclasseGuerreiroGuardiao, naurenSemearSubclasseGuerreiroJuramentado, naurenSemearSubclasseLadino, naurenSemearSubclasseLadinoArdiloso, naurenSemearSubclasseLadinoEgoista, naurenSemearSubclasseLadinoOportunista, naurenSemearSubclasseMago, naurenSemearSubclasseMagoNova, naurenSemearSubclasseMistico, naurenSemearSubclasseMisticoCaligrafia, naurenSemearSubclasseMisticoPintura, naurenSemearSubclasseMisticoPoesia, naurenSemearSubclasseSacerdote, naurenSemearSubclasseSacerdoteAgraciado, naurenSemearSubclasseSacerdoteHerege, naurenSemearSubclasseSacerdotePenitente, naurenSemearTorre, naurenTierTorre, naurenTorreTransformarAcao, naurenUuidsMascotes } from "./modulos/compendios.mjs";
 import { naurenCoresDoAtor, naurenFichaPaleta, naurenXpParaNivel, NAUREN_BARRA_CORES_PADRAO, NAUREN_CRIADOR_ATRIBUTOS, NAUREN_CRIADOR_ETAPAS, NAUREN_CRIADOR_VALORES_FIXOS, NaurenActorSheet, NaurenAlvoHelper, NaurenCriadorPersonagem, NaurenRegionHelper, naurenAdicionarItemNaFicha, naurenBonusModoExtra, naurenChecarLimiarEfeitoDireto, naurenChecarLimiarEvolucao, naurenLinhaModoExtra, naurenNumeroModo } from "./modulos/ficha-ator.mjs";
@@ -6260,6 +6260,7 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
 
 /* 0.98 — Janelas do kit (Confirmar uso, Rolagem, Reagir, escolhas...) nas cores de quem age. */
 function naurenAtorDaJanela(app) {
+  if (app?.options?.naurenSistema) return null;
   const uuid = app?.options?.naurenAtorUuid;
   if (uuid) { try { const a = fromUuidSync(uuid, { strict: false }); if (a) return a.actor ?? a; } catch (err) { /* segue */ } }
   return canvas?.tokens?.controlled?.find?.(t => t.actor?.isOwner)?.actor ?? game.user?.character ?? null;
@@ -6272,6 +6273,25 @@ function naurenPintarJanela(el, ator) {
   el.classList.toggle("nc-fundo-escuro", escuro);
   el.classList.toggle("nc-monstro", ator?.type === "npc");
 }
+/* 0.98.1 — Telas próprias (Bancada, Alambique, Obra Prima, Subclasse, ficha de item, Borda do token, Criador) nas cores
+   do personagem dono; ferramentas do Mestre (Criador de Monstro, barras, recursos da HUD) nas cores do sistema. */
+const NAUREN_TELAS_PROPRIAS = ["nauren-bancada", "nauren-obra-prima", "nauren-subclasse-sheet", "nauren-borda-janela", "nauren-criador"];
+const NAUREN_TELAS_MESTRE = ["nauren-criador-monstro", "nauren-barras-editor", "nauren-hudrec-editor"];
+Hooks.on("renderApplicationV2", (app, el) => {
+  try {
+    const raiz = app?.element ?? el;
+    const cl = raiz?.classList;
+    if (!cl || cl.contains("nauren-kit")) return;
+    const ehItem = cl.contains("nauren-rpg") && cl.contains("sheet") && cl.contains("item");
+    if (NAUREN_TELAS_MESTRE.some(c => cl.contains(c))) { naurenPintarJanela(raiz, null); cl.add("nc-tela"); return; }
+    if (!ehItem && !NAUREN_TELAS_PROPRIAS.some(c => cl.contains(c))) return;
+    let ator = app.actor ?? app.options?.actor ?? app.document?.actor ?? app.item?.actor ?? app.document?.parent ?? null;
+    if (!ator && app.options?.naurenAtorUuid) { try { ator = fromUuidSync(app.options.naurenAtorUuid, { strict: false }); } catch (err) { ator = null; } }
+    if (ator && ator.documentName !== "Actor") ator = ator.actor ?? null;
+    naurenPintarJanela(raiz, ator);
+    cl.add("nc-tela");
+  } catch (err) { console.warn("Nauren RPG | cores da tela", err); }
+});
 Hooks.on("renderApplicationV2", (app, el) => {
   try {
     const raiz = app?.element ?? el;
@@ -10032,7 +10052,7 @@ async function naurenPerguntarGradeMetros() {
   if (!emPes.length) { await game.settings.set("nauren", "gradeMetrosPerguntada", true); return; }
   const esc = v => foundry.utils.escapeHTML(String(v ?? ""));
   const lista = emPes.slice(0, 12).map(sc => `<li>${esc(sc.name)} <small>(${sc.grid.distance} ${esc(sc.grid.units || "sem unidade")})</small></li>`).join("") + (emPes.length > 12 ? `<li>… e mais ${emPes.length - 12}</li>` : "");
-  const converter = await foundry.applications.api.DialogV2.confirm({
+  const converter = await foundry.applications.api.DialogV2.confirm({ ...naurenKitSistema(),
     window: { title: "Grade em metros" }, position: { width: 420 },
     content: `<p>O Nauren mede distâncias de 1 em 1 metro. Estas cenas estão com a escala do Foundry em pés:</p><ul>${lista}</ul><p>Converter para <b>1 m por quadrado</b>? O tamanho dos quadrados no mapa não muda.</p>`,
     yes: { label: "Converter para 1 m" }, no: { label: "Deixar como está" }, rejectClose: false
@@ -10164,7 +10184,7 @@ async function naurenAbrirEnquadramento(actor, src, proporcao = 1.25) {
       </div>
     </div>`;
   let final = null;
-  await foundry.applications.api.DialogV2.wait({
+  await foundry.applications.api.DialogV2.wait({ ...naurenKitJanela(actor),
     window: { title: `Enquadrar imagem · ${actor.name}` }, position: { width: larg + 60 },
     content: conteudo,
     buttons: [
@@ -11290,7 +11310,7 @@ async function naurenResetarCompendios() {
   }
   let confirmar;
   try {
-    confirmar = await foundry.applications.api.DialogV2.confirm({
+    confirmar = await foundry.applications.api.DialogV2.confirm({ ...naurenKitSistema(),
       window: { title: "Atualizar Compêndios do Nauren" },
       content: "<p>Isso vai atualizar todos os compêndios oficiais do Nauren (Armas, Armaduras, Habilidades, Condições, Magias, Classes, Subclasses, Pigmentos, Mascotes, Bestiário, NPCs de Classe etc.) pra versão atual do sistema, sem apagar nada - cada item já existente é atualizado no lugar (mesmo UUID de sempre), e qualquer item novo é criado.</p><p>Qualquer edição manual feita DIRETO dentro desses compêndios (fora da ficha de um personagem) será substituída pela versão do sistema. Personagens e itens já concedidos a jogadores não são apagados.</p><p>Continuar?</p>",
       modal: true
@@ -12195,7 +12215,7 @@ function naurenHudLivres(actor) { try { return actor?.getFlag?.("nauren", "barra
 /** Cria uma barra livre (pergunta nome, valor e máximo) e já liga a barra no token. */
 async function naurenHudCriarBarraLivre(actor, tokenDoc = null) {
   if (!actor?.isOwner) return null;
-  const dados = await foundry.applications.api.DialogV2.prompt({
+  const dados = await foundry.applications.api.DialogV2.prompt({ ...naurenKitSistema(),
     window: { title: "Nova barra livre", icon: "fas fa-plus" }, position: { width: 340 },
     content: `<div class="nauren-livre-form"><label>Nome<input type="text" name="nome" value="Nova barra" autofocus></label>
       <div class="nauren-livre-linha"><label>Valor<input type="number" name="valor" value="5" min="0"></label><label>Máximo<input type="number" name="max" value="5" min="1"></label></div>
@@ -12216,7 +12236,7 @@ async function naurenHudCriarBarraLivre(actor, tokenDoc = null) {
 }
 async function naurenHudApagarBarraLivre(actor, recurso) {
   const k = String(recurso).replace(/^livre:/, "");
-  const ok = await foundry.applications.api.DialogV2.confirm({ window: { title: "Apagar barra livre" }, content: `<p>Apagar a barra <b>${naurenHudEscapar(naurenHudLivres(actor)[k]?.nome ?? "")}</b>?</p>`, rejectClose: false }).catch(() => false);
+  const ok = await foundry.applications.api.DialogV2.confirm({ ...naurenKitSistema(), window: { title: "Apagar barra livre" }, content: `<p>Apagar a barra <b>${naurenHudEscapar(naurenHudLivres(actor)[k]?.nome ?? "")}</b>?</p>`, rejectClose: false }).catch(() => false);
   if (!ok) return false;
   // v14: apagar uma chave usa o operador "_del" (o "-=chave" antigo fica de reserva para versões sem ele).
   if (typeof globalThis._del !== "undefined") await actor.update({ [`flags.nauren.barrasLivres.${k}`]: globalThis._del });
@@ -13150,7 +13170,7 @@ class NaurenBarrasEditor extends foundry.applications.api.ApplicationV2 {
     await this.#gravar(); this.#carregar(); this.render();
   }
   static async onSalvarModelo() {
-    const nome = await foundry.applications.api.DialogV2.prompt({ window: { title: "Salvar modelo de barras" }, content: `<p>Nome do modelo:</p><input type="text" name="nome" value="Meu modelo" autofocus>`,
+    const nome = await foundry.applications.api.DialogV2.prompt({ ...naurenKitSistema(), window: { title: "Salvar modelo de barras" }, content: `<p>Nome do modelo:</p><input type="text" name="nome" value="Meu modelo" autofocus>`,
       ok: { callback: (e, b, d) => d.element.querySelector("[name=nome]")?.value?.trim() }, rejectClose: false }).catch(() => null);
     if (!nome) return;
     const modelos = foundry.utils.deepClone(game.settings.get("nauren", "barrasModelos") ?? {});
@@ -13162,7 +13182,7 @@ class NaurenBarrasEditor extends foundry.applications.api.ApplicationV2 {
     const modelos = game.settings.get("nauren", "barrasModelos") ?? {};
     const nomes = Object.keys(modelos);
     if (!nomes.length) { ui.notifications.warn("Você ainda não salvou nenhum modelo."); return; }
-    const esc = await foundry.applications.api.DialogV2.wait({ window: { title: "Aplicar modelo de barras" }, content: `<p>Qual modelo aplicar em <b>${naurenHudEscapar(this.#actor.name)}</b>?</p>`,
+    const esc = await foundry.applications.api.DialogV2.wait({ ...naurenKitSistema(), window: { title: "Aplicar modelo de barras" }, content: `<p>Qual modelo aplicar em <b>${naurenHudEscapar(this.#actor.name)}</b>?</p>`,
       buttons: [...nomes.map(n => ({ action: n, label: n })), { action: "cancelar", label: "Cancelar" }], rejectClose: false }).catch(() => null);
     if (!esc || esc === "cancelar") return;
     this.#lista = modelos[esc].map(b => ({ ...b, id: foundry.utils.randomID(8) }));

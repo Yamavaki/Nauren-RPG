@@ -6201,3 +6201,39 @@ img.nauren-criador-token.com-borda { border: none; border-radius: 0; background:
 .nauren-criador .nc2 .nauren-criador-previa > .nauren-criador-previa-titulo { grid-column: 1 / -1; justify-content: flex-start; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; padding: 0 2px; }
 .nauren-criador .nc2 .nauren-criador-previa > span:not(.nauren-criador-previa-titulo) { min-width: 0; }
 .nauren-criador .nc2 .nauren-criador-previa small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+/* 0.98.1 — perguntas curtas no molde: texto, listas e campos com respiro e alinhados */
+.application.nauren-kit.nc2 .dialog-content { gap: 12px; }
+.application.nauren-kit.nc2 .dialog-content > p, .application.nauren-kit.nc2 .dialog-content > div > p { font-size: 14px; line-height: 1.55; color: var(--nk-texto); margin: 0; }
+.application.nauren-kit.nc2 .dialog-content p b, .application.nauren-kit.nc2 .dialog-content li b { color: var(--nc-sc); }
+.application.nauren-kit.nc2 .dialog-content ul { margin: 0; padding: 10px 12px 10px 28px; border-radius: 10px; background: var(--nk-painel); border: 1px solid var(--nk-linha); font-size: 13.5px; line-height: 1.6; }
+.application.nauren-kit.nc2 .dialog-content label { color: var(--nk-texto); font-size: 13px; }
+.application.nauren-kit.nc2 .dialog-content input[type="text"], .application.nauren-kit.nc2 .dialog-content input[type="number"], .application.nauren-kit.nc2 .dialog-content select, .application.nauren-kit.nc2 .dialog-content textarea {
+  min-height: 36px; padding: 0 10px; border-radius: 8px; border: 1px solid var(--nk-linha2); background: #120e18; color: var(--nk-texto); font-size: 14px; box-sizing: border-box; }
+.application.nauren-kit.nc2 .dialog-content input:focus, .application.nauren-kit.nc2 .dialog-content select:focus { outline: none; border-color: var(--nc-s); box-shadow: 0 0 0 2px color-mix(in srgb, var(--nc-s) 28%, transparent); }
+.application.nauren-kit.nc2 .dialog-content input[type="checkbox"], .application.nauren-kit.nc2 .dialog-content input[type="radio"] { accent-color: var(--nc-s); }
+.application.nauren-kit.nc2 .dialog-content .form-group { display: flex; flex-direction: column; gap: 6px; margin: 0; }
+.application.nauren-kit.nc2 .dialog-content .item-meta-hint { color: var(--nk-suave); font-size: 13px; line-height: 1.45; margin: 0; }
+.application.nauren-kit.nc2 .nauren-aviso-forte { border-radius: 10px; }
+
+/* ===================================================
+   0.98.1 — TELAS PRÓPRIAS NAS CORES DO DONO (ou do sistema, nas ferramentas do Mestre)
+   As cores de destaque das telas (--n-ouro, --n-borda, --n-painel...) passam a vir dos Pigmentos.
+   Sem cantos cortados aqui: estas janelas mudam de tamanho e o canto de arrastar fica livre.
+   =================================================== */
+.application.nauren-rpg.nc-tela.nc2, .nauren-rpg.sheet.item.nc-tela.nc2:not(.nauren-subclasse-sheet), .application.nauren-borda-janela.nc-tela.nc2 {
+  --nc-f: #1b1624;
+  --n-ouro: var(--nc-s); --n-tinta: var(--nc-f);
+  --n-painel: color-mix(in srgb, var(--nc-pd) 30%, #211a2e); --n-painel2: color-mix(in srgb, var(--nc-pd) 45%, #261e35);
+  --n-borda: color-mix(in srgb, var(--nc-p) 26%, #2e2640); --n-borda2: color-mix(in srgb, var(--nc-p) 46%, #2e2640);
+  border: 1.5px solid color-mix(in srgb, var(--nc-p) 75%, #000) !important;
+}
+.application.nc-tela.nc2.nc-fundo-escuro { --nc-f: #141317; }
+.application.nc-tela.nc2::after { content: ""; position: absolute; inset: 3px; border: 1px solid color-mix(in srgb, var(--nc-s) 32%, transparent); pointer-events: none; z-index: 60; border-radius: inherit; }
+.application.nc-tela.nc2 > .window-header {
+  background: repeating-linear-gradient(135deg, var(--nc-pd) 0 10px, color-mix(in srgb, var(--nc-pd) 78%, #000) 10px 20px) !important;
+  border-bottom: 2px solid var(--nc-s); color: #fff;
+}
+.application.nc-tela.nc2 > .window-header .window-title { font-family: "Modesto Condensed", "Cinzel", Georgia, serif; font-size: 17px; font-weight: 700; letter-spacing: .03em; color: #fff; display: flex; align-items: center; gap: 8px; }
+.application.nc-tela.nc2 > .window-header .window-title::before { content: ""; flex: none; width: 7px; height: 7px; transform: rotate(45deg); background: var(--nc-s); }
+.application.nc-tela.nc2 > .window-header button, .application.nc-tela.nc2 > .window-header a { color: var(--nc-pc); }
+.application.nc-tela.nc2 input[type="checkbox"], .application.nc-tela.nc2 input[type="radio"] { accent-color: var(--nc-s); }

@@ -891,7 +891,7 @@ async function naurenAbrirBorda(actor, { tokenDoc = null, srcInicial = "" } = {}
   let animFlash = null;
   const resultado = await foundry.applications.api.DialogV2.wait({
     window: { title: `Borda do token · ${actor.name}`, icon: "fas fa-circle-dot", resizable: true },
-    classes: ["nauren-borda-janela"],
+    classes: ["nauren-borda-janela"], naurenAtorUuid: actor?.uuid ?? null,
     position: { width: Math.min(900, Math.max(640, window.innerWidth - 80)), height: Math.max(560, Math.min(window.innerHeight - 60, 760)) },
     content: conteudo,
     buttons: [

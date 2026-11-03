@@ -317,7 +317,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
   static async onEstressePermanente() {
     const atual = this.actor.system.estressePermanente ?? 0;
     const max = this.actor.system.stress?.max ?? 0;
-    const novo = await foundry.applications.api.DialogV2.prompt({
+    const novo = await foundry.applications.api.DialogV2.prompt({ ...NK.naurenKitJanela(this.actor),
       window: { title: `Estresse permanente — ${this.actor.name}`, icon: "fas fa-triangle-exclamation" },
       content: `<div class="nauren-aviso-forte"><i class="fas fa-triangle-exclamation"></i><div><b>Atenção:</b> Estresse permanente ocupa espaços de Estresse que não saem com descanso, cura nem habilidade (ex.: Cirurgia Sinistra). Diminua só se o Mestre autorizar: esta é a única forma de remover.</div></div>
         <div class="form-group"><label>Estresse permanente (Estresse máximo: ${max})</label><input type="number" name="valor" value="${atual}" min="0" max="${Math.max(max, atual)}" step="1"></div>`,
@@ -3615,7 +3615,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
   static async onAbrirCriadorMonstro(event, target) {
     const actor = this.actor;
     if (actor.items.size) {
-      const ok = await foundry.applications.api.DialogV2.confirm({ window: { title: "Criador de Monstros" },
+      const ok = await foundry.applications.api.DialogV2.confirm({ ...NK.naurenKitSistema(), window: { title: "Criador de Monstros" },
         content: `<p>Esta ficha já tem ${actor.items.size} item(ns). O Criador <b>substitui</b> os itens e os atributos de "${actor.name}" ao criar. Continuar?</p>`, rejectClose: false }).catch(() => false);
       if (!ok) return;
     }
@@ -3635,7 +3635,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
   static async onReabrirCriador(event, target) {
     const actor = this.actor;
     let escolha = null;
-    await foundry.applications.api.DialogV2.wait({
+    await foundry.applications.api.DialogV2.wait({ ...NK.naurenKitJanela(actor),
       window: { title: `${actor.name} — reabrir o Criador de Personagem` },
       content: `<p class="item-meta-hint">Como você quer continuar?</p>`,
       buttons: [
@@ -3694,7 +3694,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     const cor2Atual = cores.cor2 || padrao.cor2;
 
     let dados = null;
-    await foundry.applications.api.DialogV2.wait({
+    await foundry.applications.api.DialogV2.wait({ ...NK.naurenKitSistema(),
       window: { title: "Customizar cor da barra" },
       content: `
         <div class="nauren-sheet" style="padding: 4px 2px;">
@@ -3796,7 +3796,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
       return;
     }
 
-    const confirmar = await foundry.applications.api.DialogV2.confirm({
+    const confirmar = await foundry.applications.api.DialogV2.confirm({ ...NK.naurenKitSistema(),
       window: { title: "Sincronizar com a Ficha Original?" },
       content: `<p>Isso vai copiar os atributos/recursos deste token para a ficha de <b>${original.name}</b> na barra lateral. Os Itens são MESCLADOS: item igual (mesmo nome e tipo) é atualizado com os dados do token, item que só existe no token é adicionado, e item que só existe na ficha original é preservado (não é apagado). Confirma?</p>`,
       rejectClose: false
@@ -11715,7 +11715,7 @@ class NaurenCriadorPersonagem extends foundry.applications.api.HandlebarsApplica
       new FP({ type: "image", current: campo?.value ?? "", callback: aplicar }).browse();
       return;
     }
-    const link = await foundry.applications.api.DialogV2.prompt({ window: { title: alvo === "token" ? "Imagem do token" : "Imagem do personagem" },
+    const link = await foundry.applications.api.DialogV2.prompt({ ...NK.naurenKitJanela(this.actor), window: { title: alvo === "token" ? "Imagem do token" : "Imagem do personagem" },
       content: `<p>Cole o link (endereço) da imagem. Para escolher um arquivo do servidor, peça ao Mestre a permissão de navegar nos arquivos.</p><input type="text" name="link" value="${campo?.value ?? ""}" style="width: 100%;">`,
       ok: { label: "Usar esta imagem", callback: (ev, btn) => btn.form.elements.link.value.trim() }, rejectClose: false }).catch(() => null);
     aplicar(link);
@@ -11742,7 +11742,7 @@ class NaurenCriadorPersonagem extends foundry.applications.api.HandlebarsApplica
     {
       const sobrando = [...root.querySelectorAll(".nauren-criador-ficha-valor:not(.usada)")].map(c => c.dataset.valor);
       if (sobrando.length) {
-        const seguir = await foundry.applications.api.DialogV2.confirm({ window: { title: "Atributos" },
+        const seguir = await foundry.applications.api.DialogV2.confirm({ ...NK.naurenKitJanela(this.actor), window: { title: "Atributos" },
           content: `<p>Ainda sobram valores sem atributo: <b>${sobrando.join(", ")}</b>.</p><p>Continuar mesmo assim?</p>`, rejectClose: false }).catch(() => false);
         if (!seguir) return;
       }

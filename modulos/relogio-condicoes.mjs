@@ -1,4 +1,5 @@
 /* Nauren RPG — Relógio de combate: tempo das Condições. Separado do nauren.mjs na 0.94.31. */
+import { naurenKitJanela, naurenKitSistema } from "./janelas-kit.mjs";
 import { NAUREN_CAMPOS_MODIFICADOR_OPCOES, NaurenHabilidadeData, NaurenMagiaData, campoAcao, campoCuraBloco, campoDanoBloco, campoModificador, naurenDefinirCaminhoProfundo, naurenInterpretarModificador, naurenItemCorrespondeAoAlvo, naurenPostarCard, naurenResolverPorNivel, naurenUsosExtrasPara, naurenUsosPassivaMax } from "../nauren.mjs";
 import { NaurenActorSheet, NaurenAlvoHelper } from "./ficha-ator.mjs";
 import { NaurenItemSheet, USOS_RESET_OPCOES } from "./ficha-item.mjs";
@@ -1033,10 +1034,10 @@ class NaurenProgressaoHelper {
     };
     Hooks.on("renderDialogV2", aoRenderizar);
     try {
-      await foundry.applications.api.DialogV2.wait({
+      await foundry.applications.api.DialogV2.wait({ ...naurenKitJanela(actor),
         window: { title: `${actor.name} — escolha de itens (nível ${nivel})` },
         // Largura fixa: sem isto o Foundry media a janela pelo conteúdo e "Ver tudo" a esticava para os lados.
-        classes: ["nauren-escolha-janela"], position: { width: 640 },
+        classes: ["nauren-kit", "nauren-escolha-janela"], position: { width: 640 },
         content,
         buttons: [{
           label: "Confirmar",
