@@ -1241,6 +1241,8 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
       toggleModoFicha: NaurenActorSheet.onToggleModoFicha,
       reabrirCriador: NaurenActorSheet.onReabrirCriador,
       abrirBarrasToken: NaurenActorSheet.onAbrirBarrasToken,
+      escolherArteMoldura: NaurenActorSheet.onEscolherArteMoldura,
+      limparArteMoldura: NaurenActorSheet.onLimparArteMoldura,
       abrirRecursosHud: NaurenActorSheet.onAbrirRecursosHud,
       abrirCriadorMonstro: NaurenActorSheet.onAbrirCriadorMonstro,
       configurarBarra: NaurenActorSheet.onConfigurarBarra,
@@ -1572,6 +1574,8 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     // de fichas de NPC/monstro - nunca aparecem num personagem jogável
     // (ver template: seções envolvidas num {{#if isNpc}}).
     context.isNpc = this.actor.type === "npc";
+    context.ehMestre = game.user.isGM;
+    context.arteHover = { ocultarNome: !!this.actor.getFlag("nauren", "ocultarNome"), ocultarArte: !!this.actor.getFlag("nauren", "ocultarArte"), moldura: this.actor.getFlag("nauren", "moldura") ?? "auto", arte: this.actor.getFlag("nauren", "arteMoldura") ?? "" };
     // NPC/monstro: as seções de personagem jogável (Peculiaridades de jogador, Classe, Subclasse) só aparecem se tiverem algo.
     // As Peculiaridades do Criador (Envenenador, Bando...) são Habilidades e aparecem em Habilidades.
     // Cabeçalho do NPC: Categoria (1-4) e Valor Base. A Categoria mostrada é a FINAL
@@ -3420,6 +3424,14 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     const item = NaurenActorSheet._itemDaLinha(this, target);
     if (item) await naurenPostarDescricaoNoChat(item);
   }
+
+  /** 0.100: arte própria para a moldura que aparece ao passar o mouse no token (só o Mestre). */
+  static onEscolherArteMoldura() {
+    const FP = foundry.applications.apps?.FilePicker?.implementation ?? foundry.applications.apps?.FilePicker;
+    if (!FP) return;
+    new FP({ type: "imagevideo", current: this.actor.getFlag("nauren", "arteMoldura") || this.actor.img, callback: p => this.actor.setFlag("nauren", "arteMoldura", p) }).render(true);
+  }
+  static async onLimparArteMoldura() { await this.actor.unsetFlag("nauren", "arteMoldura"); }
 
   static async onItemEquip(event, target) {
     const item = NaurenActorSheet._itemDaLinha(this, target);

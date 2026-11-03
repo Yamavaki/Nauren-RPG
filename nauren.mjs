@@ -1,5 +1,6 @@
 import { NAUREN_HAB_MONSTROS, NAUREN_HAB_MONSTROS_VERSAO } from "./data/habilidades-monstros.mjs";
 import { NAUREN_KIT_JANELA, naurenKitJanela, naurenKitSistema } from "./modulos/janelas-kit.mjs";
+import { naurenArteInit, naurenNomeVisivel, naurenNomeOculto, naurenMostrarArteATodos, naurenArteMostrar, naurenArtePosicao, naurenArteAnalisar, naurenArteImagem } from "./modulos/arte-hover.mjs";
 import { naurenChatInit, naurenChatPintarBalao, naurenChatBalao } from "./modulos/chat.mjs";
 import { naurenArmazemInit, naurenArmazemHooks, NaurenArmazemJanela, NaurenArmazemSheet, naurenArmazemPedir, naurenArmazemPontosDaCena, naurenArmazemDistancia, naurenArmazemPreco } from "./modulos/armazenamento.mjs";
 import { NAUREN_MOTION_ALVO_OPCOES, NAUREN_MOTION_CONDICAO_OPCOES, NAUREN_MOTION_ESPERA_EFEITO, NAUREN_MOTION_JANELA_EFEITOS, NAUREN_MOTION_SO_COR, NAUREN_MOTION_USUARIO_OPCOES, NAUREN_QUERY_MOTION, naurenAANomeReserva, naurenAANomeTemAnimacao, naurenAANomesCadastrados, naurenAjustarTamanhoAura, naurenAnimacoesDisponiveis, naurenAnimarAcao, naurenAnimarAcumulo, naurenAnimarCritico, naurenAnimarPassiva, naurenAuraTamanhoPendente, naurenAurasTocando, naurenCorCalcular, naurenCorCamadaAgora, naurenCorCondTocando, naurenCorConfig, naurenCorDaCondicao, naurenCorEntrada, naurenCorFixa, naurenCorFlash, naurenCorMatriz, naurenCorPode, naurenCorRGB, naurenCorTick, naurenCorTickLigado, naurenCorTirar, naurenCorTirarFiltro, naurenCorTokens, naurenDesligarAnimacaoAura, naurenDiametroAuraQuadrados, naurenEfeitosDaAura, naurenEfeitosDoSom, naurenEncerrarEfeitosSequencer, naurenEntradaAefx, naurenEntradaMenu, naurenEsperarMs, naurenInstalarSomSincronizado, naurenLigarAnimacaoAura, naurenMotionAlvo, naurenMotionAnotarEfeito, naurenMotionAnotarPreparo, naurenMotionAtacante, naurenMotionCasa, naurenMotionCondDebounce, naurenMotionCondTocando, naurenMotionCondicoesDepois, naurenMotionCondicoesDoAtor, naurenMotionContador, naurenMotionDeOutraTela, naurenMotionEfeitosRecentes, naurenMotionEhPreparo, naurenMotionEmTodos, naurenMotionEnviar, naurenMotionEvento, naurenMotionExecutar, naurenMotionForca, naurenMotionImpactoDoEfeito, naurenMotionMontarCondicao, naurenMotionParaOutrasTelas, naurenMotionPlanoDaAcao, naurenMotionPlanos, naurenMotionPode, naurenMotionPresetCondicao, naurenMotionReceberPlano, naurenMotionSincronizar, naurenMotionSincronizarCondicoes, naurenMotionTocar, naurenMotionToken, naurenMotionUltimoPlano, naurenMotionUuid, naurenMotionVistos, naurenPassivasAnimadas, naurenRaioEmanacaoMetros, naurenSomEsperarAnimacao, naurenSomSincronizadoAtivo, naurenTocarNaRegiao, naurenTocarNoToken, naurenTokenDoAtor, naurenTokenDoItem } from "./modulos/animacoes.mjs";
@@ -7826,6 +7827,7 @@ Hooks.once("init", () => {
   naurenArmazemInit();
   naurenArmazemHooks();
   naurenChatInit(); // 0.99.2: chat no estilo do sistema (modulos/chat.mjs)
+  naurenArteInit(); // 0.100: arte do personagem ao passar o mouse no token (modulos/arte-hover.mjs)
 
   CONFIG.Item.dataModels.habilidade = NaurenHabilidadeData;
   CONFIG.Item.dataModels.arma = NaurenArmaData;
@@ -12909,7 +12911,8 @@ function naurenHudMostrarTooltip(token) {
   const conds = naurenHudPodeVerCondicoes(actor) ? naurenHudCondicoesDoAtor(actor) : [];
   const esc = s => naurenHudEscapar(String(s ?? ""));
   const el = naurenHudTooltipEl ??= Object.assign(document.createElement("div"), { id: "nauren-token-tooltip" });
-  el.innerHTML = `<div class="nome">${esc(token.document.name)}</div>
+  const nomeT = naurenNomeVisivel(token);
+  el.innerHTML = `<div class="nome">${esc(nomeT)}${game.user.isGM && naurenNomeOculto(token) ? ` <span class="num" title="Os jogadores veem &quot;Desconhecido&quot;">(oculto)</span>` : ""}</div>
     <div class="estado" style="color:${est.cor}">${esc(est.texto)}${numeros ? ` <span class="num">${value}/${max}${escudo > 0 ? ` +${escudo}` : ""}</span>` : ""}</div>
     ${conds.length ? `<div class="conds">${conds.map(c => `<span><img src="${esc(c.img)}" alt="">${esc(c.nome)}${c.acumulos ? ` ${c.acumulos}` : ""}</span>`).join("")}</div>` : ""}`;
   document.body.append(el);
