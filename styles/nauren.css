@@ -6237,3 +6237,6 @@ img.nauren-criador-token.com-borda { border: none; border-radius: 0; background:
 .application.nc-tela.nc2 > .window-header .window-title::before { content: ""; flex: none; width: 7px; height: 7px; transform: rotate(45deg); background: var(--nc-s); }
 .application.nc-tela.nc2 > .window-header button, .application.nc-tela.nc2 > .window-header a { color: var(--nc-pc); }
 .application.nc-tela.nc2 input[type="checkbox"], .application.nc-tela.nc2 input[type="radio"] { accent-color: var(--nc-s); }
+/* 0.98.2: a moldura do retrato do item fica na caixa (antes ficava na imagem e a caixa cortava a borda de baixo e da direita) */
+.nauren-rpg.sheet.item .nauren-sheet > header .nauren-item-retrato { box-sizing: border-box; border: 1.5px solid var(--n-ouro); box-shadow: 0 0 0 3px var(--n-tinta), 0 0 0 4px color-mix(in srgb, var(--n-ouro) 35%, transparent); margin: 4px; }
+.nauren-rpg.sheet.item .nauren-sheet > header .nauren-item-retrato img { border: 0 !important; border-radius: 0 !important; margin: 0; }
