@@ -1650,13 +1650,32 @@ async function naurenAtualizarTreinoResistencia(mascote) {
   const total = Math.max(1, hab.system.rankAtual || 1) * Math.max(1, mascote.system.nivel ?? 1);
   const sistema = { ativo: true, modificadores: [{ campo: "vida", valor: String(total) }],
     descricao: naurenMontarDescricao({ regra: `Origem: Treinamento de Resistência (${dono.name}). +${hab.system.rankAtual || 1} de Vida por nível do mascote.`, automatico: `+${total} de Vida máxima (recalculado ao subir de nível).`, manual: "" }) };
-  if (existente) await existente.update({ system: sistema });
+  if (existente) {
+    const atual = existente.system?.modificadores?.find?.(m => m.campo === "vida")?.valor;
+    if (String(atual) !== String(total) || existente.system?.ativo === false) await existente.update({ system: sistema });
+  }
   else await mascote.createEmbeddedDocuments("Item", [{ name: "Treinamento de Resistência", type: "efeito", img: hab.img, system: sistema, flags: { nauren: { treinoResistencia: true } } }]);
 }
 Hooks.on("updateActor", async (actor, mudancas) => {
   if (game.users.activeGM !== game.user || !actor.system?.mascoteDeUuid) return;
-  if (foundry.utils.getProperty(mudancas, "system.nivel") === undefined) return;
+  // 0.97.7: também quando o ator vira mascote de alguém (Domar Besta, besta inicial, vínculo na ficha).
+  if (foundry.utils.getProperty(mudancas, "system.nivel") === undefined && foundry.utils.getProperty(mudancas, "system.mascoteDeUuid") === undefined) return;
   await naurenAtualizarTreinoResistencia(actor);
+});
+/** 0.97.7: o Caçador ganhou, subiu de rank ou perdeu o Treinamento de Resistência — recalcula a Vida dos mascotes já existentes. */
+function naurenTreinoResistenciaMudouNoDono(item) {
+  if (game.users.activeGM !== game.user || item?.type !== "habilidade" || !naurenEhItem(item, "Treinamento de Resistência")) return;
+  const dono = item.parent;
+  if (!dono || dono.system?.mascoteDeUuid) return;
+  for (const pet of (game.actors ?? []).filter(a => a.system?.mascoteDeUuid === dono.uuid))
+    naurenAtualizarTreinoResistencia(pet).catch(err => console.warn("Nauren RPG | Treinamento de Resistência", err));
+}
+Hooks.on("createItem", item => naurenTreinoResistenciaMudouNoDono(item));
+Hooks.on("updateItem", item => naurenTreinoResistenciaMudouNoDono(item));
+Hooks.on("deleteItem", item => naurenTreinoResistenciaMudouNoDono(item));
+Hooks.once("ready", () => {
+  if (game.users.activeGM !== game.user) return;
+  setTimeout(() => { for (const pet of (game.actors ?? []).filter(a => a.system?.mascoteDeUuid)) naurenAtualizarTreinoResistencia(pet).catch(() => null); }, 4000);
 });
 
 /**

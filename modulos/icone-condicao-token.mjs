@@ -214,6 +214,9 @@ async function naurenReconciliarItemComCompendio(item) {
   // Cópia de Falsificar Seu Destino: é congelada no nível de origem, com 1 uso por dia
   // e custos convertidos - ressincronizar desfaria tudo isso.
   if (item.getFlag?.("nauren", "emprestadaDe")) return false;
+  // 0.97.7: item feito ou melhorado na Bancada / Loja de Invenções — o "system" vem do projeto, não do compêndio.
+  // Ressincronizar voltava o arco melhorado para o do compêndio e o jogador perdia os bônus da Loja.
+  if (item.getFlag?.("nauren", "projeto")) return false;
   const uuidOrigem = item.getFlag("nauren", "origemUuid") || item.getFlag("core", "sourceId");
   if (!uuidOrigem) return false;
   let origem = await fromUuid(uuidOrigem).catch(() => null);
