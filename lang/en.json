@@ -1,0 +1,29 @@
+{
+  "TYPES": {
+    "Actor": {
+      "personagem": "Personagem",
+      "npc": "PNJ",
+      "armazenamento": "Armazenamento"
+    },
+    "Item": {
+      "arma": "Arma",
+      "armadura": "Armadura",
+      "consumivel": "Equipamento",
+      "habilidade": "Habilidade",
+      "magia": "Magia",
+      "efeito": "Efeito",
+      "cor": "Pigmento",
+      "condicao": "Condição",
+      "grupo": "Grupo de Jogadores",
+      "classe": "Classe",
+      "subclasse": "Subclasse",
+      "peculiaridade": "Peculiaridade"
+    },
+    "RegionBehavior": {
+      "armazenamento": "Nauren: Armazenamento"
+    }
+  },
+  "NAUREN": {
+    "SystemName": "Nauren RPG"
+  }
+}

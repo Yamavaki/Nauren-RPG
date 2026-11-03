@@ -7147,3 +7147,22 @@ li.chat-message.ncc-card > .message-content { padding-top: 0 !important; }
 /* 0.99.7: linha da redução de dano na barra "Sua Vida" da reação */
 .nk-vidadano .nk-vd-reducao { margin-top: 4px; font-size: 12px; color: var(--nk-bom, #7fe0b8); }
 .nk-vidadano .nk-vd-reducao[hidden] { display: none; }
+/* 0.99.8: listas (select) com fundo escuro em todas as janelas do sistema e nos diálogos do Foundry com o molde */
+.application.nauren-kit, .application.nc-tela, .application.nc-moldura, .application.nauren-armazem, .nauren-sheet, .nauren-rpg.sheet { color-scheme: dark; }
+.application.nauren-kit select option, .application.nc-tela select option, .application.nc-moldura select option, .application.nauren-armazem select option, .nauren-rpg.sheet select option, .nauren-sheet select option,
+.application.nauren-kit select optgroup, .application.nc-tela select optgroup, .application.nc-moldura select optgroup, .nauren-rpg.sheet select optgroup {
+  background: #1b1624; color: #ece6f5;
+}
+.application.nauren-kit select option:checked, .application.nc-tela select option:checked, .application.nc-moldura select option:checked, .nauren-rpg.sheet select option:checked { background: color-mix(in srgb, var(--nc-s, #e0b257) 35%, #1b1624); color: #fff; }
+/* 0.99.8: caixas que ainda estavam no roxo antigo passam a seguir as cores da janela (Pigmentos de quem age) */
+.application.nauren-kit.nc2 :is(.nk-fontes-caixa, .nk-ajustes, .nk-destino-off) { --cbg: color-mix(in srgb, var(--nc-pd) 28%, var(--nc-f)); --cbd: var(--nk-linha2); background-color: transparent; }
+.application.nauren-kit.nc2 .nk-ajustes summary, .application.nauren-kit.nc2 .nk-ajustes .nauren-popup-opt-row label, .application.nauren-kit.nc2 .nk-ajustes label { color: var(--nk-texto); }
+.application.nauren-kit.nc2 .nk-fontes-titulo { color: var(--nc-sc); }
+.application.nauren-kit.nc2 .nk-ajustes summary::before { color: var(--nc-s); }
+/* 0.99.8: "ver todos os N dados" com botão próprio */
+.ncc-todos-dados > .dice-rolls { display: none !important; }
+.ncc-todos-dados.ncc-aberto > .dice-rolls { display: flex !important; }
+.ncc-ver-dados { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--nc-sc, #ffe2a3); padding: 2px 0; }
+.ncc-ver-dados::before { content: "▸"; display: inline-block; transition: transform .15s; }
+.ncc-todos-dados.ncc-aberto .ncc-ver-dados::before { transform: rotate(90deg); }
+.ncc-ver-dados:hover { text-decoration: underline; }

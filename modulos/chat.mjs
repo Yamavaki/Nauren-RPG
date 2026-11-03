@@ -198,12 +198,21 @@ function organizarDados(ol) {
     corpo = `<div class="ncc-faces" style="--faces:${faces}">${cont.map((c, i) => `<div class="ncc-face ${i + 1 === faces ? "max" : i === 0 ? "min" : ""}" title="${c}× o ${i + 1}"><i style="--h:${Math.round(c / maior * 100)}%"></i><b>${c}</b><span>${i + 1}</span></div>`).join("")}</div>`;
   }
   resumo.innerHTML = `<div class="ncc-resumo-linha"><span><b>${n}</b> dados</span><span>média <b>${media}</b></span>${max ? `<span class="ncc-r-max"><b>${max}</b> no máximo</span>` : ""}${min ? `<span class="ncc-r-min"><b>${min}</b> no mínimo</span>` : ""}</div>${corpo}`;
-  const det = document.createElement("details");
+  // Botão próprio (o clique na rolagem é do Foundry, que abre/fecha o detalhe e engolia o <details>).
+  const det = document.createElement("div");
   det.className = "ncc-todos-dados";
-  det.innerHTML = `<summary>ver todos os ${n} dados</summary>`;
+  det.innerHTML = `<button type="button" class="ncc-ver-dados">ver todos os ${n} dados</button>`;
   ol.before(resumo);
   ol.before(det);
   det.appendChild(ol);
+  const btn = det.querySelector(".ncc-ver-dados");
+  const alternar = ev => {
+    ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation?.();
+    const aberto = det.classList.toggle("ncc-aberto");
+    btn.textContent = aberto ? `esconder os ${n} dados` : `ver todos os ${n} dados`;
+  };
+  btn.addEventListener("click", alternar);
+  btn.addEventListener("pointerdown", ev => ev.stopPropagation());
 }
 
 /* ---------- balão em cima do token ---------- */

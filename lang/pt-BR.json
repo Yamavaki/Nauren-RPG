@@ -16,7 +16,8 @@
       "condicao": "Condição",
       "grupo": "Grupo de Jogadores",
       "classe": "Classe",
-      "subclasse": "Subclasse"
+      "subclasse": "Subclasse",
+      "peculiaridade": "Peculiaridade"
     },
     "RegionBehavior": {
       "armazenamento": "Nauren: Armazenamento"
