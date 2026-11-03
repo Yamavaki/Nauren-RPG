@@ -2,7 +2,7 @@
   "id": "nauren",
   "title": "Nauren RPG",
   "description": "Um mundo pintado e abandonado, onde o Acaso mancha as bordas da realidade e os personagens resistem usando Estamina, Prioridade e o poder do Grande Prisma.",
-  "version": "0.98.7",
+  "version": "0.99.0",
   "compatibility": {
     "minimum": 13,
     "verified": 14
@@ -34,7 +34,8 @@
   "documentTypes": {
     "Actor": {
       "personagem": {},
-      "npc": {}
+      "npc": {},
+      "armazenamento": {}
     },
     "Item": {
       "arma": {},
@@ -49,6 +50,9 @@
       "classe": {},
       "subclasse": {},
       "peculiaridade": {}
+    },
+    "RegionBehavior": {
+      "armazenamento": {}
     }
   },
   "initiative": "@atributosTotais.agilidade + (1d20 * 0.01)",

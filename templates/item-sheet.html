@@ -2083,6 +2083,15 @@
         </div>
       </div>
       {{/if}}
+      {{#if ehMoeda}}
+      <div class="field-grid" style="grid-template-columns: 200px 1fr;">
+        <div class="field">
+          <label>Quantidade</label>
+          <input type="number" name="system.quantidade" value="{{system.quantidade}}" min="0" max="999999999" step="1">
+        </div>
+        <p class="item-meta-hint" style="align-self: end; margin: 0 0 6px;">Moeda: a quantidade é o saldo (até 999.999.999). Ao receber mais da mesma moeda, tudo vira uma pilha só.</p>
+      </div>
+      {{else}}
       <div class="field-grid" style="grid-template-columns: 90px 90px 1fr;">
         <div class="field">
           <label>Quantidade</label>
@@ -2098,6 +2107,7 @@
           <input type="text" name="system.efeito" value="{{system.efeito}}">
         </div>
       </div>
+      {{/if}}
       {{#if equipamentoGasta}}
       <div class="toggle-box item-meta-box" style="margin-top: 10px;">
         <label class="toggle-header"><input type="checkbox" name="system.ehMunicao" {{checked system.ehMunicao}}> <i class="fas fa-bullseye"></i> É munição</label>
@@ -3009,6 +3019,147 @@
       </label>
     </div>
     {{/if}}
+  </div>
+  {{/if}}
+  {{#if temLuzVisao}}
+  <!-- 0.99: LUZ E VISÃO DO ITEM (os mesmos campos da luz e da visão do token no Foundry V14) -->
+  <div class="nauren-lv">
+    <details class="nauren-lv-bloco" data-lv="luz" data-persist="lv-luz" {{#if system.luzVisao.luz.ativa}}open{{/if}}>
+      <summary class="nauren-lv-cab">
+        <span class="nauren-lv-ic"><i class="fas fa-sun"></i></span>
+        <b>Luz</b>
+        <span class="nauren-lv-resumo">{{lv.luzResumo}}</span>
+        <label class="nauren-lv-sw" title="Liga ou desliga a luz deste item">
+          <input type="checkbox" name="system.luzVisao.luz.ativa" {{checked system.luzVisao.luz.ativa}}><i></i><span>{{#if system.luzVisao.luz.ativa}}Ligado{{else}}Desligado{{/if}}</span>
+        </label>
+      </summary>
+      <div class="nauren-lv-corpo">
+        <div class="nauren-lv-grade">
+          <div class="nauren-lv-campos">
+            <div class="nauren-lv-campo">
+              <span class="nauren-lv-rot">Quando vale</span>
+              <div class="nauren-lv-seg">
+                {{#each lv.quandoLuz as |op|}}<label class="{{#if op.on}}on{{/if}}"><input type="radio" name="system.luzVisao.luz.quando" value="{{op.valor}}" {{checked op.on}}><span>{{op.rotulo}}</span></label>{{/each}}
+              </div>
+            </div>
+            <div class="nauren-lv-2">
+              <label class="nauren-lv-campo"><span class="nauren-lv-rot">Luz clara</span><span class="nauren-lv-num"><input type="number" name="system.luzVisao.luz.bright" value="{{system.luzVisao.luz.bright}}" min="0" step="0.5"><em>m</em></span></label>
+              <label class="nauren-lv-campo"><span class="nauren-lv-rot">Penumbra (conta do centro)</span><span class="nauren-lv-num"><input type="number" name="system.luzVisao.luz.dim" value="{{system.luzVisao.luz.dim}}" min="0" step="0.5"><em>m</em></span></label>
+            </div>
+            <div class="nauren-lv-2">
+              <div class="nauren-lv-campo"><span class="nauren-lv-rot">Cor</span>
+                <span class="nauren-lv-cor">
+                  <input type="hidden" name="system.luzVisao.luz.color" value="{{system.luzVisao.luz.color}}">
+                  <input type="color" class="nauren-lv-cor-pick" data-alvo="system.luzVisao.luz.color" value="{{#if system.luzVisao.luz.color}}{{system.luzVisao.luz.color}}{{else}}#ffffff{{/if}}">
+                  <span class="nauren-lv-cor-txt">{{#if system.luzVisao.luz.color}}{{system.luzVisao.luz.color}}{{else}}sem cor{{/if}}</span>
+                  {{#if system.luzVisao.luz.color}}<a class="nauren-lv-cor-limpar" data-alvo="system.luzVisao.luz.color" title="Tirar a cor">✕</a>{{/if}}
+                </span>
+              </div>
+              <label class="nauren-lv-campo"><span class="nauren-lv-rot">Força da cor <b class="nauren-lv-val">{{system.luzVisao.luz.alpha}}</b></span><input type="range" class="nauren-lv-rng" name="system.luzVisao.luz.alpha" value="{{system.luzVisao.luz.alpha}}" min="0" max="1" step="0.05"></label>
+            </div>
+            <div class="nauren-lv-2">
+              <label class="nauren-lv-campo"><span class="nauren-lv-rot">Animação</span><select name="system.luzVisao.luz.animation.type">{{selectOptions lv.animacoes selected=system.luzVisao.luz.animation.type}}</select></label>
+              <label class="nauren-lv-campo"><span class="nauren-lv-rot">Ângulo</span><span class="nauren-lv-num"><input type="number" name="system.luzVisao.luz.angle" value="{{system.luzVisao.luz.angle}}" min="0" max="360"><em>°</em></span></label>
+            </div>
+            <div class="nauren-lv-2">
+              <label class="nauren-lv-campo"><span class="nauren-lv-rot">Velocidade <b class="nauren-lv-val">{{system.luzVisao.luz.animation.speed}}</b></span><input type="range" class="nauren-lv-rng" name="system.luzVisao.luz.animation.speed" value="{{system.luzVisao.luz.animation.speed}}" min="0" max="10" step="1"></label>
+              <label class="nauren-lv-campo"><span class="nauren-lv-rot">Intensidade <b class="nauren-lv-val">{{system.luzVisao.luz.animation.intensity}}</b></span><input type="range" class="nauren-lv-rng" name="system.luzVisao.luz.animation.intensity" value="{{system.luzVisao.luz.animation.intensity}}" min="1" max="10" step="1"></label>
+            </div>
+          </div>
+          <div class="nauren-lv-previa">
+            <span class="nauren-lv-rot">Prévia</span>
+            <div class="nauren-lv-circulo" style="--lv-cor: {{#if system.luzVisao.luz.color}}{{system.luzVisao.luz.color}}{{else}}#fff3d6{{/if}}; --lv-claro: {{lv.previaClaro}}%;">
+              <i class="nauren-lv-anel"></i><i class="nauren-lv-token"></i>
+              <small class="nauren-lv-m1">{{lv.previaRotuloClaro}}</small><small class="nauren-lv-m2">{{lv.previaRotuloPenumbra}}</small>
+            </div>
+            <small class="nauren-lv-dica">1 quadrado = 1 m</small>
+          </div>
+        </div>
+        <details class="nauren-lv-avancado" data-persist="lv-avancado">
+          <summary><b>Avançado</b><span>técnica de cor, sombras, saturação, contraste, escuridão e prioridade</span></summary>
+          <div class="nauren-lv-3">
+            <label class="nauren-lv-campo"><span class="nauren-lv-rot">Técnica de cor</span><select name="system.luzVisao.luz.coloration" data-dtype="Number">{{selectOptions lv.coloracoes selected=system.luzVisao.luz.coloration}}</select></label>
+            <label class="nauren-lv-campo"><span class="nauren-lv-rot">Luminosidade <b class="nauren-lv-val">{{system.luzVisao.luz.luminosity}}</b></span><input type="range" class="nauren-lv-rng" name="system.luzVisao.luz.luminosity" value="{{system.luzVisao.luz.luminosity}}" min="0" max="1" step="0.05"></label>
+            <label class="nauren-lv-campo"><span class="nauren-lv-rot">Atenuação <b class="nauren-lv-val">{{system.luzVisao.luz.attenuation}}</b></span><input type="range" class="nauren-lv-rng" name="system.luzVisao.luz.attenuation" value="{{system.luzVisao.luz.attenuation}}" min="0" max="1" step="0.05"></label>
+            <label class="nauren-lv-campo"><span class="nauren-lv-rot">Saturação <b class="nauren-lv-val">{{system.luzVisao.luz.saturation}}</b></span><input type="range" class="nauren-lv-rng" name="system.luzVisao.luz.saturation" value="{{system.luzVisao.luz.saturation}}" min="-1" max="1" step="0.05"></label>
+            <label class="nauren-lv-campo"><span class="nauren-lv-rot">Contraste <b class="nauren-lv-val">{{system.luzVisao.luz.contrast}}</b></span><input type="range" class="nauren-lv-rng" name="system.luzVisao.luz.contrast" value="{{system.luzVisao.luz.contrast}}" min="-1" max="1" step="0.05"></label>
+            <label class="nauren-lv-campo"><span class="nauren-lv-rot">Sombras <b class="nauren-lv-val">{{system.luzVisao.luz.shadows}}</b></span><input type="range" class="nauren-lv-rng" name="system.luzVisao.luz.shadows" value="{{system.luzVisao.luz.shadows}}" min="0" max="1" step="0.05"></label>
+            <label class="nauren-lv-campo"><span class="nauren-lv-rot">Acende com escuridão de <b class="nauren-lv-val">{{system.luzVisao.luz.darkness.min}}</b></span><input type="range" class="nauren-lv-rng" name="system.luzVisao.luz.darkness.min" value="{{system.luzVisao.luz.darkness.min}}" min="0" max="1" step="0.05"></label>
+            <label class="nauren-lv-campo"><span class="nauren-lv-rot">até <b class="nauren-lv-val">{{system.luzVisao.luz.darkness.max}}</b></span><input type="range" class="nauren-lv-rng" name="system.luzVisao.luz.darkness.max" value="{{system.luzVisao.luz.darkness.max}}" min="0" max="1" step="0.05"></label>
+            <label class="nauren-lv-campo"><span class="nauren-lv-rot">Prioridade</span><span class="nauren-lv-num"><input type="number" name="system.luzVisao.luz.priority" value="{{system.luzVisao.luz.priority}}" step="1"></span></label>
+          </div>
+          <div class="nauren-lv-linha">
+            <label class="nauren-lv-chk"><input type="checkbox" name="system.luzVisao.luz.animation.reverse" {{checked system.luzVisao.luz.animation.reverse}}> Animação invertida</label>
+            <label class="nauren-lv-chk"><input type="checkbox" name="system.luzVisao.luz.negative" {{checked system.luzVisao.luz.negative}}> Luz negativa (escurece)</label>
+          </div>
+        </details>
+        <div class="nauren-lv-linha nauren-lv-rodape">
+          <a class="nauren-lv-btn" data-action="lvCopiarLuz" title="Copia a luz do token selecionado no mapa"><i class="fas fa-copy"></i> Copiar a luz de um token</a>
+          <a class="nauren-lv-btn" data-action="lvPadraoLuz" title="Volta aos valores do Foundry"><i class="fas fa-rotate-left"></i> Restaurar padrão</a>
+          <label class="nauren-lv-sw nauren-lv-dir" title="Apagada, a luz não vale mesmo com o item equipado"><input type="checkbox" name="system.luzVisao.luz.acesa" {{checked system.luzVisao.luz.acesa}}><i></i><span>Acesa</span></label>
+        </div>
+      </div>
+    </details>
+
+    <details class="nauren-lv-bloco" data-lv="visao" data-persist="lv-visao" {{#if system.luzVisao.visao.ativa}}open{{/if}}>
+      <summary class="nauren-lv-cab">
+        <span class="nauren-lv-ic"><i class="fas fa-eye"></i></span>
+        <b>Visão</b>
+        <span class="nauren-lv-resumo">{{lv.visaoResumo}}</span>
+        <label class="nauren-lv-sw" title="Liga ou desliga a visão deste item">
+          <input type="checkbox" name="system.luzVisao.visao.ativa" {{checked system.luzVisao.visao.ativa}}><i></i><span>{{#if system.luzVisao.visao.ativa}}Ligado{{else}}Desligado{{/if}}</span>
+        </label>
+      </summary>
+      <div class="nauren-lv-corpo">
+        <div class="nauren-lv-campo">
+          <span class="nauren-lv-rot">Quando vale</span>
+          <div class="nauren-lv-seg">
+            {{#each lv.quandoVisao as |op|}}<label class="{{#if op.on}}on{{/if}}"><input type="radio" name="system.luzVisao.visao.quando" value="{{op.valor}}" {{checked op.on}}><span>{{op.rotulo}}</span></label>{{/each}}
+          </div>
+        </div>
+        <div class="nauren-lv-3m">
+          <label class="nauren-lv-campo"><span class="nauren-lv-rot">Modo de visão</span><select name="system.luzVisao.visao.visionMode" class="nauren-lv-modo">{{selectOptions lv.modos selected=system.luzVisao.visao.visionMode}}</select></label>
+          <label class="nauren-lv-campo"><span class="nauren-lv-rot">Alcance</span><span class="nauren-lv-num"><input type="number" name="system.luzVisao.visao.range" value="{{system.luzVisao.visao.range}}" min="0" step="0.5"><em>m</em></span></label>
+          <label class="nauren-lv-campo"><span class="nauren-lv-rot">Ângulo</span><span class="nauren-lv-num"><input type="number" name="system.luzVisao.visao.angle" value="{{system.luzVisao.visao.angle}}" min="0" max="360"><em>°</em></span></label>
+        </div>
+        <div class="nauren-lv-grade">
+          <div class="nauren-lv-campos">
+            <div class="nauren-lv-campo"><span class="nauren-lv-rot">Cor da visão</span>
+              <span class="nauren-lv-cor">
+                <input type="hidden" name="system.luzVisao.visao.color" value="{{system.luzVisao.visao.color}}">
+                <input type="color" class="nauren-lv-cor-pick" data-alvo="system.luzVisao.visao.color" value="{{#if system.luzVisao.visao.color}}{{system.luzVisao.visao.color}}{{else}}#ffffff{{/if}}">
+                <span class="nauren-lv-cor-txt">{{#if system.luzVisao.visao.color}}{{system.luzVisao.visao.color}}{{else}}sem cor{{/if}}</span>
+                {{#if system.luzVisao.visao.color}}<a class="nauren-lv-cor-limpar" data-alvo="system.luzVisao.visao.color" title="Tirar a cor">✕</a>{{/if}}
+              </span>
+            </div>
+            {{#each lv.visaoSliders as |sl|}}
+            <label class="nauren-lv-campo"><span class="nauren-lv-rot">{{sl.rotulo}} <b class="nauren-lv-val">{{sl.valor}}</b></span><input type="range" class="nauren-lv-rng" name="system.luzVisao.visao.{{sl.campo}}" value="{{sl.valor}}" min="{{sl.min}}" max="{{sl.max}}" step="0.05"><span class="nauren-lv-pontas"><span>{{sl.a}}</span><span>{{sl.z}}</span></span></label>
+            {{/each}}
+          </div>
+          <div class="nauren-lv-previa">
+            <span class="nauren-lv-rot">Prévia</span>
+            <div class="nauren-lv-cena"></div><small class="nauren-lv-dica">normal</small>
+            <div class="nauren-lv-cena" style="filter: {{lv.visaoFiltro}};"></div><small class="nauren-lv-dica">com esta visão</small>
+          </div>
+        </div>
+        <span class="nauren-lv-rot">Detecções extras</span>
+        <div class="nauren-lv-dets">
+          {{#each system.luzVisao.visao.deteccoes as |d i|}}
+          <div class="nauren-lv-det">
+            <select class="nauren-lv-det-campo" data-indice="{{i}}" data-campo="id">{{selectOptions ../lv.deteccoes selected=d.id}}</select>
+            <span class="nauren-lv-num"><input type="number" class="nauren-lv-det-campo" data-indice="{{i}}" data-campo="range" value="{{d.range}}" min="0" step="0.5"><em>m</em></span>
+            <a data-action="lvRemDeteccao" data-indice="{{i}}" title="Tirar"><i class="fas fa-xmark"></i></a>
+          </div>
+          {{else}}
+          <span class="nauren-lv-vazio">Nenhuma. Opções: {{lv.deteccoesTexto}}.</span>
+          {{/each}}
+        </div>
+        <div class="nauren-lv-linha nauren-lv-rodape">
+          <a class="nauren-lv-btn" data-action="lvAddDeteccao"><i class="fas fa-plus"></i> Adicionar detecção</a>
+          <a class="nauren-lv-btn" data-action="lvCopiarVisao" title="Copia a visão do token selecionado no mapa"><i class="fas fa-copy"></i> Copiar a visão de um token</a>
+        </div>
+      </div>
+    </details>
   </div>
   {{/if}}
   </div>

@@ -2,7 +2,8 @@
   "TYPES": {
     "Actor": {
       "personagem": "Personagem",
-      "npc": "PNJ"
+      "npc": "PNJ",
+      "armazenamento": "Armazenamento"
     },
     "Item": {
       "arma": "Arma",
@@ -16,6 +17,9 @@
       "grupo": "Grupo de Jogadores",
       "classe": "Classe",
       "subclasse": "Subclasse"
+    },
+    "RegionBehavior": {
+      "armazenamento": "Nauren: Armazenamento"
     }
   },
   "NAUREN": {

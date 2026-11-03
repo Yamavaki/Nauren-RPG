@@ -1,6 +1,6 @@
 /* Nauren RPG — Ficha de Item (NaurenItemSheet). Separado do nauren.mjs na 0.94.22. */
 import { naurenKitJanela, naurenKitSistema } from "./janelas-kit.mjs";
-import { NAUREN_CATEGORIAS_EQUIPAMENTO, ARMADURA_TIPOS, ARMA_TIPOS, ATRIBUTOS_BASE_OPCOES, ATRIBUTOS_BONUS, HABILIDADE_CATEGORIAS, NAUREN_CAMPOS_MODIFICADOR_OPCOES, NAUREN_CAPACIDADES, NAUREN_EQUIPAMENTO_CLASSE_LIVRO, NAUREN_EQUIP_CATEGORIAS, NAUREN_LOGICA_CONDICOES_OPCOES, NAUREN_MODOS_DURACAO, NAUREN_MODOS_MODIFICADOR_EXTERNO_OPCOES, NAUREN_MOMENTOS_PERIODICOS, NAUREN_PAGAR_CUSTO_OPCOES, NAUREN_PAGAR_RECURSO_OPCOES, NAUREN_PRIORIDADE_DISPOSICAO, NAUREN_PRIORIDADE_INDICADORES, NAUREN_PRIORIDADE_INDICADORES_ACAO, NAUREN_PRIORIDADE_QUEM_RECEBE, NaurenCondicaoData, NaurenEfeitoData, NaurenGrupoHelper, NaurenHabilidadeData, NaurenMagiaData, NaurenSubclasseHelper, TEMPLATE_FORMATOS, campoCondicaoAplicada, campoModificador, campoModificadorExterno, campoRecursoDeclarado, naurenAjustarListasLargas, naurenBotoesDeFormula, naurenCategoriaDaArma, naurenClassificarCampoAcao, naurenCombatenteEhDoAtor, naurenCondicaoDoSistemaPorNome, naurenCondicaoNegativa, naurenGruposExclusivosConhecidos, naurenModificacoesRecebidas, naurenModoDuracaoCondicao, naurenMomentoEfeitoPeriodico, naurenMostrarNomesDosCamposUuid, naurenMunicoesCompativeis, naurenNomeParaUuid, naurenOpcoesDeCampoParaModificadorExterno, naurenPersistirDetalhesAbertos, naurenPesoOfensivo, naurenPostarCard, naurenProcessarEmanacoes, naurenProcessarGatilhos, naurenRecursosCustomConhecidos, naurenResumoDaAcao, naurenResumoEquipamentoClasse, naurenResumoModificador, naurenResumoPrioridadeAcao, naurenSincronizarRecursosCustom, naurenUsarAcalanto } from "../nauren.mjs";
+import { naurenFormatarNumero, NAUREN_CATEGORIAS_EQUIPAMENTO, ARMADURA_TIPOS, ARMA_TIPOS, ATRIBUTOS_BASE_OPCOES, ATRIBUTOS_BONUS, HABILIDADE_CATEGORIAS, NAUREN_CAMPOS_MODIFICADOR_OPCOES, NAUREN_CAPACIDADES, NAUREN_EQUIPAMENTO_CLASSE_LIVRO, NAUREN_EQUIP_CATEGORIAS, NAUREN_LOGICA_CONDICOES_OPCOES, NAUREN_MODOS_DURACAO, NAUREN_MODOS_MODIFICADOR_EXTERNO_OPCOES, NAUREN_MOMENTOS_PERIODICOS, NAUREN_PAGAR_CUSTO_OPCOES, NAUREN_PAGAR_RECURSO_OPCOES, NAUREN_PRIORIDADE_DISPOSICAO, NAUREN_PRIORIDADE_INDICADORES, NAUREN_PRIORIDADE_INDICADORES_ACAO, NAUREN_PRIORIDADE_QUEM_RECEBE, NaurenCondicaoData, NaurenEfeitoData, NaurenGrupoHelper, NaurenHabilidadeData, NaurenMagiaData, NaurenSubclasseHelper, TEMPLATE_FORMATOS, campoCondicaoAplicada, campoModificador, campoModificadorExterno, campoRecursoDeclarado, naurenAjustarListasLargas, naurenBotoesDeFormula, naurenCategoriaDaArma, naurenClassificarCampoAcao, naurenCombatenteEhDoAtor, naurenCondicaoDoSistemaPorNome, naurenCondicaoNegativa, naurenGruposExclusivosConhecidos, naurenModificacoesRecebidas, naurenModoDuracaoCondicao, naurenMomentoEfeitoPeriodico, naurenMostrarNomesDosCamposUuid, naurenMunicoesCompativeis, naurenNomeParaUuid, naurenOpcoesDeCampoParaModificadorExterno, naurenPersistirDetalhesAbertos, naurenPesoOfensivo, naurenPostarCard, naurenProcessarEmanacoes, naurenProcessarGatilhos, naurenRecursosCustomConhecidos, naurenResumoDaAcao, naurenResumoEquipamentoClasse, naurenResumoModificador, naurenResumoPrioridadeAcao, naurenSincronizarRecursosCustom, naurenUsarAcalanto } from "../nauren.mjs";
 import { NAUREN_MOTION_CONDICAO_OPCOES, naurenMotionPresetCondicao } from "./animacoes.mjs";
 import { NAUREN_TORRE_LOJAS, NAUREN_TORRE_PIGMENTOS, NAUREN_TORRE_RARIDADES, NAUREN_TORRE_TIERS, naurenDisponivelNoInicio, naurenTierTorre } from "./compendios.mjs";
 import { NaurenActorSheet } from "./ficha-ator.mjs";
@@ -513,6 +513,11 @@ class NaurenItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       escolherImagemTransformacao: NaurenItemSheet.onEscolherImagemTransformacao,
       escolherImagemEntidade: NaurenItemSheet.onEscolherImagemEntidade,
       limparCorEmanacao: NaurenItemSheet.onLimparCorEmanacao,
+      lvCopiarLuz: NaurenItemSheet.onLvCopiarLuz,
+      lvPadraoLuz: NaurenItemSheet.onLvPadraoLuz,
+      lvCopiarVisao: NaurenItemSheet.onLvCopiarVisao,
+      lvAddDeteccao: NaurenItemSheet.onLvAddDeteccao,
+      lvRemDeteccao: NaurenItemSheet.onLvRemDeteccao,
       addAcao: NaurenItemSheet.onAddAcao,
       toggleCapacidade: NaurenItemSheet.onToggleCapacidade,
       toggleEquipCategoria: NaurenItemSheet.onToggleEquipCategoria,
@@ -670,6 +675,7 @@ class NaurenItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     context.isConsumivel = item.type === "consumivel";
     context.categoriasEquipamento = NAUREN_CATEGORIAS_EQUIPAMENTO;
     context.equipamentoGasta = (item.system.categoria || "consumivel") === "consumivel";
+    context.ehMoeda = item.system.categoria === "moeda";
     context.isHabilidade = item.type === "habilidade";
     // Blocos de recursos avançados (Usos Passivos, Recursos Próprios,
     // Gatilhos, Emanação) valem tanto pra Habilidade quanto pra Magia -
@@ -1228,10 +1234,11 @@ class NaurenItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
         } else if (it.type === "armadura") {
           fr.push(`Defesa ${emG(`+${sy.defesaBonus ?? 0}`)}${sy.tipo ? ` (${escG(sy.tipo)})` : ""}.`);
         } else if (it.type === "consumivel") {
-          fr.push(`${emG(`${sy.quantidade ?? 0}${sy.quantidadeMax ? ` de ${sy.quantidadeMax}` : ""}`)} no inventário.`);
+          if (sy.categoria === "moeda") fr.push(`${emG(naurenFormatarNumero(sy.quantidade ?? 0))} no inventário.`);
+          else fr.push(`${emG(`${naurenFormatarNumero(sy.quantidade ?? 0)}${sy.quantidadeMax ? ` de ${naurenFormatarNumero(sy.quantidadeMax)}` : ""}`)} no inventário.`);
           if (sy.ehMunicao) fr.push(`Munição do tipo ${emG(sy.tipoMunicao || "qualquer")}${sy.municaoDanoExtra ? `, +${escG(sy.municaoDanoExtra)} de dano` : ""}${sy.municaoVenenoUuid ? `, veneno ${escG(nomeU(sy.municaoVenenoUuid))} (${sy.municaoVenenoTodas ? "todas" : `${sy.municaoVenenoQuantidade ?? 0} envenenadas`})` : ""}.`);
           if (sy.venenoCondicaoUuid) fr.push(`Frasco de ${emG(nomeU(sy.venenoCondicaoUuid))}: aplica numa arma ou munição.`);
-          if (!sy.ehMunicao && !(sy.acoes ?? []).length && sy.efeito) fr.push(`Ao usar: ${escG(sy.efeito)}.`);
+          if (!sy.ehMunicao && !(sy.acoes ?? []).length && sy.efeito && sy.categoria !== "moeda") fr.push(`Ao usar: ${escG(sy.efeito)}.`);
         }
         context.resumoGeral = fr.join(" ");
       }
@@ -1266,7 +1273,187 @@ class NaurenItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     context.armaTiposLista = Object.keys(ARMA_TIPOS).filter(t => !["Escudo", "Classe", "Subclasse"].includes(t));
     context.virarPaginaOpcoes = { "0": "— não —", "1": "Virar para frente", "-1": "Voltar", "99": "Ir para a página marcada" };
     context.beneficioMarcaOpcoes = { "": "— qualquer —", focoMortal: "Foco Mortal", tiroLetal: "Tiro Letal", reflexos: "Reflexos de Caça" };
+    // 0.99: seção "Luz e visão" (opções tiradas do CONFIG do Foundry V14, com nomes em português de reserva).
+    context.temLuzVisao = !!item.system.luzVisao;
+    if (context.temLuzVisao) context.lv = NaurenItemSheet._contextoLuzVisao(item);
     return context;
+  }
+
+  /** Listas, resumos e prévias da seção "Luz e visão". */
+  static _contextoLuzVisao(item) {
+    const lv = item.system.luzVisao;
+    const L = lv.luz, V = lv.visao;
+    const loc = (txt, reserva) => { try { const t = txt ? game.i18n.localize(txt) : ""; return t && t !== txt ? t : reserva; } catch (err) { return reserva; } };
+    const fmt = n => String(Math.round((Number(n) || 0) * 100) / 100).replace(".", ",");
+    const equipavel = "equipado" in item.system;
+    // Itens que se equipam: Equipado / Na mochila / Sempre. Os outros: Ativo / Sempre ("ativo" = "equipado" para eles).
+    const quando = atual => {
+      const v = !equipavel && atual === "ativo" ? "equipado" : (atual || "equipado");
+      const ops = equipavel
+        ? [{ valor: "equipado", rotulo: "Equipado" }, { valor: "ativo", rotulo: "Na mochila" }, { valor: "sempre", rotulo: "Sempre" }]
+        : [{ valor: "equipado", rotulo: "Ativo" }, { valor: "sempre", rotulo: "Sempre" }];
+      return ops.map(o => ({ ...o, on: o.valor === v }));
+    };
+    // Animações de luz.
+    const PT_ANIM = { flame: "Tocha", torch: "Tocha", revolving: "Farol giratório", siren: "Sirene", pulse: "Pulsar", reactivepulse: "Pulsar ao som", chroma: "Cromático", wave: "Onda", fog: "Névoa", sunburst: "Raios de sol", dome: "Cúpula", emanation: "Emanação", hexa: "Hexágonos", ghost: "Fantasma", energy: "Campo de energia", vortex: "Vórtice", witchwave: "Onda bruxa", rainbowswirl: "Arco-íris", radialrainbow: "Arco-íris radial", fairy: "Luz de fada", grid: "Grade de força", starlight: "Estrelas", smokepatch: "Fumaça", blackhole: "Buraco negro", roiling: "Massa revolta", magicalGloom: "Penumbra mágica" };
+    const animacoes = { "": "Nenhuma" };
+    const cfgAnim = globalThis.CONFIG?.Canvas?.lightAnimations ?? {};
+    for (const [id, a] of Object.entries(cfgAnim)) animacoes[id] = loc(a?.label, PT_ANIM[id] ?? id);
+    if (!Object.keys(cfgAnim).length) Object.assign(animacoes, { torch: "Tocha", pulse: "Pulsar", chroma: "Cromático", wave: "Onda", fog: "Névoa", sunburst: "Raios de sol" });
+    if (L.animation?.type && !(L.animation.type in animacoes)) animacoes[L.animation.type] = L.animation.type;
+    // Técnicas de cor.
+    const PT_COLOR = { 0: "Desligada", 1: "Luminosidade", 2: "Brilho interno", 3: "Mistura de cor", 4: "Fundo", 5: "Iluminação", 6: "Ofuscar", 7: "Luminosidade natural", 8: "Cor invertida", 9: "Ofuscar sem cor", 10: "Iluminação adaptativa" };
+    const coloracoes = {};
+    const cfgCol = globalThis.CONFIG?.Canvas?.lightTechniques ?? globalThis.foundry?.canvas?.rendering?.shaders?.AdaptiveLightingShader?.SHADER_TECHNIQUES ?? {};
+    for (const t of Object.values(cfgCol)) if (t && Number.isFinite(t.id)) coloracoes[t.id] = loc(t.label, PT_COLOR[t.id] ?? `Técnica ${t.id}`);
+    if (!Object.keys(coloracoes).length) for (const [id, n] of Object.entries(PT_COLOR)) coloracoes[id] = n;
+    // Modos de visão.
+    const PT_MODO = { basic: "Visão normal", darkvision: "Visão no escuro", monochromatic: "Monocromática (preto e branco)", blindness: "Cegueira", tremorsense: "Sentido sísmico", lightAmplification: "Amplificação de luz" };
+    const modos = {};
+    const cfgModos = globalThis.CONFIG?.Canvas?.visionModes ?? {};
+    for (const [id, m] of Object.entries(cfgModos)) modos[id] = loc(m?.label, PT_MODO[id] ?? id);
+    if (!Object.keys(modos).length) Object.assign(modos, PT_MODO);
+    if (V.visionMode && !(V.visionMode in modos)) modos[V.visionMode] = V.visionMode;
+    // Modos de detecção (os extras; a visão básica vem do alcance acima).
+    const PT_DET = { lightPerception: "Perceber luzes", seeAll: "Ver tudo", seeInvisibility: "Ver invisível", senseInvisibility: "Sentir invisível", feelTremor: "Sentir tremores", senseAll: "Sentir tudo" };
+    const deteccoes = {};
+    const cfgDet = globalThis.CONFIG?.Canvas?.detectionModes ?? {};
+    for (const [id, d] of Object.entries(cfgDet)) if (id !== "basicSight") deteccoes[id] = loc(d?.label, PT_DET[id] ?? id);
+    if (!Object.keys(deteccoes).length) Object.assign(deteccoes, PT_DET);
+    for (const d of V.deteccoes ?? []) if (d.id && !(d.id in deteccoes)) deteccoes[d.id] = d.id;
+    // Prévia da luz: o anel claro em proporção à penumbra.
+    const dim = Math.max(Number(L.dim) || 0, Number(L.bright) || 0);
+    const claro = dim > 0 ? Math.round(Math.min(1, (Number(L.bright) || 0) / dim) * 100) : 0;
+    const luzResumo = !L.ativa ? "sem luz" : dim <= 0 ? "ligada, mas sem alcance"
+      : `${fmt(L.bright)} m clara + ${fmt(Math.max(0, dim - (Number(L.bright) || 0)))} m penumbra${L.animation?.type ? ` · ${animacoes[L.animation.type] ?? L.animation.type}` : ""}${L.acesa === false ? " · apagada" : ""}`;
+    const visaoResumo = !V.ativa ? "sem visão" : `${modos[V.visionMode] ?? V.visionMode} · ${fmt(V.range)} m${(V.deteccoes ?? []).length ? ` · +${V.deteccoes.length} detecç${V.deteccoes.length === 1 ? "ão" : "ões"}` : ""}`;
+    // Prévia da visão: filtro CSS que imita saturação, brilho e contraste.
+    const sat = Math.max(0, 1 + (Number(V.saturation) || 0));
+    const bri = Math.max(0.1, 1 + (Number(V.brightness) || 0) * 0.6);
+    const con = Math.max(0.1, 1 + (Number(V.contrast) || 0) * 0.6);
+    const visaoFiltro = `saturate(${sat}) brightness(${bri}) contrast(${con})${V.visionMode === "monochromatic" ? " grayscale(1)" : ""}`;
+    const visaoSliders = [
+      { campo: "attenuation", rotulo: "Atenuação", min: 0, max: 1, a: "borda firme", z: "borda suave" },
+      { campo: "brightness", rotulo: "Brilho", min: -1, max: 1, a: "escuro", z: "claro" },
+      { campo: "saturation", rotulo: "Saturação", min: -1, max: 1, a: "preto e branco", z: "cores fortes" },
+      { campo: "contrast", rotulo: "Contraste", min: -1, max: 1, a: "lavado", z: "forte" }
+    ].map(s => ({ ...s, valor: V[s.campo] ?? 0 }));
+    return {
+      quandoLuz: quando(L.quando), quandoVisao: quando(V.quando),
+      animacoes, coloracoes, modos, deteccoes, deteccoesTexto: Object.values(deteccoes).slice(0, 4).join(", "),
+      previaClaro: claro, previaRotuloClaro: `${fmt(L.bright)} m`, previaRotuloPenumbra: `${fmt(dim)} m`,
+      luzResumo, visaoResumo, visaoFiltro, visaoSliders
+    };
+  }
+
+  /** Valores padrão de luz/visão (os mesmos do Foundry). */
+  static _padraoLuzVisao(parte) {
+    // Lê os valores iniciais do próprio schema (campoLuzVisao), descendo nos SchemaFields.
+    const inicial = campo => {
+      if (!campo) return undefined;
+      if (campo.fields && !Array.isArray(campo.fields)) return Object.fromEntries(Object.entries(campo.fields).map(([k, f]) => [k, inicial(f)]));
+      const v = typeof campo.initial === "function" ? campo.initial() : campo.initial;
+      return v === undefined ? (campo.constructor?.name === "ArrayField" ? [] : v) : foundry.utils.deepClone(v);
+    };
+    const campo = NaurenHabilidadeData.defineSchema().luzVisao?.fields?.[parte];
+    return campo ? inicial(campo) : null;
+  }
+
+  /** Token selecionado no mapa (ou o primeiro do ator do item). */
+  _tokenParaCopiar() {
+    const sel = globalThis.canvas?.tokens?.controlled?.[0];
+    if (sel) return sel.document;
+    return this.item.actor?.getActiveTokens?.(false, true)?.[0] ?? null;
+  }
+
+  static async onLvCopiarLuz() {
+    const tk = this._tokenParaCopiar();
+    if (!tk) return ui.notifications.warn("Selecione um token no mapa para copiar a luz dele.");
+    const l = tk.light ?? tk._source?.light ?? {};
+    const atual = this.item.system.luzVisao.luz;
+    const novo = { ...atual, ativa: true,
+      bright: Number(l.bright) || 0, dim: Number(l.dim) || 0, color: l.color ? String(l.color) : "", alpha: l.alpha ?? 0.5, angle: l.angle ?? 360,
+      animation: { type: l.animation?.type ?? "", speed: l.animation?.speed ?? 5, intensity: l.animation?.intensity ?? 5, reverse: !!l.animation?.reverse },
+      coloration: l.coloration ?? 1, luminosity: l.luminosity ?? 0.5, attenuation: l.attenuation ?? 0.5, saturation: l.saturation ?? 0,
+      contrast: l.contrast ?? 0, shadows: l.shadows ?? 0, negative: !!l.negative, priority: l.priority ?? 0,
+      darkness: { min: l.darkness?.min ?? 0, max: l.darkness?.max ?? 1 } };
+    await this.item.update({ "system.luzVisao.luz": novo });
+    ui.notifications.info(`Luz copiada de ${tk.name}.`);
+  }
+
+  static async onLvPadraoLuz() {
+    const padrao = NaurenItemSheet._padraoLuzVisao("luz");
+    if (!padrao) return;
+    const atual = this.item.system.luzVisao.luz;
+    await this.item.update({ "system.luzVisao.luz": { ...padrao, ativa: atual.ativa, quando: atual.quando, acesa: atual.acesa } });
+  }
+
+  static async onLvCopiarVisao() {
+    const tk = this._tokenParaCopiar();
+    if (!tk) return ui.notifications.warn("Selecione um token no mapa para copiar a visão dele.");
+    const s = tk.sight ?? tk._source?.sight ?? {};
+    const atual = this.item.system.luzVisao.visao;
+    const dets = [];
+    const modos = tk.detectionModes ?? tk._source?.detectionModes ?? {};
+    const lista = Array.isArray(modos) ? modos : Object.entries(modos).map(([id, m]) => ({ id, ...m }));
+    for (const m of lista) if (m?.id && m.id !== "basicSight" && m.enabled !== false && (Number(m.range) || 0) > 0) dets.push({ id: m.id, range: Number(m.range) });
+    await this.item.update({ "system.luzVisao.visao": { ...atual, ativa: true,
+      range: Number(s.range) || 0, angle: s.angle ?? 360, visionMode: s.visionMode || "basic", color: s.color ? String(s.color) : "",
+      attenuation: s.attenuation ?? 0.1, brightness: s.brightness ?? 0, saturation: s.saturation ?? 0, contrast: s.contrast ?? 0, deteccoes: dets } });
+    ui.notifications.info(`Visão copiada de ${tk.name}.`);
+  }
+
+  static async onLvAddDeteccao() {
+    const lista = foundry.utils.deepClone(this.item.system.luzVisao?.visao?.deteccoes ?? []);
+    const usados = new Set(lista.map(d => d.id));
+    const opcoes = Object.keys(NaurenItemSheet._contextoLuzVisao(this.item).deteccoes);
+    const id = opcoes.find(o => !usados.has(o)) ?? opcoes[0] ?? "seeInvisibility";
+    lista.push({ id, range: Math.max(Number(this.item.system.luzVisao.visao.range) || 0, 1) });
+    await this.item.update({ "system.luzVisao.visao.deteccoes": lista });
+  }
+
+  static async onLvRemDeteccao(event, target) {
+    const i = Number(target.dataset.indice);
+    const lista = foundry.utils.deepClone(this.item.system.luzVisao?.visao?.deteccoes ?? []);
+    if (!(i >= 0 && i < lista.length)) return;
+    lista.splice(i, 1);
+    await this.item.update({ "system.luzVisao.visao.deteccoes": lista });
+  }
+
+  /** Liga os controles da seção "Luz e visão" que não são campos simples do formulário. */
+  _ligarLuzVisao() {
+    const raiz = this.element?.querySelector?.(".nauren-lv");
+    if (!raiz) return;
+    // Interruptor dentro do título: liga/desliga sem abrir/fechar a seção.
+    raiz.querySelectorAll("summary .nauren-lv-sw").forEach(sw => sw.addEventListener("click", ev => {
+      ev.preventDefault(); ev.stopPropagation();
+      const inp = sw.querySelector("input");
+      inp.checked = !inp.checked;
+      inp.dispatchEvent(new Event("change", { bubbles: true }));
+    }));
+    // Barras: mostra o número enquanto arrasta.
+    raiz.querySelectorAll(".nauren-lv-rng").forEach(r => r.addEventListener("input", () => {
+      const v = r.closest(".nauren-lv-campo")?.querySelector(".nauren-lv-val");
+      if (v) v.textContent = r.value;
+    }));
+    // Cor: o seletor grava no campo escondido; ✕ tira a cor.
+    raiz.querySelectorAll(".nauren-lv-cor-pick").forEach(pk => pk.addEventListener("change", ev => {
+      ev.stopPropagation();
+      this.item.update({ [pk.dataset.alvo]: pk.value });
+    }));
+    raiz.querySelectorAll(".nauren-lv-cor-limpar").forEach(a => a.addEventListener("click", ev => {
+      ev.preventDefault();
+      this.item.update({ [a.dataset.alvo]: "" });
+    }));
+    // Detecções: cada mudança regrava a lista inteira.
+    raiz.querySelectorAll(".nauren-lv-det-campo").forEach(el => el.addEventListener("change", ev => {
+      ev.stopPropagation();
+      const lista = foundry.utils.deepClone(this.item.system.luzVisao?.visao?.deteccoes ?? []);
+      const i = Number(el.dataset.indice);
+      if (!lista[i]) return;
+      lista[i][el.dataset.campo] = el.dataset.campo === "range" ? Math.max(0, Number(el.value) || 0) : el.value;
+      this.item.update({ "system.luzVisao.visao.deteccoes": lista });
+    }));
   }
 
   /**
@@ -1323,6 +1510,7 @@ class NaurenItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     super._onRender(context, options);
     if (this.item.type === "grupo") this._ligarAbasGrupo();
     this._ligarScrollItemBody();
+    this._ligarLuzVisao();
     this.element.querySelectorAll('[data-field]').forEach(el => {
       el.addEventListener('change', ev => this._onArrayFieldChange(ev));
     });
