@@ -192,9 +192,9 @@ function camada() {
 }
 function subtitulo(a) {
   if (!a) return "";
+  // Só os personagens mostram a classe; PNJs e monstros ficam só com o nome.
   if (a.type === "personagem") return a.items?.find?.(i => i.type === "classe")?.name ?? "";
-  const cat = a.system?.categoria ?? a.system?.categoriaMonstro ?? "";
-  return cat ? String(cat) : "PNJ";
+  return "";
 }
 async function mostrar(token, { forcado = false } = {}) {
   const src = imagemDaArte(token);
