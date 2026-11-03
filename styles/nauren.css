@@ -6400,3 +6400,7 @@ img.nauren-criador-token.com-borda { border: none; border-radius: 0; background:
 .application.nauren-kit.nc2 .nauren-escolha-item + .nauren-escolha-item { border-top: 1px solid var(--nk-linha) !important; }
 .application.nauren-kit.nc2 .nauren-escolha-item.nauren-escolha-marcado { outline: 0; background: color-mix(in srgb, var(--nc-s) 10%, transparent) !important; box-shadow: inset 3px 0 0 var(--nc-s) !important; }
 .nauren-sheet.ns2 .ns-rec-estamina:has(.ns-barra-estamina) .ns-rec-cab .ns-num { display: none; }
+/* 0.98.7: Equipamento — tipo (Consumível, Ferramenta, Acessório…) */
+.nauren-rpg.sheet.item .nauren-sheet .nauren-equip-categoria > label { display: flex; flex-direction: column; gap: 2px; font-size: 13px; font-weight: 600; color: var(--n-texto); }
+.nauren-rpg.sheet.item .nauren-sheet .nauren-equip-categoria > label small { font-size: 11.5px; font-weight: 400; color: var(--n-suave); }
+.nauren-rpg.sheet.item .nauren-sheet .nauren-equip-categoria > select { flex: 0 0 170px; }

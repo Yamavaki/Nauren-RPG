@@ -10101,6 +10101,7 @@ const naurenConsumiveisSaindo = new Set();
  */
 Hooks.on("updateItem", (item, changes, options, userId) => {
   if (userId !== game.user.id || item.type !== "consumivel" || item.parent?.documentName !== "Actor") return;
+  if ((item.system.categoria || "consumivel") !== "consumivel") return; // 0.98.7: só o Consumível sai ao zerar
   if (!foundry.utils.hasProperty(changes, "system.quantidade") || (item.system.quantidade ?? 0) > 0) return;
   if (!game.settings.get("nauren", "removerConsumivelZerado") || item.system.manterAoZerar) return;
   const actor = item.parent;

@@ -2068,8 +2068,13 @@
       </div>
       {{/if}}
 
-      <!-- SE FOR CONSUMÍVEL -->
+      <!-- SE FOR EQUIPAMENTO (tipo "consumivel" por dentro) -->
       {{#if isConsumivel}}
+      <div class="item-meta-box nauren-caixa-linha nauren-equip-categoria">
+        <label for="nauren-equip-cat-{{item.id}}">Tipo de equipamento<small>{{#if equipamentoGasta}}Gasta 1 da quantidade a cada uso e sai da ficha ao acabar.{{else}}Não gasta ao usar: a quantidade é só quantos você tem.{{/if}}</small></label>
+        <select id="nauren-equip-cat-{{item.id}}" name="system.categoria">{{selectOptions categoriasEquipamento selected=system.categoria}}</select>
+      </div>
+      {{#if equipamentoGasta}}
       <div class="toggle-box item-meta-box" style="margin-bottom: 10px;">
         <label class="toggle-header"><i class="fas fa-skull-crossbones"></i> Frasco de veneno</label>
         <div class="toggle-body">
@@ -2077,6 +2082,7 @@
           <p class="item-meta-hint" style="margin-top: 4px;">Ao usar a Ação com <b>"Aplicar veneno numa arma ou munição"</b> (em <b>Mais opções</b>), o jogador escolhe a arma (até ser removido ou por N golpes) ou a munição (quantas, ou todas); cada uso gasta 1 frasco.</p>
         </div>
       </div>
+      {{/if}}
       <div class="field-grid" style="grid-template-columns: 90px 90px 1fr;">
         <div class="field">
           <label>Quantidade</label>
@@ -2086,12 +2092,13 @@
           <label>Máximo</label>
           <input type="number" name="system.quantidadeMax" value="{{system.quantidadeMax}}" min="0">
         </div>
-        <label class="item-meta-toggle" style="margin-top: 6px;" title="Quando a quantidade chega a 0, o consumível sai da ficha (configuração do mundo). Marque para manter este aqui mesmo zerado."><input type="checkbox" name="system.manterAoZerar" {{checked system.manterAoZerar}}> Manter na ficha ao acabar</label>
-        <div class="field">
+        {{#if equipamentoGasta}}        <label class="item-meta-toggle" style="margin-top: 6px;" title="Quando a quantidade chega a 0, o consumível sai da ficha (configuração do mundo). Marque para manter este aqui mesmo zerado."><input type="checkbox" name="system.manterAoZerar" {{checked system.manterAoZerar}}> Manter na ficha ao acabar</label>{{/if}}
+        <div class="field" style="grid-column: 1 / -1;">
           <label>Efeito simples ao usar (se não tiver nenhuma Ação, na aba Ações)</label>
           <input type="text" name="system.efeito" value="{{system.efeito}}">
         </div>
       </div>
+      {{#if equipamentoGasta}}
       <div class="toggle-box item-meta-box" style="margin-top: 10px;">
         <label class="toggle-header"><input type="checkbox" name="system.ehMunicao" {{checked system.ehMunicao}}> <i class="fas fa-bullseye"></i> É munição</label>
         {{#if system.ehMunicao}}
@@ -2107,8 +2114,9 @@
         </div>
         {{/if}}
       </div>
+      {{/if}}
       <p class="item-meta-hint" style="margin-top: 6px;">
-        "Máximo" é só uma referência de capacidade (ex.: 3/5 poções) - também vira o teto quando este Consumível é escolhido como fonte de cargas/munição de uma Ação de outro item (ver "Usa cargas / munição" nas Ações).
+        "Máximo" é só uma referência de capacidade (ex.: 3/5 poções) - também vira o teto quando este Equipamento é escolhido como fonte de cargas/munição de uma Ação de outro item (ver "Usa cargas / munição" nas Ações).
       </p>
       {{/if}}
     </div>

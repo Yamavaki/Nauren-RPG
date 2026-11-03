@@ -1,6 +1,6 @@
 /* Nauren RPG — Ficha de Item (NaurenItemSheet). Separado do nauren.mjs na 0.94.22. */
 import { naurenKitJanela, naurenKitSistema } from "./janelas-kit.mjs";
-import { ARMADURA_TIPOS, ARMA_TIPOS, ATRIBUTOS_BASE_OPCOES, ATRIBUTOS_BONUS, HABILIDADE_CATEGORIAS, NAUREN_CAMPOS_MODIFICADOR_OPCOES, NAUREN_CAPACIDADES, NAUREN_EQUIPAMENTO_CLASSE_LIVRO, NAUREN_EQUIP_CATEGORIAS, NAUREN_LOGICA_CONDICOES_OPCOES, NAUREN_MODOS_DURACAO, NAUREN_MODOS_MODIFICADOR_EXTERNO_OPCOES, NAUREN_MOMENTOS_PERIODICOS, NAUREN_PAGAR_CUSTO_OPCOES, NAUREN_PAGAR_RECURSO_OPCOES, NAUREN_PRIORIDADE_DISPOSICAO, NAUREN_PRIORIDADE_INDICADORES, NAUREN_PRIORIDADE_INDICADORES_ACAO, NAUREN_PRIORIDADE_QUEM_RECEBE, NaurenCondicaoData, NaurenEfeitoData, NaurenGrupoHelper, NaurenHabilidadeData, NaurenMagiaData, NaurenSubclasseHelper, TEMPLATE_FORMATOS, campoCondicaoAplicada, campoModificador, campoModificadorExterno, campoRecursoDeclarado, naurenAjustarListasLargas, naurenBotoesDeFormula, naurenCategoriaDaArma, naurenClassificarCampoAcao, naurenCombatenteEhDoAtor, naurenCondicaoDoSistemaPorNome, naurenCondicaoNegativa, naurenGruposExclusivosConhecidos, naurenModificacoesRecebidas, naurenModoDuracaoCondicao, naurenMomentoEfeitoPeriodico, naurenMostrarNomesDosCamposUuid, naurenMunicoesCompativeis, naurenNomeParaUuid, naurenOpcoesDeCampoParaModificadorExterno, naurenPersistirDetalhesAbertos, naurenPesoOfensivo, naurenPostarCard, naurenProcessarEmanacoes, naurenProcessarGatilhos, naurenRecursosCustomConhecidos, naurenResumoDaAcao, naurenResumoEquipamentoClasse, naurenResumoModificador, naurenResumoPrioridadeAcao, naurenSincronizarRecursosCustom, naurenUsarAcalanto } from "../nauren.mjs";
+import { NAUREN_CATEGORIAS_EQUIPAMENTO, ARMADURA_TIPOS, ARMA_TIPOS, ATRIBUTOS_BASE_OPCOES, ATRIBUTOS_BONUS, HABILIDADE_CATEGORIAS, NAUREN_CAMPOS_MODIFICADOR_OPCOES, NAUREN_CAPACIDADES, NAUREN_EQUIPAMENTO_CLASSE_LIVRO, NAUREN_EQUIP_CATEGORIAS, NAUREN_LOGICA_CONDICOES_OPCOES, NAUREN_MODOS_DURACAO, NAUREN_MODOS_MODIFICADOR_EXTERNO_OPCOES, NAUREN_MOMENTOS_PERIODICOS, NAUREN_PAGAR_CUSTO_OPCOES, NAUREN_PAGAR_RECURSO_OPCOES, NAUREN_PRIORIDADE_DISPOSICAO, NAUREN_PRIORIDADE_INDICADORES, NAUREN_PRIORIDADE_INDICADORES_ACAO, NAUREN_PRIORIDADE_QUEM_RECEBE, NaurenCondicaoData, NaurenEfeitoData, NaurenGrupoHelper, NaurenHabilidadeData, NaurenMagiaData, NaurenSubclasseHelper, TEMPLATE_FORMATOS, campoCondicaoAplicada, campoModificador, campoModificadorExterno, campoRecursoDeclarado, naurenAjustarListasLargas, naurenBotoesDeFormula, naurenCategoriaDaArma, naurenClassificarCampoAcao, naurenCombatenteEhDoAtor, naurenCondicaoDoSistemaPorNome, naurenCondicaoNegativa, naurenGruposExclusivosConhecidos, naurenModificacoesRecebidas, naurenModoDuracaoCondicao, naurenMomentoEfeitoPeriodico, naurenMostrarNomesDosCamposUuid, naurenMunicoesCompativeis, naurenNomeParaUuid, naurenOpcoesDeCampoParaModificadorExterno, naurenPersistirDetalhesAbertos, naurenPesoOfensivo, naurenPostarCard, naurenProcessarEmanacoes, naurenProcessarGatilhos, naurenRecursosCustomConhecidos, naurenResumoDaAcao, naurenResumoEquipamentoClasse, naurenResumoModificador, naurenResumoPrioridadeAcao, naurenSincronizarRecursosCustom, naurenUsarAcalanto } from "../nauren.mjs";
 import { NAUREN_MOTION_CONDICAO_OPCOES, naurenMotionPresetCondicao } from "./animacoes.mjs";
 import { NAUREN_TORRE_LOJAS, NAUREN_TORRE_PIGMENTOS, NAUREN_TORRE_RARIDADES, NAUREN_TORRE_TIERS, naurenDisponivelNoInicio, naurenTierTorre } from "./compendios.mjs";
 import { NaurenActorSheet } from "./ficha-ator.mjs";
@@ -16,7 +16,7 @@ const { ItemSheetV2 } = foundry.applications.sheets;
 const TIPO_ITEM_LABEL = {
   arma: "Arma",
   armadura: "Armadura",
-  consumivel: "Consumível",
+  consumivel: "Equipamento",
   habilidade: "Habilidade",
   magia: "Magia",
   efeito: "Efeito",
@@ -668,6 +668,8 @@ class NaurenItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     context.isMagia = item.type === "magia";
     context.isArmadura = item.type === "armadura";
     context.isConsumivel = item.type === "consumivel";
+    context.categoriasEquipamento = NAUREN_CATEGORIAS_EQUIPAMENTO;
+    context.equipamentoGasta = (item.system.categoria || "consumivel") === "consumivel";
     context.isHabilidade = item.type === "habilidade";
     // Blocos de recursos avançados (Usos Passivos, Recursos Próprios,
     // Gatilhos, Emanação) valem tanto pra Habilidade quanto pra Magia -
@@ -1193,10 +1195,11 @@ class NaurenItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       mana: "Mana", estaminaCombate: "Estamina", vida: "Vida", dadosDestino: "Dado de Destino" };
     {
       const it = this.item, sy = it.system ?? {};
-      const tipos = { habilidade: "Habilidade", magia: "Magia", arma: "Arma", armadura: "Armadura", consumivel: "Consumível", condicao: "Condição", efeito: "Efeito", cor: "Pigmento", peculiaridade: "Peculiaridade", classe: "Classe", subclasse: "Subclasse", grupo: "Grupo" };
+      const tipos = { habilidade: "Habilidade", magia: "Magia", arma: "Arma", armadura: "Armadura", consumivel: "Equipamento", condicao: "Condição", efeito: "Efeito", cor: "Pigmento", peculiaridade: "Peculiaridade", classe: "Classe", subclasse: "Subclasse", grupo: "Grupo" };
       const et = [tipos[it.type] ?? it.type];
       if (it.type === "magia" && sy.ehMagiaDeMago) et.push("Magia de Mago");
       if (it.type === "arma") { const cat = naurenCategoriaDaArma(it); if (cat) et.push(cat); if (sy.usaMunicao) et.push(`usa ${sy.tipoMunicao || "munição"}`); }
+      if (it.type === "consumivel") et.push(NAUREN_CATEGORIAS_EQUIPAMENTO[sy.categoria || "consumivel"] ?? "Consumível");
       if (it.type === "consumivel" && sy.ehMunicao) et.push("Munição");
       if (it.type === "consumivel" && sy.venenoCondicaoUuid) et.push("Frasco de veneno");
       if (it.type === "condicao" && sy.ehVeneno) et.push("Veneno");

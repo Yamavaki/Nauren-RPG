@@ -831,7 +831,7 @@ Clique para abrir">
               <div class="item-img-container"><img src="{{item.img}}" title="{{item.name}}" /></div>
               <div class="item-info">
                 <h4>{{item.name}}{{#if item.torreTier}} <span class="nauren-tier tier-{{item.torreTier.classe}}" title="Tier da Torre Infinita">{{item.torreTier.rotulo}}</span>{{/if}}</h4>
-                <span class="item-category">{{#if item.acaoAtiva}}{{item.acaoAtiva.nome}}{{else}}{{item.system.efeito}}{{/if}}</span>
+                <span class="item-category">{{#if item.categoriaEquip}}{{item.categoriaEquip}}{{#if item.acaoAtiva}} · {{item.acaoAtiva.nome}}{{/if}}{{else}}{{#if item.acaoAtiva}}{{item.acaoAtiva.nome}}{{else}}{{item.system.efeito}}{{/if}}{{/if}}</span>
               </div>
               {{#if item.modificadoPor.length}}
               <i class="fas fa-arrow-up-long" style="color: #a15c2e; margin: 0 4px; flex-shrink: 0;" title="Modificado por Subclasse: {{#each item.modificadoPor}}{{this.nome}} (rank {{this.rank}}){{#unless @last}}, {{/unless}}{{/each}}"></i>
