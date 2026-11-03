@@ -117,8 +117,12 @@ function retangulo(sel) {
 }
 const cruza = (a, b) => a && b && a.x < b.r && a.x + a.w > b.x && a.y < b.b && a.y + a.h > b.y;
 function obstaculos() {
-  const sel = "#nauren-carrossel .nauren-car-raiz, #nauren-carrossel, #nauren-hud-combate .nauren-hud-raiz, #nauren-hud-combate, #scene-navigation, #navigation, #scene-controls, #controls, #players, #hotbar, #chat-notifications, #nauren-token-tooltip.visivel";
-  return [...document.querySelectorAll(sel)].map(retangulo).filter(Boolean);
+  // Só as peças que de fato aparecem (não os contêineres, que no V14 podem ocupar a altura toda da tela,
+  // como o das notificações do chat): carrossel, HUD, barra das cenas, ferramentas, jogadores, hotbar,
+  // cada notificação do chat e o tooltip do token.
+  const sel = "#nauren-carrossel .nauren-car-raiz, #nauren-hud-combate .nauren-hud-raiz, #scene-navigation, #navigation, #scene-controls, #controls, #players, #hotbar, #chat-notifications li, #chat-notifications .chat-message, #nauren-token-tooltip.visivel";
+  const vh = window.innerHeight;
+  return [...document.querySelectorAll(sel)].map(retangulo).filter(r => r && r.h < vh * 0.6);
 }
 /** Primeiro elemento visível entre os que casam com o seletor. */
 function primeiroVisivel(sel) { for (const e of document.querySelectorAll(sel)) { const r = retangulo(e); if (r) return r; } return null; }
@@ -143,6 +147,7 @@ function calcularPosicao(w, h, posicao, token) {
     y = desce ? m : vh - m - h;
   }
   // Empurra para baixo (cantos de cima) ou para cima (cantos de baixo) até não cobrir nada.
+  const y0 = y;
   for (let i = 0; i < 8; i++) {
     const caixa = { x, y, w, h };
     const bate = obs.filter(o => cruza(caixa, o));
@@ -150,6 +155,8 @@ function calcularPosicao(w, h, posicao, token) {
     if (desce) y = Math.max(...bate.map(o => o.b)) + 10;
     else y = Math.min(...bate.map(o => o.y)) - 10 - h;
   }
+  // Se desviar jogaria a arte para fora da tela, fica no canto escolhido mesmo.
+  if (y + h > vh - m + 1 || y < m - 1) y = y0;
   x = Math.max(m, Math.min(vw - m - w, x));
   y = Math.max(m, Math.min(vh - m - h, y));
   return { x: Math.round(x), y: Math.round(y) };
