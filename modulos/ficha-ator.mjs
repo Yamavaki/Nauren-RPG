@@ -14469,7 +14469,7 @@ class NaurenAlvoHelper {
         : (p.resumoReacao ? `<div class="nk-faixa"><div class="nk-regra">${escP(p.resumoReacao)}</div></div>` : "");
       const opcoesC = [];
       if (danoAgora > 0 && stressAtual < stressMax) opcoesC.push(NK.naurenKitOpcao({ campo: "reacaoDano", valor: "estresse", nome: "Gastar 1 Estresse e levar metade", extraAttr: dd(Math.floor(danoAgora / 2), "gastando 1 Estresse"),
-        desc: `Estresse ${stressAtual} → ${stressAtual + 1} de ${stressMax}.`, extra: `<span class="nk-opcao-numero">−${Math.floor(danoAgora / 2)}</span>` }));
+        desc: `Estresse ${stressAtual} → ${stressAtual + 1} de ${stressMax}. Não gasta Prioridade: vale junto com a reação que você já fez.`, extra: `<span class="nk-opcao-numero">−${Math.floor(danoAgora / 2)}</span>` }));
       else if (danoAgora > 0) opcoesC.push(NK.naurenKitNota(`Estresse no máximo (${stressAtual}/${stressMax}): não dá para reduzir este dano.`));
       opcoesC.push(NK.naurenKitOpcao({ campo: "reacaoDano", valor: "cheio", marcado: true, nome: "Levar o dano", extraAttr: dd(danoAgora, "levando o dano"),
         desc: "", extra: `<span class="nk-opcao-numero">−${danoAgora}</span>` }));
@@ -14540,7 +14540,9 @@ class NaurenAlvoHelper {
           ? `${escP(semEstP.nome)}: o escudo leva ${Math.min(escPv, danoP)} cheio, metade do resto (${Math.min(escPv, danoP) + Math.floor(Math.max(0, danoP - escPv) / 2)} no total).`
           : (() => { const m = Math.floor(danoP / 2), f = prevDano(m).final; return f !== m ? `Leva metade do dano (${m}; com a redução, <b>${f}</b>).` : `Leva metade do dano (${m}).`; })();
         const danoEstP = semEstP && escPv > 0 && (actor.system.escudo?.max ?? 0) === semEstP.max ? Math.min(escPv, danoP) + Math.floor(Math.max(0, danoP - escPv) / 2) : Math.floor(danoP / 2);
-        opcoes.push(NK.naurenKitOpcao({ campo: "reacaoDano", valor: "estresse", extraAttr: dd(danoEstP, "gastando 1 Estresse"), nome: `${ehReacao ? "Não reagir e g" : "G"}astar 1 Estresse`, custo: `Estresse ${stressAtual} → ${stressAtual + 1}`, desc: textoEstP }));
+        // 0.99.10: gastar Estresse NÃO usa a Prioridade (dá até para somar depois de Bloquear ou Esquivar).
+        const notaEstP = ehReacao && !p.semPrioridade && p.houveAtaque ? ` <span class="nk-suave">Não usa a Prioridade${temEstReacao ? "; também dá para gastar depois de Bloquear ou Esquivar" : ""}.</span>` : "";
+        opcoes.push(NK.naurenKitOpcao({ campo: "reacaoDano", valor: "estresse", extraAttr: dd(danoEstP, "gastando 1 Estresse"), nome: "Gastar 1 Estresse", custo: `Estresse ${stressAtual} → ${stressAtual + 1}`, desc: textoEstP + notaEstP }));
       }
       opcoes.push(NK.naurenKitOpcao({ campo: "reacaoDano", valor: "cheio", marcado: true, nome: ehReacao || p.houveAtaque ? "Não reagir" : "Receber", extraAttr: dd(semDanoNoAtaque ? 0 : danoP, "levando o dano"),
         desc: semDanoNoAtaque ? "Deixa o ataque acertar (não causa dano)." : `Leva ${textoDanoP}.${ehReacao && !p.semPrioridade ? " Sua Prioridade fica guardada." : ""}` }));
@@ -14554,7 +14556,16 @@ class NaurenAlvoHelper {
       const notaDoisPassos = ehReacao && !p.semPrioridade && p.houveAtaque ? NK.naurenKitNota("Reagindo com dado, o Estresse e o que evitar são decididos depois, já com o resultado na tela.") : "";
       htmlReacao = `${avisos.length ? `<div class="nk-avisos">${avisos.map(a => `<div>${a}</div>`).join("")}</div>` : ""}
         ${!semDanoNoAtaque && danoP > 0 ? NK.naurenKitVidaDano({ vida: vidaP, max: vidaMaxP, escudo: escudoP }) : ""}
-        <div class="nk-grupo">${NK.naurenKitSecao(p.houveAtaque ? "O que você faz?" : "Como você recebe?", p.houveAtaque && !p.semPrioridade ? "· usa sua Prioridade" : "")}<div class="nk-opcoes">${opcoesPermitidas.join("")}</div>${notaDoisPassos}</div>
+        ${(() => {
+          // 0.99.10: reações que gastam a Prioridade num grupo; Estresse e Não reagir no outro (a Prioridade fica guardada).
+          const usaPrio = o => [...this.REACOES_QUE_USAM_PRIORIDADE].some(v => o.includes(`value="${v}"`));
+          const comPrio = opcoesPermitidas.filter(usaPrio), semPrio = opcoesPermitidas.filter(o => !usaPrio(o));
+          if (p.houveAtaque && !p.semPrioridade && comPrio.length && semPrio.length) {
+            return `<div class="nk-grupo">${NK.naurenKitSecao("Reagir", "· usa sua Prioridade")}<div class="nk-opcoes">${comPrio.join("")}</div>${notaDoisPassos}</div>
+              <div class="nk-grupo">${NK.naurenKitSecao("Sem reagir", "· a Prioridade fica guardada")}<div class="nk-opcoes">${semPrio.join("")}</div></div>`;
+          }
+          return `<div class="nk-grupo">${NK.naurenKitSecao(p.houveAtaque ? "O que você faz?" : "Como você recebe?", p.houveAtaque && !p.semPrioridade ? "· usa sua Prioridade" : "")}<div class="nk-opcoes">${opcoesPermitidas.join("")}</div>${notaDoisPassos}</div>`;
+        })()}
         ${semDanoNoAtaque ? "" : ajustesDano(true)}`;
     }
 
