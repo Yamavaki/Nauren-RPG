@@ -7,8 +7,18 @@
       <div class="ns-classe-linha">
         {{#if classeEquipada}}
         <span class="ns-classe-nome" title="Definida pelo item de Classe na aba Características — remova-o de lá pra trocar">{{classeEquipada.name}}</span>
+        {{else}}{{#if isNpc}}{{#if modoFichaEdicao}}
+        <input class="ns-classe-input" type="text" name="system.classe" value="{{system.classe}}" placeholder="Tipo (ex.: Fera, Morto-vivo)" aria-label="Tipo da criatura">
         {{else}}
+        <span class="ns-classe-nome ns-npc-tipo" title="Tipo da criatura — mude em Editar Ficha">{{#if system.classe}}{{system.classe}}{{else}}Criatura{{/if}}</span>
+        {{/if}}{{else}}
         <input class="ns-classe-input" type="text" name="system.classe" value="{{system.classe}}" placeholder="Classe" aria-label="Classe">
+        {{/if}}{{/if}}
+        {{#if isNpc}}
+        <label class="ns-npc-cat" title="Categoria da criatura (1 a 4): dado de dano {{escalaMonstro.danoCat}}, +{{escalaMonstro.estCat}} de Estamina por ataque, tamanho de token. Valor Base pelo nível: {{system.valorBase}} (fórmulas: @categoria, @vb, @danoCat, @meioCat, @estCat).">Categoria
+          <select name="system.categoriaMonstro">{{selectOptions categoriaOpcoes selected=categoriaSelecionada}}</select>
+        </label>
+        <span class="ns-npc-vb" title="Valor Base pelo nível">VB {{system.valorBase}}</span>
         {{/if}}
         {{#if ns.subclasse.item}}
         <span class="item-entry ns-sublink" data-item-id="{{ns.subclasse.item.id}}"><a data-action="itemEdit" title="Abrir a árvore de Subclasse">{{ns.subclasse.item.name}} ›</a></span>
@@ -16,12 +26,6 @@
       </div>
     </div>
     <div class="ns-xp">
-      {{#if isNpc}}
-      <label class="ns-mini" title="Categoria da criatura (1 a 4): dado de dano {{escalaMonstro.danoCat}}, +{{escalaMonstro.estCat}} de Estamina por ataque, tamanho de token. Valor Base pelo nível: {{system.valorBase}} (fórmulas: @categoria, @vb, @danoCat, @meioCat, @estCat).">Categoria
-        <select name="system.categoriaMonstro">{{selectOptions categoriaOpcoes selected=categoriaSelecionada}}</select>
-      </label>
-      <span class="ns-mini" title="Valor Base">VB {{system.valorBase}}</span>
-      {{/if}}
       <label class="ns-mini" title="XP total acumulado (não zera ao subir de nível). Nível 2 = 200, 3 = 500, 4 = 900, 5 = 1400...">XP <input type="number" name="system.xp" value="{{system.xp}}" min="0" aria-label="XP total"></label>
       {{#unless isNpc}}
       <div class="ns-xp-progresso" title="{{xpInfo.total}} de {{xpInfo.proximo}} XP para o nível {{proximoNivelNumero}}">

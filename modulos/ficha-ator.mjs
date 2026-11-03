@@ -1726,7 +1726,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     ns.vida.baixa = ns.vida.max > 0 && ns.vida.value > 0 && ns.vida.value <= ns.vida.max / 4;
     ns.vida.caido = ns.vida.max > 0 && ns.vida.value <= 0;
     ns.mana = barra("mana");
-    ns.estamina = { ...barra("estaminaCombate"), marc: naurenFichaMarcadores(sys.estaminaCombate?.value, sys.estaminaCombate?.max) };
+    ns.estamina = { ...barra("estaminaCombate"), marc: naurenFichaMarcadores(sys.estaminaCombate?.value, sys.estaminaCombate?.max, { limiteBlocos: 8, limiteFinos: 8 }) }; // 0.98.6: acima de 8, barra (16 bloquinhos ficavam picotados na coluna)
     ns.destino = { ...barra("dadosDestino"), marc: naurenFichaMarcadores(sys.dadosDestino?.value, sys.dadosDestino?.max, { limiteBlocos: 6, limiteFinos: 6 }) };
     const perm = Math.max(0, Number(sys.estressePermanente) || 0);
     ns.estresse = { marc: naurenFichaMarcadores(sys.stress?.value, sys.stress?.max, { limiteBlocos: 8, limiteFinos: 8, travados: perm }), permanente: perm };
@@ -9780,7 +9780,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
                   : await exC?.query(NAUREN_QUERY_APLICAR_CONDICAO, { actorUuid: alvoTokC.actor.uuid, uuid: uuidC, acumulos: 1 }, { timeout: 20000 }).catch(() => null);
                 if (nomeC) aplicados.push(nomeC);
               }
-              secondaryLines.push({ label: "Traço Celestial", value: aplicados.length ? `${alvoTokC.name}: ${aplicados.join(" + ")}` : "falhou (o Mestre está conectado?)", breakdown: `agiu na Prioridade de ${doadorC.name}` });
+              secondaryLines.push({ label: "Traço Celestial", value: aplicados.length ? `${alvoTokC.name}: ${aplicados.join(" + ")}` : "não aplicou (o alvo já tinha isso, ou nenhum Mestre conectado)", breakdown: `agiu na Prioridade de ${doadorC.name}` });
             }
           }
         }
@@ -10810,7 +10810,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
             const exAb = NaurenAlvoHelper.usuarioExecutor(tokenDoc.actor);
             const okAb = exAb?.id === game.user.id ? await tokenDoc.actor.createEmbeddedDocuments("Item", [dadosAb]).then(() => true).catch(() => false)
               : await exAb?.query(NAUREN_QUERY_CRIAR_ITEM, { actorUuid: tokenDoc.actor.uuid, dados: dadosAb }, { timeout: 20000 }).catch(() => false);
-            this.#beneficiosAtual.push({ label: "Você está abaixo", value: okAb ? `${tokenDoc.name}: −${infA} ${ab.rotulo}` : "falhou (o Mestre está conectado?)", breakdown: "até o fim da cena ou 2 PdE" });
+            this.#beneficiosAtual.push({ label: "Você está abaixo", value: okAb ? `${tokenDoc.name}: −${infA} ${ab.rotulo}` : "não aplicou (o alvo já tinha isso, ou nenhum Mestre conectado)", breakdown: "até o fim da cena ou 2 PdE" });
             if (okAb) this.#estudoAtual.abaixoAplicado = true;
           }
         }
@@ -10819,10 +10819,14 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
           && this.actor.items.some(i => i.type === "habilidade" && naurenEhItem(i, "Espírito Ardiloso") && i.system.ativo !== false)) {
           const resA = (this.actor.system.recursosCustom ?? []).find(x => x.id === "espiritoardiloso");
           if ((resA?.valor ?? 0) > 0) {
+            // 0.98.6: Caído e Cego não acumulam - se o alvo já tem, a opção some (antes gastava o ponto e o card dizia "falhou")
+            const jaTemA = nome => tokenDoc.actor.items.some(i => i.type === "condicao" && i.system?.ativo !== false && naurenEhItem(i, nome));
+            const opcoesA = [{ action: "condicao-caido", label: "Caído" }, { action: "condicao-cego", label: "Cego" }, { action: "condicao-sangramento", label: "Sangramento" }]
+              .filter(o => o.label === "Sangramento" || !jaTemA(o.label));
             const escA = await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA,
               window: { title: `Espírito Ardiloso — ${tokenDoc.name}` },
-              content: `<p>Você acertou <b>${tokenDoc.name}</b>. Gastar 1 Espírito Ardiloso (${resA.valor}/${resA.max ?? "?"}) para causar uma Condição?</p>`,
-              buttons: [{ action: "condicao-caido", label: "Caído" }, { action: "condicao-cego", label: "Cego" }, { action: "condicao-sangramento", label: "Sangramento" }, { action: "nao", label: "Não", default: true }],
+              content: `<p>Você acertou <b>${tokenDoc.name}</b>. Gastar 1 Espírito Ardiloso (${resA.valor}/${resA.max ?? "?"}) para causar uma Condição?</p>${opcoesA.length < 3 ? `<p class="item-meta-hint">${["Caído", "Cego"].filter(jaTemA).join(" e ")}: o alvo já está assim.</p>` : ""}`,
+              buttons: [...opcoesA, { action: "nao", label: "Não", default: true }],
               rejectClose: false
             }).catch(() => "nao");
             if (escA && escA !== "nao") {
@@ -10832,7 +10836,14 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
                 const exA = NaurenAlvoHelper.usuarioExecutor(tokenDoc.actor);
                 const nomeA = exA?.id === game.user.id ? await NaurenAlvoHelper.aplicarCondicao(tokenDoc.actor, uuidA, 1).catch(() => null)
                   : await exA?.query(NAUREN_QUERY_APLICAR_CONDICAO, { actorUuid: tokenDoc.actor.uuid, uuid: uuidA, acumulos: 1 }, { timeout: 20000 }).catch(() => null);
-                this.#beneficiosAtual.push({ label: "Espírito Ardiloso", value: nomeA ? `${tokenDoc.name}: ${nomeA}` : "falhou (o Mestre está conectado?)", breakdown: `−1 Espírito Ardiloso (${Math.max(0, (resA.valor ?? 1) - 1)} restante(s))` });
+                if (nomeA) this.#beneficiosAtual.push({ label: "Espírito Ardiloso", value: `${tokenDoc.name}: ${nomeA}`, breakdown: `−1 Espírito Ardiloso (${Math.max(0, (resA.valor ?? 1) - 1)} restante(s))` });
+                else {
+                  // não pegou: devolve o ponto e diz o motivo de verdade
+                  await naurenConcederRecurso(this.actor, "recursoCustom:espiritoardiloso", "+1", item).catch(() => 0);
+                  const rotA = { "condicao-caido": "Caído", "condicao-cego": "Cego", "condicao-sangramento": "Sangramento" }[escA] ?? "a Condição";
+                  const motivoA = !exA ? "nenhum Mestre conectado para aplicar" : jaTemA(rotA) ? `${tokenDoc.name} já estava ${rotA}` : `${rotA} não pegou em ${tokenDoc.name}`;
+                  this.#beneficiosAtual.push({ label: "Espírito Ardiloso", value: `${motivoA} — ponto devolvido`, breakdown: "nada foi gasto" });
+                }
               }
             }
           }

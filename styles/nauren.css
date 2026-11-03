@@ -6323,3 +6323,80 @@ img.nauren-criador-token.com-borda { border: none; border-radius: 0; background:
 /* Criador: amostra do card */
 .nauren-criador .nc2 .ncr-amostra-card { position: relative; border: 0; padding: 1.5px; --mc: 8px; --mb: color-mix(in srgb, var(--nc-p) 80%, #000); --mbw: 1.5px; }
 .nauren-criador .nc2 .ncr-amostra-card::after { z-index: 2; }
+
+/* ===================================================
+   0.98.6 — MIOLO DAS JANELAS NO ESTILO NOVO
+   Caixas, opções, linhas de escolha, quadros e campos com cantos chanfrados e borda inteira
+   (inclusive nas diagonais): a borda é a camada de trás (border-box) e o fundo chanfrado vai
+   por cima (padding-box). Variáveis: --cc chanfro · --cbg fundo · --cbd borda · --cbw espessura
+   =================================================== */
+.application.nauren-kit.nc2 :is(.nk-cab, .nk-bloco, .nk-opcao, .nk-gasto, .nk-destino, .nk-faixa, .nk-vidadano, .nk-condicao, .nk-fontes-caixa, .nk-ajustes, .nk-escolha-card, .nauren-mov-opcao, .nauren-mov-resumo > div, label.nauren-popup-opt, .nauren-escolha-lista, .nauren-escolha-ver, .nauren-criador-escolha-btn, .form-footer button:not(.default):not([autofocus]):not(.nk-principal), .dialog-content > ul),
+.application.nauren-kit.nc2 .form-footer button:is([data-action="cancelar"], [data-action="cancel"], [data-action="close"], [data-action="no"], [data-action="nao"], [data-action="n"]),
+.application.nauren-kit.nc2 :is(input[type="text"], input[type="number"], input:not([type]), select, textarea) {
+  --cbw: 1px;
+  --ck: calc(var(--cc, 7px) * .7071 - var(--cbw) * .4142);
+  border: var(--cbw) solid transparent !important; border-radius: 0 !important; box-shadow: none !important; outline: none;
+  background:
+    linear-gradient(135deg, transparent var(--ck), var(--cbg, var(--nk-cartao)) 0) top left / 51% 51% no-repeat padding-box,
+    linear-gradient(225deg, transparent var(--ck), var(--cbg, var(--nk-cartao)) 0) top right / 51% 51% no-repeat padding-box,
+    linear-gradient(315deg, transparent var(--ck), var(--cbg, var(--nk-cartao)) 0) bottom right / 51% 51% no-repeat padding-box,
+    linear-gradient(45deg, transparent var(--ck), var(--cbg, var(--nk-cartao)) 0) bottom left / 51% 51% no-repeat padding-box,
+    linear-gradient(var(--cbd, var(--nk-linha2)), var(--cbd, var(--nk-linha2))) border-box !important;
+  clip-path: polygon(var(--cc, 7px) 0, calc(100% - var(--cc, 7px)) 0, 100% var(--cc, 7px), 100% calc(100% - var(--cc, 7px)), calc(100% - var(--cc, 7px)) 100%, var(--cc, 7px) 100%, 0 calc(100% - var(--cc, 7px)), 0 var(--cc, 7px));
+}
+/* fundo padrão das caixas: um pouco mais claro que a janela, para separar */
+.application.nauren-kit.nc2 { --nk-cartao: color-mix(in srgb, var(--nc-pd) 45%, #231b30); }
+/* tamanhos do chanfro */
+.application.nauren-kit.nc2 :is(.nk-cab, .nk-faixa, .nk-vidadano, .nk-destino) { --cc: 9px; }
+.application.nauren-kit.nc2 :is(.nauren-mov-resumo > div, .nauren-escolha-ver) { --cc: 5px; }
+.application.nauren-kit.nc2 :is(input[type="text"], input[type="number"], input:not([type]), select, textarea) { --cc: 5px; --cbg: #120e18; }
+/* cores por peça */
+.application.nauren-kit.nc2 .nk-cab { --cbg: color-mix(in srgb, var(--nc-pd) 70%, #16111d); --cbd: color-mix(in srgb, var(--nc-p) 60%, #000); }
+.application.nauren-kit.nc2 .nk-cab.nk-cab-atacante { --cbg: color-mix(in srgb, var(--nc-pd) 85%, #120e18); --cbd: color-mix(in srgb, var(--nc-p) 70%, #000); }
+.application.nauren-kit.nc2 .nk-cab.nk-tom-ruim { --cbg: var(--nk-ruim-fundo); --cbd: #a8642f; }
+.application.nauren-kit.nc2 .nk-cab.nk-tom-bom { --cbg: var(--nk-bom-fundo); --cbd: #4f8f78; }
+.application.nauren-kit.nc2 .nk-cab.nk-tom-roxo { --cbg: #231a33; --cbd: #7a4fa8; }
+.application.nauren-kit.nc2 .nk-destino { --cbg: var(--nk-roxo-fundo); --cbd: #7a4fa8; }
+.application.nauren-kit.nc2 :is(.nk-fontes-caixa, .nk-ajustes) { --cbg: #1f1829; --cbd: var(--nk-linha); }
+.application.nauren-kit.nc2 .nk-ajustes[open] { --cbd: var(--nk-linha2); }
+.application.nauren-kit.nc2 .nk-vidadano.nk-vd-morre { --cbg: var(--nk-falha-fundo); --cbd: #c2474f; --cbw: 2px; }
+.application.nauren-kit.nc2 .nk-faixa.nk-faixa-critico { --cbd: var(--nc-s); }
+.application.nauren-kit.nc2 .nk-faixa.nk-faixa-falha { --cbd: #c2474f; }
+/* passar o mouse e marcado: a borda acende na secundária */
+.application.nauren-kit.nc2 :is(.nk-opcao, .nk-gasto, .nauren-mov-opcao, label.nauren-popup-opt, .nauren-escolha-ver, .nauren-criador-escolha-btn):hover { --cbd: color-mix(in srgb, var(--nc-s) 65%, #000); }
+.application.nauren-kit.nc2 :is(.nk-opcao, .nk-gasto, label.nauren-popup-opt):has(input:checked),
+.application.nauren-kit.nc2 :is(.nk-opcao, .nk-gasto, label.nauren-popup-opt):has(input:checked) { --cbd: var(--nc-s); --cbg: color-mix(in srgb, var(--nc-s) 10%, var(--nk-cartao)); }
+.application.nauren-kit.nc2 .nk-opcao:has(input:checked) { padding: 11px 13px; }
+.application.nauren-kit.nc2 :is(input[type="text"], input[type="number"], input:not([type]), select, textarea):focus { --cbd: var(--nc-s); }
+.application.nauren-kit.nc2 .nauren-mov-opcao:hover:not(:disabled) { --cbg: color-mix(in srgb, var(--nc-s) 8%, var(--nk-cartao)); }
+.application.nauren-kit.nc2 .nauren-mov-opcao > i { color: var(--nc-s); }
+/* rótulos ATAQUE/DANO em plaquinha chanfrada */
+.application.nauren-kit.nc2 .nk-tag { border-radius: 0; clip-path: polygon(4px 0, calc(100% - 4px) 0, 100% 4px, 100% calc(100% - 4px), calc(100% - 4px) 100%, 4px 100%, 0 calc(100% - 4px), 0 4px); }
+/* rodapé: botões secundários chanfrados em contorno; "Cancelar" nunca vira o botão principal, mesmo sozinho */
+.application.nauren-kit.nc2 .form-footer button:not(.default):not([autofocus]):not(.nk-principal),
+.application.nauren-kit.nc2 .form-footer button:is([data-action="cancelar"], [data-action="cancel"], [data-action="close"], [data-action="no"], [data-action="nao"], [data-action="n"]) {
+  --cc: 9px; --cbg: var(--nc-f); --cbd: color-mix(in srgb, var(--nc-s) 55%, #000); color: var(--nc-sc); padding: 8px 18px;
+}
+.application.nauren-kit.nc2 .form-footer button:not(.default):not([autofocus]):not(.nk-principal):hover,
+.application.nauren-kit.nc2 .form-footer button:is([data-action="cancelar"], [data-action="cancel"], [data-action="close"], [data-action="no"], [data-action="nao"], [data-action="n"]):hover {
+  --cbd: var(--nc-s); --cbg: color-mix(in srgb, var(--nc-s) 12%, var(--nc-f)); color: #fff;
+}
+.application.nauren-kit.nc2 .form-footer button.nk-destino-btn { --cbd: #9c6ad6; --cbg: var(--nc-f); color: #d9bdf7; }
+.application.nauren-kit.nc2 .form-footer button.nk-destino-btn:hover { --cbg: #9c6ad6; color: #160d20; }
+
+/* ficha de criatura: tipo, Categoria e VB na linha de baixo do nome; à direita só o XP */
+.nauren-sheet.ns2 .ns-faixa-topo .ns-classe-linha { align-items: center; }
+.nauren-sheet.ns2 .ns-npc-tipo { font-size: 14px; }
+.nauren-sheet.ns2 .ns-npc-cat { display: inline-flex; align-items: center; gap: 6px; margin: 0; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ns-sub); }
+.nauren-sheet.ns2 .ns-npc-cat select { width: auto; min-width: 46px; height: 24px; min-height: 0; padding: 0 4px 0 8px; font-size: 13px; font-weight: 700; letter-spacing: 0; color: #fff; background: #0d0a12; border: 1px solid color-mix(in srgb, var(--ns-s) 45%, #000); border-radius: 4px; }
+.nauren-sheet.ns2 .ns-npc-vb { font-size: 11px; font-weight: 700; letter-spacing: .08em; color: var(--ns-sub); padding: 2px 8px; border: 1px solid color-mix(in srgb, var(--ns-s) 30%, transparent); border-radius: 4px; }
+/* listas vazias: em vez de uma caixinha fina sem nada, um aviso */
+.nauren-sheet.ns2 ul.item-list:not(:has(> li)):not(:has(+ .empty-list)) { border: 0 !important; background: none !important; box-shadow: none !important; min-height: 0; padding: 0; margin: 0 0 6px; }
+.nauren-sheet.ns2 ul.item-list:not(:has(> li)):not(:has(+ .empty-list))::before { content: "Nada aqui ainda — arraste um item para cá ou use Adicionar."; display: block; padding: 6px 12px; font-size: 12.5px; font-style: italic; color: var(--ns-apagado); }
+/* grupos com título na borda (legend) e linhas da lista de escolha: cantos retos, sem chanfro (o recorte cortaria o título) */
+.application.nauren-kit.nc2 fieldset.nauren-popup-group { border-radius: 0; border-color: var(--nk-linha2); background: color-mix(in srgb, var(--nc-pd) 20%, var(--nc-f)); }
+.application.nauren-kit.nc2 .nauren-escolha-lista { --cbg: color-mix(in srgb, var(--nc-pd) 20%, var(--nc-f)); padding: 2px; }
+.application.nauren-kit.nc2 .nauren-escolha-item { border-radius: 0 !important; }
+.application.nauren-kit.nc2 .nauren-escolha-item + .nauren-escolha-item { border-top: 1px solid var(--nk-linha) !important; }
+.application.nauren-kit.nc2 .nauren-escolha-item.nauren-escolha-marcado { outline: 0; background: color-mix(in srgb, var(--nc-s) 10%, transparent) !important; box-shadow: inset 3px 0 0 var(--nc-s) !important; }
+.nauren-sheet.ns2 .ns-rec-estamina:has(.ns-barra-estamina) .ns-rec-cab .ns-num { display: none; }

@@ -6282,6 +6282,9 @@ Hooks.on("renderApplicationV2", (app, el) => {
     const raiz = app?.element ?? el;
     const cl = raiz?.classList;
     if (!cl || cl.contains("nauren-kit")) return;
+    // 0.98.6: diálogos do próprio Foundry (Criar Ator/Item/Pasta, confirmações…) ganham o molde das janelas do sistema, nas cores do sistema
+    const DV2 = foundry.applications?.api?.DialogV2;
+    if (DV2 && app instanceof DV2) { if (app.options) app.options.naurenSistema = true; cl.add("nauren-kit"); return; }
     const ehItem = cl.contains("nauren-rpg") && cl.contains("sheet") && cl.contains("item");
     if (NAUREN_TELAS_MESTRE.some(c => cl.contains(c))) { naurenPintarJanela(raiz, null); cl.add("nc-tela"); return; }
     if (!ehItem && !NAUREN_TELAS_PROPRIAS.some(c => cl.contains(c))) return;
