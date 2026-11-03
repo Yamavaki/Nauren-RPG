@@ -7144,3 +7144,6 @@ li.chat-message.ncc-card > .message-content { padding-top: 0 !important; }
   li.chat-message.ncc-card > .message-header .message-metadata > :not(.ncc-selo) { opacity: .55; }
   li.chat-message.ncc-card > .message-header { pointer-events: auto; }
 }
+/* 0.99.7: linha da redução de dano na barra "Sua Vida" da reação */
+.nk-vidadano .nk-vd-reducao { margin-top: 4px; font-size: 12px; color: var(--nk-bom, #7fe0b8); }
+.nk-vidadano .nk-vd-reducao[hidden] { display: none; }

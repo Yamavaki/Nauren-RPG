@@ -14433,7 +14433,11 @@ class NaurenAlvoHelper {
     const semDanoNoAtaque = !(Number(p.dano) > 0) && !(Number(p.danoVerdadeiro) > 0);
     const condsQueVem = (itensEvitaveis ?? []).filter(it => it && !it._oculto && it.tipo !== "movimento" && it.label).map(it => it.label);
     const escudoP = actor.system.escudo?.value ?? 0;
-    const dd = (n, rot = "") => `data-dano="${Math.max(0, Math.round(Number(n) || 0))}" data-dano-rotulo="${escP(rot)}"`;
+    // 0.99.7: a barra mostra o dano depois das reduções da ficha (Redução de Dano, %, Eu estou acima, por uso).
+    const prevDano = n => this.preverDanoRecebido(actor, n, p);
+    const dd = (n, rot = "") => { const pv = prevDano(n); return `data-dano="${pv.final}" data-dano-bruto="${pv.bruto}" data-dano-reducao="${escP(pv.partes.join(", "))}" data-dano-rotulo="${escP(rot)}"`; };
+    const danoPrevP = prevDano(danoP);
+    const textoDanoP = danoPrevP.final !== danoPrevP.bruto ? `<b>${danoPrevP.final} de dano</b> (${danoPrevP.bruto}, ${escP(danoPrevP.partes.join(", "))})` : `<b>${danoP} de dano</b>`;
     const ajusteCampo = (nome, desab = false) => `<span class="nk-opcao-ajuste">ajuste <input type="text" name="${nome}" value="0" class="nauren-popup-ajuste"${desab ? " disabled" : ""} title="Bônus ou penalidade só nesta reação. Aceita dado (ex.: 1d4, -2)" aria-label="ajuste"></span>`;
     // Ajustes pontuais (dano final, ignorar o dano) — para o jogador ou o Mestre.
     const ajustesDano = (incluiSemDano = true) => `
@@ -14534,12 +14538,12 @@ class NaurenAlvoHelper {
         const semEstP = actor.getFlag?.("nauren", "escudoSemEstresse"), escPv = actor.system?.escudo?.value ?? 0;
         const textoEstP = semEstP && escPv > 0 && (actor.system.escudo?.max ?? 0) === semEstP.max
           ? `${escP(semEstP.nome)}: o escudo leva ${Math.min(escPv, danoP)} cheio, metade do resto (${Math.min(escPv, danoP) + Math.floor(Math.max(0, danoP - escPv) / 2)} no total).`
-          : `Leva metade do dano (${Math.floor(danoP / 2)}).`;
+          : (() => { const m = Math.floor(danoP / 2), f = prevDano(m).final; return f !== m ? `Leva metade do dano (${m}; com a redução, <b>${f}</b>).` : `Leva metade do dano (${m}).`; })();
         const danoEstP = semEstP && escPv > 0 && (actor.system.escudo?.max ?? 0) === semEstP.max ? Math.min(escPv, danoP) + Math.floor(Math.max(0, danoP - escPv) / 2) : Math.floor(danoP / 2);
         opcoes.push(NK.naurenKitOpcao({ campo: "reacaoDano", valor: "estresse", extraAttr: dd(danoEstP, "gastando 1 Estresse"), nome: `${ehReacao ? "Não reagir e g" : "G"}astar 1 Estresse`, custo: `Estresse ${stressAtual} → ${stressAtual + 1}`, desc: textoEstP }));
       }
       opcoes.push(NK.naurenKitOpcao({ campo: "reacaoDano", valor: "cheio", marcado: true, nome: ehReacao || p.houveAtaque ? "Não reagir" : "Receber", extraAttr: dd(semDanoNoAtaque ? 0 : danoP, "levando o dano"),
-        desc: semDanoNoAtaque ? "Deixa o ataque acertar (não causa dano)." : `Leva <b>${danoP} de dano</b>.${ehReacao && !p.semPrioridade ? " Sua Prioridade fica guardada." : ""}` }));
+        desc: semDanoNoAtaque ? "Deixa o ataque acertar (não causa dano)." : `Leva ${textoDanoP}.${ehReacao && !p.semPrioridade ? " Sua Prioridade fica guardada." : ""}` }));
       // Fase 6 (P): Condições ativas podem proibir Bloqueio/Esquiva (ex.: Juramentos).
       const proibindo = actor.items.filter(i => i.type === "condicao" && i.system.ativo !== false && (i.system.proibeBloqueio || i.system.proibeEsquiva || i.system.proibeContraAtaque));
       const proibeBloqueio = proibindo.some(i => i.system.proibeBloqueio) || !!p?.ignoraBloqueio || !!p?.apenasContraAtaque;
@@ -15469,6 +15473,46 @@ class NaurenAlvoHelper {
     naurenPostarCard({ ator: actor, titulo: "Condição encerrada", icone: "icons/magic/time/hourglass-tilted-gray.webp", fonte: "Sofreu dano",
       linhas: itens.map(i => ({ label: i.name, value: "terminou", breakdown: `some ao sofrer dano (${danoBruto} recebido)` })) }).catch(() => {});
     return itens.map(i => i.name);
+  }
+
+  /**
+   * 0.99.7: previsão do dano que de fato sai da Vida/Escudo (para a barra "Sua Vida" da janela de reação),
+   * na mesma ordem de quem aplica: Dano Sofrido Extra → Redução % → Redução fixa (inclui "Eu estou acima"
+   * e Se Afastar) → reduções por uso (só fórmulas sem dado). Não gasta nada: é só a conta.
+   */
+  static preverDanoRecebido(actor, danoBruto, p = {}) {
+    const bruto = Math.max(0, Math.round(Number(danoBruto) || 0));
+    const out = { bruto, final: bruto, partes: [] };
+    if (!actor || bruto <= 0) return out;
+    let d = this.aplicarReducaoPercentual(actor, bruto);
+    const extra = actor.system.danoRecebidoTotal ?? 0;
+    if (extra) out.partes.push(`${extra > 0 ? "+" : ""}${extra} dano sofrido`);
+    const pct = actor.system.reducaoDanoPercentualTotal ?? 0;
+    if (pct && d < Math.max(0, bruto + extra)) out.partes.push(`−${pct}%`);
+    let rd = actor.system.reducaoDanoTotal ?? 0;
+    try {
+      const tR = p?.atacanteTokenUuid ? fromUuidSync(p.atacanteTokenUuid) : null;
+      rd += naurenBonusAcimaContra(actor, tR?.actor ?? null, "reducaoDano").total || 0;
+    } catch (err) { /* segue */ }
+    try {
+      if (actor.items.some(i => i.type === "habilidade" && naurenEhItem(i, "Se Afastar") && i.system.ativo !== false) && naurenAliadosAte(actor, 4) === 0) rd += Number(actor.system.poderMagia?.value ?? 0) || 0;
+    } catch (err) { /* segue */ }
+    if (rd > 0 && d > 0) { const antes = d; d = Math.max(0, d - rd); out.partes.push(`−${antes - d} redução`); }
+    for (const item of actor.items) {
+      if (d <= 0) break;
+      if ((item.type !== "habilidade" && item.type !== "magia") || !item.system.ativo || !item.system.reducaoDanoPorUso) continue;
+      if (!item.system.usaUsosPassiva || (item.system.usosPassivaAtual ?? 0) <= 0) continue;
+      const custoMana = Number(item.system.reducaoDanoPorUsoCustoMana) || 0;
+      if (custoMana > 0 && (actor.system.mana?.value ?? 0) < custoMana) continue;
+      try {
+        const f = String(item.system.reducaoDanoPorUso).replace(/@(\w+)/g, (m, nome) => String(naurenResolverTokenFormula(nome, actor)));
+        if (/d\d/i.test(f)) continue; // com dado: não dá para prever
+        const v = Math.round(Number(Roll.safeEval ? Roll.safeEval(f) : Number(f)) || 0);
+        if (v > 0) { const antes = d; d = Math.max(0, d - v); out.partes.push(`−${antes - d} ${item.name}`); }
+      } catch (err) { /* segue */ }
+    }
+    out.final = d;
+    return out;
   }
 
   static aplicarReducaoPercentual(actor, danoBruto) {

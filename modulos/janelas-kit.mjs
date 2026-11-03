@@ -159,6 +159,7 @@ export function naurenKitVidaDano({ vida = 0, max = 0, escudo = 0, dano = 0, rot
     <div class="nk-vidadano-topo"><span class="nk-vidadano-titulo">Sua Vida</span><span class="nk-vidadano-rotulo">${esc(rotulo)}</span></div>
     <div class="nk-vidadano-barra" aria-hidden="true"><i class="nk-vd-fica"></i><b class="nk-vd-perde"></b><u class="nk-vd-escudo"></u></div>
     <div class="nk-vidadano-numeros"><span class="nk-vd-conta"></span><span class="nk-vd-perda"></span></div>
+    <div class="nk-vd-reducao" hidden></div>
     <div class="nk-vidadano-alerta">Com este dano a sua Vida chega a 0</div>
   </div>`;
 }
@@ -178,7 +179,11 @@ export function naurenKitAtualizarVidaDano(raiz) {
   box.querySelector(".nk-vd-escudo").style.width = pct(Math.max(0, escudo - noEscudo));
   box.querySelector(".nk-vd-conta").innerHTML = `<b>${vida}</b> → <b class="nk-vd-final">${fica}</b> / ${max}`;
   const sobra = dano - noEscudo - naVida;
-  box.querySelector(".nk-vd-perda").textContent = dano ? `−${naVida} PV${noEscudo ? ` (e −${noEscudo} no Escudo)` : ""}${sobra > 0 ? ` · dano ${dano}` : ""}` : "não perde Vida";
+  const bruto = Number(marcado?.dataset?.danoBruto ?? dano) || 0, reducao = marcado?.dataset?.danoReducao ?? "";
+  box.querySelector(".nk-vd-perda").textContent = dano ? `−${naVida} PV${noEscudo ? ` (e −${noEscudo} no Escudo)` : ""}${sobra > 0 ? ` · dano ${dano}` : ""}` : (bruto > 0 ? "não perde Vida (a redução segura tudo)" : "não perde Vida");
+  const red = box.querySelector(".nk-vd-reducao");
+  const txtRed = bruto > dano ? `Dano ${bruto} → ${dano}${reducao ? `: ${reducao}` : ""}` : "";
+  if (red) { red.textContent = txtRed; red.hidden = !txtRed; }
   const rot = marcado?.dataset?.danoRotulo ?? "";
   box.querySelector(".nk-vidadano-rotulo").textContent = rot;
   box.classList.toggle("nk-vd-morre", dano > 0 && fica <= 0);
