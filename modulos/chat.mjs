@@ -155,6 +155,12 @@ function aplicar(message, html) {
     const nat = d20Natural(message);
     if (nat) html.classList.add(nat === "crit" ? "ncc-crit" : "ncc-falha");
     html.querySelectorAll(".dice-tooltip").forEach(t => t.classList.add("expanded", "ncc-aberto"));
+    html.querySelectorAll(".dice-rolls").forEach(organizarDados);
+    // Um dado só e sem bônus (ex.: /r 1d20 = 8): o quadradinho repetiria o total.
+    html.querySelectorAll(".dice-roll").forEach(dr => {
+      const ds = dr.querySelectorAll("li.roll"), tot = dr.querySelector(".dice-total")?.textContent?.trim();
+      if (ds.length === 1 && tot && ds[0].textContent.trim() === tot && !dr.closest(".ncc-crit, .ncc-falha")) dr.classList.add("ncc-so-total");
+    });
   }
   if (continuaDaAnterior(message, tipo)) {
     // Continuação: encosta na mensagem de cima e vira uma faixa do mesmo card.
@@ -162,6 +168,42 @@ function aplicar(message, html) {
     const ligar = () => { const ant = html.previousElementSibling; if (ant?.classList?.contains("ncc")) ant.classList.add("ncc-segue"); };
     requestAnimationFrame(ligar); setTimeout(ligar, 120);
   }
+}
+
+/* ---------- dados: poucos, muitos e montes ----------
+   Até 10 dados: quadrados normais. De 11 a 40: quadrados menores, na largura toda.
+   Mais de 40: um resumo (quantos saíram de cada face, ou máximos/mínimos em dados grandes) e
+   "ver todos os N dados" para abrir a lista. */
+function organizarDados(ol) {
+  const dados = [...ol.querySelectorAll("li.roll")];
+  const n = dados.length;
+  const parte = ol.closest(".tooltip-part") ?? ol.parentElement;
+  parte?.classList.add(n <= 10 ? "ncc-poucos" : n <= 40 ? "ncc-muitos" : "ncc-montes");
+  if (n <= 40 || ol.dataset.ncc) return;
+  ol.dataset.ncc = "1";
+  const faces = Number((dados[0]?.className.match(/\bd(\d+)\b/) ?? [])[1]) || 0;
+  const ativos = dados.filter(d => !d.classList.contains("discarded") && !d.classList.contains("rerolled"));
+  const valores = ativos.map(d => Number(d.textContent) || 0);
+  const soma = valores.reduce((a, b) => a + b, 0);
+  const media = valores.length ? (soma / valores.length).toFixed(1).replace(".", ",") : "0";
+  const max = dados.filter(d => d.classList.contains("max")).length, min = dados.filter(d => d.classList.contains("min")).length;
+  const resumo = document.createElement("div");
+  resumo.className = "ncc-resumo-dados";
+  let corpo = "";
+  if (faces && faces <= 20) {
+    // Quantos saíram de cada face: uma coluna por face.
+    const cont = Array.from({ length: faces }, () => 0);
+    for (const v of valores) if (v >= 1 && v <= faces) cont[v - 1]++;
+    const maior = Math.max(1, ...cont);
+    corpo = `<div class="ncc-faces" style="--faces:${faces}">${cont.map((c, i) => `<div class="ncc-face ${i + 1 === faces ? "max" : i === 0 ? "min" : ""}" title="${c}× o ${i + 1}"><i style="--h:${Math.round(c / maior * 100)}%"></i><b>${c}</b><span>${i + 1}</span></div>`).join("")}</div>`;
+  }
+  resumo.innerHTML = `<div class="ncc-resumo-linha"><span><b>${n}</b> dados</span><span>média <b>${media}</b></span>${max ? `<span class="ncc-r-max"><b>${max}</b> no máximo</span>` : ""}${min ? `<span class="ncc-r-min"><b>${min}</b> no mínimo</span>` : ""}</div>${corpo}`;
+  const det = document.createElement("details");
+  det.className = "ncc-todos-dados";
+  det.innerHTML = `<summary>ver todos os ${n} dados</summary>`;
+  ol.before(resumo);
+  ol.before(det);
+  det.appendChild(ol);
 }
 
 /* ---------- balão em cima do token ---------- */
@@ -229,7 +271,7 @@ async function naurenBalao(token, mensagem, opcoes = {}) {
   const el = document.createElement("div");
   el.className = `ncc-bolha2 ${opcoes.cssClasses?.join?.(" ") ?? ""}`;
   el.dataset.tokenId = tk.id;
-  el.innerHTML = `<div class="ncc-bolha2-texto">${mensagem}</div>`;
+  el.innerHTML = `<div class="ncc-bolha2-caixa"><div class="ncc-bolha2-texto">${mensagem}</div></div>`;
   const { estilo, escuro } = naurenEstiloDoCard(tk.actor ?? null);
   el.style.cssText += estilo;
   el.classList.toggle("ncc-escuro", !!escuro);
@@ -261,6 +303,22 @@ function instalarBalaoProprio() {
   Hooks.on("canvasTearDown", () => { for (const b of baloes.values()) { clearTimeout(b.timer); b.el.remove(); } baloes.clear(); });
 }
 
+/** Refaz os grupos depois que uma mensagem some (a de baixo vira a primeira do grupo e ganha o nome de volta). */
+function regruparChat() {
+  for (const raiz of document.querySelectorAll("#chat-log, .chat-log, #chat-notifications, .chat-popout")) {
+    const lis = [...raiz.querySelectorAll("li.chat-message.ncc[data-message-id]")];
+    lis.forEach((li, i) => {
+      const m = game.messages?.get?.(li.dataset.messageId);
+      if (!m) return;
+      const tipo = m._naurenTipo ?? tipoBasico(m);
+      const cont = continuaDaAnterior(m, tipo) && lis[i - 1]?.classList.contains("ncc") && !lis[i - 1]?.classList.contains("ncc-card");
+      li.classList.toggle("ncc-cont", !!cont);
+    });
+    lis.forEach((li, i) => li.classList.toggle("ncc-segue", !!lis[i + 1]?.classList.contains("ncc-cont")));
+  }
+}
+Hooks.on("deleteChatMessage", () => { setTimeout(regruparChat, 60); setTimeout(regruparChat, 450); });
+
 function naurenChatInit() {
   game.settings.register("nauren", "chatNauren", {
     name: "Chat no estilo Nauren",
@@ -273,4 +331,4 @@ function naurenChatInit() {
 Hooks.on("renderChatMessageHTML", (message, html) => { try { aplicar(message, html); } catch (err) { console.warn("Nauren RPG | chat", err); } });
 Hooks.once("ready", () => { try { if (ligado()) document.body.classList.add("ncc-chat"); observarBaloes(); instalarBalaoProprio(); } catch (err) { console.warn("Nauren RPG | balões", err); } });
 
-export { naurenChatInit, pintarBalao as naurenChatPintarBalao, naurenBalao as naurenChatBalao };
+export { regruparChat as naurenChatRegrupar, naurenChatInit, pintarBalao as naurenChatPintarBalao, naurenBalao as naurenChatBalao };

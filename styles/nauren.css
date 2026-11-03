@@ -7056,3 +7056,71 @@ li.chat-message.ncc-card > .message-header { position: relative; z-index: 0; mar
 .ncc-bolha2-texto { position: relative; }
 .ncc-bolha2-texto p { margin: 0; }
 .ncc-bolha2-texto i, .ncc-bolha2-texto em { color: var(--nc-sc, #ffe2a3); }
+/* ===================================================
+   0.99.5 — ROLAGENS DO CHAT: espaço e quantidade de dados
+   Linha de cima: fórmula à esquerda, total à direita (mesma altura). Embaixo, os dados na largura toda.
+   Poucos (até 10): quadrados normais · muitos (11–40): menores · montes (40+): resumo por face e
+   "ver todos os N dados". Máximo em verde, mínimo em vermelho.
+   =================================================== */
+li.chat-message.ncc .dice-roll .dice-result { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "formula total" "dados dados"; gap: 6px 10px; align-items: center; }
+li.chat-message.ncc .dice-roll .dice-formula { align-self: center; font-size: 13.5px; color: var(--nc-pc, #d9bdf7); letter-spacing: .03em; }
+li.chat-message.ncc .dice-roll .dice-total { min-width: 50px; height: 44px; font-size: 25px; --cc: 8px; align-self: center; }
+li.chat-message.ncc .dice-roll .dice-tooltip { padding-top: 6px; border-top: 1px solid color-mix(in srgb, var(--nc-p, #a86ee0) 25%, transparent); }
+li.chat-message.ncc .dice-roll .dice-tooltip .wrapper { gap: 6px; }
+/* várias partes (ex.: 1d20 + 2d6): rótulo pequeno antes dos dados */
+li.chat-message.ncc .dice-roll .dice-tooltip .tooltip-part { display: block; }
+li.chat-message.ncc .dice-roll .dice-tooltip .dice { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start; gap: 6px; }
+li.chat-message.ncc .dice-roll .dice-tooltip .tooltip-part:only-child .dice { grid-template-columns: minmax(0, 1fr); }
+li.chat-message.ncc .dice-roll .dice-tooltip .part-header { display: inline-flex; flex-direction: column; align-items: flex-start; gap: 0; min-width: 34px; padding-top: 3px; line-height: 1.15; }
+li.chat-message.ncc .dice-roll .dice-tooltip .part-header .part-formula { font-weight: 600; color: var(--ncc-suave); font-size: 11px; }
+li.chat-message.ncc .dice-roll .dice-tooltip .part-header .part-total { font-size: 12px; color: #e6def2; }
+/* quadradinhos: tamanho pela quantidade */
+li.chat-message.ncc .dice-roll .ncc-poucos .dice-rolls { gap: 5px; }
+li.chat-message.ncc .dice-roll .ncc-poucos .dice-rolls .roll { width: 28px; height: 28px; min-width: 28px; font-size: 13.5px; line-height: 25px; }
+li.chat-message.ncc .dice-roll .ncc-muitos .dice-rolls { gap: 3px; }
+li.chat-message.ncc .dice-roll .ncc-muitos .dice-rolls .roll { --cc: 4px; width: 23px; height: 23px; min-width: 23px; font-size: 11px; line-height: 20px; }
+li.chat-message.ncc .dice-roll .ncc-montes .dice-rolls { gap: 2px; padding-top: 6px; }
+li.chat-message.ncc .dice-roll .ncc-montes .dice-rolls .roll { --cc: 3px; --cbw: 1px; width: 21px; height: 19px; min-width: 21px; font-size: 10px; line-height: 17px; }
+/* dados de 3 dígitos (d100): um pouco mais largos */
+li.chat-message.ncc .dice-roll .dice-rolls .roll.d100 { width: auto; min-width: 30px; padding: 0 3px; }
+li.chat-message.ncc .dice-roll .ncc-montes .dice-rolls .roll.d100 { min-width: 24px; padding: 0 2px; }
+/* máximo verde, mínimo vermelho */
+li.chat-message.ncc .dice-roll .dice-rolls .roll.max { --cbg: #245a3a; --cbd: #7fe0b8; color: #eafff3; }
+li.chat-message.ncc .dice-roll .dice-rolls .roll.min { --cbg: #4a1d24; --cbd: #ff8a92; color: #ffe0e2; }
+/* resumo dos montes */
+.ncc-resumo-dados { display: flex; flex-direction: column; gap: 6px; }
+.ncc-resumo-linha { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12px; color: var(--ncc-suave); }
+.ncc-resumo-linha b { color: #f4eefc; font-weight: 700; }
+.ncc-resumo-linha .ncc-r-max b { color: #7fe0b8; }
+.ncc-resumo-linha .ncc-r-min b { color: #ff8a92; }
+.ncc-faces { display: grid; grid-template-columns: repeat(var(--faces), minmax(0, 1fr)); gap: 3px; align-items: end; }
+.ncc-face { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 0; }
+.ncc-face i { display: block; width: 100%; height: 34px; position: relative; background: rgba(0, 0, 0, .22); }
+.ncc-face i::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: var(--h); min-height: 2px; background: color-mix(in srgb, var(--nc-p, #a86ee0) 75%, #000); }
+.ncc-face.max i::after { background: #3c9a66; }
+.ncc-face.min i::after { background: #b6434c; }
+.ncc-face b { font-size: 11.5px; color: #f4eefc; line-height: 1; }
+.ncc-face span { font-size: 10px; color: var(--ncc-suave); line-height: 1; }
+.ncc-face.max span { color: #7fe0b8; font-weight: 700; }
+.ncc-face.min span { color: #ff8a92; font-weight: 700; }
+.ncc-todos-dados { margin-top: 2px; }
+.ncc-todos-dados > summary { cursor: pointer; font-size: 11.5px; color: var(--nc-sc, #ffe2a3); list-style: none; display: inline-flex; align-items: center; gap: 5px; }
+.ncc-todos-dados > summary::-webkit-details-marker { display: none; }
+.ncc-todos-dados > summary::before { content: "▸"; transition: transform .15s; display: inline-block; }
+.ncc-todos-dados[open] > summary::before { transform: rotate(90deg); }
+li.chat-message.ncc .dice-roll.ncc-so-total .dice-tooltip { display: none !important; }
+li.chat-message.ncc .dice-roll.ncc-so-total .dice-result { grid-template-areas: "formula total"; }
+/* 0.99.5: continuação de grupo sempre em linha (o <li> do Foundry é "flexcol") */
+li.chat-message.ncc.ncc-cont { flex-direction: row !important; align-items: flex-start; }
+li.chat-message.ncc.ncc-cont > .message-header { flex-wrap: nowrap; padding-top: 1px; }
+/* 0.99.5: balão em duas camadas (borda atrás, fundo na frente): sem o risco no meio quando ele é ampliado */
+.ncc-bolha2 { padding: 0 !important; }
+.ncc-bolha2::before { display: none !important; }
+.ncc-bolha2-caixa {
+  --cc: 9px; padding: 1.5px; background: var(--nc-p, #a86ee0);
+  clip-path: polygon(var(--cc) 0, calc(100% - var(--cc)) 0, 100% var(--cc), 100% calc(100% - var(--cc)), calc(100% - var(--cc)) 100%, var(--cc) 100%, 0 calc(100% - var(--cc)), 0 var(--cc));
+}
+.ncc-bolha2-texto {
+  --cci: 8.4px; padding: 8px 14px 9px; background: color-mix(in srgb, var(--nc-pd, #26183a) 78%, #120e18);
+  clip-path: polygon(var(--cci) 0, calc(100% - var(--cci)) 0, 100% var(--cci), 100% calc(100% - var(--cci)), calc(100% - var(--cci)) 100%, var(--cci) 100%, 0 calc(100% - var(--cci)), 0 var(--cci));
+}
