@@ -109,7 +109,7 @@ export function naurenContextoCatalogo(item) {
   return {
     ...c,
     gm: game.user.isGM,
-    tiers: [{ id: "", nome: "Sem tier", selo: `<span class="nt-sem-tier">Sem tier</span>`, on: !c.tier }, ...tiers.map(t => ({ id: t.id, nome: t.nome, selo: naurenSeloTierHtml(t, { titulo: false }), on: t.id === c.tier }))],
+    tiers: [{ id: "", nome: "Sem tier", selo: `<span class="nt-sem-tier">Sem tier</span>`, on: !c.tier }, ...tiers.map(t => ({ id: t.id, nome: t.nome, selo: naurenSeloTierHtml(t, { titulo: false, tam: "nt-p" }), on: t.id === c.tier }))],
     tierDesconhecido: c.tier && !tiers.some(t => t.id === c.tier) ? c.tier : "",
     raridades: { "": "—", ...NAUREN_TORRE_RARIDADES },
     pigmentos: NAUREN_TORRE_PIGMENTOS,

@@ -817,7 +817,7 @@ function naurenLigarPreviaFormula(el, actor, item) {
     previa.classList.toggle("erro", !v.ok);
     el.classList.toggle("nauren-formula-erro", !v.ok);
     // Número puro não precisa de prévia; erro aparece sempre.
-    previa.classList.toggle("vazia", !txt || (v.ok && /^-?\d+(\.\d+)?%?$/.test(String(el.value).trim().replace(/^=/, ""))));
+    previa.classList.toggle("vazia", !txt || (v.ok && /^[+-]?\s*\d+(\.\d+)?%?$/.test(String(el.value).trim().replace(/^=/, ""))));
     if (!v.ok) el.title = txt; else if (el.title?.startsWith("⚠")) el.title = "";
   };
   el.addEventListener("input", atualizar);

@@ -3942,13 +3942,6 @@
   {{/if}}
   {{#if podeVincularEfeitoNoItem}}
   <div class="item-meta-box">
-    {{#if torreInfo}}
-    <div class="nauren-torre-info" title="Dados do bot O Curador (somente leitura)">
-      <span><i class="fas fa-tower-observation"></i> <b>Torre Infinita</b></span>
-      <span>chave <code>{{torreInfo.chave}}</code></span><span>{{torreInfo.tier}}</span><span>{{torreInfo.raridade}}</span>
-      <span>{{torreInfo.preco}} florins</span><span>pigmento: {{torreInfo.pigmento}}</span><span>loja: {{torreInfo.loja}}</span>
-    </div>
-    {{/if}}
     <label class="nauren-vinculos-titulo">Bônus do item <small>valem enquanto o item estiver {{#if isConsumivel}}no inventário{{else}}equipado{{/if}} e a linha estiver ativa</small></label>
     {{#if escolhaBonus}}
     <div class="nauren-escolha-bonus">
