@@ -11365,26 +11365,40 @@ class NaurenCriadorPersonagem extends foundry.applications.api.HandlebarsApplica
       const ler = x => ({
         forca: x.atributosTotais?.forca, agilidade: x.atributosTotais?.agilidade, estamina: x.atributosTotais?.estamina, inteligencia: x.atributosTotais?.inteligencia, destino: x.atributosTotais?.destino,
         espirito: x.espirito?.max, poderAtaque: x.poderAtaque?.value, poderMagia: x.poderMagia?.value, vitalidade: x.vitalidade?.max,
-        estresse: x.stress?.max, movimento: x.movimentoTotal, defesa: x.defesaTotal
+        estresse: x.stress?.max, movimento: x.movimentoTotal, defesa: x.defesaTotal, ataque: x.bonusAtaqueTotal,
+        vida: x.vida?.max, mana: x.mana?.max, estaminaCombate: x.estaminaCombate?.max, dadosDestino: x.dadosDestino?.max
       });
-      const nomes = { forca: "Força", agilidade: "Agilidade", estamina: "Estamina", inteligencia: "Inteligência", destino: "Destino", espirito: "Espírito", poderAtaque: "P. Ataque", poderMagia: "P. Magia", vitalidade: "Vitalidade", estresse: "Estresse máx.", movimento: "Movimento", defesa: "Defesa" };
+      const nomes = { forca: "Força", agilidade: "Agilidade", estamina: "Estamina", inteligencia: "Inteligência", destino: "Destino", espirito: "Espírito", poderAtaque: "P. Ataque", poderMagia: "P. Magia", vitalidade: "Vitalidade", estresse: "Estresse máx.", movimento: "Movimento", defesa: "Defesa", ataque: "Acerto", vida: "Vida", mana: "Mana", estaminaCombate: "Est. combate", dadosDestino: "D. Destino" };
       const ATR = ["forca", "agilidade", "estamina", "inteligencia", "destino"];
       const com = ler(s);
       const porNome = new Map();
       for (const it of this.actor.items.filter(i => i.type === "cor" || i.type === "peculiaridade")) {
         const sem = ler(this._cloneComAtributos(valores, it.id).system);
         const dif = Object.fromEntries(Object.keys(com).map(k => [k, (Number(com[k]) || 0) - (Number(sem[k]) || 0)]).filter(([, d]) => d));
-        // Mudou um atributo? Mostra só o atributo (o meta que vem dele já aparece no valor total).
-        const chaves = ATR.some(k => dif[k]) ? Object.keys(dif).filter(k => ATR.includes(k)) : Object.keys(dif);
-        if (!chaves.length) continue;
+        // Mudou um atributo? Mostra só o atributo (o meta e o recurso que vêm dele já aparecem no total).
+        // Senão, os metas e o resto; Vida/Mana/Estamina de combate/Dados de Destino só quando nada acima explica.
+        const RECURSOS = ["vida", "mana", "estaminaCombate", "dadosDestino"];
+        const tem = k => !!dif[k];
+        let chaves = ATR.some(tem) ? ATR.filter(tem) : Object.keys(dif).filter(k => !RECURSOS.includes(k));
+        if (!chaves.length) chaves = RECURSOS.filter(tem);
         const ehCor = it.type === "cor";
+        // Peculiaridade sem número (Escalador, Audição…): aparece como "especial", para a lista ficar completa.
+        if (!chaves.length) {
+          if (ehCor) continue;
+          const chaveNomeE = `${it.type}:${it.name}`;
+          if (!porNome.has(chaveNomeE)) porNome.set(chaveNomeE, { de: it.name, cor: "", img: it.img || "", soma: {}, especial: true, fardo: it.system?.tipo === "fardo" });
+          continue;
+        }
         const chaveNome = `${it.type}:${it.name}`;
         const atual = porNome.get(chaveNome) ?? { de: ehCor ? it.name.replace(/^Pigmento\s+/i, "") : it.name, cor: ehCor ? (NAUREN_FICHA_PIGMENTOS[naurenFichaPigmentoDoItem(it)]?.a ?? (it.system?.corHex || "#888")) : "", img: ehCor ? "" : (it.img || ""), soma: {} };
         for (const k of chaves) atual.soma[k] = (atual.soma[k] ?? 0) + dif[k];
         porNome.set(chaveNome, atual);
       }
       const bonus = [];
-      for (const b of porNome.values()) for (const [k, d] of Object.entries(b.soma)) if (d) bonus.push({ de: b.de, cor: b.cor, img: b.img, txt: `${nomes[k] ?? k} ${d > 0 ? "+" : "−"}${Math.abs(d)}`, negativo: d < 0 });
+      for (const b of porNome.values()) {
+        if (b.especial) { bonus.push({ de: b.de, cor: b.cor, img: b.img, txt: "especial", especial: true, negativo: false, title: "Efeito descrito no item (sem número na ficha)" }); continue; }
+        for (const [k, d] of Object.entries(b.soma)) if (d) bonus.push({ de: b.de, cor: b.cor, img: b.img, txt: `${nomes[k] ?? k} ${d > 0 ? "+" : "−"}${Math.abs(d)}`, negativo: d < 0 });
+      }
       return { metas, bonus };
     } catch (err) { console.warn("Nauren RPG | metas do Criador", err); return vazio; }
   }

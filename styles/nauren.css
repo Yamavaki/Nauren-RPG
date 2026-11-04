@@ -7455,3 +7455,4 @@ li.chat-message.ncc-card > .message-content { padding-top: 0 !important; }
   .nauren-criador .nc2 :is(.ncr-grade2, .ncr-entenda, .ncr-modos) { grid-template-columns: minmax(0, 1fr); }
   .nauren-criador .nc2 .ncr-metas { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+.nauren-criador .nc2 .ncr-bonus-l b.esp { color: var(--ncr-suave); font-weight: 600; font-style: italic; }

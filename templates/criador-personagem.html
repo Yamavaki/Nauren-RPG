@@ -23,8 +23,8 @@
     </div>
     {{#if ficha.bonus.length}}
     <div class="ncr-bonus">
-      <div class="ncr-bonus-t">Bônus recebidos</div>
-      {{#each ficha.bonus as |b|}}<div class="ncr-bonus-l">{{#if b.img}}<img src="{{b.img}}" alt="">{{else}}<i style="background: {{b.cor}};"></i>{{/if}}<span>{{b.de}}</span><b class="{{#if b.negativo}}neg{{/if}}">{{b.txt}}</b></div>{{/each}}
+      <div class="ncr-bonus-t">Bônus e penalidades</div>
+      {{#each ficha.bonus as |b|}}<div class="ncr-bonus-l">{{#if b.img}}<img src="{{b.img}}" alt="">{{else}}<i style="background: {{b.cor}};"></i>{{/if}}<span>{{b.de}}</span><b class="{{#if b.negativo}}neg{{/if}}{{#if b.especial}} esp{{/if}}" {{#if b.title}}title="{{b.title}}"{{/if}}>{{b.txt}}</b></div>{{/each}}
     </div>
     {{/if}}
     <div class="ncr-contas">
