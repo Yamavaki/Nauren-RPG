@@ -1,12 +1,8 @@
 <div class="nauren-criador-corpo nc2 {{#if cores.escuro}}nc-fundo-escuro{{/if}}" style="{{cores.estilo}}">
 
-  <!-- 0.98: passos em faixas (feito ✓, atual preenchido, próximos apagados); os feitos voltam com um clique. -->
-  <nav class="nauren-criador-progresso ncr-passos" aria-label="Passos do criador">
-    <span class="nauren-criador-marco ncr-passo {{#if marcoAtivo0}}ativo{{/if}} {{#if marcoOk0}}feito{{/if}}" {{#if marcoFeito0}}data-action="irParaEtapa" data-etapa="0" title="Voltar para Atributos"{{/if}}><i><b>{{#if marcoOk0}}✓{{else}}1{{/if}}</b></i><span>Atributos</span></span>
-    <span class="nauren-criador-marco ncr-passo {{#if marcoAtivo1}}ativo{{/if}} {{#if marcoOk1}}feito{{/if}}" {{#if marcoFeito1}}data-action="irParaEtapa" data-etapa="1" title="Voltar para Peculiaridades"{{/if}}><i><b>{{#if marcoOk1}}✓{{else}}2{{/if}}</b></i><span>Peculiaridades</span></span>
-    <span class="nauren-criador-marco ncr-passo {{#if marcoAtivo2}}ativo{{/if}} {{#if marcoOk2}}feito{{/if}}" {{#if marcoFeito2}}data-action="irParaEtapa" data-etapa="2" title="Voltar para Pigmentos"{{/if}}><i><b>{{#if marcoOk2}}✓{{else}}3{{/if}}</b></i><span>Pigmentos</span></span>
-    <span class="nauren-criador-marco ncr-passo {{#if marcoAtivo3}}ativo{{/if}} {{#if marcoOk3}}feito{{/if}}" {{#if marcoFeito3}}data-action="irParaEtapa" data-etapa="3" title="Voltar para Classe"{{/if}}><i><b>{{#if marcoOk3}}✓{{else}}4{{/if}}</b></i><span>Classe</span></span>
-    <span class="nauren-criador-marco ncr-passo {{#if marcoAtivo4}}ativo{{/if}} {{#if marcoOk4}}feito{{/if}}" {{#if marcoFeito4}}data-action="irParaEtapa" data-etapa="4" title="Voltar para Equipamento"{{/if}}><i><b>{{#if marcoOk4}}✓{{else}}5{{/if}}</b></i><span>Equipamento</span></span>
+  <!-- 0.98: passos em faixas (feito ✓, atual preenchido, próximos apagados); os feitos voltam com um clique. 0.101: Identidade → Classe → Atributos → … -->
+  <nav class="nauren-criador-progresso ncr-passos" aria-label="Passos do criador" style="--passos: {{passos.length}};">
+    {{#each passos as |p|}}<span class="nauren-criador-marco ncr-passo {{#if p.ativo}}ativo{{/if}} {{#if p.ok}}feito{{/if}}" {{#if p.atalho}}data-action="irParaEtapa" data-etapa="{{p.i}}" title="Voltar para {{p.nome}}"{{/if}}><i><b>{{#if p.ok}}✓{{else}}{{p.numero}}{{/if}}</b></i><span>{{p.nome}}</span></span>{{/each}}
   </nav>
 
   <div class="ncr-layout">
@@ -22,6 +18,15 @@
     <div class="ncr-brasoes">
       {{#each ficha.atributos as |a|}}<div class="ncr-brasao"><div><span>{{a.curto}}</span><b>{{a.valor}}</b></div></div>{{/each}}
     </div>
+    <div class="ncr-metas-ficha">
+      {{#each ficha.metas as |m|}}<span class="ncr-los" title="{{m.nome}}"><span class="ncr-los-m"><span>{{m.curto}}</span><b data-ficha-meta="{{m.chave}}">{{m.valor}}</b></span></span>{{/each}}
+    </div>
+    {{#if ficha.bonus.length}}
+    <div class="ncr-bonus">
+      <div class="ncr-bonus-t">Bônus recebidos</div>
+      {{#each ficha.bonus as |b|}}<div class="ncr-bonus-l">{{#if b.img}}<img src="{{b.img}}" alt="">{{else}}<i style="background: {{b.cor}};"></i>{{/if}}<span>{{b.de}}</span><b class="{{#if b.negativo}}neg{{/if}}">{{b.txt}}</b></div>{{/each}}
+    </div>
+    {{/if}}
     <div class="ncr-contas">
       <span>Peculiaridades<b>{{ficha.peculiaridades}}</b></span>
       <span>Equipamentos<b>{{ficha.equipamento}}</b></span>
@@ -32,6 +37,7 @@
 
   {{#if estaNaEtapa0}}
   <div class="nauren-criador-etapa">
+    <div class="ncr-cab2"><h2>Quem é você?</h2><p>Nome e imagens. Dá para trocar depois na ficha.</p></div>
     <div class="nauren-criador-nome">
       <label for="nauren-criador-nome"><i class="fas fa-signature"></i> Nome do personagem</label>
       <input type="text" id="nauren-criador-nome" name="nomePersonagem" value="{{nomePersonagem}}" placeholder="Como seu personagem se chama?" autocomplete="off">
@@ -41,7 +47,7 @@
         <img src="{{imgRetrato}}" data-previa="retrato" alt="Retrato">
         <div>
           <label>Imagem do personagem</label>
-          <p class="item-meta-hint">Aparece na ficha e no diretório de atores.</p>
+          <p class="item-meta-hint">Aparece na ficha, no chat e ao passar o mouse no token.</p>
           <button type="button" data-action="escolherImagemCriador" data-alvo="retrato"><i class="fas fa-image"></i> Escolher imagem</button>
           <button type="button" data-action="enquadrarRetratoCriador"><i class="fas fa-crop-simple"></i> Enquadrar</button>
           <input type="text" class="nauren-criador-link" data-alvo="retrato" placeholder="ou cole o link da imagem (.png, .jpg, .webp…)" title="Link direto de uma imagem já enviada a um site (ex.: Imgur). Precisa terminar em .png, .jpg, .jpeg, .webp ou .gif." autocomplete="off">
@@ -60,78 +66,140 @@
         </div>
       </div>
     </div>
-    <div class="ncr-placa"><i></i><span>Seus atributos</span></div>
-    {{#if semModo}}
-    <p class="item-meta-hint" style="text-align: center; margin-bottom: 12px;">Como você quer gerar seus 5 valores?</p>
-    <div class="nauren-criador-modos">
-      <a class="nauren-criador-modo" data-action="modoAtributos" data-modo="rolar">
-        <i class="fas fa-dice"></i><b>Rolar 5 dados (D6)</b><span>Deixe o Prisma decidir. Os 5 resultados viram os valores para distribuir.</span>
-      </a>
-      <a class="nauren-criador-modo" data-action="modoAtributos" data-modo="fixo">
-        <i class="fas fa-scale-balanced"></i><b>Valores fixos</b><span>Sem depender do acaso: <b>{{valoresFixosTexto}}</b>.</span>
-      </a>
-    </div>
-    <p class="item-meta-hint" style="text-align: center; margin: 10px 0 14px;">Ou digite os valores direto nos atributos abaixo.</p>
-    {{else}}
-    <div class="nauren-criador-modo-barra">
-      <span class="nauren-criador-modo-chip {{#if modoRolar}}ativo{{/if}}" {{#unless modoRolar}}data-action="modoAtributos" data-modo="rolar"{{/unless}}><i class="fas fa-dice"></i> Rolar 5d6</span>
-      <span class="nauren-criador-modo-chip {{#if modoFixo}}ativo{{/if}}" {{#unless modoFixo}}data-action="modoAtributos" data-modo="fixo"{{/unless}}><i class="fas fa-scale-balanced"></i> Valores fixos</span>
-      <a class="nauren-criador-modo-limpar" data-action="limparAtributos" title="Zera os 5 atributos para recomeçar"><i class="fas fa-eraser"></i> Limpar</a>
-    </div>
-    {{#if modoRolar}}{{#unless dadosAtributosCompletos}}
-    <div class="nauren-criador-dados">
-      <p class="item-meta-hint" style="text-align: center; margin: 0 0 8px;">Clique em cada dado (ou em <b>Rolar todos</b>). Cada dado rola uma vez só.</p>
-      <div class="nauren-criador-dados-linha">
-        {{#each dadosAtributos as |d|}}
-        <div class="nauren-criador-dado {{#if d.rolado}}rolado{{/if}}" {{#unless d.rolado}}data-action="rolarDadoAtributo"{{/unless}} data-indice="{{d.indice}}" title="{{#if d.rolado}}Já rolado{{else}}Clique para rolar 1d6{{/if}}">
-          {{#if d.rolado}}<span class="nauren-criador-dado-valor">{{d.valor}}</span>{{else}}<i class="fas fa-dice-d6 nauren-criador-dado-icone"></i><span class="nauren-criador-dado-rotulo">d6</span>{{/if}}
-        </div>
-        {{/each}}
-        <a class="btn-add nauren-criador-rolar-todos" data-action="rolarTodosDadosAtributo"><i class="fas fa-dice"></i> Rolar todos</a>
-      </div>
-    </div>
-    {{/unless}}{{/if}}
-    {{#if temPool}}
-    <div class="nauren-criador-pool">
-      <span class="nauren-criador-pool-rotulo">{{#if modoRolar}}Seus dados{{else}}Valores{{/if}}:</span>
-      {{#each pool as |p|}}<span class="nauren-criador-ficha-valor" draggable="true" data-valor="{{p.valor}}" title="Clique e depois clique num atributo (ou arraste)">{{p.valor}}</span>{{/each}}
-      <span class="nauren-criador-pool-aviso"></span>
-    </div>
-    <p class="item-meta-hint" style="text-align: center; margin: 4px 0 12px;">Clique num valor e depois no atributo (ou arraste). Também dá para digitar.</p>
-    {{/if}}
-    {{/if}}
-    <div class="nauren-criador-atributos-grid principal">
-      {{#each atributosCards as |a|}}
-      <div class="nauren-criador-atributo-campo" data-atributo="{{a.chave}}">
-        <span class="nauren-criador-atributo-icone"><i class="fas {{a.icone}}"></i></span>
-        <label for="nauren-atr-{{a.chave}}">{{a.nome}}</label>
-        <div class="nauren-criador-atributo-valor">
-          <button type="button" data-action="ajustarAtributo" data-passo="-1" title="−1">−</button>
-          <input type="number" id="nauren-atr-{{a.chave}}" name="atributo_{{a.chave}}" value="{{a.valor}}" min="0">
-          <button type="button" data-action="ajustarAtributo" data-passo="1" title="+1">+</button>
-        </div>
-        <span class="nauren-criador-atributo-desc">{{a.desc}}</span>
-      </div>
-      {{/each}}
-    </div>
-    <div class="nauren-criador-previa" title="Calculado do mesmo jeito que a ficha. Pigmentos, Peculiaridades e Classe ainda vão mudar alguns valores.">
-      <span class="nauren-criador-previa-titulo"><i class="fas fa-eye"></i> Prévia</span>
-      <span><small>Vida</small><b data-previa-valor="vida">—</b></span>
-      <span><small>Mana</small><b data-previa-valor="mana">—</b></span>
-      <span><small>Estamina</small><b data-previa-valor="estaminaCombate">—</b></span>
-      <span><small>Poder de Ataque</small><b data-previa-valor="poderAtaque">—</b></span>
-      <span><small>Poder de Magia</small><b data-previa-valor="poderMagia">—</b></span>
-      <span><small>Dados de Destino</small><b data-previa-valor="dadosDestino">—</b></span>
-      <span><small>Itens iniciais</small><b data-previa-valor="itens">—</b></span>
-    </div>
+    <div class="ncr-dica-linha"><i class="fas fa-route"></i><span><b>Próximo: a Classe.</b> Ela mostra quais atributos valem mais para você; depois você gera os seus valores já sabendo onde colocar.</span></div>
   </div>
   <div class="nauren-criador-rodape">
     <span></span>
-    <a class="btn-add nauren-criador-btn-avancar" data-action="confirmarAtributos">Confirmar e continuar <i class="fas fa-arrow-right"></i></a>
+    <a class="btn-add nauren-criador-btn-avancar" data-action="confirmarIdentidade">Continuar para a Classe <i class="fas fa-arrow-right"></i></a>
   </div>
   {{/if}}
 
   {{#if estaNaEtapa1}}
+  <div class="nauren-criador-etapa">
+    <div class="ncr-cab2"><h2>Classe</h2><p>{{#if temClasse}}Sua Classe já está definida: <b>{{classeAtualNome}}</b>.{{else}}Escolha 1. Só é gravada quando você concluir: dá para voltar e trocar.{{/if}}</p></div>
+    {{#unless temClasse}}
+    <div class="ncr-classes">
+      {{#each classes as |c|}}
+      <div class="ncr-cl {{#if c.selecionado}}selecionado{{/if}}" data-action="escolherClasse" data-uuid="{{c.uuid}}" title="{{c.textoCompleto}}" style="--classe: {{c.cor}};" role="button" tabindex="0">
+        <span class="ncr-emblema"><svg viewBox="0 0 24 24" aria-hidden="true">{{{c.svg}}}</svg></span>
+        <span>{{c.nome}}</span>
+      </div>
+      {{/each}}
+    </div>
+    {{/unless}}
+    {{#if classeSelecionada}}
+    <div class="ncr-cl-detalhe" style="--classe: {{classeSelecionada.cor}};">
+      <span class="ncr-emblema grande"><svg viewBox="0 0 24 24" aria-hidden="true">{{{classeSelecionada.svg}}}</svg></span>
+      <div><h3>{{classeSelecionada.nome}}</h3><p>{{classeSelecionada.descricao}}</p></div>
+    </div>
+    <div class="ncr-grade2">
+      <div class="ncr-bloco">
+        <div class="ncr-rot">O que {{classeSelecionada.artigo}} {{classeSelecionada.nome}} usa mais</div>
+        {{#if classeSelecionada.rec.metas.length}}<div class="ncr-linha">{{#each classeSelecionada.rec.metas as |m|}}<span class="ncr-chip rec">★ {{m}}</span>{{/each}}</div>{{/if}}
+        {{#if classeSelecionada.rec.atributos.length}}
+        <div class="ncr-prio">
+          {{#each classeSelecionada.rec.atributos as |a|}}<div><small>{{a.rank}}º</small><b>{{a.nome}}</b><span>{{a.motivo}}</span></div>{{/each}}
+        </div>
+        {{/if}}
+        {{#if classeSelecionada.rec.dica}}<span class="ncr-suave">{{classeSelecionada.rec.dica}}</span>{{/if}}
+        <span class="ncr-suave">No passo Atributos, <b>Sugestão</b> testa todas as combinações dos seus valores e escolhe a que mais rende para {{classeSelecionada.artigo}} {{classeSelecionada.nome}}. Você pode trocar depois.</span>
+      </div>
+      <div class="ncr-bloco">
+        <div class="ncr-rot">Armas e armaduras</div>
+        <div class="ncr-equip-l">
+          <small>Armas</small><div class="ncr-linha">{{#each classeSelecionada.armas as |x|}}<span class="ncr-chip">{{x}}</span>{{else}}<span class="ncr-suave">—</span>{{/each}}</div>
+          <small>Armaduras</small><div class="ncr-linha">{{#each classeSelecionada.armaduras as |x|}}<span class="ncr-chip">{{x}}</span>{{else}}<span class="ncr-suave">—</span>{{/each}}</div>
+          <small>Todas</small><div class="ncr-linha"><span class="ncr-chip">Capas</span><span class="ncr-chip">Botas</span></div>
+        </div>
+        <span class="ncr-suave">É o que aparece primeiro no Equipamento.</span>
+      </div>
+    </div>
+    {{/if}}
+  </div>
+  <div class="nauren-criador-rodape">
+    <a class="btn-add" data-action="voltarEtapa"><i class="fas fa-arrow-left"></i> Voltar</a>
+    {{#if temClasse}}
+    <a class="btn-add nauren-criador-btn-avancar" data-action="avancarDeClasse">Continuar <i class="fas fa-arrow-right"></i></a>
+    {{else}}{{#if temSelecao}}
+    <a class="btn-add nauren-criador-btn-avancar" data-action="avancarDeClasse">Continuar com {{classeSelecionada.nome}} <i class="fas fa-arrow-right"></i></a>
+    {{else}}
+    <span class="item-meta-hint">Escolha uma Classe acima</span>
+    {{/if}}{{/if}}
+  </div>
+  {{/if}}
+
+  {{#if estaNaEtapa2}}
+  <div class="nauren-criador-etapa ncr-atributos">
+    <div class="ncr-cab2"><h2>Atributos</h2><p>{{atr.subtitulo}}</p></div>
+    {{#if atr.semModo}}
+    {{#if atr.recLinha}}<div class="ncr-dica-linha"><i class="fas fa-star"></i><span>{{{atr.recLinha}}}</span></div>{{/if}}
+    <div class="ncr-modos">
+      <a class="ncr-modo" data-action="modoAtributos" data-modo="rolar"><i class="fas fa-dice"></i><b>Rolar 5 dados (d6)</b><span>Deixe o Prisma decidir. O Mestre vê a rolagem no chat.{{#if atr.travado}} <b>Depois de rolar, não dá para trocar para os valores fixos.</b>{{/if}}</span></a>
+      <a class="ncr-modo" data-action="modoAtributos" data-modo="fixo"><i class="fas fa-scale-balanced"></i><b>Valores fixos</b><span>Sem acaso: <b>{{atr.fixosTexto}}</b>. Seguro e equilibrado.</span></a>
+    </div>
+    {{else}}
+    <div class="ncr-trava">
+      <i class="fas {{#if atr.modoPreso}}fa-lock{{else}}fa-sliders{{/if}}"></i>
+      <span class="ncr-trava-txt"><b>{{#if atr.modoRolar}}Rolar 5d6{{else}}Valores fixos{{/if}}</b>{{#if atr.valoresTexto}} · {{atr.valoresTexto}}{{/if}}{{#if atr.modoRolar}} <span class="ncr-suave">· no chat e no Registro</span>{{/if}}</span>
+      {{#if atr.podeTrocarModo}}<a class="ncr-btn" data-action="modoAtributos" data-modo="{{#if atr.modoRolar}}fixo{{else}}rolar{{/if}}" title="{{#if atr.travado}}Só até rolar o primeiro dado{{/if}}"><i class="fas fa-right-left"></i> {{#if atr.modoRolar}}Usar valores fixos{{else}}Rolar 5d6{{/if}}</a>{{/if}}
+      {{#each atr.sugestoes as |s|}}<a class="ncr-btn" data-action="sugestaoAtributos" data-perfil="{{s.indice}}" title="Testa as combinações dos seus valores e escolhe a que mais rende para a Classe"><i class="fas fa-wand-magic-sparkles"></i> {{s.rotulo}}</a>{{/each}}
+      <a class="ncr-btn" data-action="limparAtributos" title="Devolve todos os valores"><i class="fas fa-eraser"></i> Limpar</a>
+    </div>
+    <div class="ncr-pool">
+      <span class="ncr-suave ncr-pool-rot">Seus valores</span>
+      {{#each atr.pool as |v|}}
+      {{#if v.rolado}}<a class="ncr-v {{#if v.usado}}usado{{/if}} {{#if v.naMao}}pego{{/if}}" {{#unless v.usado}}data-action="pegarValor" draggable="true"{{/unless}} data-indice="{{v.indice}}" data-valor="{{v.valor}}" title="{{#if v.usado}}Já está num atributo{{else}}Clique e depois clique num atributo{{/if}}"><b>{{v.valor}}</b></a>
+      {{else}}<a class="ncr-v dado" data-action="rolarDadoAtributo" data-indice="{{v.indice}}" title="Clique para rolar 1d6"><i class="fas fa-dice-d6"></i></a>{{/if}}
+      {{/each}}
+      {{#if atr.faltaRolar}}<a class="ncr-btn forte" data-action="rolarTodosDadosAtributo"><i class="fas fa-dice"></i> Rolar todos</a>{{/if}}
+    </div>
+    {{/if}}
+    <div class="ncr-atrs {{#if atr.temNaMao}}esperando{{/if}}">
+      {{#each atr.cards as |a|}}
+      <div class="ncr-atr {{#if a.rec}}rec{{/if}} {{#if a.cheio}}cheio{{/if}}" data-atributo="{{a.chave}}" {{#if a.clicavel}}data-action="colocarAtributo"{{/if}}>
+        <span class="ncr-atr-n"><i class="fas {{a.icone}}"></i>{{a.nome}}</span>
+        {{#if ../atr.livre}}
+        <span class="ncr-casa cheia livre"><input type="number" name="atributo_{{a.chave}}" value="{{a.valor}}" min="0" aria-label="{{a.nome}}"></span>
+        <span class="ncr-livre-btns"><button type="button" data-action="ajustarAtributo" data-passo="-1" title="−1">−</button><button type="button" data-action="ajustarAtributo" data-passo="1" title="+1">+</button></span>
+        {{else}}
+        <span class="ncr-casa {{#if a.cheio}}cheia{{/if}}">{{#if a.cheio}}<b>{{a.valor}}</b>{{else}}<em>{{#if ../atr.temNaMao}}aqui{{else}}vazio{{/if}}</em>{{/if}}</span>
+        {{/if}}
+        <span class="ncr-atr-d">{{a.desc}}</span>
+        <span class="ncr-atr-x {{#if a.rec}}r{{/if}}">{{{a.rodape}}}</span>
+      </div>
+      {{/each}}
+    </div>
+    {{#if atr.completo}}<div class="ncr-ok"><i class="fas fa-circle-check"></i><span>{{{atr.resultadoTexto}}}</span></div>{{/if}}
+    <div class="ncr-placa"><i></i><span>Como fica</span></div>
+    <div class="ncr-metas">
+      {{#each atr.metas as |m|}}<div class="{{#if m.rec}}rec{{/if}}"><span class="ncr-los"><span class="ncr-los-m"><span>{{m.nome}}</span><b data-previa-valor="{{m.chave}}">{{m.valor}}</b></span></span><small>{{#if m.rec}}★ {{/if}}{{m.formula}}</small></div>{{/each}}
+    </div>
+    <div class="ncr-recursos">
+      {{#each atr.recursos as |r|}}<span><small>{{r.nome}}</small><b data-previa-valor="{{r.chave}}">{{r.valor}}</b></span>{{/each}}
+    </div>
+    <div class="ncr-placa"><i></i><span>Entenda os atributos</span></div>
+    <div class="ncr-entenda">
+      <div class="ncr-bloco">
+        <div class="ncr-rot">Atributos (o que você rola)</div>
+        {{#each atr.entendaAtributos as |e|}}<div class="ncr-er {{#if e.rec}}rec{{/if}}"><i class="fas {{e.icone}}"></i><b>{{e.nome}}{{#if e.rec}}<em>★ {{../atr.classeNome}}</em>{{/if}}</b><span>{{{e.texto}}}</span></div>{{/each}}
+      </div>
+      <div class="ncr-bloco">
+        <div class="ncr-rot">Meta-atributos (calculados)</div>
+        {{#each atr.entendaMetas as |e|}}<div class="ncr-er {{#if e.rec}}rec{{/if}}"><i class="fas {{e.icone}}"></i><b>{{e.nome}}{{#if e.formula}}<small>{{e.formula}}</small>{{/if}}{{#if e.rec}}<em>★ {{../atr.classeNome}}</em>{{/if}}</b><span>{{{e.texto}}}</span></div>{{/each}}
+      </div>
+    </div>
+  </div>
+  <div class="nauren-criador-rodape">
+    <a class="btn-add" data-action="voltarEtapa"><i class="fas fa-arrow-left"></i> Voltar</a>
+    {{#if atr.podeConfirmar}}
+    <a class="btn-add nauren-criador-btn-avancar" data-action="confirmarAtributos">Confirmar e continuar <i class="fas fa-arrow-right"></i></a>
+    {{else}}
+    <span class="item-meta-hint">{{atr.faltamTexto}}</span>
+    {{/if}}
+  </div>
+  {{/if}}
+
+  {{#if estaNaEtapa3}}
   <div class="nauren-criador-etapa">
     <div class="ncr-cabecalho"><h2 class="nauren-criador-titulo">Peculiaridades</h2><p>Escolha de <b>0 a 3</b> pares. Para cada par: escolha um lado (Benefício ou Fardo) e <b>role o D10</b> para o outro (ou vice-versa). A mesma Peculiaridade vale no máximo 2 vezes.</p></div>
     <div class="nauren-criador-sorteio">
@@ -164,7 +232,7 @@
   </div>
   {{/if}}
 
-  {{#if estaNaEtapa2}}
+  {{#if estaNaEtapa4}}
   <div class="nauren-criador-etapa">
     <div class="ncr-cabecalho"><h2 class="nauren-criador-titulo">Pigmentos</h2><p>Escolha <b>2</b>: suas duas cores favoritas. Elas viram as cores da sua ficha, dos seus cards e da HUD.</p></div>
     <div class="nauren-criador-cards-grid ncr-pigmentos">
@@ -198,95 +266,53 @@
   </div>
   {{/if}}
 
-  {{#if estaNaEtapa3}}
+  {{#if estaNaEtapa5}}
   <div class="nauren-criador-etapa">
-    <div class="ncr-cabecalho"><h2 class="nauren-criador-titulo">Classe</h2></div>
-    {{#if temClasse}}
-    <p class="item-meta-hint" style="text-align: center; margin-bottom: 12px;">
-      Sua Classe já está definida: <b>{{classeAtualNome}}</b>. Continue para revisar o Equipamento.
-    </p>
+    <div class="ncr-cab2"><h2>Equipamento</h2><p>Destino {{destinoTotal}} → até <b>{{equipamentoMax}} {{#if limiteUm}}item{{else}}itens{{/if}}</b> (1-2 → 1, 3-4 → 2, 5-6 → 3, 7-8 → 4). Clique de novo para desmarcar.</p></div>
+    {{#if temClasseEscolhida}}
+    <div class="ncr-perm" style="--classe: {{classeCor}};">
+      <span class="ncr-emblema"><svg viewBox="0 0 24 24" aria-hidden="true">{{{classeSvg}}}</svg></span>
+      <div class="ncr-equip-l">
+        <small>Armas</small><div class="ncr-linha">{{#each permitido.armas as |x|}}<span class="ncr-chip rec">{{x}}</span>{{else}}<span class="ncr-suave">—</span>{{/each}}</div>
+        <small>Armaduras</small><div class="ncr-linha">{{#each permitido.armaduras as |x|}}<span class="ncr-chip rec">{{x}}</span>{{/each}}<span class="ncr-chip">Capas e botas: todas</span></div>
+      </div>
+      <span class="ncr-suave ncr-perm-rot">Permitido<br>para {{classeArtigo}} {{classeNome}}</span>
+    </div>
     {{else}}
-    <p class="item-meta-hint" style="text-align: center; margin-bottom: 12px;">
-      Escolha 1 Classe. No próximo passo, o Equipamento mostra primeiro o que ela usa. A Classe só é gravada quando você concluir, então dá para voltar e trocar.
-    </p>
-    <div class="nauren-criador-cards-grid nauren-criador-grade-classes">
-      {{#each classes as |c|}}
-      <div class="nauren-criador-card ncr-classe-card {{#if c.selecionado}}selecionado{{/if}}" data-action="escolherClasse" data-uuid="{{c.uuid}}" title="{{c.textoCompleto}}" style="--classe: {{c.cor}};">
-        <span class="ncr-emblema"><svg viewBox="0 0 24 24" aria-hidden="true">{{{c.svg}}}</svg></span>
-        <span class="nauren-criador-card-nome">{{c.nome}}</span>
-        <span class="nauren-criador-card-resumo">{{c.resumo}}</span>
+    <p class="nauren-criador-equip-dica"><i class="fas fa-circle-info"></i> Sem Classe escolhida: volte ao passo Classe para ver o equipamento dela.</p>
+    {{/if}}
+    {{#if equipRecArmas.length}}
+    <div class="ncr-grupo-t"><i class="fas fa-star"></i> Armas {{classeDa}} <span class="ncr-suave">· {{equipRecArmas.length}} {{#if armasUma}}opção{{else}}opções{{/if}}</span></div>
+    <div class="nauren-criador-cards-grid ncr-equip-cards">
+      {{#each equipRecArmas as |e|}}
+      <div class="nauren-criador-card nauren-criador-card-recomendado {{#if e.selecionado}}selecionado{{/if}} {{#if e.bloqueado}}bloqueado{{/if}}" data-action="toggleCardEquipamento" data-uuid="{{e.uuid}}" title="{{e.textoCompleto}}">
+        <img src="{{e.img}}"><span class="nauren-criador-card-nome">{{e.nome}}</span><span class="nauren-criador-card-tipo">{{e.tipoRotulo}}</span><span class="nauren-criador-card-resumo">{{e.resumo}}</span>
       </div>
       {{/each}}
     </div>
-    {{#if classeSelecionada}}
-    <div class="nauren-criador-classe-detalhe" style="--classe: {{classeSelecionada.cor}};">
-      <span class="ncr-emblema grande"><svg viewBox="0 0 24 24" aria-hidden="true">{{{classeSelecionada.svg}}}</svg></span>
-      <div>
-        <b class="nauren-criador-classe-detalhe-nome">{{classeSelecionada.nome}}</b>
-        <p>{{classeSelecionada.descricao}}</p>
-        {{#if classeSelecionada.dica}}<p class="nauren-criador-equip-dica"><i class="fas fa-shield-halved"></i> {{classeSelecionada.dica}}</p>{{/if}}
+    {{/if}}
+    {{#if equipRecArmaduras.length}}
+    <div class="ncr-grupo-t"><i class="fas fa-star"></i> Armaduras, capas e botas <span class="ncr-suave">· {{equipRecArmaduras.length}} {{#if armadurasUma}}opção{{else}}opções{{/if}}</span></div>
+    <div class="nauren-criador-cards-grid ncr-equip-cards">
+      {{#each equipRecArmaduras as |e|}}
+      <div class="nauren-criador-card nauren-criador-card-recomendado {{#if e.selecionado}}selecionado{{/if}} {{#if e.bloqueado}}bloqueado{{/if}}" data-action="toggleCardEquipamento" data-uuid="{{e.uuid}}" title="{{e.textoCompleto}}">
+        <img src="{{e.img}}"><span class="nauren-criador-card-nome">{{e.nome}}</span><span class="nauren-criador-card-tipo">{{e.tipoRotulo}}</span><span class="nauren-criador-card-resumo">{{e.resumo}}</span>
       </div>
+      {{/each}}
     </div>
     {{/if}}
-    {{/if}}
-  </div>
-  <div class="nauren-criador-rodape">
-    <a class="btn-add" data-action="voltarEtapa"><i class="fas fa-arrow-left"></i> Voltar</a>
-    {{#if temClasse}}
-    <a class="btn-add nauren-criador-btn-avancar" data-action="avancarDeClasse">Continuar <i class="fas fa-arrow-right"></i></a>
-    {{else}}{{#if temSelecao}}
-    <a class="btn-add nauren-criador-btn-avancar" data-action="avancarDeClasse">Continuar com {{classeSelecionada.nome}} <i class="fas fa-arrow-right"></i></a>
-    {{else}}
-    <span class="item-meta-hint">Escolha uma classe acima</span>
-    {{/if}}{{/if}}
-  </div>
-  {{/if}}
-
-  {{#if estaNaEtapa4}}
-  <div class="nauren-criador-etapa">
-    <div class="ncr-cabecalho"><h2 class="nauren-criador-titulo">Equipamento</h2></div>
-    <p class="item-meta-hint" style="text-align: center; margin-bottom: 12px;">
-      Escolha até <b>{{equipamentoMax}}</b> {{#if limiteUm}}item{{else}}itens{{/if}} - a quantidade depende do seu Destino (1-2 → 1 item, 3-4 → 2, 5-6 → 3, 7-8 → 4). Para trocar, clique no item escolhido para desmarcar.
-    </p>
-    {{#if temRecomendados}}
-    <div class="nauren-criador-equip-grupo recomendado">
-      <div class="nauren-criador-equip-cabecalho">
-        <i class="fas fa-star"></i> Recomendado para {{classeNome}}
-      </div>
-      {{#if dicaClasse}}<p class="nauren-criador-equip-dica"><i class="fas fa-lightbulb"></i> {{dicaClasse}}</p>{{/if}}
-      <div class="nauren-criador-cards-grid">
-        {{#each equipRecomendados as |e|}}
-        <div class="nauren-criador-card nauren-criador-card-recomendado {{#if e.selecionado}}selecionado{{/if}} {{#if e.bloqueado}}bloqueado{{/if}}" data-action="toggleCardEquipamento" data-uuid="{{e.uuid}}" title="{{e.textoCompleto}}">
-          <span class="nauren-criador-selo-recomendado"><i class="fas fa-star"></i> {{../classeNome}}</span>
-          <img src="{{e.img}}">
-          <span class="nauren-criador-card-nome">{{e.nome}}</span>
-          <span class="nauren-criador-card-tipo">{{e.tipoRotulo}}</span>
-          <span class="nauren-criador-card-resumo">{{e.resumo}}</span>
-        </div>
-        {{/each}}
-      </div>
-    </div>
-    {{else}}
-    {{#unless temClasseEscolhida}}
-    <p class="nauren-criador-equip-dica"><i class="fas fa-circle-info"></i> Sem Classe escolhida: volte um passo para ver o equipamento recomendado para ela.</p>
-    {{/unless}}
-    {{/if}}
-    <div class="nauren-criador-equip-grupo">
-      {{#if temRecomendados}}
-      <div class="nauren-criador-equip-cabecalho outros">Outros equipamentos</div>
-      <p class="item-meta-hint" style="margin: 0 0 8px;">Fora da lista da sua Classe. Você pode escolher mesmo assim (combine com o Mestre).</p>
-      {{/if}}
-      <div class="nauren-criador-cards-grid">
+    {{#if equipOutros.length}}
+    <details class="ncr-fora nauren-criador-equip-grupo" data-persist="criador-fora" {{#if foraAberto}}open{{/if}}>
+      <summary><i class="fas fa-chevron-right"></i><span><b>{{#if temRecomendados}}Fora da Classe{{else}}Equipamentos{{/if}}</b> <span class="ncr-suave">· {{equipOutros.length}} itens{{#if temRecomendados}} · dá para pegar; fica marcado como fora da Classe{{/if}}</span></span></summary>
+      <div class="nauren-criador-cards-grid ncr-equip-cards">
         {{#each equipOutros as |e|}}
         <div class="nauren-criador-card {{#if e.selecionado}}selecionado{{/if}} {{#if e.bloqueado}}bloqueado{{/if}}" data-action="toggleCardEquipamento" data-uuid="{{e.uuid}}" title="{{e.textoCompleto}}">
-          <img src="{{e.img}}">
-          <span class="nauren-criador-card-nome">{{e.nome}}</span>
-          <span class="nauren-criador-card-tipo">{{e.tipoRotulo}}</span>
-          <span class="nauren-criador-card-resumo">{{e.resumo}}</span>
+          <img src="{{e.img}}"><span class="nauren-criador-card-nome">{{e.nome}}</span><span class="nauren-criador-card-tipo">{{e.tipoRotulo}}</span><span class="nauren-criador-card-resumo">{{e.resumo}}</span>
         </div>
         {{/each}}
       </div>
-    </div>
+    </details>
+    {{/if}}
   </div>
   <p class="nauren-criador-contador">Selecionados: <b>{{equipamentoContagem}}</b> / {{equipamentoMax}}{{#if equipamentoRestante}} · ainda pode escolher {{equipamentoRestante}}{{/if}}{{#if foraDaClasseEscolhidos}} · <span class="nauren-criador-aviso-fora">fora da Classe: {{foraDaClasseEscolhidos}}</span>{{/if}}</p>
   <div class="nauren-criador-rodape">
@@ -306,6 +332,7 @@
       <p><b>Peculiaridades:</b> {{resumo.peculiaridades}}</p>
       <p><b>Pigmentos:</b> {{resumo.pigmentos}}</p>
       <p><b>Equipamento:</b> {{resumo.equipamento}}</p>
+      {{#if resumo.armasClasse}}<p><b>Armas da Classe:</b> {{resumo.armasClasse}}</p>{{/if}}
       {{#if resumo.concedidos}}<p><b>Da Classe (nível 1):</b> {{resumo.concedidos}}</p>{{/if}}
     </div>
     <p class="item-meta-hint" style="text-align: center;">Concluir fecha o assistente e abre a escolha das barras do token.</p>

@@ -1,6 +1,6 @@
 /* Nauren RPG — Ficha de Item (NaurenItemSheet). Separado do nauren.mjs na 0.94.22. */
 import { naurenKitJanela, naurenKitSistema } from "./janelas-kit.mjs";
-import { naurenFormatarNumero, NAUREN_CATEGORIAS_EQUIPAMENTO, ARMADURA_TIPOS, ARMA_TIPOS, ATRIBUTOS_BASE_OPCOES, ATRIBUTOS_BONUS, HABILIDADE_CATEGORIAS, NAUREN_CAMPOS_MODIFICADOR_OPCOES, NAUREN_CAPACIDADES, NAUREN_EQUIPAMENTO_CLASSE_LIVRO, NAUREN_EQUIP_CATEGORIAS, NAUREN_LOGICA_CONDICOES_OPCOES, NAUREN_MODOS_DURACAO, NAUREN_MODOS_MODIFICADOR_EXTERNO_OPCOES, NAUREN_MOMENTOS_PERIODICOS, NAUREN_PAGAR_CUSTO_OPCOES, NAUREN_PAGAR_RECURSO_OPCOES, NAUREN_PRIORIDADE_DISPOSICAO, NAUREN_PRIORIDADE_INDICADORES, NAUREN_PRIORIDADE_INDICADORES_ACAO, NAUREN_PRIORIDADE_QUEM_RECEBE, NaurenCondicaoData, NaurenEfeitoData, NaurenGrupoHelper, NaurenHabilidadeData, NaurenMagiaData, NaurenSubclasseHelper, TEMPLATE_FORMATOS, campoCondicaoAplicada, campoModificador, campoModificadorExterno, campoRecursoDeclarado, naurenAjustarListasLargas, naurenBotoesDeFormula, naurenCategoriaDaArma, naurenClassificarCampoAcao, naurenCombatenteEhDoAtor, naurenCondicaoDoSistemaPorNome, naurenCondicaoNegativa, naurenGruposExclusivosConhecidos, naurenModificacoesRecebidas, naurenModoDuracaoCondicao, naurenMomentoEfeitoPeriodico, naurenMostrarNomesDosCamposUuid, naurenMunicoesCompativeis, naurenNomeParaUuid, naurenOpcoesDeCampoParaModificadorExterno, naurenPersistirDetalhesAbertos, naurenPesoOfensivo, naurenPostarCard, naurenProcessarEmanacoes, naurenProcessarGatilhos, naurenRecursosCustomConhecidos, naurenResumoDaAcao, naurenResumoEquipamentoClasse, naurenResumoModificador, naurenResumoPrioridadeAcao, naurenSincronizarRecursosCustom, naurenUsarAcalanto } from "../nauren.mjs";
+import { NAUREN_ATRIBUTOS_CLASSE_LIVRO, naurenFormatarNumero, NAUREN_CATEGORIAS_EQUIPAMENTO, ARMADURA_TIPOS, ARMA_TIPOS, ATRIBUTOS_BASE_OPCOES, ATRIBUTOS_BONUS, HABILIDADE_CATEGORIAS, NAUREN_CAMPOS_MODIFICADOR_OPCOES, NAUREN_CAPACIDADES, NAUREN_EQUIPAMENTO_CLASSE_LIVRO, NAUREN_EQUIP_CATEGORIAS, NAUREN_LOGICA_CONDICOES_OPCOES, NAUREN_MODOS_DURACAO, NAUREN_MODOS_MODIFICADOR_EXTERNO_OPCOES, NAUREN_MOMENTOS_PERIODICOS, NAUREN_PAGAR_CUSTO_OPCOES, NAUREN_PAGAR_RECURSO_OPCOES, NAUREN_PRIORIDADE_DISPOSICAO, NAUREN_PRIORIDADE_INDICADORES, NAUREN_PRIORIDADE_INDICADORES_ACAO, NAUREN_PRIORIDADE_QUEM_RECEBE, NaurenCondicaoData, NaurenEfeitoData, NaurenGrupoHelper, NaurenHabilidadeData, NaurenMagiaData, NaurenSubclasseHelper, TEMPLATE_FORMATOS, campoCondicaoAplicada, campoModificador, campoModificadorExterno, campoRecursoDeclarado, naurenAjustarListasLargas, naurenBotoesDeFormula, naurenCategoriaDaArma, naurenClassificarCampoAcao, naurenCombatenteEhDoAtor, naurenCondicaoDoSistemaPorNome, naurenCondicaoNegativa, naurenGruposExclusivosConhecidos, naurenModificacoesRecebidas, naurenModoDuracaoCondicao, naurenMomentoEfeitoPeriodico, naurenMostrarNomesDosCamposUuid, naurenMunicoesCompativeis, naurenNomeParaUuid, naurenOpcoesDeCampoParaModificadorExterno, naurenPersistirDetalhesAbertos, naurenPesoOfensivo, naurenPostarCard, naurenProcessarEmanacoes, naurenProcessarGatilhos, naurenRecursosCustomConhecidos, naurenResumoDaAcao, naurenResumoEquipamentoClasse, naurenResumoModificador, naurenResumoPrioridadeAcao, naurenSincronizarRecursosCustom, naurenUsarAcalanto } from "../nauren.mjs";
 import { NAUREN_MOTION_CONDICAO_OPCOES, naurenMotionPresetCondicao } from "./animacoes.mjs";
 import { NAUREN_TORRE_LOJAS, NAUREN_TORRE_PIGMENTOS, NAUREN_TORRE_RARIDADES, NAUREN_TORRE_TIERS, naurenDisponivelNoInicio, naurenTierTorre } from "./compendios.mjs";
 import { NaurenActorSheet } from "./ficha-ator.mjs";
@@ -522,6 +522,9 @@ class NaurenItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       toggleCapacidade: NaurenItemSheet.onToggleCapacidade,
       toggleEquipCategoria: NaurenItemSheet.onToggleEquipCategoria,
       equipPadraoLivro: NaurenItemSheet.onEquipPadraoLivro,
+      toggleAtrRecMeta: NaurenItemSheet.onToggleAtrRecMeta,
+      toggleAtrRecAtributo: NaurenItemSheet.onToggleAtrRecAtributo,
+      atrRecPadraoLivro: NaurenItemSheet.onAtrRecPadraoLivro,
       addUsoExtra: NaurenItemSheet.onAddUsoExtra,
       addPagarMovimento: NaurenItemSheet.onAddPagarMovimento,
       removePagarMovimento: NaurenItemSheet.onRemovePagarMovimento,
@@ -1146,6 +1149,13 @@ class NaurenItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
         context.equipCategoriasArmaduras = listaEq.filter(c => c.grupo === "armadura");
         context.equipRecomendadoResumo = naurenResumoEquipamentoClasse(eqCfg);
         context.equipLivroDisponivel = !!NAUREN_EQUIPAMENTO_CLASSE_LIVRO[this.item.system.identifier];
+        // 0.101: atributos recomendados (Criador de Personagem: passo Classe e passo Atributos).
+        const ar = this.item.system.atributosRecomendados ?? {};
+        const metasM = new Set(ar.metas ?? []);
+        context.atrRecMetas = [["espirito", "Espírito"], ["poderAtaque", "Poder de Ataque"], ["poderMagia", "Poder de Magia"], ["vitalidade", "Vitalidade"]].map(([chave, nome]) => ({ chave, nome, marcada: metasM.has(chave) }));
+        const ordem = ar.atributos ?? [];
+        context.atrRecAtributos = [["forca", "Força"], ["agilidade", "Agilidade"], ["estamina", "Estamina"], ["inteligencia", "Inteligência"], ["destino", "Destino"]].map(([chave, nome]) => ({ chave, nome, rank: ordem.indexOf(chave) + 1 }));
+        context.atrRecLivroDisponivel = !!NAUREN_ATRIBUTOS_CLASSE_LIVRO[this.item.system.identifier];
       }
       context.niveisView = await Promise.all(comIndice.map(async n => ({
         ...n,
@@ -1859,6 +1869,26 @@ class NaurenItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     const c = target.dataset.chave;
     lista.has(c) ? lista.delete(c) : lista.add(c);
     await this.item.update({ "system.equipamentoRecomendado.categorias": [...lista] });
+  }
+  /** Classe: liga/desliga um meta-atributo recomendado. */
+  static async onToggleAtrRecMeta(event, target) {
+    const lista = new Set(this.item.system.atributosRecomendados?.metas ?? []);
+    const c = target.dataset.chave;
+    lista.has(c) ? lista.delete(c) : lista.add(c);
+    await this.item.update({ "system.atributosRecomendados.metas": [...lista] });
+  }
+  /** Classe: atributos em destaque, na ordem em que são marcados (1º, 2º, 3º…); clicar de novo tira. */
+  static async onToggleAtrRecAtributo(event, target) {
+    const lista = [...(this.item.system.atributosRecomendados?.atributos ?? [])];
+    const c = target.dataset.chave;
+    const i = lista.indexOf(c);
+    if (i >= 0) lista.splice(i, 1); else lista.push(c);
+    await this.item.update({ "system.atributosRecomendados.atributos": lista });
+  }
+  static async onAtrRecPadraoLivro(event, target) {
+    const padrao = NAUREN_ATRIBUTOS_CLASSE_LIVRO[this.item.system.identifier];
+    if (!padrao) return ui.notifications.warn("Não há padrão do livro para este identificador.");
+    await this.item.update({ "system.atributosRecomendados": foundry.utils.deepClone(padrao) });
   }
   /** Classe: volta o equipamento recomendado ao padrão do livro (pelo identifier). */
   static async onEquipPadraoLivro(event, target) {

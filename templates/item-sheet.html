@@ -2790,6 +2790,28 @@
     {{#if equipLivroDisponivel}}<a class="btn-add" data-action="equipPadraoLivro" style="margin-top: 8px; display: inline-block;"><i class="fas fa-book"></i> Voltar ao padrão do livro</a>{{/if}}
   </details>
 
+  <details class="item-meta-box" data-persist="atr-recomendados" open>
+    <summary style="cursor: pointer;"><i class="fas fa-star"></i> Atributos recomendados (Criador de Personagem)</summary>
+    <p class="item-meta-hint" style="margin: 6px 0 8px;">
+      No Criador, os metas marcados ganham ★ e os atributos aparecem como 1º, 2º e 3º no passo Classe e destacados no passo Atributos. A "Sugestão" usa estes metas para escolher a melhor distribuição dos valores.
+    </p>
+    <label style="display: block; margin: 4px 0;">Meta-atributos que a Classe mais usa</label>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px 14px;">
+      {{#each atrRecMetas as |m|}}
+      <a class="item-meta-toggle" data-action="toggleAtrRecMeta" data-chave="{{m.chave}}" style="margin: 0; cursor: pointer; {{#unless m.marcada}}opacity: .6;{{/unless}}"><i class="far {{#if m.marcada}}fa-square-check{{else}}fa-square{{/if}}"></i> {{m.nome}}</a>
+      {{/each}}
+    </div>
+    <label style="display: block; margin: 10px 0 4px;">Atributos em destaque (clique na ordem: 1º, 2º, 3º)</label>
+    <div style="display: flex; flex-wrap: wrap; gap: 4px 14px;">
+      {{#each atrRecAtributos as |a|}}
+      <a class="item-meta-toggle" data-action="toggleAtrRecAtributo" data-chave="{{a.chave}}" style="margin: 0; cursor: pointer; {{#unless a.rank}}opacity: .6;{{/unless}}"><i class="far {{#if a.rank}}fa-square-check{{else}}fa-square{{/if}}"></i> {{a.nome}}{{#if a.rank}} <b>({{a.rank}}º)</b>{{/if}}</a>
+      {{/each}}
+    </div>
+    <label style="display: block; margin: 10px 0 4px;">Dica ao jogador</label>
+    <textarea name="system.atributosRecomendados.dica" rows="2" style="width: 100%; box-sizing: border-box;" placeholder="ex.: Livro: Espírito e Poder de Magia.">{{system.atributosRecomendados.dica}}</textarea>
+    {{#if atrRecLivroDisponivel}}<a class="btn-add" data-action="atrRecPadraoLivro" style="margin-top: 8px; display: inline-block;"><i class="fas fa-book"></i> Voltar ao padrão do livro</a>{{/if}}
+  </details>
+
   <div class="item-meta-box">
     <label style="display: block; margin-bottom: 8px;"><i class="fas fa-list-ol"></i> Progressão por Nível</label>
     <p class="item-meta-hint" style="margin: 0 0 10px;">

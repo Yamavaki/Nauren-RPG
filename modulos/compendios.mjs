@@ -1,6 +1,6 @@
 /* Nauren RPG — Compêndios oficiais (auto-semeadura, Torre, Bestiário, mascotes). Separado do nauren.mjs na 0.94.22. */
 import { NAUREN_KIT_JANELA } from "./janelas-kit.mjs";
-import { NAUREN_CAPACIDADE_POR_NOME, NAUREN_CORES_PINTURA, NAUREN_EQUIPAMENTO_CLASSE_LIVRO, NaurenActorSheet, NaurenAlvoHelper, NaurenCondicaoData, NaurenHabilidadeData, NaurenMagiaData, campoAcao, campoModificador, naurenAtorTemRecurso, naurenClamparRecursosAoMaximo, naurenEhCondicaoModelo, naurenEquipRecomendadoPreenchido, naurenFixarTipoAlcanceSemeado, naurenInterpretarModificador, naurenMontarDescricao, naurenNomeDoRecurso, naurenPostarCard, naurenPreencherRecursosNoMaximo, naurenProcessarGatilhos, naurenRecursoEstaTravado, naurenResetarCompendios, naurenUuidPorSeed } from "../nauren.mjs";
+import { NAUREN_CAPACIDADE_POR_NOME, NAUREN_CORES_PINTURA, NAUREN_EQUIPAMENTO_CLASSE_LIVRO, NAUREN_ATRIBUTOS_CLASSE_LIVRO, naurenAtributosRecomendadosPreenchido, NaurenActorSheet, NaurenAlvoHelper, NaurenCondicaoData, NaurenHabilidadeData, NaurenMagiaData, campoAcao, campoModificador, naurenAtorTemRecurso, naurenClamparRecursosAoMaximo, naurenEhCondicaoModelo, naurenEquipRecomendadoPreenchido, naurenFixarTipoAlcanceSemeado, naurenInterpretarModificador, naurenMontarDescricao, naurenNomeDoRecurso, naurenPostarCard, naurenPreencherRecursosNoMaximo, naurenProcessarGatilhos, naurenRecursoEstaTravado, naurenResetarCompendios, naurenUuidPorSeed } from "../nauren.mjs";
 /* =======================================
  * 7. COMPÊNDIOS OFICIAIS DO SISTEMA (auto-semeadura)
  * =======================================
@@ -192,6 +192,10 @@ async function naurenGarantirItemNoPack(pack, seedId, dados) {
     const padrao = NAUREN_EQUIPAMENTO_CLASSE_LIVRO[dados.system.identifier];
     if (padrao) dados.system.equipamentoRecomendado = foundry.utils.deepClone(padrao);
   }
+  if (dados?.type === "classe" && dados.system && !naurenAtributosRecomendadosPreenchido(dados.system.atributosRecomendados)) {
+    const padrao = NAUREN_ATRIBUTOS_CLASSE_LIVRO[dados.system.identifier];
+    if (padrao) dados.system.atributosRecomendados = foundry.utils.deepClone(padrao);
+  }
   const chaveCapSeed = NAUREN_CAPACIDADE_POR_NOME?.[dados?.name];
   if (chaveCapSeed && ["habilidade", "condicao", "efeito"].includes(dados.type)) {
     dados = { ...dados, system: { ...(dados.system ?? {}), capacidades: [...new Set([...(dados.system?.capacidades ?? []), chaveCapSeed])] } };
@@ -220,6 +224,7 @@ async function naurenGarantirItemNoPack(pack, seedId, dados) {
       if (naurenFundoPersonalizado(doc.system?.imagemFundo) && novo.system) delete novo.system.imagemFundo;
       // Equipamento recomendado já configurado na Classe (pelo Mestre ou numa abertura anterior): não volta ao padrão.
       if (doc.type === "classe" && novo.system && naurenEquipRecomendadoPreenchido(doc.system?.equipamentoRecomendado)) delete novo.system.equipamentoRecomendado;
+      if (doc.type === "classe" && novo.system && naurenAtributosRecomendadosPreenchido(doc.system?.atributosRecomendados)) delete novo.system.atributosRecomendados;
       await doc.update(novo);
       return doc;
     }

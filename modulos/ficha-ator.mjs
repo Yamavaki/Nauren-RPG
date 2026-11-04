@@ -1,5 +1,5 @@
 /* Nauren RPG — Ficha do Ator (NaurenActorSheet). Separado do nauren.mjs na 0.94.22. */
-import { naurenFormatarNumero, naurenLerNumero, naurenItemValeAgora, ARMA_TIPOS, ATRIBUTOS_BONUS, CALCULO_DADOS_DESTINO_OPCOES, CALCULO_ESTAMINA_COMBATE_OPCOES, CALCULO_MANA_OPCOES, CALCULO_VIDA_OPCOES, MODOS_ROLAGEM, NAUREN_ARRAYS_ADICIONAVEIS, NAUREN_CAMPOS_ACIMA_AUTOMATICOS, NAUREN_CAMPOS_ACIMA_GERAIS, NAUREN_CAMPOS_ANALISE_CRIATIVA, NAUREN_CAMPOS_ESTADO_ACAO, NAUREN_CAMPOS_ESTADO_ITEM, NAUREN_CAMPOS_MODIFICADOR_OPCOES, NAUREN_FASE_MODIFICADOR, NAUREN_NOMES_ATRIBUTO_CURTO, NAUREN_PODEROSA_EFEITOS, NAUREN_QUERY_APLICAR_CONDICAO, NAUREN_QUERY_APLICAR_CONDICAO_ECO, NAUREN_QUERY_AREA_AO_CRIAR, NAUREN_QUERY_BESTA_INICIAL, NAUREN_QUERY_CRIAR_ITEM, NAUREN_QUERY_DANO_COLISAO, NAUREN_QUERY_DOMAR, NAUREN_QUERY_ITEM_MESTRE, NAUREN_QUERY_MANIPULAR, NAUREN_QUERY_REACAO_PRE_ATAQUE, NAUREN_REACAO_RESISTIR_OPCOES, NAUREN_REFERENCIA_FORMULAS, NAUREN_ROTULO_FASE_MODIFICADOR, NaurenActor, NaurenActorData, NaurenBarrasEditor, NaurenConcessaoHelper, NaurenCondicaoData, NaurenCriadorMonstro, NaurenEfeitoData, NaurenGrupoHelper, NaurenHabilidadeData, NaurenHudCombate, NaurenHudRecursosEditor, NaurenItemSheet, NaurenMagiaData, NaurenProgressaoHelper, NaurenSubclasseHelper, RECURSOS_ALVO, USOS_RESET_LABEL, USOS_RESET_POR_COMBATE, campoAcao, campoCondicaoAplicada, campoDanoBloco, campoGatilho, campoModificador, campoModificadorExterno, naurenAbrirBorda, naurenAbrirConstrucaoPorAcao, naurenAbrirEnquadramento, naurenAcaoEhCura, naurenAcaoEhGolpe, naurenAcaoSemCustoEstaminaMana, naurenAgindoForaDoTurno, naurenAjusteCriticoDoGrupo, naurenAjusteCustoManaMagia, naurenAlcanceEmMetros, naurenAliadosAte, naurenAlvoDaRecarga, naurenAlvosSaoVelhos, naurenAncoraDuracaoAtual, naurenAnotarModsRecebidosNoCard, naurenAnotarNoRegistro, naurenApagarItensSeExistirem, naurenAplicarAcalanto, naurenAplicarDanoManual, naurenAplicarEfeitoSimples, naurenAplicarEfeitosPeriodicos, naurenAplicarPalavraComEscolha, naurenArmarPoderosa, naurenAtacouNoTurnoAtual, naurenAtualizarCondicaoPresenca, naurenAtualizarItemViaMestre, naurenAvaliarExpressaoSimples, naurenAvisarEstrelaDoArcoIris, naurenAvisarSeLinkBloqueado, naurenBandoCfg, naurenBandoChave, naurenBandoMembros, naurenBandoNoAlcance, naurenBeneficiosDoEstado, naurenBonusAcimaContra, naurenBordaPreviaDataUrl, naurenBordaPreviaDoAtor, naurenBotoesDeFormula, naurenBotoesDirecaoGrimorio, naurenBreakdownSimples, naurenBuscarMascotesDe, naurenCalcularEmpurrao, naurenCategoriaDaArma, naurenCategoriaDoAtor, naurenCategoriaEquipamento, naurenCelulasNaArea, naurenChaveEscopoRelogio, naurenChaveFlagSegura, naurenChecarCondicaoAoAtingirMax, naurenClamparRecursosAoMaximo, naurenCombatenteEhDoAtor, naurenCompensacoesContraOrigem, naurenConcederPrioridadePeloCard, naurenConcederRecurso, naurenConcederRecursoAoAtacante, naurenCondicaoNegativa, naurenCondicoesAtivas, naurenCondicoesLigadasA, naurenCongelarNoNivel, naurenConsumirUsoDaHabilidade, naurenContarAliadosProximos, naurenContextoInvencoes, naurenCriarFrascoEspecial, naurenCriarInvocacoes, naurenCriarItemNoAtor, naurenCronometroNoDialog, naurenDescricaoParaChat, naurenDeslocarToken, naurenDiferencaDesfazer, naurenDispararEventoNoDono, naurenDisposicaoDoAtor, naurenEfeitoComSubst, naurenEhCondicaoModelo, naurenEhGolpeEspiritual, naurenEhItem, naurenEquipamentoGasta, NAUREN_CATEGORIAS_EQUIPAMENTO, naurenEmpurrarToken, naurenEquipamentoRecomendado, naurenEscalaPorCategoria, naurenEscolherCorDaPintura, naurenEscolherEfeitoPoderosa, naurenEscolherFrasco, naurenEscolherPeculiaridade, naurenEscolherPontoNoMapa, naurenEstiloEnquadramento, naurenEstresseDosAliados, naurenEstudoNoAlvo, naurenExecutarRecarga, naurenFaceD20, naurenFontesDeModificadores, naurenFormulaComTokensDoAtor, naurenFormulaParaTexto, naurenFotoCenaDesfazer, naurenFotografarModsRecebidos, naurenFrascoParaPacote, naurenGastarRecursoSimples, naurenGrimorio, naurenGuardarD20Roubado, naurenHandleQueryAreaAoCriar, naurenHandleQueryBestaInicial, naurenHandleQueryDanoColisao, naurenHandleQueryDomar, naurenHandleQueryItemMestre, naurenHandleQueryManipular, naurenHandleQueryReacaoPreAtaque, naurenHudAlvos, naurenIdentificadorTurnoAtual, naurenInterpretarModificador, naurenInterpretarModificadorComDado, naurenItemCorrespondeAoAlvo, naurenItemEhDoProjeto, naurenItensDoProjetoPorNome, naurenLimiteOfensivoBase, naurenLimiteVagaDefesa, naurenLimparMeusAlvos, naurenMaisDadosPoderosa, naurenMapearStrings, naurenMarcarAlvosAgora, naurenMedirDistanciaBordas, naurenMestreDaMesa, naurenMetrosEmpurrao, naurenModsAcima, naurenMontarDescricao, naurenMontarSelecaoPrioridade, naurenMoverGrimorio, naurenMoverTokenPara, naurenMoverTokenViaMestre, naurenMovimentoSaldo, naurenMunicoesCompativeis, naurenNivelDeOrigemNaClasse, naurenNomeDeToken, naurenNomeDoRecurso, naurenNomeNormalizado, naurenNomeParaUuid, naurenNomeRecurso, naurenNotificarGanhoPerda, naurenOferecerAcovardar, naurenOferecerDestino, naurenOperarEntidade, naurenOperarEstudo, naurenOperarRecursoViaMestre, naurenOperarRegistroPrioridade, naurenOrdemListaMagias, naurenPersonagensEmCena, naurenPesoOfensivo, naurenPesoOfensivoEquipado, naurenPontoDentroDaRegiao, naurenPostarCard, naurenPostarDescricaoNoChat, naurenPreparacaoUsadas, naurenPrepararModificador, naurenPresosPorArmadilha, naurenPrioridadesGeradas, naurenProcessarEmanacoes, naurenProcessarFrascoNoAlvo, naurenProcessarGatilhos, naurenProcessarTemplatesPersistentes, naurenRaizDaEvolucao, naurenReacoesPagasDano, naurenReacoesPagasDefesa, naurenReaplicarUpgradesDeSubclasse, naurenRecarregarUsos, naurenReconciliarTodosOsItens, naurenReconjurarPendente, naurenRecursoDoAtor, naurenRecursoEstaTravado, naurenRegistrarAtaqueNoTurno, naurenRegistrarUsoTorre, naurenRegistroParaExport, naurenRegistroParaFicha, naurenRegraVagasDefesa, naurenRegrasExtras, naurenReordenarGrimorio, naurenResolverPorNivel, naurenResolverPorRank, naurenResolverPrioridade, naurenResolverSelf, naurenResolverSelfEmObjeto, naurenResolverTokenFormula, naurenResumoDaAcao, naurenResumoEquipamentoClasse, naurenRolagemAuditada, naurenRollToBreakdownText, naurenRotuloToken, naurenSincronizarCriativasDoLadino, naurenSincronizarGrimorio, naurenSincronizarRecursosCustom, naurenSomarEfeitoPermanente, naurenSubstituirTokensDeContexto, naurenTemEstado, naurenTempoReacao, naurenTextoFrascoEspecial, naurenTextoHistoricoDestino, naurenTextoModificador, naurenTextoRolagem, naurenTimeoutReacaoMs, naurenTipoAlcanceAdivinhado, naurenTipoAlcanceDaAcao, naurenTiposEstudoDoAtor, naurenTokenElegivelPorDisposicao, naurenTransferirRecursoDoAlvo, naurenTravaDaAcao, naurenUltimoAtacante, naurenUmaVezMarcar, naurenUmaVezRecusa, naurenUsoDisponivel, naurenUsosExtrasPara, naurenUsosPassivaMax, naurenUuidEhEsteToken, naurenUuidPorSeed, naurenVagaDefesa, naurenValorEstudo, resumoCondicao, resumoCor, resumoEfeito } from "../nauren.mjs";
+import { NAUREN_ATRIBUTOS_CLASSE_LIVRO, naurenPerfisSugestaoClasse, naurenMelhorDistribuicao, naurenFormatarNumero, naurenLerNumero, naurenItemValeAgora, ARMA_TIPOS, ATRIBUTOS_BONUS, CALCULO_DADOS_DESTINO_OPCOES, CALCULO_ESTAMINA_COMBATE_OPCOES, CALCULO_MANA_OPCOES, CALCULO_VIDA_OPCOES, MODOS_ROLAGEM, NAUREN_ARRAYS_ADICIONAVEIS, NAUREN_CAMPOS_ACIMA_AUTOMATICOS, NAUREN_CAMPOS_ACIMA_GERAIS, NAUREN_CAMPOS_ANALISE_CRIATIVA, NAUREN_CAMPOS_ESTADO_ACAO, NAUREN_CAMPOS_ESTADO_ITEM, NAUREN_CAMPOS_MODIFICADOR_OPCOES, NAUREN_FASE_MODIFICADOR, NAUREN_NOMES_ATRIBUTO_CURTO, NAUREN_PODEROSA_EFEITOS, NAUREN_QUERY_APLICAR_CONDICAO, NAUREN_QUERY_APLICAR_CONDICAO_ECO, NAUREN_QUERY_AREA_AO_CRIAR, NAUREN_QUERY_BESTA_INICIAL, NAUREN_QUERY_CRIAR_ITEM, NAUREN_QUERY_DANO_COLISAO, NAUREN_QUERY_DOMAR, NAUREN_QUERY_ITEM_MESTRE, NAUREN_QUERY_MANIPULAR, NAUREN_QUERY_REACAO_PRE_ATAQUE, NAUREN_REACAO_RESISTIR_OPCOES, NAUREN_REFERENCIA_FORMULAS, NAUREN_ROTULO_FASE_MODIFICADOR, NaurenActor, NaurenActorData, NaurenBarrasEditor, NaurenConcessaoHelper, NaurenCondicaoData, NaurenCriadorMonstro, NaurenEfeitoData, NaurenGrupoHelper, NaurenHabilidadeData, NaurenHudCombate, NaurenHudRecursosEditor, NaurenItemSheet, NaurenMagiaData, NaurenProgressaoHelper, NaurenSubclasseHelper, RECURSOS_ALVO, USOS_RESET_LABEL, USOS_RESET_POR_COMBATE, campoAcao, campoCondicaoAplicada, campoDanoBloco, campoGatilho, campoModificador, campoModificadorExterno, naurenAbrirBorda, naurenAbrirConstrucaoPorAcao, naurenAbrirEnquadramento, naurenAcaoEhCura, naurenAcaoEhGolpe, naurenAcaoSemCustoEstaminaMana, naurenAgindoForaDoTurno, naurenAjusteCriticoDoGrupo, naurenAjusteCustoManaMagia, naurenAlcanceEmMetros, naurenAliadosAte, naurenAlvoDaRecarga, naurenAlvosSaoVelhos, naurenAncoraDuracaoAtual, naurenAnotarModsRecebidosNoCard, naurenAnotarNoRegistro, naurenApagarItensSeExistirem, naurenAplicarAcalanto, naurenAplicarDanoManual, naurenAplicarEfeitoSimples, naurenAplicarEfeitosPeriodicos, naurenAplicarPalavraComEscolha, naurenArmarPoderosa, naurenAtacouNoTurnoAtual, naurenAtualizarCondicaoPresenca, naurenAtualizarItemViaMestre, naurenAvaliarExpressaoSimples, naurenAvisarEstrelaDoArcoIris, naurenAvisarSeLinkBloqueado, naurenBandoCfg, naurenBandoChave, naurenBandoMembros, naurenBandoNoAlcance, naurenBeneficiosDoEstado, naurenBonusAcimaContra, naurenBordaPreviaDataUrl, naurenBordaPreviaDoAtor, naurenBotoesDeFormula, naurenBotoesDirecaoGrimorio, naurenBreakdownSimples, naurenBuscarMascotesDe, naurenCalcularEmpurrao, naurenCategoriaDaArma, naurenCategoriaDoAtor, naurenCategoriaEquipamento, naurenCelulasNaArea, naurenChaveEscopoRelogio, naurenChaveFlagSegura, naurenChecarCondicaoAoAtingirMax, naurenClamparRecursosAoMaximo, naurenCombatenteEhDoAtor, naurenCompensacoesContraOrigem, naurenConcederPrioridadePeloCard, naurenConcederRecurso, naurenConcederRecursoAoAtacante, naurenCondicaoNegativa, naurenCondicoesAtivas, naurenCondicoesLigadasA, naurenCongelarNoNivel, naurenConsumirUsoDaHabilidade, naurenContarAliadosProximos, naurenContextoInvencoes, naurenCriarFrascoEspecial, naurenCriarInvocacoes, naurenCriarItemNoAtor, naurenCronometroNoDialog, naurenDescricaoParaChat, naurenDeslocarToken, naurenDiferencaDesfazer, naurenDispararEventoNoDono, naurenDisposicaoDoAtor, naurenEfeitoComSubst, naurenEhCondicaoModelo, naurenEhGolpeEspiritual, naurenEhItem, naurenEquipamentoGasta, NAUREN_CATEGORIAS_EQUIPAMENTO, naurenEmpurrarToken, naurenEquipamentoRecomendado, naurenEscalaPorCategoria, naurenEscolherCorDaPintura, naurenEscolherEfeitoPoderosa, naurenEscolherFrasco, naurenEscolherPeculiaridade, naurenEscolherPontoNoMapa, naurenEstiloEnquadramento, naurenEstresseDosAliados, naurenEstudoNoAlvo, naurenExecutarRecarga, naurenFaceD20, naurenFontesDeModificadores, naurenFormulaComTokensDoAtor, naurenFormulaParaTexto, naurenFotoCenaDesfazer, naurenFotografarModsRecebidos, naurenFrascoParaPacote, naurenGastarRecursoSimples, naurenGrimorio, naurenGuardarD20Roubado, naurenHandleQueryAreaAoCriar, naurenHandleQueryBestaInicial, naurenHandleQueryDanoColisao, naurenHandleQueryDomar, naurenHandleQueryItemMestre, naurenHandleQueryManipular, naurenHandleQueryReacaoPreAtaque, naurenHudAlvos, naurenIdentificadorTurnoAtual, naurenInterpretarModificador, naurenInterpretarModificadorComDado, naurenItemCorrespondeAoAlvo, naurenItemEhDoProjeto, naurenItensDoProjetoPorNome, naurenLimiteOfensivoBase, naurenLimiteVagaDefesa, naurenLimparMeusAlvos, naurenMaisDadosPoderosa, naurenMapearStrings, naurenMarcarAlvosAgora, naurenMedirDistanciaBordas, naurenMestreDaMesa, naurenMetrosEmpurrao, naurenModsAcima, naurenMontarDescricao, naurenMontarSelecaoPrioridade, naurenMoverGrimorio, naurenMoverTokenPara, naurenMoverTokenViaMestre, naurenMovimentoSaldo, naurenMunicoesCompativeis, naurenNivelDeOrigemNaClasse, naurenNomeDeToken, naurenNomeDoRecurso, naurenNomeNormalizado, naurenNomeParaUuid, naurenNomeRecurso, naurenNotificarGanhoPerda, naurenOferecerAcovardar, naurenOferecerDestino, naurenOperarEntidade, naurenOperarEstudo, naurenOperarRecursoViaMestre, naurenOperarRegistroPrioridade, naurenOrdemListaMagias, naurenPersonagensEmCena, naurenPesoOfensivo, naurenPesoOfensivoEquipado, naurenPontoDentroDaRegiao, naurenPostarCard, naurenPostarDescricaoNoChat, naurenPreparacaoUsadas, naurenPrepararModificador, naurenPresosPorArmadilha, naurenPrioridadesGeradas, naurenProcessarEmanacoes, naurenProcessarFrascoNoAlvo, naurenProcessarGatilhos, naurenProcessarTemplatesPersistentes, naurenRaizDaEvolucao, naurenReacoesPagasDano, naurenReacoesPagasDefesa, naurenReaplicarUpgradesDeSubclasse, naurenRecarregarUsos, naurenReconciliarTodosOsItens, naurenReconjurarPendente, naurenRecursoDoAtor, naurenRecursoEstaTravado, naurenRegistrarAtaqueNoTurno, naurenRegistrarUsoTorre, naurenRegistroParaExport, naurenRegistroParaFicha, naurenRegraVagasDefesa, naurenRegrasExtras, naurenReordenarGrimorio, naurenResolverPorNivel, naurenResolverPorRank, naurenResolverPrioridade, naurenResolverSelf, naurenResolverSelfEmObjeto, naurenResolverTokenFormula, naurenResumoDaAcao, naurenResumoEquipamentoClasse, naurenRolagemAuditada, naurenRollToBreakdownText, naurenRotuloToken, naurenSincronizarCriativasDoLadino, naurenSincronizarGrimorio, naurenSincronizarRecursosCustom, naurenSomarEfeitoPermanente, naurenSubstituirTokensDeContexto, naurenTemEstado, naurenTempoReacao, naurenTextoFrascoEspecial, naurenTextoHistoricoDestino, naurenTextoModificador, naurenTextoRolagem, naurenTimeoutReacaoMs, naurenTipoAlcanceAdivinhado, naurenTipoAlcanceDaAcao, naurenTiposEstudoDoAtor, naurenTokenElegivelPorDisposicao, naurenTransferirRecursoDoAlvo, naurenTravaDaAcao, naurenUltimoAtacante, naurenUmaVezMarcar, naurenUmaVezRecusa, naurenUsoDisponivel, naurenUsosExtrasPara, naurenUsosPassivaMax, naurenUuidEhEsteToken, naurenUuidPorSeed, naurenVagaDefesa, naurenValorEstudo, resumoCondicao, resumoCor, resumoEfeito } from "../nauren.mjs";
 import { NAUREN_MASCOTES_INICIAIS, naurenDisponivelNoInicio, naurenDuasArmasPendente, naurenExtraEstaminaCondicoes, naurenObterOuCriarPacks, naurenPreverDuasArmasGratis, naurenRolarAjustePopup, naurenTierTorre } from "./compendios.mjs";
 import * as NK from "./janelas-kit.mjs";
 import { naurenAnimarAcao, naurenAnimarCritico, naurenMotionEmTodos, naurenMotionEnviar, naurenMotionPlanoDaAcao } from "./animacoes.mjs";
@@ -1240,6 +1240,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
       removeEscalaAtributoLinha: NaurenActorSheet.onRemoveEscalaAtributoLinha,
       toggleModoFicha: NaurenActorSheet.onToggleModoFicha,
       reabrirCriador: NaurenActorSheet.onReabrirCriador,
+      liberarAtributosCriador: NaurenActorSheet.onLiberarAtributosCriador,
       abrirBarrasToken: NaurenActorSheet.onAbrirBarrasToken,
       escolherArteMoldura: NaurenActorSheet.onEscolherArteMoldura,
       limparArteMoldura: NaurenActorSheet.onLimparArteMoldura,
@@ -3675,6 +3676,24 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     NaurenBarrasEditor.abrir(this.actor, this.token ?? null);
   }
 
+  /** 0.101 — Mestre: apaga os 5 dados de atributo do Criador (fica no Registro) para o jogador rolar de novo. */
+  static async onLiberarAtributosCriador(event, target) {
+    if (!game.user.isGM) return;
+    const actor = this.actor;
+    const dados = (actor.getFlag("nauren", "criadorDadosAtributos") ?? []).filter(v => v !== null && v !== undefined);
+    const ok = await foundry.applications.api.DialogV2.confirm({ ...NK.naurenKitJanela(actor), window: { title: "Liberar nova rolagem dos atributos" },
+      content: `<p>Apagar os dados de atributo de <b>${actor.name}</b>${dados.length ? ` (<b>${dados.join(", ")}</b>)` : ""} e liberar o jogador para escolher o modo e rolar de novo no Criador?</p><p class="item-meta-hint">Fica anotado no Registro de rolagens.</p>`, rejectClose: false }).catch(() => false);
+    if (!ok) return;
+    await naurenAnotarNoRegistro(actor, { tipo: "reset", dados: { dadosApagados: dados, peloMestre: true },
+      linhas: [{ label: "Dados apagados", value: dados.join(", ") || "nenhum", breakdown: "o Mestre liberou uma nova rolagem dos atributos" }] }).catch(err => console.warn("Nauren RPG | Registro de rolagens (liberar)", err));
+    await actor.unsetFlag("nauren", "criadorDadosAtributos");
+    await actor.unsetFlag("nauren", "criadorModoAtributos");
+    for (const app of foundry.applications.instances.values()) {
+      if (app instanceof NaurenCriadorPersonagem && app.actor === actor) { app._distrib = null; app._distribAssin = null; app._valorNaMao = null; app.render(); }
+    }
+    ui.notifications.info(`${actor.name}: nova rolagem dos atributos liberada.`);
+  }
+
   static async onReabrirCriador(event, target) {
     const actor = this.actor;
     let escolha = null;
@@ -3706,10 +3725,14 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
         "system.xp": 0
       });
       // Começar do zero: os 5 dados de atributo podem ser rolados de novo - mas o registro guarda os antigos.
-      const apagados = (actor.getFlag("nauren", "criadorDadosAtributos") ?? []).filter(v => v !== null && v !== undefined);
+      // 0.101: com a trava do mundo ligada, só o Mestre apaga os dados (o jogador recomeça com os mesmos 5).
+      let travado = true; try { travado = game.settings.get("nauren", "criadorAtributosTravados") !== false; } catch (err) { travado = true; }
+      const manterDados = travado && !game.user.isGM;
+      const apagados = manterDados ? [] : (actor.getFlag("nauren", "criadorDadosAtributos") ?? []).filter(v => v !== null && v !== undefined);
       if (apagados.length) await naurenAnotarNoRegistro(actor, { tipo: "reset", dados: { dadosApagados: apagados },
         linhas: [{ label: "Dados apagados", value: apagados.join(", "), breakdown: "a ficha foi resetada no Criador; os dados podem ser rolados de novo" }] }).catch(err => console.warn("Nauren RPG | Registro de rolagens (reset)", err));
-      await actor.unsetFlag("nauren", "criadorDadosAtributos");
+      if (!manterDados) await actor.unsetFlag("nauren", "criadorDadosAtributos");
+      else if ((actor.getFlag("nauren", "criadorDadosAtributos") ?? []).some(v => v !== null && v !== undefined)) ui.notifications.info("Os dados de atributo já rolados continuam valendo. Só o Mestre pode liberar uma nova rolagem.");
       for (const app of foundry.applications.instances.values()) {
         if (app instanceof NaurenCriadorPersonagem && app.actor === actor) { app._atributosDigitados = null; app._sorteioPeculiaridade = null; }
       }
@@ -3718,6 +3741,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     await actor.unsetFlag("nauren", "criadorConcluido");
     await actor.unsetFlag("nauren", "criadorClasseSelecionada");
     await actor.setFlag("nauren", "criadorEtapa", 0);
+    await actor.setFlag("nauren", "criadorVersao", 2);
     new NaurenCriadorPersonagem({ actor }).render(true);
   }
 
@@ -11194,6 +11218,10 @@ class NaurenCriadorPersonagem extends foundry.applications.api.HandlebarsApplica
       rolarTodosDadosAtributo: NaurenCriadorPersonagem.onRolarTodosDadosAtributo,
       rolarPeculiaridade: NaurenCriadorPersonagem.onRolarPeculiaridade,
       confirmarAtributos: NaurenCriadorPersonagem.onConfirmarAtributos,
+      confirmarIdentidade: NaurenCriadorPersonagem.onConfirmarIdentidade,
+      pegarValor: NaurenCriadorPersonagem.onPegarValor,
+      colocarAtributo: NaurenCriadorPersonagem.onColocarAtributo,
+      sugestaoAtributos: NaurenCriadorPersonagem.onSugestaoAtributos,
       escolherImagemCriador: NaurenCriadorPersonagem.onEscolherImagem,
       enquadrarRetratoCriador: NaurenCriadorPersonagem.onEnquadrarRetrato,
       bordaTokenCriador: NaurenCriadorPersonagem.onBordaToken,
@@ -11264,6 +11292,7 @@ class NaurenCriadorPersonagem extends foundry.applications.api.HandlebarsApplica
     if (escolha === "monstro") NaurenCriadorMonstro.abrir(actor);
     else if (escolha === "criador") {
       await actor.setFlag("nauren", "criadorEtapa", 0);
+      await actor.setFlag("nauren", "criadorVersao", 2);
       new NaurenCriadorPersonagem({ actor }).render(true);
     }
   }
@@ -11273,54 +11302,118 @@ class NaurenCriadorPersonagem extends foundry.applications.api.HandlebarsApplica
     this.close();
   }
 
-  async _prepareContext(options) {
-    const etapa = this.actor.getFlag("nauren", "criadorEtapa") ?? 0;
-    const context = { etapa, actor: this.actor, etapaNome: NAUREN_CRIADOR_ETAPAS[etapa]?.nome ?? "" };
-    context.totalEtapas = NAUREN_CRIADOR_ETAPAS.length;
-    context.progressoPct = Math.round(((etapa) / (NAUREN_CRIADOR_ETAPAS.length - 1)) * 100);
-    // Booleanos "estaNaEtapaN" pro template (sem depender de um helper
-    // "eq" - este sistema nunca registrou um, ver working-notes) e
-    // "ativo_N" pros marcos da barra de progresso.
-    context.progressoPct = Math.min(100, context.progressoPct);
-    for (let i = 0; i < NAUREN_CRIADOR_ETAPAS.length; i++) {
-      context[`estaNaEtapa${i}`] = etapa === i;
-      context[`marcoAtivo${i}`] = etapa === i;
-      // Etapas já passadas viram atalho (clicar volta direto para ela).
-      context[`marcoFeito${i}`] = i < etapa && etapa < NAUREN_CRIADOR_ETAPAS.length;
-      context[`marcoOk${i}`] = i < etapa; // 0.98: ✓ também no resumo final
+  /** 0.101: passo atual (migra a ordem antiga Atributos → Peculiaridades → Pigmentos → Classe → Equipamento uma vez). */
+  async _lerEtapaCriador() {
+    let etapa = this.actor.getFlag("nauren", "criadorEtapa") ?? 0;
+    if (this.actor.getFlag("nauren", "criadorVersao") !== 2) {
+      const antiga = this.actor.getFlag("nauren", "criadorEtapa");
+      const mapa = { 0: 0, 1: 3, 2: 4, 3: 1, 4: 5 };
+      if (antiga !== undefined && antiga !== null) etapa = antiga >= 5 ? NAUREN_CRIADOR_ETAPAS.length : (mapa[antiga] ?? 0);
+      await this.actor.setFlag("nauren", "criadorVersao", 2);
+      if (antiga !== undefined && antiga !== null && etapa !== antiga) await this.actor.setFlag("nauren", "criadorEtapa", etapa);
     }
+    return etapa;
+  }
+
+  /** A Classe gravada na ficha ou a marcada no passo Classe (documento + o que ela recomenda). */
+  async _classeDoCriador() {
+    const naFicha = this.actor.items.find(i => i.type === "classe");
+    let doc = naFicha ?? null;
+    if (!doc) { const uuid = this.actor.getFlag("nauren", "criadorClasseSelecionada"); doc = uuid ? await fromUuid(uuid).catch(() => null) : null; }
+    if (!doc) return null;
+    const identifier = doc.system?.identifier ?? "";
+    const rec = doc.system?.atributosRecomendados;
+    const cfgRec = (rec?.metas?.length || rec?.atributos?.length) ? rec : (NAUREN_ATRIBUTOS_CLASSE_LIVRO[identifier] ?? { metas: [], atributos: [], dica: "" });
+    const vis = NAUREN_FICHA_CLASSES[naurenFichaChaveClasse(doc)] ?? null;
+    return { doc, nome: doc.name, identifier, rec: cfgRec, equip: doc.system?.equipamentoRecomendado ?? null, cor: vis?.cor ?? "#cca162", svg: vis?.svg ?? NAUREN_FICHA_CLASSE_NEUTRA.svg };
+  }
+
+  /** Valores de cada atributo no passo Atributos (travado: pelo valor colocado; livre: digitado). */
+  _valoresAtributosAtuais() {
+    const atrs = this.actor.system.atributos ?? {};
+    const base = Object.fromEntries(NAUREN_CRIADOR_ATRIBUTOS.map(c => [c.chave, Number(atrs[c.chave]?.value ?? 0) || 0]));
+    if (this._atrEstado?.livre) return { ...base, ...(this._atributosDigitados ?? {}) };
+    if (this._atrEstado?.pool) {
+      const d = this._distrib ?? {};
+      return Object.fromEntries(NAUREN_CRIADOR_ATRIBUTOS.map(c => [c.chave, d[c.chave] !== null && d[c.chave] !== undefined ? Number(this._atrEstado.pool[d[c.chave]]) || 0 : 0]));
+    }
+    return base;
+  }
+
+  /** Clone do ator com outros atributos (e, se pedido, sem um item) — o mesmo cálculo da ficha, sem gravar nada. */
+  _cloneComAtributos(valores, semItemId = null) {
+    const mudar = {};
+    if (valores) mudar.system = { atributos: Object.fromEntries(Object.entries(valores).map(([k, v]) => [k, { value: Math.max(0, Math.round(Number(v) || 0)) }])) };
+    if (semItemId) mudar.items = this.actor.items.filter(i => i.id !== semItemId).map(i => i.toObject());
+    const c = this.actor.clone(mudar, { keepId: true });
+    c.prepareData?.();
+    return c;
+  }
+
+  /** Metas da coluna "Sua ficha" e os bônus de cada Pigmento/Peculiaridade (diferença com e sem o item). */
+  _metasEBonusDaFicha(valores) {
+    const vazio = { metas: [], bonus: [] };
+    try {
+      const c = this._cloneComAtributos(valores);
+      const s = c.system;
+      const metas = [
+        { chave: "espirito", nome: "Espírito", curto: "Espírito", valor: s.espirito?.max ?? 0 },
+        { chave: "poderAtaque", nome: "Poder de Ataque", curto: "P. Ataque", valor: s.poderAtaque?.value ?? 0 },
+        { chave: "poderMagia", nome: "Poder de Magia", curto: "P. Magia", valor: s.poderMagia?.value ?? 0 },
+        { chave: "vitalidade", nome: "Vitalidade", curto: "Vitalidade", valor: s.vitalidade?.max ?? 0 }
+      ];
+      const ler = x => ({
+        forca: x.atributosTotais?.forca, agilidade: x.atributosTotais?.agilidade, estamina: x.atributosTotais?.estamina, inteligencia: x.atributosTotais?.inteligencia, destino: x.atributosTotais?.destino,
+        espirito: x.espirito?.max, poderAtaque: x.poderAtaque?.value, poderMagia: x.poderMagia?.value, vitalidade: x.vitalidade?.max,
+        estresse: x.stress?.max, movimento: x.movimentoTotal, defesa: x.defesaTotal
+      });
+      const nomes = { forca: "Força", agilidade: "Agilidade", estamina: "Estamina", inteligencia: "Inteligência", destino: "Destino", espirito: "Espírito", poderAtaque: "P. Ataque", poderMagia: "P. Magia", vitalidade: "Vitalidade", estresse: "Estresse máx.", movimento: "Movimento", defesa: "Defesa" };
+      const ATR = ["forca", "agilidade", "estamina", "inteligencia", "destino"];
+      const com = ler(s);
+      const porNome = new Map();
+      for (const it of this.actor.items.filter(i => i.type === "cor" || i.type === "peculiaridade")) {
+        const sem = ler(this._cloneComAtributos(valores, it.id).system);
+        const dif = Object.fromEntries(Object.keys(com).map(k => [k, (Number(com[k]) || 0) - (Number(sem[k]) || 0)]).filter(([, d]) => d));
+        // Mudou um atributo? Mostra só o atributo (o meta que vem dele já aparece no valor total).
+        const chaves = ATR.some(k => dif[k]) ? Object.keys(dif).filter(k => ATR.includes(k)) : Object.keys(dif);
+        if (!chaves.length) continue;
+        const ehCor = it.type === "cor";
+        const chaveNome = `${it.type}:${it.name}`;
+        const atual = porNome.get(chaveNome) ?? { de: ehCor ? it.name.replace(/^Pigmento\s+/i, "") : it.name, cor: ehCor ? (NAUREN_FICHA_PIGMENTOS[naurenFichaPigmentoDoItem(it)]?.a ?? (it.system?.corHex || "#888")) : "", img: ehCor ? "" : (it.img || ""), soma: {} };
+        for (const k of chaves) atual.soma[k] = (atual.soma[k] ?? 0) + dif[k];
+        porNome.set(chaveNome, atual);
+      }
+      const bonus = [];
+      for (const b of porNome.values()) for (const [k, d] of Object.entries(b.soma)) if (d) bonus.push({ de: b.de, cor: b.cor, img: b.img, txt: `${nomes[k] ?? k} ${d > 0 ? "+" : "−"}${Math.abs(d)}`, negativo: d < 0 });
+      return { metas, bonus };
+    } catch (err) { console.warn("Nauren RPG | metas do Criador", err); return vazio; }
+  }
+
+  async _prepareContext(options) {
+    const etapa = await this._lerEtapaCriador();
+    const N = NAUREN_CRIADOR_ETAPAS.length;
+    const context = { etapa, actor: this.actor, etapaNome: NAUREN_CRIADOR_ETAPAS[etapa]?.nome ?? "" };
+    context.totalEtapas = N;
+    context.progressoPct = Math.min(100, Math.round((etapa / (N - 1)) * 100));
+    // Booleanos "estaNaEtapaN" pro template (sem helper "eq": este sistema nunca registrou um).
+    for (let i = 0; i < N; i++) context[`estaNaEtapa${i}`] = etapa === i;
+    context.passos = NAUREN_CRIADOR_ETAPAS.map((p, i) => ({ i, numero: i + 1, nome: p.nome, ativo: etapa === i, ok: i < etapa, atalho: i < etapa && etapa < N }));
+    const classe = await this._classeDoCriador();
+    const daClasse = classe ? `do ${classe.nome}` : "da Classe";
 
     if (etapa === 0) {
-      const atrs = this.actor.system.atributos;
       context.nomePersonagem = this.actor.name;
       context.imgRetrato = this._imgRetratoEscolhida ?? this.actor.img ?? "icons/svg/mystery-man.svg";
       context.imgToken = this._imgTokenEscolhida ?? this.actor.prototypeToken?.texture?.src ?? context.imgRetrato;
       context.bordaAtiva = !!this.actor.getFlag("nauren", "borda")?.ativa;
-      context.atributos = {
-        forca: atrs.forca.value, agilidade: atrs.agilidade.value, estamina: atrs.estamina.value,
-        inteligencia: atrs.inteligencia.value, destino: atrs.destino.value
-      };
-      if (this._atributosDigitados) Object.assign(context.atributos, this._atributosDigitados);
-      const dadosSalvos = this.actor.getFlag("nauren", "criadorDadosAtributos") ?? [null, null, null, null, null];
-      context.dadosAtributos = dadosSalvos.map((v, i) => ({ indice: i, numero: i + 1, valor: v, rolado: v !== null && v !== undefined }));
-      context.dadosAtributosCompletos = context.dadosAtributos.every(d => d.rolado);
-      context.atributosCards = NAUREN_CRIADOR_ATRIBUTOS.map(c => ({ ...c, valor: context.atributos[c.chave] }));
-      const modo = this.actor.getFlag("nauren", "criadorModoAtributos") || "";
-      context.modoFixo = modo === "fixo";
-      context.modoRolar = modo === "rolar";
-      context.semModo = !modo;
-      context.valoresFixosTexto = NAUREN_CRIADOR_VALORES_FIXOS.join(", ");
-      const valoresPool = modo === "fixo" ? NAUREN_CRIADOR_VALORES_FIXOS : modo === "rolar" && context.dadosAtributosCompletos ? dadosSalvos : [];
-      context.pool = valoresPool.map((v, i) => ({ valor: v, indice: i }));
-      context.temPool = context.pool.length > 0;
     }
 
-    if (etapa === 1) {
+    if (etapa === 2) context.atr = this._contextoAtributos(classe);
+
+    if (etapa === 3) {
       const packs = await naurenObterOuCriarPacks();
       await packs.peculiaridades.getIndex({ fields: ["system.tipo", "system.descricao", "img"] });
-      const jaTemUuids = new Set(
-        this.actor.items.map(i => i.getFlag("nauren", "origemUuid") || i.getFlag("core", "sourceId")).filter(Boolean)
-      );
+      const jaTemUuids = new Set(this.actor.items.map(i => i.getFlag("nauren", "origemUuid") || i.getFlag("core", "sourceId")).filter(Boolean));
       context.peculiaridades = packs.peculiaridades.index.contents
         .map(entrada => {
           const textoPuro = (entrada.system?.descricao ?? "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
@@ -11341,23 +11434,14 @@ class NaurenCriadorPersonagem extends foundry.applications.api.HandlebarsApplica
       context.peculiaridades = context.peculiaridades.map(p => ({ ...p, bloqueado: limitePeculiaridadesAtingido && !p.selecionado }));
     }
 
-    if (etapa === 2) {
+    if (etapa === 4) {
       const packs = await naurenObterOuCriarPacks();
       await packs.pigmentos.getIndex({ fields: ["system.corHex", "system.descricao"] });
-      const jaTemUuids = new Set(
-        this.actor.items.filter(i => i.type === "cor")
-          .map(i => i.getFlag("nauren", "origemUuid") || i.getFlag("core", "sourceId"))
-          .filter(Boolean)
-      );
+      const jaTemUuids = new Set(this.actor.items.filter(i => i.type === "cor").map(i => i.getFlag("nauren", "origemUuid") || i.getFlag("core", "sourceId")).filter(Boolean));
       context.pigmentos = packs.pigmentos.index.contents
         .map(entrada => {
           const textoPuro = (entrada.system?.descricao ?? "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
-          return {
-            uuid: entrada.uuid, nome: entrada.name, img: entrada.img,
-            corHex: entrada.system?.corHex || "#726b8a",
-            resumo: textoPuro.length > 90 ? textoPuro.slice(0, 90) + "…" : textoPuro,
-            selecionado: jaTemUuids.has(entrada.uuid)
-          };
+          return { uuid: entrada.uuid, nome: entrada.name, img: entrada.img, corHex: entrada.system?.corHex || "#726b8a", resumo: textoPuro.length > 90 ? textoPuro.slice(0, 90) + "…" : textoPuro, selecionado: jaTemUuids.has(entrada.uuid) };
         })
         .sort((a, b) => a.nome.localeCompare(b.nome));
       context.pigmentosContagem = context.pigmentos.filter(p => p.selecionado).length;
@@ -11365,10 +11449,10 @@ class NaurenCriadorPersonagem extends foundry.applications.api.HandlebarsApplica
       context.pigmentos = context.pigmentos.map(p => ({ ...p, bloqueado: limitePigmentosAtingido && !p.selecionado }));
     }
 
-    if (etapa === 3) {
-      // Classe (vem ANTES do Equipamento: o Equipamento destaca o que a Classe usa).
+    if (etapa === 1) {
+      // Classe (vem logo depois da Identidade: o passo Atributos mostra o que ela usa mais).
       const packs = await naurenObterOuCriarPacks();
-      await packs.classes.getIndex({ fields: ["system.descricao", "system.equipamentoRecomendado", "system.identifier"] });
+      await packs.classes.getIndex({ fields: ["system.descricao", "system.equipamentoRecomendado", "system.identifier", "system.atributosRecomendados"] });
       const classeAtual = this.actor.items.find(i => i.type === "classe");
       context.temClasse = !!classeAtual;
       context.classeAtualNome = classeAtual?.name ?? "";
@@ -11377,40 +11461,43 @@ class NaurenCriadorPersonagem extends foundry.applications.api.HandlebarsApplica
       context.classes = packs.classes.index.contents
         .filter(e => e.type === "classe")
         .map(entrada => {
-          const textoPuro = limpar(entrada.system?.descricao);
-          return {
-            uuid: entrada.uuid, nome: entrada.name, img: entrada.img,
-            resumo: textoPuro.length > 140 ? textoPuro.slice(0, 140) + "…" : textoPuro,
-            textoCompleto: textoPuro,
-            selecionado: entrada.uuid === uuidSelecionado
-          };
+          const v = NAUREN_FICHA_CLASSES[naurenFichaChaveClasse({ name: entrada.name })];
+          return { uuid: entrada.uuid, nome: entrada.name, img: entrada.img, textoCompleto: limpar(entrada.system?.descricao), selecionado: entrada.uuid === uuidSelecionado, cor: v?.cor ?? "#cca162", svg: v?.svg ?? NAUREN_FICHA_CLASSE_NEUTRA.svg };
         })
         .sort((a, b) => a.nome.localeCompare(b.nome));
-      const sel = packs.classes.index.find(e => e.uuid === uuidSelecionado);
-      context.temSelecao = !!sel;
-      if (sel) {
-        const cfg = sel.system?.equipamentoRecomendado ?? {};
+      context.temSelecao = !!classe;
+      if (classe) {
+        const desc = limpar(classe.doc.system?.descricao);
+        const metasNome = { espirito: "Espírito", poderAtaque: "Poder de Ataque", poderMagia: "Poder de Magia", vitalidade: "Vitalidade" };
+        const recMetas = (classe.rec?.metas ?? []).filter(m => metasNome[m]);
         context.classeSelecionada = {
-          nome: sel.name, img: sel.img,
-          descricao: limpar(sel.system?.descricao),
-          dica: String(cfg.dica ?? "").trim(),
-          resumoEquip: naurenResumoEquipamentoClasse(cfg)
+          nome: classe.nome, artigo: "o", cor: classe.cor, svg: classe.svg,
+          descricao: desc.length > 330 ? desc.slice(0, 330).replace(/\s+\S*$/, "") + "…" : desc,
+          rec: {
+            metas: recMetas.map(m => metasNome[m]),
+            atributos: (classe.rec?.atributos ?? []).slice(0, 3).map((a, i) => ({ rank: i + 1, nome: NAUREN_CRIADOR_ATRIBUTOS.find(c => c.chave === a)?.nome ?? a, motivo: naurenMotivoAtributo(a, recMetas) })),
+            dica: String(classe.rec?.dica ?? "").trim()
+          },
+          ...naurenArmasDaClasse(classe.equip)
         };
       }
     }
 
-    if (etapa === 4) {
+    if (etapa === 5) {
       // Equipamento: tudo pode ser escolhido; o que a Classe usa vem primeiro, destacado.
       const packs = await naurenObterOuCriarPacks();
       const campos = ["flags.nauren.seedId", "system.descricao", "system.disponivelNoInicio", "system.categoria", "system.tipo", "system.defesaBonus"];
       await packs.armas.getIndex({ fields: campos });
       await packs.armaduras.getIndex({ fields: campos });
-      const { cfg, nome: nomeClasse } = await this._classeParaEquipamento();
-      context.classeNome = nomeClasse;
-      context.temClasseEscolhida = !!nomeClasse;
-      context.dicaClasse = String(cfg?.dica ?? "").trim();
-      context.resumoEquipClasse = naurenResumoEquipamentoClasse(cfg);
-      // 0.94.29: só conta o que foi escolhido NESTA etapa (a mesma conta do clique).
+      const cfg = classe?.equip ?? null;
+      context.classeNome = classe?.nome ?? "";
+      context.classeArtigo = "o";
+      context.classeDa = daClasse;
+      context.classeCor = classe?.cor ?? "#cca162";
+      context.classeSvg = classe?.svg ?? "";
+      context.temClasseEscolhida = !!classe;
+      context.permitido = naurenArmasDaClasse(cfg);
+      context.destinoTotal = this.actor.system.atributosTotais?.destino ?? this.actor.system.atributos?.destino?.value ?? 0;
       const jaTemUuids = new Set(
         this.actor.items.filter(i => (i.type === "arma" || i.type === "armadura") && i.getFlag("nauren", "escolhaEquipamentoCriador"))
           .map(i => i.getFlag("nauren", "origemUuid") || i._stats?.compendiumSource || i.getFlag("core", "sourceId"))
@@ -11426,13 +11513,9 @@ class NaurenCriadorPersonagem extends foundry.applications.api.HandlebarsApplica
       const montarCard = entrada => {
         const textoPuro = (entrada.system?.descricao ?? "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
         return {
-          uuid: entrada.uuid, nome: entrada.name, img: entrada.img,
-          tipoRotulo: rotuloTipo(entrada),
-          ehArma: entrada.type === "arma",
-          resumo: textoPuro.length > 90 ? textoPuro.slice(0, 90) + "…" : textoPuro,
-          textoCompleto: textoPuro,
-          recomendado: !!cfg && naurenEquipamentoRecomendado(cfg, entrada),
-          selecionado: jaTemUuids.has(entrada.uuid)
+          uuid: entrada.uuid, nome: entrada.name, img: entrada.img, tipoRotulo: rotuloTipo(entrada), ehArma: entrada.type === "arma",
+          resumo: textoPuro.length > 90 ? textoPuro.slice(0, 90) + "…" : textoPuro, textoCompleto: textoPuro,
+          recomendado: !!cfg && naurenEquipamentoRecomendado(cfg, entrada), selecionado: jaTemUuids.has(entrada.uuid)
         };
       };
       const todos = [
@@ -11441,25 +11524,30 @@ class NaurenCriadorPersonagem extends foundry.applications.api.HandlebarsApplica
       ].map(montarCard).sort((a, b) => (b.ehArma - a.ehArma) || a.nome.localeCompare(b.nome));
       context.equipamentoContagem = todos.filter(e => e.selecionado).length;
       context.equipamentoMax = Math.max(0, naurenInterpretarModificador("@destinoItensIniciais", this.actor)?.valor ?? 0);
-      // 0.94.29: limite atingido (qualquer limite, inclusive 1): os cards NÃO selecionados ficam
-      // escuros e não respondem; para trocar, clique no escolhido para desmarcar.
+      // 0.94.29: limite atingido: os cards NÃO selecionados ficam escuros; para trocar, clique no escolhido.
       const limiteAtingido = context.equipamentoContagem >= context.equipamentoMax;
       const comBloqueio = todos.map(e => ({ ...e, bloqueado: limiteAtingido && !e.selecionado }));
       context.equipRecomendados = comBloqueio.filter(e => e.recomendado);
+      context.equipRecArmas = context.equipRecomendados.filter(e => e.ehArma);
+      context.equipRecArmaduras = context.equipRecomendados.filter(e => !e.ehArma);
+      context.armasUma = context.equipRecArmas.length === 1;
+      context.armadurasUma = context.equipRecArmaduras.length === 1;
       context.equipOutros = comBloqueio.filter(e => !e.recomendado);
       context.temRecomendados = context.equipRecomendados.length > 0;
+      context.foraAberto = !context.temRecomendados || context.equipOutros.some(e => e.selecionado);
       context.equipamentoRestante = Math.max(0, context.equipamentoMax - context.equipamentoContagem);
       context.limiteUm = context.equipamentoMax === 1;
       context.foraDaClasseEscolhidos = comBloqueio.filter(e => e.selecionado && !e.recomendado && cfg).map(e => e.nome).join(", ");
     }
 
-    if (etapa >= 5) {
+    if (etapa >= N) {
       // Resumo final (a Classe já foi gravada ao concluir o Equipamento).
       context.estaNoResumo = true;
       context.progressoPct = 100;
       const s = this.actor.system;
       const at = s.atributos ?? {};
       const nomesAtr = { forca: "Força", agilidade: "Agilidade", estamina: "Estamina", inteligencia: "Inteligência", destino: "Destino" };
+      const perm = naurenArmasDaClasse(classe?.equip ?? null);
       context.resumo = {
         nome: this.actor.name,
         img: this.actor.img || "icons/svg/mystery-man.svg",
@@ -11468,6 +11556,7 @@ class NaurenCriadorPersonagem extends foundry.applications.api.HandlebarsApplica
         peculiaridades: this.actor.items.filter(i => i.type === "peculiaridade").map(i => i.name).join(", ") || "nenhuma",
         pigmentos: this.actor.items.filter(i => i.type === "cor").map(i => i.name.replace(/^Pigmento\s+/i, "")).join(", ") || "nenhum",
         equipamento: this.actor.items.filter(i => ["arma", "armadura"].includes(i.type) && i.getFlag("nauren", "escolhaEquipamentoCriador")).map(i => i.name).join(", ") || "nenhum",
+        armasClasse: [...perm.armas, ...perm.armaduras.map(a => `armadura ${a.toLowerCase()}`)].join(", "),
         concedidos: this.actor.items.filter(i => ["habilidade", "magia"].includes(i.type)).map(i => i.name).slice(0, 8).join(", ")
       };
     }
@@ -11479,18 +11568,16 @@ class NaurenCriadorPersonagem extends foundry.applications.api.HandlebarsApplica
       const pal = pigs.length ? naurenFichaPaleta(pigs[0], pigs[1] ?? (pigs[0] === "Dourado" ? "Branco" : "Dourado"), { inverter: modo === "inverter" }) : naurenFichaPaleta("Roxo", "Dourado");
       context.cores = { estilo: `--nc-p: ${pal.p}; --nc-pd: ${pal.pd}; --nc-pc: ${pal.pc}; --nc-s: ${pal.s}; --nc-sc: ${pal.sc};`, escuro: !!pal.fundoEscuro,
         temPigmentos: pigs.length > 0, nomeP: pal.nomeP, nomeS: pal.nomeS, invertido: modo === "inverter", explicacao: naurenExplicarPaleta(pigs.length >= 2 ? pal : null, pigs) };
-      const atrsBase = this.actor.system.atributos ?? {};
-      const atrsVal = { ...Object.fromEntries(Object.entries(atrsBase).map(([k, v]) => [k, v?.value ?? v])), ...(etapa === 0 && this._atributosDigitados ? this._atributosDigitados : {}) };
-      const classeItem = this.actor.items.find(i => i.type === "classe");
-      const uuidSel = this.actor.getFlag("nauren", "criadorClasseSelecionada") || null;
-      let classeNome = classeItem?.name ?? "";
-      if (!classeNome && uuidSel) { try { classeNome = fromUuidSync(uuidSel, { strict: false })?.name ?? ""; } catch (err) { classeNome = ""; } }
-      const chave = naurenFichaChaveClasse(classeItem ?? { name: classeNome });
-      const vis = NAUREN_FICHA_CLASSES[chave] ?? null;
+      // No passo Atributos, a coluna acompanha o que está sendo distribuído; nos outros, a ficha como está.
+      const valores = etapa === 2 ? this._valoresAtributosAtuais() : null;
+      const cl = valores ? this._cloneComAtributos(valores) : this.actor;
+      const tot = cl.system.atributosTotais ?? {};
+      const { metas, bonus } = this._metasEBonusDaFicha(valores);
       context.ficha = {
         nome: this.actor.name, img: this._imgRetratoEscolhida ?? this.actor.img ?? "icons/svg/mystery-man.svg",
-        classe: classeNome, classeCor: vis?.cor ?? "", classeSvg: vis?.svg ?? "",
-        atributos: NAUREN_CRIADOR_ATRIBUTOS.map(c => ({ curto: { forca: "FOR", agilidade: "AGI", estamina: "EST", inteligencia: "INT", destino: "DES" }[c.chave], valor: Number(atrsVal[c.chave]) || 0 })),
+        classe: classe?.nome ?? "", classeCor: classe?.cor ?? "", classeSvg: classe?.svg ?? "",
+        atributos: NAUREN_CRIADOR_ATRIBUTOS.map(c => ({ curto: { forca: "FOR", agilidade: "AGI", estamina: "EST", inteligencia: "INT", destino: "DES" }[c.chave], valor: Number(tot[c.chave] ?? cl.system.atributos?.[c.chave]?.value) || 0 })),
+        metas, bonus,
         pigmentos: pigsItens.map((i, k) => ({ nome: i.name.replace(/^Pigmento\s+/i, ""), cor: NAUREN_FICHA_PIGMENTOS[naurenFichaPigmentoDoItem(i)]?.a ?? (i.system?.corHex || "#888"), ordem: k === 0 ? "Primária" : "Secundária" })),
         peculiaridades: this.actor.items.filter(i => i.type === "peculiaridade").length,
         equipamento: this.actor.items.filter(i => ["arma", "armadura"].includes(i.type) && i.getFlag("nauren", "escolhaEquipamentoCriador")).length
@@ -11504,7 +11591,7 @@ class NaurenCriadorPersonagem extends foundry.applications.api.HandlebarsApplica
           return { ...context.ficha.pigmentos[k], ordem: ehP ? "Primária" : "Secundária" };
         }).sort((a, b) => (a.ordem === "Primária" ? 0 : 1) - (b.ordem === "Primária" ? 0 : 1));
       }
-      if (etapa === 2 && context.pigmentos) {
+      if (etapa === 4 && context.pigmentos) {
         const ordemPorUuid = new Map(pigsItens.map((i, k) => [i.getFlag("nauren", "origemUuid") || i.getFlag("core", "sourceId"), k]));
         context.pigmentos = context.pigmentos.map(p => {
           const k = naurenFichaPigmentoDoItem({ name: p.nome, system: { corHex: p.corHex } });
@@ -11513,12 +11600,127 @@ class NaurenCriadorPersonagem extends foundry.applications.api.HandlebarsApplica
         });
         context.podeInverter = pigs.length >= 2 && pigs[0] !== pigs[1];
       }
-      if (etapa === 3 && context.classes) {
-        context.classes = context.classes.map(c => { const v = NAUREN_FICHA_CLASSES[naurenFichaChaveClasse({ name: c.nome })]; return { ...c, cor: v?.cor ?? "#cca162", svg: v?.svg ?? NAUREN_FICHA_CLASSE_NEUTRA.svg }; });
-        if (context.classeSelecionada) { const v = NAUREN_FICHA_CLASSES[naurenFichaChaveClasse({ name: context.classeSelecionada.nome })]; context.classeSelecionada.cor = v?.cor ?? "#cca162"; context.classeSelecionada.svg = v?.svg ?? NAUREN_FICHA_CLASSE_NEUTRA.svg; }
-      }
     }
     return context;
+  }
+
+  /**
+   * 0.101 — Passo Atributos.
+   * Travado (padrão do mundo): o valor só entra pelos 5 dados rolados ou pelos valores fixos, clicando;
+   * depois de rolar o 1º dado o modo fica preso em "Rolar". Livre: dá para digitar (como antes).
+   */
+  _contextoAtributos(classe) {
+    let travado = true; try { travado = game.settings.get("nauren", "criadorAtributosTravados") !== false; } catch (err) { travado = true; }
+    const dados = this.actor.getFlag("nauren", "criadorDadosAtributos") ?? [null, null, null, null, null];
+    const algumRolado = dados.some(v => v !== null && v !== undefined);
+    let modo = this.actor.getFlag("nauren", "criadorModoAtributos") || "";
+    if (travado && algumRolado) modo = "rolar";
+    const pool = modo === "fixo" ? [...NAUREN_CRIADOR_VALORES_FIXOS] : modo === "rolar" ? dados.map(v => (v === null || v === undefined) ? null : Number(v)) : [];
+    const assinatura = `${modo}|${pool.join(",")}`;
+    const livre = !travado;
+    this._atrEstado = { travado, livre, modo, pool };
+    // Distribuição em memória (atributo → índice do valor). Muda o conjunto de valores: tenta remontar pelo que está na ficha.
+    if (!livre && this._distribAssin !== assinatura) {
+      const antes = this._distrib ?? null;
+      const novo = Object.fromEntries(NAUREN_CRIADOR_ATRIBUTOS.map(c => [c.chave, null]));
+      // Mesmo modo e só entraram dados novos: mantém o que já estava colocado.
+      if (antes && this._distribAssin && this._distribAssin.split("|")[0] === modo) {
+        for (const [k, i] of Object.entries(antes)) if (i !== null && pool[i] !== null && pool[i] !== undefined) novo[k] = i;
+      } else if (pool.length && pool.every(v => v !== null)) {
+        // Voltou ao passo depois de confirmar: os atributos da ficha batem com os valores? Remonta.
+        const atrs = this.actor.system.atributos ?? {};
+        const livres = pool.map((v, i) => i);
+        let bate = true;
+        for (const c of NAUREN_CRIADOR_ATRIBUTOS) {
+          const v = Number(atrs[c.chave]?.value ?? 0);
+          const k = livres.find(i => pool[i] === v);
+          if (k === undefined) { bate = false; break; }
+          novo[c.chave] = k; livres.splice(livres.indexOf(k), 1);
+        }
+        if (!bate) for (const c of NAUREN_CRIADOR_ATRIBUTOS) novo[c.chave] = null;
+      }
+      this._distrib = novo;
+      this._distribAssin = assinatura;
+      this._valorNaMao = null;
+    }
+    const d = this._distrib ?? {};
+    const usados = new Set(Object.values(d).filter(i => i !== null && i !== undefined));
+    if (livre) {
+      // Modo livre: cada valor digitado "consome" um valor igual da lista.
+      usados.clear();
+      const vals = Object.values({ ...Object.fromEntries(NAUREN_CRIADOR_ATRIBUTOS.map(c => [c.chave, Number(this.actor.system.atributos?.[c.chave]?.value ?? 0)])), ...(this._atributosDigitados ?? {}) }).map(Number);
+      pool.forEach((v, i) => { const k = vals.indexOf(v); if (v !== null && k >= 0) { vals.splice(k, 1); usados.add(i); } });
+    }
+    if (this._valorNaMao !== null && this._valorNaMao !== undefined && (usados.has(this._valorNaMao) || pool[this._valorNaMao] === null)) this._valorNaMao = null;
+    const naMao = this._valorNaMao ?? null;
+    const recAtr = classe?.rec?.atributos ?? [];
+    const recMetas = classe?.rec?.metas ?? [];
+    const nomeClasse = classe?.nome ?? "";
+    const valores = this._valoresAtributosAtuais();
+    const cards = NAUREN_CRIADOR_ATRIBUTOS.map(c => {
+      const idx = d[c.chave];
+      const cheio = livre ? true : (idx !== null && idx !== undefined);
+      const rank = recAtr.indexOf(c.chave) + 1;
+      const rodape = rank ? `★ ${rank}º ${nomeClasse ? `do ${nomeClasse}` : "da Classe"}${cheio && !livre ? ' · <i class="fas fa-rotate-left"></i>' : ""}` : (cheio && !livre ? '<i class="fas fa-rotate-left"></i> devolver' : "&nbsp;");
+      return { ...c, valor: livre ? valores[c.chave] : (cheio ? pool[idx] : null), cheio, rec: rank || 0, rodape, clicavel: livre ? naMao !== null : (cheio || naMao !== null) };
+    });
+    const colocados = cards.filter(c => c.cheio).length;
+    const todosRolados = pool.length === 5 && pool.every(v => v !== null);
+    const completo = livre ? true : (todosRolados && colocados === 5);
+    const p = this._cloneComAtributos(valores).system;
+    const metas = [
+      { chave: "espirito", nome: "Espírito", valor: p.espirito?.max ?? 0, formula: "INT + DES" },
+      { chave: "poderMagia", nome: "Poder de Magia", valor: p.poderMagia?.value ?? 0, formula: "(INT + EST) ÷ 2" },
+      { chave: "poderAtaque", nome: "Poder de Ataque", valor: p.poderAtaque?.value ?? 0, formula: "(FOR ou AGI + EST) ÷ 2" },
+      { chave: "vitalidade", nome: "Vitalidade", valor: p.vitalidade?.max ?? 0, formula: "(FOR + EST) ÷ 2" }
+    ].map(m => ({ ...m, rec: recMetas.includes(m.chave) }));
+    metas.sort((a, b) => (b.rec - a.rec)); // os da Classe primeiro
+    let itens = 0; try { itens = Math.max(0, naurenInterpretarModificador("@destinoItensIniciais", this._cloneComAtributos(valores))?.valor ?? 0); } catch (err) { itens = 0; }
+    const recursos = [
+      { chave: "vida", nome: "Vida", valor: p.vida?.max ?? 0 }, { chave: "mana", nome: "Mana", valor: p.mana?.max ?? 0 },
+      { chave: "estaminaCombate", nome: "Estamina", valor: p.estaminaCombate?.max ?? 0 }, { chave: "dadosDestino", nome: "Dados de Destino", valor: p.dadosDestino?.max ?? 0 },
+      { chave: "itens", nome: "Itens iniciais", valor: itens }
+    ];
+    const nomeAtr = k => NAUREN_CRIADOR_ATRIBUTOS.find(c => c.chave === k)?.nome ?? k;
+    const metasNome = { espirito: "Espírito", poderAtaque: "Poder de Ataque", poderMagia: "Poder de Magia", vitalidade: "Vitalidade" };
+    const recLinha = classe && recAtr.length
+      ? `<b>${nomeClasse}</b> usa mais ${recMetas.map(m => `<b>${metasNome[m]}</b>`).join(" e ") || "estes atributos"}: os maiores valores rendem mais em <b>${nomeAtr(recAtr[0])}</b>${recAtr.length > 1 ? `, depois ${recAtr.slice(1).map(k => `<b>${nomeAtr(k)}</b>`).join(" e ")}` : ""}.`
+      : "";
+    const perfis = classe ? naurenPerfisSugestaoClasse(classe.identifier, classe.rec) : [];
+    const sugestoes = !livre && todosRolados && perfis.length ? perfis.map((pf, i) => ({ indice: i, rotulo: pf.nome ? `Sugestão: ${pf.nome}` : `Sugestão ${nomeClasse ? `do ${nomeClasse}` : ""}`.trim() })) : [];
+    const faltam = 5 - colocados;
+    const entendaAtributos = [
+      { chave: "forca", icone: "fa-fist-raised", nome: "Força", texto: "Potência física e carga. Entra na <u>Vitalidade</u> e no <u>Poder de Ataque</u>." },
+      { chave: "agilidade", icone: "fa-running", nome: "Agilidade", texto: "Velocidade e esquiva; <u>quem age primeiro</u> no combate. Pode substituir a Força no <u>Poder de Ataque</u>." },
+      { chave: "estamina", icone: "fa-heartbeat", nome: "Estamina", texto: "Seu fôlego: é a <u>Estamina de combate</u>, que paga as Ações. Entra no <u>Poder de Ataque</u>, no <u>Poder de Magia</u> e na <u>Vitalidade</u>." },
+      { chave: "inteligencia", icone: "fa-brain", nome: "Inteligência", texto: "Enigmas, manuscritos e testes de mente. Entra no <u>Espírito</u> e no <u>Poder de Magia</u>." },
+      { chave: "destino", icone: "fa-star", nome: "Destino", texto: "<u>Dados de Destino</u> (rerrolar o d20, menos 1 e 20) e <u>itens iniciais</u>. Entra no <u>Espírito</u>." }
+    ].map(e => ({ ...e, rec: recAtr.includes(e.chave) }));
+    const entendaMetas = [
+      { chave: "espirito", icone: "fa-droplet", nome: "Espírito", formula: "INT + DES", texto: "Sua <u>Mana</u>. Algumas Classes transformam em outra coisa: Espírito da Batalha, Ardiloso, Energia, Pontos de Invenção." },
+      { chave: "poderAtaque", icone: "fa-khanda", nome: "Poder de Ataque", formula: "(maior de FOR/AGI + EST) ÷ 2", texto: "Somado ao <u>acerto e ao dano com armas</u>." },
+      { chave: "poderMagia", icone: "fa-wand-sparkles", nome: "Poder de Magia", formula: "(INT + EST) ÷ 2", texto: "Somado ao <u>acerto e ao dano de magias</u>." },
+      { chave: "vitalidade", icone: "fa-heart", nome: "Vitalidade", formula: "(FOR + EST) ÷ 2", texto: "Sua <u>Vida</u>: a Vitalidade entra de novo a cada nível." },
+      { chave: "", icone: "fa-circle-info", nome: "Arredonda para baixo", formula: "", texto: "Pigmentos e Peculiaridades ainda podem somar nos atributos e nos metas." }
+    ].map(e => ({ ...e, rec: recMetas.includes(e.chave) }));
+    const resumoRec = recAtr.length ? recAtr.map(k => `${nomeAtr(k)} ${valores[k]}`).join(", ") : "";
+    const metasRec = metas.filter(m => m.rec).map(m => `<b>${m.nome} ${m.valor}</b>`).join(" e ");
+    return {
+      travado, livre, semModo: !modo, modoFixo: modo === "fixo", modoRolar: modo === "rolar",
+      modoPreso: travado && algumRolado, podeTrocarModo: !!modo && !(travado && algumRolado),
+      subtitulo: !modo ? "Como você quer gerar seus 5 valores?" : livre ? "Digite os valores ou clique num valor e depois no atributo." : completo ? "Tudo distribuído. Ainda dá para devolver e trocar antes de continuar." : "1. Clique num valor · 2. Clique no atributo. Clique num atributo cheio para devolver.",
+      fixosTexto: NAUREN_CRIADOR_VALORES_FIXOS.join(", "),
+      valoresTexto: pool.filter(v => v !== null).join(", "),
+      pool: pool.map((v, i) => ({ indice: i, valor: v, rolado: v !== null, usado: usados.has(i), naMao: naMao === i })),
+      faltaRolar: modo === "rolar" && !todosRolados,
+      temNaMao: naMao !== null,
+      cards, completo: !!modo && completo, metas, recursos, recLinha, sugestoes,
+      classeNome: nomeClasse, daClasse: nomeClasse ? `do ${nomeClasse}` : "da Classe",
+      entendaAtributos, entendaMetas,
+      resultadoTexto: `<b>Resultado final:</b> ${resumoRec ? `${resumoRec}${metasRec ? ` → ${metasRec}` : ""}. ` : ""}Pigmentos e Peculiaridades ainda podem somar.`,
+      podeConfirmar: livre ? true : (!!modo && completo),
+      faltamTexto: !modo ? "Escolha como gerar os valores" : !todosRolados ? "Role os 5 dados" : `${faltam === 1 ? "Falta 1 valor" : `Faltam ${faltam} valores`}`
+    };
   }
 
   /** 0.98: troca qual Pigmento é a cor principal (vale também para a ficha, cards e HUD). */
@@ -11561,73 +11763,40 @@ class NaurenCriadorPersonagem extends foundry.applications.api.HandlebarsApplica
    */
   _ligarDistribuicaoAtributos() {
     const root = this.element;
-    const inputs = [...root.querySelectorAll('input[name^="atributo_"]')];
-    if (!inputs.length) return;
-    const chips = [...root.querySelectorAll(".nauren-criador-ficha-valor")];
-    const atualizar = () => {
-      // Fichas usadas: cada valor digitado "consome" uma ficha igual.
-      const restantes = inputs.map(i => Number(i.value));
-      for (const ch of chips) {
-        const v = Number(ch.dataset.valor);
-        const k = restantes.indexOf(v);
-        if (k >= 0) restantes.splice(k, 1);
-        ch.classList.toggle("usada", k >= 0);
-      }
-      const aviso = root.querySelector(".nauren-criador-pool-aviso");
-      if (aviso && chips.length) {
-        const todasUsadas = chips.every(c => c.classList.contains("usada"));
-        aviso.textContent = todasUsadas ? "Tudo distribuído." : `Faltam ${chips.filter(c => !c.classList.contains("usada")).length} valor(es) para distribuir.`;
-        aviso.classList.toggle("ok", todasUsadas);
-      }
-      this._atualizarPreviaAtributos(inputs);
-    };
-    const aplicar = (input, valor) => {
-      input.value = valor;
-      input.closest(".nauren-criador-atributo-campo")?.classList.add("piscou");
-      setTimeout(() => input.closest(".nauren-criador-atributo-campo")?.classList.remove("piscou"), 350);
-      root.querySelectorAll(".nauren-criador-ficha-valor.escolhida").forEach(c => c.classList.remove("escolhida"));
-      this._guardarAtributosDigitados();
-      atualizar();
-    };
-    chips.forEach(ch => {
-      ch.addEventListener("click", () => {
-        const ja = ch.classList.contains("escolhida");
-        chips.forEach(c => c.classList.remove("escolhida"));
-        if (!ja) ch.classList.add("escolhida");
-        root.querySelector(".nauren-criador-atributos-grid.principal")?.classList.toggle("esperando-valor", !ja);
-      });
-      ch.addEventListener("dragstart", ev => { ev.dataTransfer?.setData("text/plain", ch.dataset.valor); });
-    });
-    root.querySelectorAll(".nauren-criador-atributo-campo[data-atributo]").forEach(card => {
-      const input = card.querySelector("input");
-      card.addEventListener("click", ev => {
-        const ch = root.querySelector(".nauren-criador-ficha-valor.escolhida");
-        if (!ch || ev.target.closest("button")) return;
-        ev.preventDefault();
-        aplicar(input, ch.dataset.valor);
-        root.querySelector(".nauren-criador-atributos-grid.principal")?.classList.remove("esperando-valor");
-      });
+    const est = this._atrEstado;
+    if (!root?.querySelector?.(".ncr-atributos") || !est) return;
+    // Arrastar um valor até o atributo (além de clicar).
+    root.querySelectorAll(".ncr-v[data-indice]:not(.usado):not(.dado)").forEach(ch => ch.addEventListener("dragstart", ev => ev.dataTransfer?.setData("text/plain", ch.dataset.indice)));
+    root.querySelectorAll(".ncr-atr[data-atributo]").forEach(card => {
       card.addEventListener("dragover", ev => { ev.preventDefault(); card.classList.add("alvo-drop"); });
       card.addEventListener("dragleave", () => card.classList.remove("alvo-drop"));
       card.addEventListener("drop", ev => {
         ev.preventDefault(); card.classList.remove("alvo-drop");
-        const v = ev.dataTransfer?.getData("text/plain");
-        if (v !== "" && v !== undefined && Number.isFinite(Number(v))) aplicar(input, v);
+        const i = Number(ev.dataTransfer?.getData("text/plain"));
+        if (!Number.isInteger(i) || est.pool[i] === null || est.pool[i] === undefined) return;
+        this._valorNaMao = i;
+        NaurenCriadorPersonagem.onColocarAtributo.call(this, { target: card }, card);
       });
-      input.addEventListener("input", () => { this._guardarAtributosDigitados(); atualizar(); });
     });
+    if (!est.livre) return;
+    // Modo livre (o Mestre desligou a trava): digitar atualiza a prévia e a coluna na hora.
+    const inputs = [...root.querySelectorAll('input[name^="atributo_"]')];
+    const chips = [...root.querySelectorAll(".ncr-v[data-valor]")];
+    const atualizar = () => {
+      const restantes = inputs.map(i => Number(i.value));
+      for (const ch of chips) { const k = restantes.indexOf(Number(ch.dataset.valor)); if (k >= 0) restantes.splice(k, 1); ch.classList.toggle("usado", k >= 0); }
+      this._atualizarPreviaAtributos(inputs);
+    };
+    inputs.forEach(i => i.addEventListener("input", () => { this._guardarAtributosDigitados(); atualizar(); }));
     atualizar();
   }
 
   /** Prévia dos valores derivados usando o mesmo cálculo da ficha (clone do ator, nada é gravado). */
   _atualizarPreviaAtributos(inputs) {
-    const painel = this.element.querySelector(".nauren-criador-previa");
-    if (!painel) return;
     try {
       const atr = {};
-      for (const i of inputs) atr[i.name.slice(9)] = { value: Math.max(0, Math.round(Number(i.value) || 0)) };
-      const clone = this.actor.clone({ system: { atributos: atr } }, { keepId: true });
-      clone.prepareData?.();
+      for (const i of inputs) atr[i.name.slice(9)] = Math.max(0, Math.round(Number(i.value) || 0));
+      const clone = this._cloneComAtributos(atr);
       const s = clone.system;
       const itens = Math.max(0, naurenInterpretarModificador("@destinoItensIniciais", clone)?.valor ?? 0);
       const valores = {
@@ -11635,14 +11804,19 @@ class NaurenCriadorPersonagem extends foundry.applications.api.HandlebarsApplica
         poderAtaque: s.poderAtaque?.value, poderMagia: s.poderMagia?.value, espirito: s.espirito?.max, vitalidade: s.vitalidade?.max, itens
       };
       for (const [k, v] of Object.entries(valores)) {
-        const el = painel.querySelector(`[data-previa-valor="${k}"]`);
-        if (el) el.textContent = Number.isFinite(v) ? String(v) : "—";
+        this.element.querySelectorAll(`[data-previa-valor="${k}"], [data-ficha-meta="${k}"]`).forEach(el => { el.textContent = Number.isFinite(v) ? String(v) : "—"; });
       }
+      const tot = s.atributosTotais ?? {};
+      const brasoes = this.element.querySelectorAll(".ncr-ficha .ncr-brasao b");
+      NAUREN_CRIADOR_ATRIBUTOS.forEach((c, k) => { if (brasoes[k]) brasoes[k].textContent = String(tot[c.chave] ?? atr[c.chave] ?? 0); });
     } catch (err) { console.warn("Nauren RPG | prévia de atributos", err); }
   }
 
   /** Escolhe como gerar os valores: "fixo" (5, 4, 3, 3, 2) ou "rolar" (5d6). */
   static async onModoAtributos(event, target) {
+    let travado = true; try { travado = game.settings.get("nauren", "criadorAtributosTravados") !== false; } catch (err) { travado = true; }
+    const jaRolou = (this.actor.getFlag("nauren", "criadorDadosAtributos") ?? []).some(v => v !== null && v !== undefined);
+    if (travado && jaRolou && target.dataset.modo !== "rolar") { ui.notifications.warn("Os dados já foram rolados: eles valem. Só o Mestre pode liberar uma nova distribuição."); return; }
     this._guardarAtributosDigitados();
     // Ainda nos valores de fábrica (todos iguais): começa zerado, para as fichas ficarem livres.
     const d = this._atributosDigitados ?? {};
@@ -11666,7 +11840,7 @@ class NaurenCriadorPersonagem extends foundry.applications.api.HandlebarsApplica
 
   /** Botões − / + de cada atributo. */
   static async onAjustarAtributo(event, target) {
-    const card = target.closest(".nauren-criador-atributo-campo");
+    const card = target.closest(".ncr-atr, .nauren-criador-atributo-campo");
     const input = card?.querySelector("input");
     if (!input) return;
     input.value = Math.max(0, (Number(input.value) || 0) + Number(target.dataset.passo || 0));
@@ -11675,6 +11849,13 @@ class NaurenCriadorPersonagem extends foundry.applications.api.HandlebarsApplica
 
   /** Zera a distribuição para recomeçar. */
   static async onLimparAtributos() {
+    if (this._atrEstado && !this._atrEstado.livre) {
+      this._distrib = Object.fromEntries(NAUREN_CRIADOR_ATRIBUTOS.map(c => [c.chave, null]));
+      this._valorNaMao = null;
+      this.render();
+      return;
+    }
+    this._atributosDigitados = Object.fromEntries(NAUREN_CRIADOR_ATRIBUTOS.map(c => [c.chave, 0]));
     this.element.querySelectorAll('input[name^="atributo_"]').forEach(i => { i.value = 0; i.dispatchEvent(new Event("input", { bubbles: true })); });
   }
 
@@ -11776,35 +11957,93 @@ class NaurenCriadorPersonagem extends foundry.applications.api.HandlebarsApplica
     aplicar(link);
   }
 
-  static async onConfirmarAtributos(event, target) {
+  /** Passo Identidade: grava nome, retrato e token e segue para a Classe. */
+  static async onConfirmarIdentidade(event, target) {
     const root = this.element;
     const nomeNovo = String(root.querySelector('input[name="nomePersonagem"]')?.value ?? "").trim();
     if (nomeNovo && nomeNovo !== this.actor.name) await this.actor.update({ name: nomeNovo });
     // Retrato e token: vão direto para a ficha; token vazio = usa o retrato.
-    {
-      const retrato = String(root.querySelector('input[name="imgRetrato"]')?.value ?? "").trim();
-      let token = String(root.querySelector('input[name="imgToken"]')?.value ?? "").trim();
-      if (!this._imgTokenEscolhida && this._imgRetratoEscolhida) token = retrato;
-      const upd = {};
-      if (retrato && retrato !== this.actor.img) upd.img = retrato;
-      if (token && token !== this.actor.prototypeToken?.texture?.src) upd["prototypeToken.texture.src"] = token;
-      if (Object.keys(upd).length) await this.actor.update(upd);
-      if (upd["prototypeToken.texture.src"]) {
-        for (const tk of this.actor.getActiveTokens?.(false, true) ?? []) if (tk.isOwner) await tk.update({ "texture.src": token }).catch(() => {});
-      }
+    const retrato = String(root.querySelector('input[name="imgRetrato"]')?.value ?? "").trim();
+    let token = String(root.querySelector('input[name="imgToken"]')?.value ?? "").trim();
+    if (!this._imgTokenEscolhida && this._imgRetratoEscolhida) token = retrato;
+    const upd = {};
+    if (retrato && retrato !== this.actor.img) upd.img = retrato;
+    if (token && token !== this.actor.prototypeToken?.texture?.src) upd["prototypeToken.texture.src"] = token;
+    if (Object.keys(upd).length) await this.actor.update(upd);
+    if (upd["prototypeToken.texture.src"]) {
+      for (const tk of this.actor.getActiveTokens?.(false, true) ?? []) if (tk.isOwner) await tk.update({ "texture.src": token }).catch(() => {});
+    }
+    await this.actor.setFlag("nauren", "criadorEtapa", 1);
+    this.#scrollCriadorEtapa = 0;
+    this.render();
+  }
+
+  /** Passo Atributos (travado): pega um valor (clique de novo solta). */
+  static async onPegarValor(event, target) {
+    const i = Number(target.dataset.indice);
+    if (!Number.isInteger(i)) return;
+    this._guardarAtributosDigitados();
+    this._valorNaMao = this._valorNaMao === i ? null : i;
+    this.render();
+  }
+
+  /** Clica num atributo: coloca o valor que está na mão (troca, se já tinha um) ou devolve o que estava nele. */
+  static async onColocarAtributo(event, target) {
+    if (event?.target?.closest?.("input, button")) return;
+    const k = target.closest("[data-atributo]")?.dataset.atributo;
+    const est = this._atrEstado;
+    if (!k || !est) return;
+    const naMao = this._valorNaMao;
+    if (est.livre) {
+      if (naMao === null || naMao === undefined) return;
+      this._guardarAtributosDigitados();
+      this._atributosDigitados = { ...(this._atributosDigitados ?? {}), [k]: Number(est.pool[naMao]) || 0 };
+      this._valorNaMao = null;
+      this.render();
+      return;
+    }
+    this._distrib ??= {};
+    if (naMao !== null && naMao !== undefined) { this._distrib[k] = naMao; this._valorNaMao = null; }
+    else if (this._distrib[k] !== null && this._distrib[k] !== undefined) this._distrib[k] = null;
+    else return;
+    this.render();
+  }
+
+  /** Sugestão da Classe: testa as 120 combinações dos 5 valores e fica com a que mais rende (pesos da Classe). */
+  static async onSugestaoAtributos(event, target) {
+    const est = this._atrEstado;
+    if (!est?.pool?.length || est.pool.some(v => v === null)) return ui.notifications.warn("Gere os 5 valores primeiro.");
+    const classe = await this._classeDoCriador();
+    const perfis = classe ? naurenPerfisSugestaoClasse(classe.identifier, classe.rec) : [];
+    const pf = perfis[Number(target.dataset.perfil) || 0] ?? perfis[0];
+    if (!pf) return ui.notifications.warn("Escolha uma Classe para ver a sugestão.");
+    this._distrib = naurenMelhorDistribuicao(est.pool, pf.pesos);
+    this._valorNaMao = null;
+    this.render();
+  }
+
+  static async onConfirmarAtributos(event, target) {
+    const root = this.element;
+    const est = this._atrEstado ?? {};
+    if (!est.livre) {
+      const d = this._distrib ?? {};
+      const faltam = NAUREN_CRIADOR_ATRIBUTOS.filter(c => d[c.chave] === null || d[c.chave] === undefined || est.pool?.[d[c.chave]] === null);
+      if (!est.modo || faltam.length) { ui.notifications.warn(`Coloque um valor em cada atributo (falta: ${faltam.map(c => c.nome).join(", ") || "escolher o modo"}).`); return; }
     }
     // Valores fixos/rolados que ainda não foram para nenhum atributo: só confirma (não impede).
-    {
-      const sobrando = [...root.querySelectorAll(".nauren-criador-ficha-valor:not(.usada)")].map(c => c.dataset.valor);
+    if (est.livre) {
+      const sobrando = [...root.querySelectorAll(".ncr-v[data-valor]:not(.usado)")].map(c => c.dataset.valor);
       if (sobrando.length) {
         const seguir = await foundry.applications.api.DialogV2.confirm({ ...NK.naurenKitJanela(this.actor), window: { title: "Atributos" },
           content: `<p>Ainda sobram valores sem atributo: <b>${sobrando.join(", ")}</b>.</p><p>Continuar mesmo assim?</p>`, rejectClose: false }).catch(() => false);
         if (!seguir) return;
       }
     }
+    const valoresTravados = est.livre ? null : this._valoresAtributosAtuais();
     const ler = campo => {
+      if (valoresTravados) return Math.max(0, Math.round(Number(valoresTravados[campo]) || 0));
       const input = root.querySelector(`input[name="atributo_${campo}"]`);
-      const n = Number(input?.value);
+      const n = Number(input?.value ?? this._atributosDigitados?.[campo]);
       return Number.isFinite(n) && n >= 0 ? Math.round(n) : 0;
     };
     await this.actor.update({
@@ -11828,7 +12067,7 @@ class NaurenCriadorPersonagem extends foundry.applications.api.HandlebarsApplica
           linhas: [{ label: "Atributos", value: Object.entries(atributosD).map(([k, v]) => `${NAUREN_NOMES_ATRIBUTO_CURTO[k]} ${v}`).join(" · "), breakdown: fonteD ? `${modoD === "rolar" ? "dados rolados" : "valores fixos"}: ${fonteD.join(", ")} · ${bate ? "confere" : "NÃO confere"}` : "sem modo escolhido" }] });
       }
     } catch (err) { console.warn("Nauren RPG | Registro de rolagens (distribuição)", err); }
-    await this.actor.setFlag("nauren", "criadorEtapa", 1);
+    await this.actor.setFlag("nauren", "criadorEtapa", 3);
     this.#scrollCriadorEtapa = 0;
     this.render();
   }
@@ -11954,7 +12193,7 @@ class NaurenCriadorPersonagem extends foundry.applications.api.HandlebarsApplica
   }
 
   static async onAvancarDePeculiaridades(event, target) {
-    await this.actor.setFlag("nauren", "criadorEtapa", 2);
+    await this.actor.setFlag("nauren", "criadorEtapa", 4);
     this.#scrollCriadorEtapa = 0;
     this.render();
   }
@@ -11983,7 +12222,7 @@ class NaurenCriadorPersonagem extends foundry.applications.api.HandlebarsApplica
   }
 
   static async onAvancarDePigmentos(event, target) {
-    await this.actor.setFlag("nauren", "criadorEtapa", 3);
+    await this.actor.setFlag("nauren", "criadorEtapa", 5);
     this.#scrollCriadorEtapa = 0;
     this.render();
   }
@@ -12069,14 +12308,14 @@ class NaurenCriadorPersonagem extends foundry.applications.api.HandlebarsApplica
     this.render();
   }
 
-  /** Classe marcada (ou já gravada) - segue para o Equipamento. */
+  /** Classe marcada (ou já gravada) - segue para os Atributos. */
   static async onAvancarDeClasse(event, target) {
     const temClasse = this.actor.items.some(i => i.type === "classe");
     if (!temClasse && !this.actor.getFlag("nauren", "criadorClasseSelecionada")) {
       ui.notifications.warn("Escolha uma Classe antes de continuar.");
       return;
     }
-    await this.actor.setFlag("nauren", "criadorEtapa", 4);
+    await this.actor.setFlag("nauren", "criadorEtapa", 2);
     this.#scrollCriadorEtapa = 0;
     this.render();
   }
@@ -12138,21 +12377,51 @@ class NaurenCriadorPersonagem extends foundry.applications.api.HandlebarsApplica
 // Etapa Atributos do Criador: texto do livro (cap. "Seus atributos") e os valores fixos
 // para quem não quer rolar. Só exibição/apoio: a ficha continua aceitando qualquer valor.
 const NAUREN_CRIADOR_ATRIBUTOS = [
-  { chave: "forca", nome: "Força", icone: "fa-fist-raised", desc: "Potência física e o peso que você carrega." },
-  { chave: "agilidade", nome: "Agilidade", icone: "fa-running", desc: "Velocidade e esquiva. Decide quem age primeiro no combate." },
-  { chave: "estamina", nome: "Estamina", icone: "fa-heartbeat", desc: "Energia para o esforço: quantas ações antes de se exaurir." },
-  { chave: "inteligencia", nome: "Inteligência", icone: "fa-brain", desc: "Enigmas, manuscritos e a lógica por trás dos mistérios." },
-  { chave: "destino", nome: "Destino", icone: "fa-star", desc: "Rerrolar o D20 no episódio. Também define seus itens iniciais." }
+  { chave: "forca", nome: "Força", icone: "fa-fist-raised", desc: "Potência física e carga." },
+  { chave: "agilidade", nome: "Agilidade", icone: "fa-running", desc: "Velocidade, esquiva, quem age primeiro." },
+  { chave: "estamina", nome: "Estamina", icone: "fa-heartbeat", desc: "Fôlego: quantas ações antes de cansar." },
+  { chave: "inteligencia", nome: "Inteligência", icone: "fa-brain", desc: "Enigmas, manuscritos e mistérios." },
+  { chave: "destino", nome: "Destino", icone: "fa-star", desc: "Rerrolar o d20; itens iniciais." }
 ];
 const NAUREN_CRIADOR_VALORES_FIXOS = [5, 4, 3, 3, 2];
 
+// 0.101: a Classe vem antes dos Atributos (eles dependem dela). Ordem antiga migrada em NaurenCriadorPersonagem#_etapaAtual.
 const NAUREN_CRIADOR_ETAPAS = [
+  { nome: "Identidade" },
+  { nome: "Classe" },
   { nome: "Atributos" },
   { nome: "Peculiaridades" },
   { nome: "Pigmentos" },
-  { nome: "Classe" },
   { nome: "Equipamento" }
 ];
+
+/** Por que um atributo rende para a Classe: os metas recomendados em que ele entra (ou o que ele faz sozinho). */
+function naurenMotivoAtributo(chave, metasRec = []) {
+  const entra = { forca: ["poderAtaque", "vitalidade"], agilidade: ["poderAtaque"], estamina: ["poderAtaque", "poderMagia", "vitalidade"], inteligencia: ["espirito", "poderMagia"], destino: ["espirito"] }[chave] ?? [];
+  const nomes = { espirito: "Espírito", poderAtaque: "Poder de Ataque", poderMagia: "Poder de Magia", vitalidade: "Vitalidade" };
+  const metas = entra.filter(m => metasRec.includes(m)).map(m => nomes[m]);
+  const extra = { estamina: "paga as Ações", agilidade: "esquiva e iniciativa", destino: "Dados de Destino e itens", forca: "Vida e Ataque", inteligencia: "testes de mente" }[chave] ?? "";
+  if (!metas.length) return extra;
+  const txt = metas.length > 1 ? `${metas.slice(0, -1).join(", ")} e ${metas[metas.length - 1]}` : metas[0];
+  return chave === "estamina" && metas.length < 2 ? `${txt}; paga as Ações` : txt;
+}
+
+/**
+ * Armas e armaduras da Classe para mostrar em etiquetas: lê a dica do livro ("Armas: …. Armaduras: ….")
+ * e, sem dica, as categorias marcadas no equipamento recomendado.
+ */
+function naurenArmasDaClasse(cfg) {
+  const cap = t => t ? t.charAt(0).toUpperCase() + t.slice(1) : t;
+  const partes = txt => String(txt ?? "").split(/,|\s+e\s+/i).map(t => t.trim().replace(/^(armaduras?|de)\s+/i, "").replace(/^de\s+/i, "").replace(/\.$/, "")).filter(Boolean).map(cap);
+  const dica = String(cfg?.dica ?? "");
+  const mA = dica.match(/Armas?\s*:\s*([^.]*)/i), mR = dica.match(/Armaduras?\s*:\s*([^.]*)/i);
+  if (mA || mR) return { armas: mA ? partes(mA[1]) : [], armaduras: mR ? partes(mR[1]) : [] };
+  const cats = cfg?.categorias ?? [];
+  const nomeA = { Leve: "Leves", "Média": "Médias", Pesada: "Pesadas", Alcance: "De alcance", "Distância": "À distância", Catalisador: "Catalisadores", Escudo: "Escudos" };
+  const armas = [...cats.filter(c => nomeA[c]).map(c => nomeA[c]), ...String(cfg?.nomes ?? "").split(/[,;\n]/).map(t => t.trim()).filter(Boolean)];
+  const armaduras = cats.filter(c => ["Tecido", "Couro", "Malha", "Placa"].includes(c));
+  return { armas, armaduras };
+}
 
 /**
  * ============================================================
