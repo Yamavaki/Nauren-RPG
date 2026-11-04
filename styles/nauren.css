@@ -7594,3 +7594,36 @@ li.chat-message.ncc-card > .message-content { padding-top: 0 !important; }
 .application.nauren-kit.nc2.nauren-armazem .na-busca input[type] { --cc: 6px; --cbw: 1.5px; --cbg: color-mix(in srgb, var(--nc-pd) 45%, #221a2e); --cbd: var(--nk-linha2); color: var(--nk-texto); }
 .application.nauren-kit.nc2.nauren-armazem .na-busca input[type]:focus { --cbd: var(--nc-s); }
 .application.nauren-kit.nc2.nauren-armazem .na-busca > i { color: var(--nc-sc); }
+
+/* 0.101.4 — Cantos das janelas no Firefox: cada parte se corta sozinha.
+   Mesmo que o recorte da janela inteira não pegue (Firefox), o fundo da janela já vem chanfrado (degradês com o canto
+   transparente), o cabeçalho corta os cantos de cima e o conteúdo os de baixo — não sobra nada para "furar" a borda. */
+.application.nc-moldura.nc2, .application.nauren-kit.nc2 {
+  --mkb: calc(var(--mc, 10px) * .7071);
+  background:
+    linear-gradient(135deg, transparent var(--mkb), var(--nc-f, #1b1624) 0) top left / calc(50% + 2px) calc(50% + 2px) no-repeat,
+    linear-gradient(225deg, transparent var(--mkb), var(--nc-f, #1b1624) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat,
+    linear-gradient(315deg, transparent var(--mkb), var(--nc-f, #1b1624) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat,
+    linear-gradient(45deg, transparent var(--mkb), var(--nc-f, #1b1624) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat !important;
+  outline: none !important;
+}
+.application.nc-moldura.nc2 > .window-header, .application.nauren-kit.nc2 > .window-header {
+  clip-path: polygon(var(--mc, 10px) 0, calc(100% - var(--mc, 10px)) 0, 100% var(--mc, 10px), 100% 100%, 0 100%, 0 var(--mc, 10px));
+}
+.application.nc-moldura.nc2 > .window-content, .application.nauren-kit.nc2 > .window-content, .application.nauren-kit.nc2 > form.window-content {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--mc, 10px)), calc(100% - var(--mc, 10px)) 100%, var(--mc, 10px) 100%, 0 calc(100% - var(--mc, 10px)));
+}
+.application.nauren-armazem-mestre, .application.nauren-armazem-mestre > .window-content { overflow: clip !important; }
+/* 0.101.4 — botões − / + da quantidade (loja/baú): borda inteira também nas diagonais */
+.application.nauren-armazem .na-stepper button {
+  --cbw: 1.5px; --cc: 6px; --ck: calc(var(--cc) * .7071 - var(--cbw) * .4142); --cbg: color-mix(in srgb, var(--nc-pd, #26183a) 35%, #1a1422); --cbd: color-mix(in srgb, var(--nc-s, #e0b257) 70%, #000);
+  border: var(--cbw) solid transparent !important;
+  background:
+    linear-gradient(135deg, transparent var(--ck), var(--cbg) 0) top left / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(225deg, transparent var(--ck), var(--cbg) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(315deg, transparent var(--ck), var(--cbg) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(45deg, transparent var(--ck), var(--cbg) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(var(--cbd), var(--cbd)) border-box !important;
+}
+.application.nauren-armazem .na-stepper button:hover:not(:disabled) { --cbd: var(--nc-sc, #ffd98a); --cbg: color-mix(in srgb, var(--nc-s, #e0b257) 15%, #1a1422); }
+.application.nauren-armazem .na-stepper button:disabled { --cbd: color-mix(in srgb, var(--nc-s, #e0b257) 35%, #000); }

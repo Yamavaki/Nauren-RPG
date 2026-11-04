@@ -6523,6 +6523,26 @@ Hooks.on("renderApplicationV2", (app, el) => {
     cl.add("nc-tela");
   } catch (err) { console.warn("Nauren RPG | cores da tela", err); }
 });
+/* 0.101.4 — Janela "deslizada" depois de redesenhar: o navegador rolava a própria janela (ou a área de conteúdo,
+   que não tem barra) para mostrar o campo clicado, e ficava um vão embaixo e o topo escondido. Volta para o lugar. */
+function naurenDesrolarJanela(raiz) {
+  if (!raiz) return;
+  if (raiz.scrollTop || raiz.scrollLeft) { raiz.scrollTop = 0; raiz.scrollLeft = 0; }
+  const wc = raiz.querySelector(":scope > .window-content");
+  if (wc && (wc.scrollTop || wc.scrollLeft)) { const ov = getComputedStyle(wc).overflowY; if (ov === "hidden" || ov === "clip" || ov === "visible") { wc.scrollTop = 0; wc.scrollLeft = 0; } }
+}
+Hooks.on("renderApplicationV2", (app, el) => {
+  try {
+    const raiz = app?.element ?? el;
+    if (!raiz?.classList?.contains("nauren-rpg") && !raiz?.classList?.contains("nauren-kit")) return;
+    naurenDesrolarJanela(raiz);
+    if (!raiz.dataset.naurenDesrolar) {
+      raiz.dataset.naurenDesrolar = "1";
+      raiz.addEventListener("scroll", () => naurenDesrolarJanela(raiz));
+      raiz.querySelector(":scope > .window-content")?.addEventListener("scroll", () => naurenDesrolarJanela(raiz));
+    }
+  } catch (err) { /* segue */ }
+});
 Hooks.on("renderApplicationV2", (app, el) => {
   try {
     const raiz = app?.element ?? el;

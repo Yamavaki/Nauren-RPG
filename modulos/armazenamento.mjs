@@ -66,7 +66,7 @@ class NaurenArmazenamentoData extends foundry.abstract.TypeDataModel {
       mapa: new SchemaField({
         icone: new StringField({ initial: "bau" }),
         imagem: new StringField({ initial: "" }),
-        tamanho: num(0.6, { min: 0.2, max: 4 }),     // em quadrados da cena
+        tamanho: num(0.4, { min: 0.2, max: 4 }),     // em quadrados da cena
         rotuloSempre: new BooleanField({ initial: false }),
         soNaVisao: new BooleanField({ initial: true }),
         abrirAoEntrar: new BooleanField({ initial: false })
@@ -938,7 +938,7 @@ class NaurenArmazemSheet extends foundry.applications.sheets.ActorSheetV2 {
           <div class="na-mapa-op">
             ${op("Ícone", "", sel("system.mapa.icone", icones, m.icone ?? "bau"))}
             ${m.icone === "imagem" ? op("Imagem", "caminho do arquivo", `<input type="text" name="system.mapa.imagem" value="${ESC(m.imagem ?? "")}" placeholder="icons/...">`, "na-op-largo") : ""}
-            ${op("Tamanho", "em quadrados", num("system.mapa.tamanho", m.tamanho ?? 0.6, `min="0.2" max="4" step="0.1"`, "qd"))}
+            ${op("Tamanho", "em quadrados", num("system.mapa.tamanho", m.tamanho ?? 0.4, `min="0.2" max="4" step="0.1"`, "qd"))}
             ${op("Nome sempre visível", "senão, ao passar o mouse", sw("system.mapa.rotuloSempre", m.rotuloSempre))}
           </div>
           <div class="na-mapa-op">
@@ -1044,7 +1044,7 @@ function naurenArmazemColocarNoMapa(armazem, ficha = null) {
   const PIXI_ = globalThis.PIXI;
   const g0 = canvas.grid?.size || canvas.dimensions?.size || 100;
   const cfg = armazem.system?.mapa ?? {};
-  const tam = Math.round(g0 * (Number(cfg.tamanho) || 0.6));
+  const tam = Math.round(g0 * (Number(cfg.tamanho) || 0.4));
   let previa = null;
   try {
     previa = new PIXI_.Container(); previa.name = "naurenArmazemPrevia"; previa.eventMode = "none";
@@ -1134,7 +1134,7 @@ async function desenharIcones() {
       if (!armazem) continue;
       const cfg = armazem.system.mapa ?? {};
       const grade = canvas.grid?.size || canvas.dimensions?.size || 100;
-      const cx = ret.x + ret.w / 2, cy = ret.y + ret.h / 2, tam = Math.round(grade * (Number(cfg.tamanho) || 0.6));
+      const cx = ret.x + ret.w / 2, cy = ret.y + ret.h / 2, tam = Math.round(grade * (Number(cfg.tamanho) || 0.4));
       const ic = new PIXI_.Container();
       ic.position.set(cx, cy);
       ic.eventMode = "static"; ic.cursor = "pointer";
@@ -1199,7 +1199,7 @@ function naurenArmazemInit() {
   CONFIG.queries ??= {};
   CONFIG.queries[QUERY] = naurenArmazemHandleQuery;
   CONFIG.queries[QUERY_ABRIR] = async ({ armazemUuid } = {}) => { const a = await fromUuid(armazemUuid); if (a) NaurenArmazemJanela.abrir(a); return true; };
-  game.settings.register("nauren", "armazemTamanho06", { scope: "world", config: false, type: Boolean, default: false });
+  game.settings.register("nauren", "armazemTamanho04", { scope: "world", config: false, type: Boolean, default: false });
   const Colecao = foundry.documents.collections?.Actors ?? globalThis.Actors;
   Colecao?.registerSheet?.("nauren", NaurenArmazemSheet, { types: ["armazenamento"], makeDefault: true, label: "Nauren: Armazenamento" });
 }
@@ -1216,12 +1216,12 @@ function naurenArmazemHooks() {
   for (const h of ["createRegion", "updateRegion", "deleteRegion", "createRegionBehavior", "updateRegionBehavior", "deleteRegionBehavior"]) Hooks.on(h, () => redesenharIcones());
   Hooks.on("updateActor", a => { if (a.type === "armazenamento" && camada) redesenharIcones(); });
   Hooks.on("sightRefresh", () => atualizarVisibilidade());
-  // 0.101.3: o tamanho padrão do ícone no mapa caiu de 0,8 para 0,6 quadrado (0,8 ficava grande demais).
+  // 0.101.4: tamanho padrão do ícone no mapa: 0,4 quadrado (os que estavam no padrão antigo, 0,8 ou 0,6, passam para 0,4).
   Hooks.once("ready", async () => {
     try {
-      if (!game.user.isGM || game.settings.get("nauren", "armazemTamanho06")) return;
-      for (const a of game.actors.filter(x => x.type === "armazenamento" && Number(x.system?.mapa?.tamanho) === 0.8)) await a.update({ "system.mapa.tamanho": 0.6 });
-      await game.settings.set("nauren", "armazemTamanho06", true);
+      if (!game.user.isGM || game.settings.get("nauren", "armazemTamanho04")) return;
+      for (const a of game.actors.filter(x => x.type === "armazenamento" && [0.8, 0.6].includes(Number(x.system?.mapa?.tamanho)))) await a.update({ "system.mapa.tamanho": 0.4 });
+      await game.settings.set("nauren", "armazemTamanho04", true);
     } catch (err) { console.warn("Nauren RPG | tamanho dos baús", err); }
   });
 }
