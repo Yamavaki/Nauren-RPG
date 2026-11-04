@@ -6342,7 +6342,7 @@ img.nauren-criador-token.com-borda { border: none; border-radius: 0; background:
     linear-gradient(225deg, transparent var(--ck), var(--cbg, var(--nk-cartao)) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
     linear-gradient(315deg, transparent var(--ck), var(--cbg, var(--nk-cartao)) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
     linear-gradient(45deg, transparent var(--ck), var(--cbg, var(--nk-cartao)) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
-    linear-gradient(var(--cbd, var(--nk-linha2)), var(--cbd, var(--nk-linha2))) border-box !important;
+    linear-gradient(135deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd, var(--nk-linha2)) 0) top left / calc(50% + 2px) calc(50% + 2px) no-repeat border-box, linear-gradient(225deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd, var(--nk-linha2)) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat border-box, linear-gradient(315deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd, var(--nk-linha2)) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat border-box, linear-gradient(45deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd, var(--nk-linha2)) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat border-box !important;
   clip-path: polygon(var(--cc, 7px) 0, calc(100% - var(--cc, 7px)) 0, 100% var(--cc, 7px), 100% calc(100% - var(--cc, 7px)), calc(100% - var(--cc, 7px)) 100%, var(--cc, 7px) 100%, 0 calc(100% - var(--cc, 7px)), 0 var(--cc, 7px));
 }
 /* fundo padrão das caixas: um pouco mais claro que a janela, para separar */
@@ -6526,7 +6526,7 @@ img.nauren-criador-token.com-borda { border: none; border-radius: 0; background:
     linear-gradient(225deg, transparent var(--ck), var(--cbg, var(--nk-cartao, #241c31)) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
     linear-gradient(315deg, transparent var(--ck), var(--cbg, var(--nk-cartao, #241c31)) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
     linear-gradient(45deg, transparent var(--ck), var(--cbg, var(--nk-cartao, #241c31)) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
-    linear-gradient(var(--cbd, var(--nk-linha2)), var(--cbd, var(--nk-linha2))) border-box !important;
+    linear-gradient(135deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd, var(--nk-linha2)) 0) top left / calc(50% + 2px) calc(50% + 2px) no-repeat border-box, linear-gradient(225deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd, var(--nk-linha2)) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat border-box, linear-gradient(315deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd, var(--nk-linha2)) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat border-box, linear-gradient(45deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd, var(--nk-linha2)) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat border-box !important;
   clip-path: polygon(var(--cc, 7px) 0, calc(100% - var(--cc, 7px)) 0, 100% var(--cc, 7px), 100% calc(100% - var(--cc, 7px)), calc(100% - var(--cc, 7px)) 100%, var(--cc, 7px) 100%, 0 calc(100% - var(--cc, 7px)), 0 var(--cc, 7px));
 }
 .application.nauren-armazem :is(.na-detalhe, .na-cartao, .na-caixa, .na-trancado) { --cc: 10px; }
@@ -6871,7 +6871,7 @@ li.chat-message.ncc:not(.ncc-card) {
     linear-gradient(225deg, transparent var(--ckt), var(--cbg) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
     linear-gradient(315deg, transparent var(--ckb), var(--cbg) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
     linear-gradient(45deg, transparent var(--ckb), var(--cbg) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
-    linear-gradient(var(--cbd), var(--cbd)) border-box !important;
+    linear-gradient(135deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) top left / calc(50% + 2px) calc(50% + 2px) no-repeat border-box, linear-gradient(225deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat border-box, linear-gradient(315deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat border-box, linear-gradient(45deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat border-box !important;
   border: var(--cbw) solid transparent !important;
   clip-path: polygon(var(--ct) 0, calc(100% - var(--ct)) 0, 100% var(--ct), 100% calc(100% - var(--cb)), calc(100% - var(--cb)) 100%, var(--cb) 100%, 0 calc(100% - var(--cb)), 0 var(--ct));
 }
@@ -6932,7 +6932,7 @@ li.chat-message.ncc .dice-roll .dice-rolls .roll {
     linear-gradient(225deg, transparent var(--ck), var(--cbg) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
     linear-gradient(315deg, transparent var(--ck), var(--cbg) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
     linear-gradient(45deg, transparent var(--ck), var(--cbg) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
-    linear-gradient(var(--cbd), var(--cbd)) border-box !important;
+    linear-gradient(135deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) top left / calc(50% + 2px) calc(50% + 2px) no-repeat border-box, linear-gradient(225deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat border-box, linear-gradient(315deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat border-box, linear-gradient(45deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat border-box !important;
   clip-path: polygon(var(--cc) 0, calc(100% - var(--cc)) 0, 100% var(--cc), 100% calc(100% - var(--cc)), calc(100% - var(--cc)) 100%, var(--cc) 100%, 0 calc(100% - var(--cc)), 0 var(--cc));
 }
 li.chat-message.ncc .dice-roll .dice-rolls .roll::before, li.chat-message.ncc .dice-roll .dice-rolls .roll::after { display: none; }
@@ -6950,7 +6950,7 @@ li.chat-message.ncc .dice-roll .dice-total {
     linear-gradient(225deg, transparent var(--ck), var(--cbg) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
     linear-gradient(315deg, transparent var(--ck), var(--cbg) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
     linear-gradient(45deg, transparent var(--ck), var(--cbg) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
-    linear-gradient(var(--cbd), var(--cbd)) border-box !important;
+    linear-gradient(135deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) top left / calc(50% + 2px) calc(50% + 2px) no-repeat border-box, linear-gradient(225deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat border-box, linear-gradient(315deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat border-box, linear-gradient(45deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat border-box !important;
   clip-path: polygon(var(--cc) 0, calc(100% - var(--cc)) 0, 100% var(--cc), 100% calc(100% - var(--cc)), calc(100% - var(--cc)) 100%, var(--cc) 100%, 0 calc(100% - var(--cc)), 0 var(--cc));
 }
 li.chat-message.ncc-crit .dice-roll .dice-total { --cbg: var(--nc-s, #e0b257); --cbd: #fff1c9; color: #2a1a05; }
@@ -6997,7 +6997,7 @@ body.ncc-chat .chat-bubble::before {
     linear-gradient(225deg, transparent var(--ck), var(--cbg) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
     linear-gradient(315deg, transparent var(--ck), var(--cbg) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
     linear-gradient(45deg, transparent var(--ck), var(--cbg) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
-    linear-gradient(var(--cbd), var(--cbd)) border-box;
+    linear-gradient(135deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) top left / calc(50% + 2px) calc(50% + 2px) no-repeat border-box, linear-gradient(225deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat border-box, linear-gradient(315deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat border-box, linear-gradient(45deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat border-box;
   clip-path: polygon(var(--cc) 0, calc(100% - var(--cc)) 0, 100% var(--cc), 100% calc(100% - var(--cc)), calc(100% - var(--cc)) 100%, var(--cc) 100%, 0 calc(100% - var(--cc)), 0 var(--cc));
 }
 body.ncc-chat .chat-bubble::after {
@@ -7049,7 +7049,7 @@ li.chat-message.ncc-card > .message-header { position: relative; z-index: 0; mar
     linear-gradient(225deg, transparent var(--ck), var(--cbg) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
     linear-gradient(315deg, transparent var(--ck), var(--cbg) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
     linear-gradient(45deg, transparent var(--ck), var(--cbg) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
-    linear-gradient(var(--cbd), var(--cbd)) border-box;
+    linear-gradient(135deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) top left / calc(50% + 2px) calc(50% + 2px) no-repeat border-box, linear-gradient(225deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat border-box, linear-gradient(315deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat border-box, linear-gradient(45deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat border-box;
   clip-path: polygon(var(--cc) 0, calc(100% - var(--cc)) 0, 100% var(--cc), 100% calc(100% - var(--cc)), calc(100% - var(--cc)) 100%, var(--cc) 100%, 0 calc(100% - var(--cc)), 0 var(--cc));
 }
 .ncc-bolha2::after { content: ""; position: absolute; left: 50%; top: 100%; width: 16px; height: 10px; margin: -1px 0 0 -8px; background: var(--nc-p, #a86ee0); clip-path: polygon(0 0, 100% 0, 50% 100%); }
@@ -7297,7 +7297,7 @@ li.chat-message.ncc-card > .message-content { padding-top: 0 !important; }
     linear-gradient(225deg, transparent var(--ck), var(--cbg) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
     linear-gradient(315deg, transparent var(--ck), var(--cbg) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
     linear-gradient(45deg, transparent var(--ck), var(--cbg) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
-    linear-gradient(var(--cbd), var(--cbd)) border-box !important;
+    linear-gradient(135deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) top left / calc(50% + 2px) calc(50% + 2px) no-repeat border-box, linear-gradient(225deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat border-box, linear-gradient(315deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat border-box, linear-gradient(45deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat border-box !important;
   clip-path: polygon(var(--cc) 0, calc(100% - var(--cc)) 0, 100% var(--cc), 100% calc(100% - var(--cc)), calc(100% - var(--cc)) 100%, var(--cc) 100%, 0 calc(100% - var(--cc)), 0 var(--cc));
 }
 .nauren-criador .nc2 .ncr-rot { display: flex; align-items: center; gap: 6px; font: 700 10.5px Signika, sans-serif; letter-spacing: .1em; text-transform: uppercase; color: var(--nc-sc); }
@@ -7475,7 +7475,7 @@ li.chat-message.ncc-card > .message-content { padding-top: 0 !important; }
     linear-gradient(225deg, transparent var(--ck), var(--cbg) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
     linear-gradient(315deg, transparent var(--ck), var(--cbg) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
     linear-gradient(45deg, transparent var(--ck), var(--cbg) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
-    linear-gradient(var(--cbd), var(--cbd)) border-box !important;
+    linear-gradient(135deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) top left / calc(50% + 2px) calc(50% + 2px) no-repeat border-box, linear-gradient(225deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat border-box, linear-gradient(315deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat border-box, linear-gradient(45deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat border-box !important;
   clip-path: polygon(var(--cc) 0, calc(100% - var(--cc)) 0, 100% var(--cc), 100% calc(100% - var(--cc)), calc(100% - var(--cc)) 100%, var(--cc) 100%, 0 calc(100% - var(--cc)), 0 var(--cc)); }
 .nauren-criador .nc2 .nauren-criador-nome input { border-radius: 0 !important; border: 1.5px solid var(--ncr-linha2) !important; background: #120e18 !important;
   clip-path: polygon(7px 0, calc(100% - 7px) 0, 100% 7px, 100% calc(100% - 7px), calc(100% - 7px) 100%, 7px 100%, 0 calc(100% - 7px), 0 7px); }
@@ -7517,7 +7517,7 @@ li.chat-message.ncc-card > .message-content { padding-top: 0 !important; }
     linear-gradient(225deg, transparent var(--ck), var(--cbg) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
     linear-gradient(315deg, transparent var(--ck), var(--cbg) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
     linear-gradient(45deg, transparent var(--ck), var(--cbg) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
-    linear-gradient(var(--cbd), var(--cbd)) border-box !important;
+    linear-gradient(135deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) top left / calc(50% + 2px) calc(50% + 2px) no-repeat border-box, linear-gradient(225deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat border-box, linear-gradient(315deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat border-box, linear-gradient(45deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat border-box !important;
   clip-path: polygon(var(--cc) 0, calc(100% - var(--cc)) 0, 100% var(--cc), 100% calc(100% - var(--cc)), calc(100% - var(--cc)) 100%, var(--cc) 100%, 0 calc(100% - var(--cc)), 0 var(--cc));
 }
 .application.nauren-barras-editor.nc2 :is(.nauren-be-campo select, .nauren-be-campo input[type=number], .nauren-be-corcampo input[type=color]) { --cc: 5px; --cbg: #120e18; color: #ece6f3; }
@@ -7551,7 +7551,7 @@ li.chat-message.ncc-card > .message-content { padding-top: 0 !important; }
     linear-gradient(225deg, transparent var(--ck), var(--cbg) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
     linear-gradient(315deg, transparent var(--ck), var(--cbg) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
     linear-gradient(45deg, transparent var(--ck), var(--cbg) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
-    linear-gradient(var(--cbd), var(--cbd)) border-box !important;
+    linear-gradient(135deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) top left / calc(50% + 2px) calc(50% + 2px) no-repeat border-box, linear-gradient(225deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat border-box, linear-gradient(315deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat border-box, linear-gradient(45deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat border-box !important;
   clip-path: polygon(var(--cc) 0, calc(100% - var(--cc)) 0, 100% var(--cc), 100% calc(100% - var(--cc)), calc(100% - var(--cc)) 100%, var(--cc) 100%, 0 calc(100% - var(--cc)), 0 var(--cc));
 }
 .application.nauren-kit.nc2.nauren-borda-janela .nauren-borda-palco { --cc: 10px; --cbg: #120e18; }
@@ -7613,7 +7613,6 @@ li.chat-message.ncc-card > .message-content { padding-top: 0 !important; }
 .application.nc-moldura.nc2 > .window-content, .application.nauren-kit.nc2 > .window-content, .application.nauren-kit.nc2 > form.window-content {
   clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--mc, 10px)), calc(100% - var(--mc, 10px)) 100%, var(--mc, 10px) 100%, 0 calc(100% - var(--mc, 10px)));
 }
-.application.nauren-armazem-mestre, .application.nauren-armazem-mestre > .window-content { overflow: clip !important; }
 /* 0.101.4 — botões − / + da quantidade (loja/baú): borda inteira também nas diagonais */
 .application.nauren-armazem .na-stepper button {
   --cbw: 1.5px; --cc: 6px; --ck: calc(var(--cc) * .7071 - var(--cbw) * .4142); --cbg: color-mix(in srgb, var(--nc-pd, #26183a) 35%, #1a1422); --cbd: color-mix(in srgb, var(--nc-s, #e0b257) 70%, #000);
@@ -7623,7 +7622,64 @@ li.chat-message.ncc-card > .message-content { padding-top: 0 !important; }
     linear-gradient(225deg, transparent var(--ck), var(--cbg) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
     linear-gradient(315deg, transparent var(--ck), var(--cbg) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
     linear-gradient(45deg, transparent var(--ck), var(--cbg) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
-    linear-gradient(var(--cbd), var(--cbd)) border-box !important;
+    linear-gradient(135deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) top left / calc(50% + 2px) calc(50% + 2px) no-repeat border-box, linear-gradient(225deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat border-box, linear-gradient(315deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat border-box, linear-gradient(45deg, transparent calc(var(--cc, 7px) * .7071), var(--cbd) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat border-box !important;
 }
 .application.nauren-armazem .na-stepper button:hover:not(:disabled) { --cbd: var(--nc-sc, #ffd98a); --cbg: color-mix(in srgb, var(--nc-s, #e0b257) 15%, #1a1422); }
 .application.nauren-armazem .na-stepper button:disabled { --cbd: color-mix(in srgb, var(--nc-s, #e0b257) 35%, #000); }
+
+/* ===================================================
+   0.101.5 — CANTOS CHANFRADOS SEM DEPENDER DO RECORTE
+   Regra do sistema: caixa chanfrada nunca usa "border: Npx solid" + clip-path (a borda some nas diagonais e,
+   no Firefox, o recorte às vezes falha e aparecem os cantos quadrados). Borda e fundo são degradês em 4 quadrantes
+   com o canto transparente (ver --cbd/--cbg/--cc); o clip-path fica só de reforço.
+   =================================================== */
+/* Criador: campo do nome */
+.nauren-criador .nc2 .nauren-criador-nome input {
+  --cbw: 1.5px; --cc: 7px; --ck: calc(var(--cc) * .7071 - var(--cbw) * .4142); --cbg: #120e18; --cbd: var(--ncr-linha2);
+  border: var(--cbw) solid transparent !important; border-radius: 0 !important; box-shadow: none !important;
+  background:
+    linear-gradient(135deg, transparent var(--ck), var(--cbg) 0) top left / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(225deg, transparent var(--ck), var(--cbg) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(315deg, transparent var(--ck), var(--cbg) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(45deg, transparent var(--ck), var(--cbg) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(135deg, transparent calc(var(--cc) * .7071), var(--cbd) 0) top left / calc(50% + 2px) calc(50% + 2px) no-repeat border-box,
+    linear-gradient(225deg, transparent calc(var(--cc) * .7071), var(--cbd) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat border-box,
+    linear-gradient(315deg, transparent calc(var(--cc) * .7071), var(--cbd) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat border-box,
+    linear-gradient(45deg, transparent calc(var(--cc) * .7071), var(--cbd) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat border-box !important;
+}
+.nauren-criador .nc2 .nauren-criador-nome input:focus { --cbd: var(--nc-s); border-color: transparent !important; }
+/* HUD de combate: botões de Ação (a moldura de fora saía do botão nos cantos de baixo) */
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-acao {
+  --cbw: 1.5px; --cc: 6px; --ck: calc(var(--cc) * .7071 - var(--cbw) * .4142);
+  --cbg: color-mix(in srgb, var(--nc-pd) 38%, var(--nc-f)); --cbd: var(--borda-acao);
+  border: var(--cbw) solid transparent !important;
+  background:
+    linear-gradient(135deg, transparent var(--ck), var(--cbg) 0) top left / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(225deg, transparent var(--ck), var(--cbg) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(315deg, transparent var(--ck), var(--cbg) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(45deg, transparent var(--ck), var(--cbg) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(135deg, transparent calc(var(--cc) * .7071), var(--cbd) 0) top left / calc(50% + 2px) calc(50% + 2px) no-repeat border-box,
+    linear-gradient(225deg, transparent calc(var(--cc) * .7071), var(--cbd) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat border-box,
+    linear-gradient(315deg, transparent calc(var(--cc) * .7071), var(--cbd) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat border-box,
+    linear-gradient(45deg, transparent calc(var(--cc) * .7071), var(--cbd) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat border-box !important;
+}
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-acao:hover { --cbg: color-mix(in srgb, var(--nc-s) 14%, var(--nc-f)); }
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-acao::after { display: none !important; }
+#nauren-hud-combate .nauren-hud-raiz.nc2 .nauren-hud-acao.fechada { border-style: solid !important; }
+/* Baú/Loja, Comprar/Vender: borda inteira no formato de seta (camada em anel) */
+.na-seg { position: relative; border: 0 !important; padding: 1.5px; box-sizing: border-box; }
+.na-seg::after { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 2; background: var(--nk-linha2);
+  clip-path: polygon(evenodd, 14px 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 14px 100%, 0 50%, 14px 0,
+    14.7px 1.5px, 2px 50%, 14.7px calc(100% - 1.5px), calc(100% - 14.7px) calc(100% - 1.5px), calc(100% - 2px) 50%, calc(100% - 14.7px) 1.5px, 14.7px 1.5px); }
+.na-seg-3::after { clip-path: polygon(evenodd, 0 0, 100% 0, 100% 100%, 0 100%, 0 0, 1.5px 1.5px, 1.5px calc(100% - 1.5px), calc(100% - 1.5px) calc(100% - 1.5px), calc(100% - 1.5px) 1.5px, 1.5px 1.5px); }
+.na-seg button + button { border-left-width: 1.5px; }
+/* Criador: os 4 meta-atributos com a mesma borda (o ★ e a legenda dourada marcam os da Classe) */
+.nauren-criador .nc2 .ncr-metas > .rec .ncr-los { background: color-mix(in srgb, var(--nc-s) 65%, #000); }
+/* Fita do crítico / falha crítica: reta em cima e com as diagonais embaixo */
+.nauren-roll-card.nc2 > .nc-fita:first-child, .nauren-roll-card.nc2 .nc-fita {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 6.9px), calc(100% - 6.9px) 100%, 6.9px 100%, 0 calc(100% - 6.9px)) !important;
+  padding: 1px 16px 3px;
+}
+/* 0.101.5 — Ficha do Mestre do baú/loja: a área de conteúdo segura a altura e só o miolo rola (a janela voltou a rolar) */
+.application.nauren-armazem > .window-content { display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+.application.nauren-armazem > .window-content > .na-janela { flex: 1 1 auto; min-height: 0; }
