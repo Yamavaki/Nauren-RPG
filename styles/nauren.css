@@ -7560,3 +7560,37 @@ li.chat-message.ncc-card > .message-content { padding-top: 0 !important; }
 .application.nauren-kit.nc2.nauren-borda-janela .nauren-borda-remover { --cbd: color-mix(in srgb, #c2474f 55%, #000); --cbg: color-mix(in srgb, #c2474f 8%, var(--nk-cartao)); }
 .application.nauren-kit.nc2.nauren-borda-janela .nauren-borda-rotulo { color: var(--nc-sc); }
 .application.nauren-kit.nc2.nauren-borda-janela input[type=range] { accent-color: var(--nc-s); }
+/* 0.101.3 — Criador: coluna "Sua ficha" rola por dentro da moldura (antes a moldura ficava para trás ao rolar em janelas baixas) */
+.nauren-criador .nc2 .ncr-ficha { overflow: hidden; padding: 0; display: flex; flex-direction: column; align-items: stretch; }
+.nauren-criador .nc2 .ncr-ficha-rolagem { flex: 1 1 auto; min-height: 0; overflow-y: auto; scrollbar-width: thin; scrollbar-gutter: stable;
+  display: flex; flex-direction: column; align-items: center; gap: 10px; margin: 6px 4px 6px 6px; padding: 10px 6px 10px 8px; box-sizing: border-box; text-align: center; }
+.nauren-criador .nc2 .ncr-ficha-rolagem > .ncr-nota { margin-top: auto; }
+
+/* 0.101.3 — Firefox: além do recorte (clip-path), uma máscara com o mesmo chanfro. No Firefox o recorte da janela
+   às vezes não pega os filhos (o cabeçalho listrado aparecia em ponta nos cantos); a máscara corta tudo junto. */
+.application.nc-moldura.nc2, .application.nauren-kit.nc2 {
+  --mk: calc(var(--mc, 10px) * .7071);
+  -webkit-mask:
+    linear-gradient(135deg, transparent var(--mk), #000 calc(var(--mk) + .5px)) top left / 51% 51% no-repeat,
+    linear-gradient(225deg, transparent var(--mk), #000 calc(var(--mk) + .5px)) top right / 51% 51% no-repeat,
+    linear-gradient(315deg, transparent var(--mk), #000 calc(var(--mk) + .5px)) bottom right / 51% 51% no-repeat,
+    linear-gradient(45deg, transparent var(--mk), #000 calc(var(--mk) + .5px)) bottom left / 51% 51% no-repeat;
+  mask:
+    linear-gradient(135deg, transparent var(--mk), #000 calc(var(--mk) + .5px)) top left / 51% 51% no-repeat,
+    linear-gradient(225deg, transparent var(--mk), #000 calc(var(--mk) + .5px)) top right / 51% 51% no-repeat,
+    linear-gradient(315deg, transparent var(--mk), #000 calc(var(--mk) + .5px)) bottom right / 51% 51% no-repeat,
+    linear-gradient(45deg, transparent var(--mk), #000 calc(var(--mk) + .5px)) bottom left / 51% 51% no-repeat;
+}
+.application.nc-moldura.nc2.minimized, .application.nauren-kit.nc2.minimized { -webkit-mask: none; mask: none; }
+
+/* 0.101.3 — Loja/Baú: diagonais mais firmes; campo de preço sem o "quadrado dentro da borda"; busca igual aos filtros */
+.application.nauren-armazem :is(.na-slot, .na-detalhe, .na-cartao, .na-btn, .na-filtro, .na-tag, .na-caixa, .na-trancado, .na-aviso, .na-guardar, .na-solta, .na-retrato, .na-linha-ic, .na-campo-moeda, .na-estoque, .na-sugestoes, .na-venda) { --cbw: 1.5px; }
+.application.nauren-kit.nc2.nauren-armazem .na-campo-moeda { --cbg: #120e18; padding: 0 10px 0 9px; gap: 6px; }
+.application.nauren-kit.nc2.nauren-armazem .na-campo-moeda > i { flex: none; padding-right: 7px; border-right: 1px solid var(--nk-linha2); line-height: 20px; }
+.application.nauren-kit.nc2.nauren-armazem .na-campo-moeda input[type] { all: unset; box-sizing: border-box; flex: 1 1 auto; min-width: 0; width: 100%; height: 28px; text-align: right;
+  font: 600 14px Signika, sans-serif; color: var(--nk-ouro-claro, #ffd98a); font-variant-numeric: tabular-nums; background: none !important; border: 0 !important; clip-path: none !important; box-shadow: none !important; }
+.application.nauren-kit.nc2.nauren-armazem .na-campo-moeda:focus-within { --cbd: var(--nc-s); }
+.application.nauren-kit.nc2.nauren-armazem input.na-estoque { --cc: 6px; --cbg: #120e18; }
+.application.nauren-kit.nc2.nauren-armazem .na-busca input[type] { --cc: 6px; --cbw: 1.5px; --cbg: color-mix(in srgb, var(--nc-pd) 45%, #221a2e); --cbd: var(--nk-linha2); color: var(--nk-texto); }
+.application.nauren-kit.nc2.nauren-armazem .na-busca input[type]:focus { --cbd: var(--nc-s); }
+.application.nauren-kit.nc2.nauren-armazem .na-busca > i { color: var(--nc-sc); }

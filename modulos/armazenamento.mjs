@@ -66,7 +66,7 @@ class NaurenArmazenamentoData extends foundry.abstract.TypeDataModel {
       mapa: new SchemaField({
         icone: new StringField({ initial: "bau" }),
         imagem: new StringField({ initial: "" }),
-        tamanho: num(0.8, { min: 0.2, max: 4 }),     // em quadrados da cena
+        tamanho: num(0.6, { min: 0.2, max: 4 }),     // em quadrados da cena
         rotuloSempre: new BooleanField({ initial: false }),
         soNaVisao: new BooleanField({ initial: true }),
         abrirAoEntrar: new BooleanField({ initial: false })
@@ -270,6 +270,12 @@ async function mudarSaldo(ator, nomeMoeda, delta) {
   const m = moedaDoAtor(ator, nomeMoeda);
   if (m) {
     const de = qtdDe(m), para = Math.max(0, Math.min(NAUREN_QUANTIDADE_MAXIMA, de + delta));
+    // 0.101.3: moeda zerada sai da ficha (desfazer traz de volta com o mesmo id).
+    if (para <= 0 && ator.type !== "armazenamento") {
+      const dados = m.toObject();
+      await ator.deleteEmbeddedDocuments("Item", [m.id]);
+      return async () => { if (!ator.items.get(dados._id)) await ator.createEmbeddedDocuments("Item", [dados], { keepId: true, naurenSemJuntar: true }); };
+    }
     await m.update({ "system.quantidade": para });
     return async () => { const it = ator.items.get(m.id); if (it) await it.update({ "system.quantidade": de }); };
   }
@@ -932,7 +938,7 @@ class NaurenArmazemSheet extends foundry.applications.sheets.ActorSheetV2 {
           <div class="na-mapa-op">
             ${op("Ícone", "", sel("system.mapa.icone", icones, m.icone ?? "bau"))}
             ${m.icone === "imagem" ? op("Imagem", "caminho do arquivo", `<input type="text" name="system.mapa.imagem" value="${ESC(m.imagem ?? "")}" placeholder="icons/...">`, "na-op-largo") : ""}
-            ${op("Tamanho", "em quadrados", num("system.mapa.tamanho", m.tamanho ?? 0.8, `min="0.2" max="4" step="0.1"`, "qd"))}
+            ${op("Tamanho", "em quadrados", num("system.mapa.tamanho", m.tamanho ?? 0.6, `min="0.2" max="4" step="0.1"`, "qd"))}
             ${op("Nome sempre visível", "senão, ao passar o mouse", sw("system.mapa.rotuloSempre", m.rotuloSempre))}
           </div>
           <div class="na-mapa-op">
@@ -1034,7 +1040,40 @@ function naurenArmazemColocarNoMapa(armazem, ficha = null) {
   ficha?.minimize?.();
   ui.notifications.info(`Clique no mapa onde fica "${armazem.name}". Esc ou botão direito cancela.`);
   const palco = canvas.stage;
-  const fim = () => { palco.off("pointerdown", aoClicar); document.removeEventListener("keydown", aoTecla, true); colocando = null; ficha?.maximize?.(); };
+  // 0.101.3: prévia que segue o mouse — o quadrado da grade acende e o ícone aparece onde vai ficar.
+  const PIXI_ = globalThis.PIXI;
+  const g0 = canvas.grid?.size || canvas.dimensions?.size || 100;
+  const cfg = armazem.system?.mapa ?? {};
+  const tam = Math.round(g0 * (Number(cfg.tamanho) || 0.6));
+  let previa = null;
+  try {
+    previa = new PIXI_.Container(); previa.name = "naurenArmazemPrevia"; previa.eventMode = "none";
+    const casa = new PIXI_.Graphics(); casa.beginFill(0xe0b257, 0.22).lineStyle(3, 0xe0b257, 0.95).drawRect(0, 0, g0, g0).endFill();
+    const ic = new PIXI_.Container(); ic.position.set(g0 / 2, g0 / 2); ic.alpha = 0.85;
+    const corte = tam * 0.22, m = tam / 2 + 3;
+    const fundo = new PIXI_.Graphics(); fundo.beginFill(0x1b1524, 0.88).lineStyle(Math.max(2, tam * 0.04), 0xe0b257, 1)
+      .drawPolygon([-m + corte, -m, m - corte, -m, m, -m + corte, m, m - corte, m - corte, m, -m + corte, m, -m, m - corte, -m, -m + corte]).endFill();
+    ic.addChild(fundo);
+    const src = cfg.icone === "imagem" && cfg.imagem ? cfg.imagem : cfg.icone === "proprio" ? armazem.img : (ICONES[cfg.icone]?.img ?? armazem.img);
+    foundry.canvas.loadTexture(src).then(tex => { if (!tex || previa?.destroyed) return; const sp = new PIXI_.Sprite(tex); sp.anchor.set(0.5); const k = Math.min(tam * 0.84 / (tex.width || 1), tam * 0.84 / (tex.height || 1)); sp.scale.set(k); ic.addChild(sp); }).catch(() => {});
+    const rot = new PIXI_.Text(armazem.name, { fontFamily: "Signika", fontSize: Math.max(14, Math.round(g0 * 0.2)), fill: 0xf4ead1, stroke: 0x000000, strokeThickness: 4 });
+    rot.anchor.set(0.5, 0); rot.position.set(0, m + 4); ic.addChild(rot);
+    previa.addChild(casa, ic); previa.visible = false;
+    (canvas.controls ?? canvas.interface ?? palco).addChild(previa);
+  } catch (err) { previa = null; }
+  const casaDe = pos => {
+    let tl = { x: Math.floor(pos.x / g0) * g0, y: Math.floor(pos.y / g0) * g0 };
+    try { const p = canvas.grid.getTopLeftPoint?.(pos); if (p) tl = p; } catch (err) { /* conta simples */ }
+    return tl;
+  };
+  const aoMover = ev => {
+    if (!previa) return;
+    const pos = ev.getLocalPosition ? ev.getLocalPosition(palco) : ev.data?.getLocalPosition?.(palco);
+    if (!pos) return;
+    const tl = casaDe(pos);
+    previa.position.set(tl.x, tl.y); previa.visible = true;
+  };
+  const fim = () => { palco.off("pointerdown", aoClicar); palco.off("pointermove", aoMover); try { previa?.destroy({ children: true }); } catch (err) { /* segue */ } previa = null; document.removeEventListener("keydown", aoTecla, true); colocando = null; ficha?.maximize?.(); };
   const aoTecla = ev => { if (ev.key === "Escape") { ev.stopPropagation(); fim(); ui.notifications.info("Cancelado."); } };
   const aoClicar = async ev => {
     if (ev.button === 2) { fim(); ui.notifications.info("Cancelado."); return; }
@@ -1061,6 +1100,7 @@ function naurenArmazemColocarNoMapa(armazem, ficha = null) {
     ficha?.render?.();
   };
   palco.on("pointerdown", aoClicar);
+  palco.on("pointermove", aoMover);
   document.addEventListener("keydown", aoTecla, true);
   colocando = { cancelar: fim };
 }
@@ -1094,7 +1134,7 @@ async function desenharIcones() {
       if (!armazem) continue;
       const cfg = armazem.system.mapa ?? {};
       const grade = canvas.grid?.size || canvas.dimensions?.size || 100;
-      const cx = ret.x + ret.w / 2, cy = ret.y + ret.h / 2, tam = Math.round(grade * (Number(cfg.tamanho) || 0.8));
+      const cx = ret.x + ret.w / 2, cy = ret.y + ret.h / 2, tam = Math.round(grade * (Number(cfg.tamanho) || 0.6));
       const ic = new PIXI_.Container();
       ic.position.set(cx, cy);
       ic.eventMode = "static"; ic.cursor = "pointer";
@@ -1159,6 +1199,7 @@ function naurenArmazemInit() {
   CONFIG.queries ??= {};
   CONFIG.queries[QUERY] = naurenArmazemHandleQuery;
   CONFIG.queries[QUERY_ABRIR] = async ({ armazemUuid } = {}) => { const a = await fromUuid(armazemUuid); if (a) NaurenArmazemJanela.abrir(a); return true; };
+  game.settings.register("nauren", "armazemTamanho06", { scope: "world", config: false, type: Boolean, default: false });
   const Colecao = foundry.documents.collections?.Actors ?? globalThis.Actors;
   Colecao?.registerSheet?.("nauren", NaurenArmazemSheet, { types: ["armazenamento"], makeDefault: true, label: "Nauren: Armazenamento" });
 }
@@ -1175,6 +1216,14 @@ function naurenArmazemHooks() {
   for (const h of ["createRegion", "updateRegion", "deleteRegion", "createRegionBehavior", "updateRegionBehavior", "deleteRegionBehavior"]) Hooks.on(h, () => redesenharIcones());
   Hooks.on("updateActor", a => { if (a.type === "armazenamento" && camada) redesenharIcones(); });
   Hooks.on("sightRefresh", () => atualizarVisibilidade());
+  // 0.101.3: o tamanho padrão do ícone no mapa caiu de 0,8 para 0,6 quadrado (0,8 ficava grande demais).
+  Hooks.once("ready", async () => {
+    try {
+      if (!game.user.isGM || game.settings.get("nauren", "armazemTamanho06")) return;
+      for (const a of game.actors.filter(x => x.type === "armazenamento" && Number(x.system?.mapa?.tamanho) === 0.8)) await a.update({ "system.mapa.tamanho": 0.6 });
+      await game.settings.set("nauren", "armazemTamanho06", true);
+    } catch (err) { console.warn("Nauren RPG | tamanho dos baús", err); }
+  });
 }
 
 export { NaurenArmazenamentoData, NaurenArmazemComportamento, NaurenArmazemJanela, NaurenArmazemSheet, naurenArmazemInit, naurenArmazemHooks, naurenArmazemPedir, naurenArmazemExecutar, naurenArmazemClicarPonto, naurenArmazemColocarNoMapa, pontosDaCena as naurenArmazemPontosDaCena, distanciaAtorRegiao as naurenArmazemDistancia, precoFinal as naurenArmazemPreco };

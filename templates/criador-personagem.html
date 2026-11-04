@@ -7,7 +7,7 @@
 
   <div class="ncr-layout">
   <!-- Coluna "Sua ficha": muda na hora a cada escolha -->
-  <aside class="ncr-ficha">
+  <aside class="ncr-ficha"><div class="ncr-ficha-rolagem">
     <div class="ncr-placa"><i></i><span>Sua ficha</span></div>
     <div class="ncr-retrato"><img src="{{ficha.img}}" alt="" data-previa="retrato-mini"></div>
     <div class="ncr-nome">{{ficha.nome}}</div>
@@ -32,7 +32,7 @@
       <span>Equipamentos<b>{{ficha.equipamento}}</b></span>
     </div>
     <p class="ncr-nota">Muda na hora a cada escolha.</p>
-  </aside>
+  </div></aside>
   <div class="ncr-principal">
 
   {{#if estaNaEtapa0}}
