@@ -7972,3 +7972,48 @@ li.chat-message.ncc-card > .message-content { padding-top: 0 !important; }
 .nauren-rpg.sheet.item .nauren-sheet .nt-ed-area > textarea.nt-codigo { border: 0 !important; border-radius: 0 !important; clip-path: none !important; }
 .nt-g3.nt-g3-borda { grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) minmax(0, .8fr); }
 .nt-picker-abas.nt-ch { border: var(--cbw) solid transparent; --cc: 6px; --cbg: color-mix(in srgb, #000 25%, var(--nt-b)); --cbd: var(--nk-linha2, #4a3d66); }
+
+/* =========================================================
+ * 0.102.1: SELETOR DE ÍCONES (catálogo completo, busca, sugeridos)
+ * ========================================================= */
+.nt-icones { display: flex; flex-direction: column; gap: 10px; }
+.nt-icones-topo { display: flex; gap: 8px; align-items: center; }
+.nt-icones-topo .nt-busca { flex: 1 1 auto; height: 36px; }
+.nauren-kit .nt-icones-topo button.nt-bt { height: 36px; flex: 0 0 auto; }
+.nt-icones-lista { height: 360px; overflow-y: auto; padding: 2px 6px 2px 2px; display: flex; flex-direction: column; gap: 6px; }
+.nt-icones-g { margin: 4px 0 0; font: 700 11px Signika, sans-serif; letter-spacing: .1em; text-transform: uppercase; color: var(--nk-ouro-claro, #ffd98a); display: flex; justify-content: space-between; }
+.nt-icones-g small { text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--nk-suave, #b3a6c9); }
+.nt-icones-g[hidden], .nt-icones-grade[hidden], .nt-icones-vazio[hidden] { display: none; }
+.nt-icones-grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(42px, 1fr)); gap: 4px; }
+.nauren-kit button.nt-icone { --cc: 6px; --cbw: 1px; --ck: calc(var(--cc) * .7071 - var(--cbw) * .4142); height: 42px; min-height: 0; width: auto; margin: 0; padding: 0; display: grid; place-items: center; cursor: pointer;
+  color: var(--nk-texto, #ece6f5); font-size: 17px; line-height: 1; --cbg: color-mix(in srgb, #000 22%, var(--nt-b, #241c31)); --cbd: color-mix(in srgb, #c8aaff 16%, var(--nt-b, #241c31));
+  border: var(--cbw) solid transparent !important; border-radius: 0 !important; box-shadow: none !important;
+  background:
+    linear-gradient(135deg, transparent var(--ck), var(--cbg) 0) top left / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(225deg, transparent var(--ck), var(--cbg) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(315deg, transparent var(--ck), var(--cbg) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(45deg, transparent var(--ck), var(--cbg) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(135deg, transparent calc(var(--cc) * .7071), var(--cbd) 0) top left / calc(50% + 2px) calc(50% + 2px) no-repeat border-box,
+    linear-gradient(225deg, transparent calc(var(--cc) * .7071), var(--cbd) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat border-box,
+    linear-gradient(315deg, transparent calc(var(--cc) * .7071), var(--cbd) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat border-box,
+    linear-gradient(45deg, transparent calc(var(--cc) * .7071), var(--cbd) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat border-box !important;
+  clip-path: polygon(var(--cc) 0, calc(100% - var(--cc)) 0, 100% var(--cc), 100% calc(100% - var(--cc)), calc(100% - var(--cc)) 100%, var(--cc) 100%, 0 calc(100% - var(--cc)), 0 var(--cc)); }
+.nauren-kit button.nt-icone[hidden] { display: none; }
+.nauren-kit button.nt-icone:hover, .nauren-kit button.nt-icone:focus-visible { color: var(--nk-ouro-claro, #ffd98a); --cbd: var(--nk-ouro, #e0b257); outline: 0; }
+.nauren-kit button.nt-icone.on { color: #24180a; --cbg: var(--nk-ouro, #e0b257); --cbd: var(--nk-ouro, #e0b257); }
+.nt-icones-vazio { margin: 18px 4px; text-align: center; font-size: 13px; color: var(--nk-suave, #b3a6c9); }
+.nt-icones-rodape { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-top: 8px; border-top: 1px solid var(--nk-linha, #3b3154); }
+.nt-icones-ver { display: inline-flex; align-items: center; gap: 10px; min-width: 0; }
+.nt-icones-ver > i { font-size: 22px; color: var(--nk-ouro-claro, #ffd98a); width: 28px; text-align: center; }
+.nt-icones-ver > b { font: 600 13px "Fira Code", Consolas, monospace; color: var(--nk-texto); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nt-icones-rodape small { color: var(--nk-suave, #b3a6c9); font-size: 11.5px; }
+/* campo do editor de tiers */
+.nauren-kit button.nt-ic-bt { cursor: pointer; text-align: left; justify-content: flex-start; }
+.nauren-kit button.nt-ic-bt > span { flex: 1 1 auto; min-width: 0; font: 13px "Fira Code", Consolas, monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nauren-kit button.nt-ic-bt > em { font-style: normal; font-size: 11.5px; color: var(--nk-suave); display: inline-flex; gap: 5px; align-items: center; flex: 0 0 auto; }
+.nauren-kit button.nt-ic-bt:hover { --cbd: var(--nk-ouro); }
+.nauren-kit button.nt-ic-bt:hover > em { color: var(--nk-ouro-claro, #ffd98a); }
+/* campos de ícone nas fichas (recursos da Classe/Subclasse) */
+button.nt-icone-campo { flex: 0 0 30px; width: 30px !important; height: 30px !important; min-height: 0 !important; padding: 0 !important; margin: 0 4px 0 0 !important; display: inline-grid; place-items: center; cursor: pointer; font-size: 14px; line-height: 1; color: var(--n-ouro, #e0b257); vertical-align: middle; }
+button.nt-icone-campo:hover { filter: brightness(1.25); }
+input.nt-icone-texto { font-family: "Fira Code", Consolas, monospace; font-size: 12px; }

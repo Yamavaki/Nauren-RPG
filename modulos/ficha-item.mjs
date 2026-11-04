@@ -5,6 +5,7 @@ import { NAUREN_MOTION_CONDICAO_OPCOES, naurenMotionPresetCondicao } from "./ani
 import { NAUREN_TORRE_LOJAS, NAUREN_TORRE_PIGMENTOS, NAUREN_TORRE_RARIDADES, NAUREN_TORRE_TIERS, naurenDisponivelNoInicio, naurenTierTorre } from "./compendios.mjs";
 import { NaurenActorSheet } from "./ficha-ator.mjs";
 import { NAUREN_CONDICOES_TIPOS, NaurenTiersEditor, naurenCondicoesEmbutidas, naurenContextoCatalogo, naurenDadosParaEmbutir, naurenEditarCondicaoEmbutida, naurenGravarCondicoesEmbutidas, naurenHtmlAbaCondicoes, naurenLigarFichaItemExtras, naurenSeloDoItem, naurenTorreDoCatalogo } from "./itens-catalogo.mjs";
+import { naurenLigarSeletorIcones } from "./seletor-icones.mjs";
 import { NAUREN_SCRIPT_TIPOS, naurenHtmlAbaScript, naurenHtmlBotoesScript, naurenLigarBotoesScript, naurenLigarFichaScripts, naurenScriptAprovado, naurenScriptsDoItem } from "./itens-scripts.mjs";
 /* =======================================
  * 5. FICHA DE ITEM (ApplicationV2 - padrão atual do Foundry V13/V14)
@@ -1539,7 +1540,7 @@ class NaurenItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     this.element.querySelectorAll("details").forEach(d => d.addEventListener("toggle", () => naurenAjustarListasLargas(this.element)));
     super._onRender(context, options);
     // 0.102: aba Condições, seletor de Condição, aba Script e botões de script.
-    try { naurenLigarFichaItemExtras(this); naurenLigarFichaScripts(this); naurenLigarBotoesScript(this); } catch (err) { console.warn("Nauren RPG | ficha do item (0.102)", err); }
+    try { naurenLigarFichaItemExtras(this); naurenLigarFichaScripts(this); naurenLigarBotoesScript(this); naurenLigarSeletorIcones(this.element); } catch (err) { console.warn("Nauren RPG | ficha do item (0.102)", err); }
     if (this.item.type === "grupo") this._ligarAbasGrupo();
     this._ligarScrollItemBody();
     this._ligarLuzVisao();
@@ -3290,6 +3291,7 @@ class NaurenSubclasseSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     });
 
     naurenMostrarNomesDosCamposUuid(this.element, this.item?.actor ?? this.document?.actor ?? null);
+    naurenLigarSeletorIcones(this.element); // 0.102.1: seletor de ícones nos recursos
     this.element.querySelectorAll('.nauren-uuid-input[data-node-field]').forEach(el => {
       el.addEventListener('dragover', ev => ev.preventDefault());
       el.addEventListener('drop', async ev => {

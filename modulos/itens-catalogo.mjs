@@ -10,6 +10,7 @@
  */
 import { NAUREN_TORRE_RARIDADES, NAUREN_TORRE_PIGMENTOS } from "./compendios.mjs";
 import { naurenKitSistema, naurenKitJanela } from "./janelas-kit.mjs";
+import { naurenEscolherIcone } from "./seletor-icones.mjs";
 
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[c]));
 
@@ -259,6 +260,7 @@ export class NaurenTiersEditor extends foundry.applications.api.ApplicationV2 {
       novo: function () { const t = naurenNormalizarTier({ ...foundry.utils.deepClone(NAUREN_TIERS_PADRAO[0]), id: `tier-${foundry.utils.randomID(6)}`, nome: "Novo tier" }); this.lista.push(t); this.sel = this.lista.length - 1; this.render(); },
       duplicar: function (ev, el) { const i = Number(el.dataset.i); const t = naurenNormalizarTier({ ...foundry.utils.deepClone(this.lista[i]), id: `tier-${foundry.utils.randomID(6)}`, nome: `${this.lista[i].nome} (cópia)` }); this.lista.splice(i + 1, 0, t); this.sel = i + 1; this.render(); },
       apagar: NaurenTiersEditor.#apagar,
+      escolherIcone: async function () { const v = await naurenEscolherIcone({ atual: this.atual.icone, titulo: `Ícone do tier ${this.atual.nome}` }); if (v === null) return; this.atual.icone = v; this.render(); },
       forma: function (ev, el) { this.atual.forma = el.dataset.v; this.render(); },
       efeito: function (ev, el) { this.atual.efeito = el.dataset.v; this.render(); },
       tipoFundo: function (ev, el) { const f = this.atual.fundo; if (el.dataset.v === "cor") { f.cores = [f.cores[1] ?? f.cores[0]]; f.posicoes = [0]; } else if (f.cores.length < 2) { f.cores = [f.cores[0], "#ffffff"]; f.posicoes = [0, 100]; } this.render(); },
@@ -303,7 +305,7 @@ export class NaurenTiersEditor extends foundry.applications.api.ApplicationV2 {
             <h3>${esc(t.nome)} <small>id: ${esc(t.id)}</small></h3>
             <div class="nt-g3">
               <label class="nt-c"><span>Nome</span><input type="text" class="nt-in nt-ch" data-campo="nome" value="${esc(t.nome)}" maxlength="40"></label>
-              <label class="nt-c"><span>Ícone <a href="https://fontawesome.com/search?o=r&m=free&s=solid" target="_blank" rel="noopener">ver ícones</a></span><span class="nt-in nt-ch nt-in-ic"><i class="fas ${esc(t.icone || "fa-ban")}"></i><input type="text" data-campo="icone" value="${esc(t.icone)}" placeholder="fa-gem (vazio = sem ícone)"></span></label>
+              <div class="nt-c"><span>Ícone</span><button type="button" class="nt-in nt-ch nt-in-ic nt-ic-bt" data-action="escolherIcone" title="Escolher no catálogo de ícones"><i class="fas ${esc(t.icone || "fa-ban")}"></i><span>${esc(t.icone ? t.icone.replace(/^fa-/, "") : "sem ícone")}</span><em title="Trocar"><i class="fas fa-icons"></i></em></button></div>
               <label class="nt-c"><span>Cor do texto</span><span class="nt-in nt-ch"><input type="color" class="nt-cor" data-cor="texto" value="${t.texto.length === 7 ? t.texto : "#ffffff"}"><code>${esc(t.texto)}</code></span></label>
             </div>
             <div class="nt-g2">
@@ -354,14 +356,12 @@ export class NaurenTiersEditor extends foundry.applications.api.ApplicationV2 {
     const ang = el.querySelector('[data-ver="angulo"]'); if (ang) ang.textContent = `${t.fundo.angulo}°`;
     const lar = el.querySelector('[data-ver="largura"]'); if (lar) lar.textContent = `${String(t.borda.largura).replace(".", ",")} px`;
     const h3 = el.querySelector(".nt-ed h3"); if (h3?.firstChild) h3.firstChild.textContent = `${t.nome} `;
-    const ic = el.querySelector(".nt-in-ic > i"); if (ic) ic.className = `fas ${t.icone || "fa-ban"}`;
   }
   _onRender() {
     const el = this.element;
     el.querySelectorAll("[data-campo]").forEach(inp => inp.addEventListener("input", () => {
       const t = this.atual, v = inp.value;
       if (inp.dataset.campo === "nome") t.nome = v;
-      else if (inp.dataset.campo === "icone") t.icone = v.trim();
       else if (inp.dataset.campo === "angulo") t.fundo.angulo = Number(v);
       else if (inp.dataset.campo === "largura") t.borda.largura = Number(v);
       this.#atualizarPrevia();
@@ -506,6 +506,9 @@ export function naurenLigarFichaItemExtras(sheet) {
   // Seletor ao lado de cada campo de Condição (aceita Condições deste item, do sistema e do mundo).
   if (item.isOwner) el.querySelectorAll("input.nauren-uuid-input").forEach(inp => {
     if (inp.dataset.ntPicker || inp.disabled) return;
+    // Só campos de Condição (não "item concedido", "evolui para"…).
+    const chave = `${inp.dataset.field ?? ""} ${inp.dataset.recursoField ?? ""} ${inp.dataset.nodeField ?? ""} ${inp.name ?? ""} ${inp.placeholder ?? ""}`;
+    if (!/condi/i.test(chave)) return;
     inp.dataset.ntPicker = "1";
     const bt = document.createElement("button");
     bt.type = "button"; bt.className = "nt-cond-pick"; bt.title = "Escolher Condição (deste item, do sistema ou do mundo)";
