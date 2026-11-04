@@ -2,7 +2,7 @@
   "TYPES": {
     "Actor": {
       "personagem": "Personagem",
-      "npc": "PNJ",
+      "npc": "Personagem Não Jogável",
       "armazenamento": "Armazenamento"
     },
     "Item": {
