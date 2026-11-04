@@ -19,7 +19,7 @@
     <!-- Informações Dinâmicas -->
     <div style="flex: 1;">
       <input name="name" type="text" value="{{item.name}}" placeholder="Nome do Item" style="width: 100%; padding: 5px 0;" />
-      <div class="nauren-cab-etiquetas">{{#if tierTorre}}<span class="nauren-tier tier-{{tierTorre.classe}}" title="Tier da Torre Infinita">◆ {{tierTorre.rotulo}}</span>{{/if}}{{#each etiquetasCabecalho as |et|}}<span class="nauren-etiqueta">{{et}}</span>{{/each}}</div>
+      <div class="nauren-cab-etiquetas">{{#if seloTierItem}}{{{seloTierItem}}}{{/if}}{{#each etiquetasCabecalho as |et|}}<span class="nauren-etiqueta">{{et}}</span>{{/each}}</div>
 
 
     </div>
@@ -39,6 +39,8 @@
     <a class="nauren-aba-botao" data-aba="geral"><i class="fas fa-sliders"></i> Geral</a>
     <a class="nauren-aba-botao" data-aba="passivas"><i class="fas fa-infinity"></i> Passivas</a>
     <a class="nauren-aba-botao" data-aba="avancado"><i class="fas fa-gears"></i> Avançado</a>
+    {{#if condicoesHtml}}<a class="nauren-aba-botao" data-aba="condicoes"><i class="fas fa-droplet"></i> Condições{{#if condicoesQtd}}<span class="nt-aba-badge">{{condicoesQtd}}</span>{{/if}}</a>{{/if}}
+    {{#if scriptHtml}}<a class="nauren-aba-botao" data-aba="script" title="Só o Mestre vê"><i class="fas fa-code"></i> Script{{#if scriptsPendentes}}<span class="nt-aba-badge nt-aba-badge-pend" title="Precisa aprovar">{{scriptsPendentes}}</span>{{/if}}</a>{{/if}}
     <a class="nauren-aba-botao" data-aba="descricao"><i class="fas fa-feather"></i> Descrição</a>
   </nav>
 
@@ -1997,24 +1999,41 @@
       <select name="system.disponivelNoInicio">{{selectOptions disponivelNoInicioOpcoes selected=system.disponivelNoInicio}}</select>
     </div>
     {{/if}}{{/if}}
-    {{#if torreDados}}
-    <div class="nauren-torre-edicao">
-      <div class="nauren-torre-edicao-topo">
-        <span><i class="fas fa-tower-observation"></i> <b>Torre Infinita</b> <small>dados lidos pelo bot O Curador</small></span>
-        {{#if podeEditarTorre}}<a data-action="tirarTorre" title="Tirar este item da Torre"><i class="fas fa-xmark"></i> Tirar da Torre</a>{{/if}}
-      </div>
-      <div class="nauren-torre-campos">
-        <div class="field" title="Identificador do item no bot. Itens do catálogo NÃO devem ter a chave alterada."><label>Chave (ID no bot)</label><input type="text" name="flags.nauren.torre.chave" value="{{torreDados.chave}}" {{#unless podeEditarTorre}}disabled{{/unless}}></div>
-        <div class="field"><label>Tier</label><select name="flags.nauren.torre.tier" {{#unless podeEditarTorre}}disabled{{/unless}}>{{selectOptions torreOpcoes.tiers selected=torreDados.tier}}</select></div>
-        <div class="field"><label>Raridade</label><select name="flags.nauren.torre.raridade" {{#unless podeEditarTorre}}disabled{{/unless}}>{{selectOptions torreOpcoes.raridades selected=torreDados.raridade}}</select></div>
-        <div class="field"><label>Preço (florins)</label><input type="number" name="flags.nauren.torre.preco" value="{{torreDados.preco}}" min="0" {{#unless podeEditarTorre}}disabled{{/unless}}></div>
-        <div class="field"><label>Pigmento</label><select name="flags.nauren.torre.pigmento" {{#unless podeEditarTorre}}disabled{{/unless}}>{{selectOptions torreOpcoes.pigmentos selected=torreDados.pigmento}}</select></div>
-        <div class="field"><label>Loja</label><select name="flags.nauren.torre.loja" {{#unless podeEditarTorre}}disabled{{/unless}}>{{selectOptions torreOpcoes.lojas selected=torreDados.loja}}</select></div>
-      </div>
+    {{#if botoesScriptHtml}}{{{botoesScriptHtml}}}{{/if}}
+    {{#if catalogo}}
+    <!-- 0.102: CATÁLOGO (tier, raridade, valor, pigmento, ID externo); itens da Torre espelham em flags.nauren.torre -->
+    <div class="nauren-lv nt-catalogo">
+      <details class="nauren-lv-bloco" data-persist="catalogo" {{#if catalogo.gm}}open{{/if}}>
+        <summary class="nauren-lv-cab">
+          <span class="nauren-lv-ic"><i class="fas fa-tags"></i></span>
+          <b>Catálogo</b>
+          <span class="nauren-lv-resumo">{{catalogo.resumo}}</span>
+          {{{catalogo.seloAtual}}}
+        </summary>
+        <div class="nauren-lv-corpo">
+          <div class="nauren-lv-campo"><span class="nauren-lv-rot">Tier {{#if catalogo.gm}}<a class="nt-editar" data-action="editarTiers"><i class="fas fa-pen-to-square"></i> Editar tiers…</a>{{/if}}</span>
+            <div class="nt-cat-tiers">{{#each catalogo.tiers as |t|}}<button type="button" class="nt-op nt-ch {{#if t.on}}on{{/if}}" data-action="catalogoTier" data-tier="{{t.id}}" {{#unless ../catalogo.gm}}disabled{{/unless}} title="{{t.nome}}">{{{t.selo}}}</button>{{/each}}</div>
+            {{#if catalogo.tierDesconhecido}}<p class="nt-nota">Tier gravado “{{catalogo.tierDesconhecido}}” não existe mais na lista do mundo (o selo não aparece).</p>{{/if}}
+          </div>
+          <div class="nauren-lv-3">
+            <label class="nauren-lv-campo"><span class="nauren-lv-rot">Raridade</span><select name="flags.nauren.catalogo.raridade" {{#unless catalogo.gm}}disabled{{/unless}}>{{selectOptions catalogo.raridades selected=catalogo.raridade}}</select></label>
+            <label class="nauren-lv-campo"><span class="nauren-lv-rot">Valor</span><span class="nauren-lv-num"><em class="nt-pre">ƒ</em><input type="number" class="nt-esq" name="flags.nauren.catalogo.valor" value="{{catalogo.valor}}" min="0" step="1" {{#unless catalogo.gm}}disabled{{/unless}}><em>florins</em></span></label>
+            <label class="nauren-lv-campo"><span class="nauren-lv-rot">Pigmento</span><select name="flags.nauren.catalogo.pigmento" {{#unless catalogo.gm}}disabled{{/unless}}>{{selectOptions catalogo.pigmentos selected=catalogo.pigmento}}</select></label>
+          </div>
+          <div class="nauren-lv-2">
+            <label class="nauren-lv-campo"><span class="nauren-lv-rot">ID externo (chave)</span><input type="text" class="nauren-lv-txt" name="flags.nauren.catalogo.idExterno" value="{{catalogo.idExterno}}" placeholder="opcional, para integrações" {{#unless catalogo.gm}}disabled{{/unless}}></label>
+            {{#if catalogo.torre}}<label class="nauren-lv-campo"><span class="nauren-lv-rot">Loja da Torre</span><select name="flags.nauren.torre.loja" {{#unless catalogo.gm}}disabled{{/unless}}>{{selectOptions catalogo.lojasTorre selected=catalogo.lojaTorre}}</select></label>{{else}}<div class="nauren-lv-campo"><span class="nauren-lv-rot">Preço nas lojas</span><span class="nt-nota nt-nota-campo">O Valor é o preço inicial quando o item entra numa loja; cada loja pode mudar.</span></div>{{/if}}
+          </div>
+          {{#if catalogo.gm}}
+          <div class="nt-linha-sw">
+            <div><b>Item da Torre Infinita</b><span class="nt-nota">Grava também estes dados em <code>flags.nauren.torre</code>, no formato que o bot já lê.</span></div>
+            <button type="button" class="nauren-lv-sw nt-sw-bt" data-action="alternarTorre" title="{{#if catalogo.torre}}Tirar da Torre{{else}}Marcar como item da Torre{{/if}}"><input type="checkbox" tabindex="-1" {{#if catalogo.torre}}checked{{/if}}><i></i><span>{{#if catalogo.torre}}Ligado{{else}}Desligado{{/if}}</span></button>
+          </div>
+          {{/if}}
+        </div>
+      </details>
     </div>
-    {{else}}{{#if podeEditarTorre}}
-    <a class="nauren-torre-marcar" data-action="marcarTorre" title="Grava os dados da Torre neste item (chave, tier, raridade, preço, pigmento, loja)"><i class="fas fa-tower-observation"></i> Marcar como item da Torre Infinita</a>
-    {{/if}}{{/if}}
+    {{/if}}
     <div class="nauren-geral-tipo">
       {{#if podeTerOrigem}}
       <div class="field" style="margin-bottom: 10px; max-width: 260px;">
@@ -4561,6 +4580,8 @@
   </div>
   {{/if}}
   </div>
+  {{#if condicoesHtml}}<div class="nauren-aba-painel" data-aba="condicoes">{{{condicoesHtml}}}</div>{{/if}}
+  {{#if scriptHtml}}<div class="nauren-aba-painel" data-aba="script">{{{scriptHtml}}}</div>{{/if}}
   <div class="nauren-aba-painel" data-aba="descricao">
   {{#if isGrupo}}
   <div class="nauren-grupo-tab-painel" data-tab-grupo="membros">

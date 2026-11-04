@@ -10,6 +10,7 @@
  * - Ponto no mapa: comportamento de Região "armazenamento" + ícone clicável desenhado pelo sistema.
  * Só APIs do Foundry V14 (foundry.*).
  */
+import { naurenCatalogoDoItem, naurenSeloDoItem } from "./itens-catalogo.mjs";
 import { NAUREN_CATEGORIAS_EQUIPAMENTO, NAUREN_QUANTIDADE_MAXIMA, naurenEhMoeda, naurenFormatarNumero, naurenFormatarNumeroCurto, naurenLerNumero, naurenPostarCard } from "../nauren.mjs";
 
 const QUERY = "nauren.armazem";
@@ -78,7 +79,9 @@ class NaurenArmazenamentoData extends foundry.abstract.TypeDataModel {
 /** Configuração de loja/baú de um item guardado. */
 function cfgItem(item) {
   const c = item?.flags?.nauren?.armazem ?? {};
-  return { preco: Math.max(0, Number(c.preco) || 0), estoque: c.estoque === undefined || c.estoque === null ? -1 : Number(c.estoque), oculto: !!c.oculto };
+  // 0.102: sem preço na loja, vale o Valor do catálogo do item.
+  const semPreco = c.preco === undefined || c.preco === null || c.preco === "";
+  return { preco: Math.max(0, Number(semPreco ? naurenCatalogoDoItem(item).valor : c.preco) || 0), estoque: c.estoque === undefined || c.estoque === null ? -1 : Number(c.estoque), oculto: !!c.oculto };
 }
 function ehPilha(item) { return item?.type === "consumivel"; }
 function qtdDe(item) { return ehPilha(item) ? Math.max(0, Number(item.system?.quantidade) || 0) : 1; }
@@ -483,7 +486,7 @@ function trocarHtml(alvo, html) {
   if (foco) { const e = alvo.querySelector(`[data-foco="${foco.k}"]`); if (e) { e.focus(); try { e.setSelectionRange(foco.ini, foco.fim); } catch (err) { /* segue */ } } }
 }
 function icone(item) { return `<img src="${ESC(item.img)}" alt="" loading="lazy">`; }
-function chips(item) { return etiquetas(item).map(t => `<span class="na-chip">${ESC(t)}</span>`).join(""); }
+function chips(item) { return naurenSeloDoItem(item, { tam: "nt-p" }) + etiquetas(item).map(t => `<span class="na-chip">${ESC(t)}</span>`).join(""); }
 function moedaHtml(v) { return `<span class="na-moeda"><i>ƒ</i>${fmt(v)}</span>`; }
 function filtroBarra(filtro, contagens = null) {
   return `<div class="na-filtros">${FILTROS.filter(([k]) => !contagens || k === "tudo" || contagens[k]).map(([k, r]) => `<button type="button" class="na-filtro ${filtro === k ? "on" : ""}" data-action="filtro" data-filtro="${k}">${r}${contagens ? ` · ${contagens[k] ?? 0}` : ""}</button>`).join("")}</div>`;

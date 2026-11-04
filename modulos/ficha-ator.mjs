@@ -1,5 +1,7 @@
 /* Nauren RPG — Ficha do Ator (NaurenActorSheet). Separado do nauren.mjs na 0.94.22. */
 import { NAUREN_ATRIBUTOS_CLASSE_LIVRO, naurenPerfisSugestaoClasse, naurenMelhorDistribuicao, naurenFormatarNumero, naurenLerNumero, naurenItemValeAgora, ARMA_TIPOS, ATRIBUTOS_BONUS, CALCULO_DADOS_DESTINO_OPCOES, CALCULO_ESTAMINA_COMBATE_OPCOES, CALCULO_MANA_OPCOES, CALCULO_VIDA_OPCOES, MODOS_ROLAGEM, NAUREN_ARRAYS_ADICIONAVEIS, NAUREN_CAMPOS_ACIMA_AUTOMATICOS, NAUREN_CAMPOS_ACIMA_GERAIS, NAUREN_CAMPOS_ANALISE_CRIATIVA, NAUREN_CAMPOS_ESTADO_ACAO, NAUREN_CAMPOS_ESTADO_ITEM, NAUREN_CAMPOS_MODIFICADOR_OPCOES, NAUREN_FASE_MODIFICADOR, NAUREN_NOMES_ATRIBUTO_CURTO, NAUREN_PODEROSA_EFEITOS, NAUREN_QUERY_APLICAR_CONDICAO, NAUREN_QUERY_APLICAR_CONDICAO_ECO, NAUREN_QUERY_AREA_AO_CRIAR, NAUREN_QUERY_BESTA_INICIAL, NAUREN_QUERY_CRIAR_ITEM, NAUREN_QUERY_DANO_COLISAO, NAUREN_QUERY_DOMAR, NAUREN_QUERY_ITEM_MESTRE, NAUREN_QUERY_MANIPULAR, NAUREN_QUERY_REACAO_PRE_ATAQUE, NAUREN_REACAO_RESISTIR_OPCOES, NAUREN_REFERENCIA_FORMULAS, NAUREN_ROTULO_FASE_MODIFICADOR, NaurenActor, NaurenActorData, NaurenBarrasEditor, NaurenConcessaoHelper, NaurenCondicaoData, NaurenCriadorMonstro, NaurenEfeitoData, NaurenGrupoHelper, NaurenHabilidadeData, NaurenHudCombate, NaurenHudRecursosEditor, NaurenItemSheet, NaurenMagiaData, NaurenProgressaoHelper, NaurenSubclasseHelper, RECURSOS_ALVO, USOS_RESET_LABEL, USOS_RESET_POR_COMBATE, campoAcao, campoCondicaoAplicada, campoDanoBloco, campoGatilho, campoModificador, campoModificadorExterno, naurenAbrirBorda, naurenAbrirConstrucaoPorAcao, naurenAbrirEnquadramento, naurenAcaoEhCura, naurenAcaoEhGolpe, naurenAcaoSemCustoEstaminaMana, naurenAgindoForaDoTurno, naurenAjusteCriticoDoGrupo, naurenAjusteCustoManaMagia, naurenAlcanceEmMetros, naurenAliadosAte, naurenAlvoDaRecarga, naurenAlvosSaoVelhos, naurenAncoraDuracaoAtual, naurenAnotarModsRecebidosNoCard, naurenAnotarNoRegistro, naurenApagarItensSeExistirem, naurenAplicarAcalanto, naurenAplicarDanoManual, naurenAplicarEfeitoSimples, naurenAplicarEfeitosPeriodicos, naurenAplicarPalavraComEscolha, naurenArmarPoderosa, naurenAtacouNoTurnoAtual, naurenAtualizarCondicaoPresenca, naurenAtualizarItemViaMestre, naurenAvaliarExpressaoSimples, naurenAvisarEstrelaDoArcoIris, naurenAvisarSeLinkBloqueado, naurenBandoCfg, naurenBandoChave, naurenBandoMembros, naurenBandoNoAlcance, naurenBeneficiosDoEstado, naurenBonusAcimaContra, naurenBordaPreviaDataUrl, naurenBordaPreviaDoAtor, naurenBotoesDeFormula, naurenBotoesDirecaoGrimorio, naurenBreakdownSimples, naurenBuscarMascotesDe, naurenCalcularEmpurrao, naurenCategoriaDaArma, naurenCategoriaDoAtor, naurenCategoriaEquipamento, naurenCelulasNaArea, naurenChaveEscopoRelogio, naurenChaveFlagSegura, naurenChecarCondicaoAoAtingirMax, naurenClamparRecursosAoMaximo, naurenCombatenteEhDoAtor, naurenCompensacoesContraOrigem, naurenConcederPrioridadePeloCard, naurenConcederRecurso, naurenConcederRecursoAoAtacante, naurenCondicaoNegativa, naurenCondicoesAtivas, naurenCondicoesLigadasA, naurenCongelarNoNivel, naurenConsumirUsoDaHabilidade, naurenContarAliadosProximos, naurenContextoInvencoes, naurenCriarFrascoEspecial, naurenCriarInvocacoes, naurenCriarItemNoAtor, naurenCronometroNoDialog, naurenDescricaoParaChat, naurenDeslocarToken, naurenDiferencaDesfazer, naurenDispararEventoNoDono, naurenDisposicaoDoAtor, naurenEfeitoComSubst, naurenEhCondicaoModelo, naurenEhGolpeEspiritual, naurenEhItem, naurenEquipamentoGasta, NAUREN_CATEGORIAS_EQUIPAMENTO, naurenEmpurrarToken, naurenEquipamentoRecomendado, naurenEscalaPorCategoria, naurenEscolherCorDaPintura, naurenEscolherEfeitoPoderosa, naurenEscolherFrasco, naurenEscolherPeculiaridade, naurenEscolherPontoNoMapa, naurenEstiloEnquadramento, naurenEstresseDosAliados, naurenEstudoNoAlvo, naurenExecutarRecarga, naurenFaceD20, naurenFontesDeModificadores, naurenFormulaComTokensDoAtor, naurenFormulaParaTexto, naurenFotoCenaDesfazer, naurenFotografarModsRecebidos, naurenFrascoParaPacote, naurenGastarRecursoSimples, naurenGrimorio, naurenGuardarD20Roubado, naurenHandleQueryAreaAoCriar, naurenHandleQueryBestaInicial, naurenHandleQueryDanoColisao, naurenHandleQueryDomar, naurenHandleQueryItemMestre, naurenHandleQueryManipular, naurenHandleQueryReacaoPreAtaque, naurenHudAlvos, naurenIdentificadorTurnoAtual, naurenInterpretarModificador, naurenInterpretarModificadorComDado, naurenItemCorrespondeAoAlvo, naurenItemEhDoProjeto, naurenItensDoProjetoPorNome, naurenLimiteOfensivoBase, naurenLimiteVagaDefesa, naurenLimparMeusAlvos, naurenMaisDadosPoderosa, naurenMapearStrings, naurenMarcarAlvosAgora, naurenMedirDistanciaBordas, naurenMestreDaMesa, naurenMetrosEmpurrao, naurenModsAcima, naurenMontarDescricao, naurenMontarSelecaoPrioridade, naurenMoverGrimorio, naurenMoverTokenPara, naurenMoverTokenViaMestre, naurenMovimentoSaldo, naurenMunicoesCompativeis, naurenNivelDeOrigemNaClasse, naurenNomeDeToken, naurenNomeDoRecurso, naurenNomeNormalizado, naurenNomeParaUuid, naurenNomeRecurso, naurenNotificarGanhoPerda, naurenOferecerAcovardar, naurenOferecerDestino, naurenOperarEntidade, naurenOperarEstudo, naurenOperarRecursoViaMestre, naurenOperarRegistroPrioridade, naurenOrdemListaMagias, naurenPersonagensEmCena, naurenPesoOfensivo, naurenPesoOfensivoEquipado, naurenPontoDentroDaRegiao, naurenPostarCard, naurenPostarDescricaoNoChat, naurenPreparacaoUsadas, naurenPrepararModificador, naurenPresosPorArmadilha, naurenPrioridadesGeradas, naurenProcessarEmanacoes, naurenProcessarFrascoNoAlvo, naurenProcessarGatilhos, naurenProcessarTemplatesPersistentes, naurenRaizDaEvolucao, naurenReacoesPagasDano, naurenReacoesPagasDefesa, naurenReaplicarUpgradesDeSubclasse, naurenRecarregarUsos, naurenReconciliarTodosOsItens, naurenReconjurarPendente, naurenRecursoDoAtor, naurenRecursoEstaTravado, naurenRegistrarAtaqueNoTurno, naurenRegistrarUsoTorre, naurenRegistroParaExport, naurenRegistroParaFicha, naurenRegraVagasDefesa, naurenRegrasExtras, naurenReordenarGrimorio, naurenResolverPorNivel, naurenResolverPorRank, naurenResolverPrioridade, naurenResolverSelf, naurenResolverSelfEmObjeto, naurenResolverTokenFormula, naurenResumoDaAcao, naurenResumoEquipamentoClasse, naurenRolagemAuditada, naurenRollToBreakdownText, naurenRotuloToken, naurenSincronizarCriativasDoLadino, naurenSincronizarGrimorio, naurenSincronizarRecursosCustom, naurenSomarEfeitoPermanente, naurenSubstituirTokensDeContexto, naurenTemEstado, naurenTempoReacao, naurenTextoFrascoEspecial, naurenTextoHistoricoDestino, naurenTextoModificador, naurenTextoRolagem, naurenTimeoutReacaoMs, naurenTipoAlcanceAdivinhado, naurenTipoAlcanceDaAcao, naurenTiposEstudoDoAtor, naurenTokenElegivelPorDisposicao, naurenTransferirRecursoDoAlvo, naurenTravaDaAcao, naurenUltimoAtacante, naurenUmaVezMarcar, naurenUmaVezRecusa, naurenUsoDisponivel, naurenUsosExtrasPara, naurenUsosPassivaMax, naurenUuidEhEsteToken, naurenUuidPorSeed, naurenVagaDefesa, naurenValorEstudo, resumoCondicao, resumoCor, resumoEfeito } from "../nauren.mjs";
+import { naurenSeloDoItem } from "./itens-catalogo.mjs";
+import { naurenScriptsAntesDaAcao } from "./itens-scripts.mjs";
 import { NAUREN_MASCOTES_INICIAIS, naurenDisponivelNoInicio, naurenDuasArmasPendente, naurenExtraEstaminaCondicoes, naurenObterOuCriarPacks, naurenPreverDuasArmasGratis, naurenRolarAjustePopup, naurenTierTorre } from "./compendios.mjs";
 import * as NK from "./janelas-kit.mjs";
 import { naurenAnimarAcao, naurenAnimarCritico, naurenMotionEmTodos, naurenMotionEnviar, naurenMotionPlanoDaAcao } from "./animacoes.mjs";
@@ -1985,6 +1987,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     const origemLabel = sys.origem === "subclasse" ? "Subclasse" : sys.origem === "classe" ? "Classe" : "";
     return {
       torreTier: naurenTierTorre(item),
+      seloTier: naurenSeloDoItem(item),
       id: item.id,
       name: item.name,
       img: item.img,
@@ -5015,8 +5018,11 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     // Título sem repetição ("Chute do Nascer do Sol — Chute do Nascer do Sol").
     const partesTitulo = String(title ?? "").split(" — ");
     if (partesTitulo.length === 2 && partesTitulo[0].trim() === partesTitulo[1].trim()) title = partesTitulo[0];
+    const itemCard = this._naurenItemCardAtual;
+    const seloTier = itemCard && String(title ?? "").startsWith(itemCard.name) ? naurenSeloDoItem(itemCard) : "";
     const templateData = {
       title,
+      seloTier,
       custoVisivel,
       icon: icon || "icons/svg/d20-highlight.svg",
       actorName: this.actor.name,
@@ -6797,6 +6803,13 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
   async _executarAcaoInterno(item, idx) {
     let acao = item.system.acoes[idx];
     if (!acao) return;
+    this._naurenItemCardAtual = item;
+    // 0.102: scripts "Antes de usar" (deste item ou "antes de qualquer Ação") podem mudar a Ação ou cancelar.
+    {
+      const mudada = await naurenScriptsAntesDaAcao(this.actor, item, acao, idx).catch(err => { console.warn("Nauren RPG | script antes de usar", err); return null; });
+      if (mudada === false) return;
+      if (mudada) acao = mudada;
+    }
     // Bancada de Invenção (0.94): esta Ação só abre a janela de construção, sem custo nem card.
     if (acao.abrirConstrucao) return naurenAbrirConstrucaoPorAcao(this.actor, item, acao.abrirConstrucao, acao.abrirConstrucaoFonte);
     // 0.94.3: usos do item ANTES desta Ação (Tudo ou Nada: "o último uso").
@@ -10939,7 +10952,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
       }
       if (info.ehAtaque && r.acertou !== null) {
         if (tokenDoc.actor && tokenDoc.disposition !== (this.actor.getActiveTokens?.(true)?.[0]?.document?.disposition ?? tokenDoc.disposition)) naurenRegistrarAtaqueNoTurno(this.actor);
-        naurenProcessarGatilhos(r.acertou ? "euAcerteiAtaque" : "euErreiAtaque", this.actor, { alvoUuid: tokenDoc.actor?.uuid ?? "", modoAtaque: info.modoAtaque ?? "normal" })
+        naurenProcessarGatilhos(r.acertou ? "euAcerteiAtaque" : "euErreiAtaque", this.actor, { alvoUuid: tokenDoc.actor?.uuid ?? "", alvoTokenUuid: tokenDoc.uuid, itemUsadoUuid: item?.uuid ?? "", acaoNome: acao?.nome ?? "", modoAtaque: info.modoAtaque ?? "normal" })
           .catch(err => console.warn("Nauren RPG | Falha ao processar gatilhos (acerto/erro de ataque).", err));
         // "aliadoAcertouAtaque": mesma lógica de "aliadoSofreuDano", mas
         // pro momento em que EU acerto - útil pra Habilidades que reagem
@@ -16123,7 +16136,7 @@ class NaurenAlvoHelper {
     }
 
     const dados = origem.toObject();
-    if (dados.flags?.nauren?.modelo) { delete dados.flags.nauren.modelo; dados.system.ativo = true; } // modelo da ficha do NPC vira Condição de verdade no alvo
+    if (dados.flags?.nauren?.modelo) { delete dados.flags.nauren.modelo; delete dados.flags.nauren.deItem; delete dados.flags.nauren.embutidaId; dados.system.ativo = true; } // modelo da ficha do NPC vira Condição de verdade no alvo
     const curtosNovos = Number(flagsExtras?.somarCurtos) || 0;
     if (flagsExtras) { flagsExtras = { ...flagsExtras }; delete flagsExtras.somarCurtos; if (!Object.keys(flagsExtras).length) flagsExtras = null; }
     if (curtosNovos) dados.flags = { ...(dados.flags ?? {}), nauren: { ...(dados.flags?.nauren ?? {}), acumulosCurtos: curtosNovos } };

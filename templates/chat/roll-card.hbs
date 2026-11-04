@@ -6,6 +6,7 @@
     <span class="nc-retrato"><img class="nrc-icon" src="{{#if icon}}{{icon}}{{else}}icons/svg/d20-highlight.svg{{/if}}" alt="{{title}}"></span>
     <div class="nrc-title-block">
       <span class="nrc-title">{{title}}</span>
+      {{#if seloTier}}<span class="nrc-selo-tier">{{{seloTier}}}</span>{{/if}}
       <span class="nrc-actor">{{actorName}} <span class="nrc-player"><i class="nc-sep">· </i><i class="nc-ponto" style="background: {{playerColor}};"></i>{{playerName}}</span></span>
       {{#if fonte}}<span class="nrc-fonte">{{fonte}}</span>{{/if}}
       {{#if custoVisivel}}<span class="nrc-custo-visivel" title="Custo pago"><i class="fas fa-coins"></i> {{custoVisivel}}</span>{{/if}}

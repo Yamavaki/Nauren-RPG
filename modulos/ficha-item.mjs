@@ -4,6 +4,8 @@ import { NAUREN_ATRIBUTOS_CLASSE_LIVRO, naurenFormatarNumero, NAUREN_CATEGORIAS_
 import { NAUREN_MOTION_CONDICAO_OPCOES, naurenMotionPresetCondicao } from "./animacoes.mjs";
 import { NAUREN_TORRE_LOJAS, NAUREN_TORRE_PIGMENTOS, NAUREN_TORRE_RARIDADES, NAUREN_TORRE_TIERS, naurenDisponivelNoInicio, naurenTierTorre } from "./compendios.mjs";
 import { NaurenActorSheet } from "./ficha-ator.mjs";
+import { NAUREN_CONDICOES_TIPOS, NaurenTiersEditor, naurenCondicoesEmbutidas, naurenContextoCatalogo, naurenDadosParaEmbutir, naurenEditarCondicaoEmbutida, naurenGravarCondicoesEmbutidas, naurenHtmlAbaCondicoes, naurenLigarFichaItemExtras, naurenSeloDoItem, naurenTorreDoCatalogo } from "./itens-catalogo.mjs";
+import { NAUREN_SCRIPT_TIPOS, naurenHtmlAbaScript, naurenHtmlBotoesScript, naurenLigarBotoesScript, naurenLigarFichaScripts, naurenScriptAprovado, naurenScriptsDoItem } from "./itens-scripts.mjs";
 /* =======================================
  * 5. FICHA DE ITEM (ApplicationV2 - padrão atual do Foundry V13/V14)
  * ======================================= */
@@ -519,6 +521,14 @@ class NaurenItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       lvAddDeteccao: NaurenItemSheet.onLvAddDeteccao,
       lvRemDeteccao: NaurenItemSheet.onLvRemDeteccao,
       addAcao: NaurenItemSheet.onAddAcao,
+      catalogoTier: NaurenItemSheet.onCatalogoTier,
+      alternarTorre: NaurenItemSheet.onAlternarTorre,
+      editarTiers: () => new NaurenTiersEditor().render(true),
+      condNova: NaurenItemSheet.onCondNova,
+      condEditar: NaurenItemSheet.onCondEditar,
+      condDuplicar: NaurenItemSheet.onCondDuplicar,
+      condApagar: NaurenItemSheet.onCondApagar,
+      condCompendio: NaurenItemSheet.onCondCompendio,
       toggleCapacidade: NaurenItemSheet.onToggleCapacidade,
       toggleEquipCategoria: NaurenItemSheet.onToggleEquipCategoria,
       equipPadraoLivro: NaurenItemSheet.onEquipPadraoLivro,
@@ -878,6 +888,16 @@ class NaurenItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       context.torreInfo = torre ? { ...torre, tier: torre.tier ? (NAUREN_TORRE_TIERS[torre.tier] ?? torre.tier) : "sem tier", pigmento: torre.pigmento ?? "—" } : null;
       context.torreDados = torre ? { ...torre, tier: torre.tier ?? "", pigmento: torre.pigmento ?? "" } : null;
       context.tierTorre = naurenTierTorre(item);
+      // 0.102: catálogo genérico, Condições embutidas e scripts.
+      context.seloTierItem = naurenSeloDoItem(item);
+      context.catalogo = naurenContextoCatalogo(item);
+      const ehModelo = item.type === "condicao" && !!item.getFlag("nauren", "modelo");
+      if (NAUREN_CONDICOES_TIPOS.has(item.type)) { context.condicoesHtml = naurenHtmlAbaCondicoes(item); context.condicoesQtd = naurenCondicoesEmbutidas(item).length; }
+      if (game.user.isGM && NAUREN_SCRIPT_TIPOS.has(item.type) && !ehModelo) {
+        context.scriptHtml = naurenHtmlAbaScript(item);
+        context.scriptsPendentes = naurenScriptsDoItem(item).filter(x => String(x.codigo ?? "").trim() && !naurenScriptAprovado(x)).length;
+      }
+      context.botoesScriptHtml = naurenHtmlBotoesScript(item);
       context.torreOpcoes = { tiers: NAUREN_TORRE_TIERS, raridades: NAUREN_TORRE_RARIDADES, lojas: NAUREN_TORRE_LOJAS, pigmentos: NAUREN_TORRE_PIGMENTOS };
       context.podeEditarTorre = game.user.isGM;
       if (item.type === "arma" || item.type === "armadura") {
@@ -1518,6 +1538,8 @@ class NaurenItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     requestAnimationFrame(() => naurenAjustarListasLargas(this.element));
     this.element.querySelectorAll("details").forEach(d => d.addEventListener("toggle", () => naurenAjustarListasLargas(this.element)));
     super._onRender(context, options);
+    // 0.102: aba Condições, seletor de Condição, aba Script e botões de script.
+    try { naurenLigarFichaItemExtras(this); naurenLigarFichaScripts(this); naurenLigarBotoesScript(this); } catch (err) { console.warn("Nauren RPG | ficha do item (0.102)", err); }
     if (this.item.type === "grupo") this._ligarAbasGrupo();
     this._ligarScrollItemBody();
     this._ligarLuzVisao();
@@ -1529,7 +1551,7 @@ class NaurenItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     // aceitam colar um UUID copiado (menu "..." > Copy Document UUID no
     // topo da ficha do item) OU arrastar o item direto da barra lateral/
     // compendium pra cima do campo.
-    naurenMostrarNomesDosCamposUuid(this.element, this.item?.actor ?? this.document?.actor ?? null);
+    naurenMostrarNomesDosCamposUuid(this.element, this.item?.actor ?? this.document?.actor ?? null, this.item);
     this.element.querySelectorAll('.nauren-uuid-input').forEach(el => {
       el.addEventListener('dragover', ev => ev.preventDefault());
       el.addEventListener('drop', async ev => {
@@ -2663,6 +2685,46 @@ class NaurenItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
 
   /** Remove um vínculo da lista de Efeitos Vinculados DO ITEM. */
   /** Marca este item como da Torre Infinita (flags.nauren.torre), com a chave a partir do nome. */
+  /* 0.102: catálogo e Condições embutidas */
+  static async onCatalogoTier(event, target) {
+    if (!game.user.isGM) return;
+    await this.document.update({ "flags.nauren.catalogo.tier": target.dataset.tier ?? "" });
+  }
+  static async onAlternarTorre() {
+    if (!game.user.isGM) return;
+    if (this.document.getFlag("nauren", "torre")) return NaurenItemSheet.onTirarTorre.call(this);
+    await this.document.setFlag("nauren", "torre", naurenTorreDoCatalogo(this.document));
+  }
+  static async onCondNova() {
+    const dados = new Item.implementation({ name: "Nova Condição", type: "condicao", img: "icons/svg/aura.svg" }).toObject();
+    const lista = foundry.utils.deepClone(naurenCondicoesEmbutidas(this.document));
+    const usados = new Set(lista.map(e => e.dados.name)); let nome = dados.name; for (let k = 2; usados.has(nome); k++) nome = `Nova Condição ${k}`;
+    const id = foundry.utils.randomID(10);
+    lista.push({ id, dados: { ...naurenDadosParaEmbutir(dados), name: nome } });
+    await naurenGravarCondicoesEmbutidas(this.document, lista);
+    await naurenEditarCondicaoEmbutida(this.document, id);
+  }
+  static async onCondEditar(event, target) { await naurenEditarCondicaoEmbutida(this.document, target.dataset.emb); }
+  static async onCondDuplicar(event, target) {
+    const lista = foundry.utils.deepClone(naurenCondicoesEmbutidas(this.document));
+    const i = lista.findIndex(e => e.id === target.dataset.emb); if (i < 0) return;
+    const c = foundry.utils.deepClone(lista[i]); c.id = foundry.utils.randomID(10); c.dados.name = `${c.dados.name} (cópia)`;
+    lista.splice(i + 1, 0, c);
+    await naurenGravarCondicoesEmbutidas(this.document, lista);
+  }
+  static async onCondApagar(event, target) {
+    const lista = naurenCondicoesEmbutidas(this.document);
+    const e = lista.find(x => x.id === target.dataset.emb); if (!e) return;
+    const ok = await foundry.applications.api.DialogV2.confirm({ ...naurenKitJanela(this.document.actor ?? null), window: { title: "Apagar Condição do item?" }, content: `<p>Apagar <b>${foundry.utils.escapeHTML(e.dados.name)}</b> de ${foundry.utils.escapeHTML(this.document.name)}? As Ações que a usam ficam sem essa Condição.</p>`, rejectClose: false }).catch(() => false);
+    if (ok) await naurenGravarCondicoesEmbutidas(this.document, lista.filter(x => x.id !== e.id));
+  }
+  static async onCondCompendio() {
+    const pack = game.packs?.find(p => p.metadata?.label === "Nauren - Condições e Venenos");
+    if (!pack) return ui.notifications.warn("Não achei o compêndio de Condições.");
+    pack.render(true);
+    ui.notifications.info("Arraste a Condição do compêndio para a aba Condições do item.");
+  }
+
   static async onMarcarTorre() {
     if (!game.user.isGM) return;
     const chave = String(this.document.name ?? "item").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "item";

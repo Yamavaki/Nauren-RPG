@@ -1980,6 +1980,41 @@ Não precisa mais deixar `"uuid": ""` nem arrastar nada depois de importar.
 
 ---
 
+## 11b. Itens com catálogo, Condições próprias e script (0.102)
+
+Vale para qualquer item (arma, armadura, consumível, habilidade, magia, efeito, peculiaridade).
+
+**Catálogo** — `flags.nauren.catalogo`:
+```json
+"flags": { "nauren": { "catalogo": { "tier": "ouro", "raridade": "magico", "valor": 1200, "pigmento": "Azul", "idExterno": "" } } }
+```
+- `tier`: id de um tier do mundo. Padrão: `bronze`, `prata`, `ouro`, `diamante`, `prismatico`. Vazio = sem tier.
+- `raridade`: `basico`, `consumivel`, `refinado`, `magico` (aparece como "Item Pigmentado") ou `falsario`.
+- `valor`: preço inicial em florins quando o item entra numa loja (a loja pode mudar).
+- Itens da Torre continuam com `flags.nauren.torre`; não escreva os dois à mão: o sistema espelha o catálogo na Torre.
+
+**Condições do item** — `flags.nauren.condicoesEmbutidas`, uma lista de `{ "id": "<10 letras>", "dados": <Condição completa, com name, type "condicao", img e system> }`.
+- As Ações do item usam a Condição por `"self:Nome da Condição"`, igual nos monstros (seção 11).
+- Elas viajam no JSON do item. Quando o item entra numa ficha, o sistema cria o modelo escondido sozinho.
+
+**Scripts** — `flags.nauren.scripts`, lista de:
+```json
+{ "id": "a1b2c3d4e5", "nome": "Carga a cada acerto", "quando": "aoAcertar", "ondeRoda": "dono", "soAcao": "", "soEquipado": true, "ligado": true, "codigo": "await nauren.curar(ator, \"1d6\");" }
+```
+- `quando`:
+  - do próprio item: `antesDeUsar`, `aoUsar`, `aoAcertar`, `aoErrar`, `aoDarDano`, `aoEquipar`, `aoDesequipar`, `aoReceber`, `aoPerder`, `antesDeQualquerAcao`, `botao`;
+  - ou qualquer evento da seção 7 (`inicioTurno`, `euSofriDano`, `vidaZerou`…).
+- O código é JavaScript assíncrono e recebe `nauren`, `item`, `ator`, `token`, `alvo`, `alvos`, `atacante`, `evento`, `contexto` e `acao`. Em `antesDeUsar`, `acao` é a Ação que vai sair: `nauren.somarDano(acao, "2d6")` muda o golpe e `return false` cancela.
+- Caixa de ferramentas (cada chamada vira uma linha no card do chat):
+  - `rolar`, `chance`, `somar`, `guardar`, `ler`;
+  - `dano`, `curar`, `recurso`, `valor`;
+  - `aplicarCondicao`, `tirarCondicao`, `temCondicao`;
+  - `alvos`, `perto`, `escolherAlvo`, `escolherPonto`, `empurrar`, `puxar`, `teleportar`, `distancia`;
+  - `perguntar`, `anotar`, `card`, `aviso`, `som`, `esperar`;
+  - `somarDano`, `somarCura`, `somarCondicao`, `cancelar`, `usarAcao`, `criarItem`, `apagarItem`, `atualizar`, `equipado`, `emCombate`.
+- **Todo script chega desaprovado.** Ele só roda depois que o Mestre aprova na aba Script da ficha do item. Avise isso ao entregar o JSON.
+- Prefira as mecânicas normais do item (Ações, Gatilhos, Condições). Use script só para o que elas não fazem (contadores, cargas, efeitos em cadeia, escolhas, mudar o golpe antes de rolar).
+
 ## 12. Exemplo completo — NPC simples
 
 ```json

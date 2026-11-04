@@ -424,10 +424,12 @@ Hooks.on("deleteItem", async (item, opcoes, userId) => {
  * (verde) ou "não encontrado" (vermelho) - também nos campos que o template
  * não montou com o nome. Atualiza ao arrastar/colar outro.
  */
-function naurenMostrarNomesDosCamposUuid(raiz, ator = null) {
+function naurenMostrarNomesDosCamposUuid(raiz, ator = null, itemFicha = null) {
   const nomeDe = uuid => {
     if (uuid.startsWith("self:")) {
       const alvo = uuid.slice(5).trim().toLowerCase();
+      const emb = (itemFicha?.getFlag?.("nauren", "condicoesEmbutidas") ?? []).find(e => String(e?.dados?.name ?? "").trim().toLowerCase() === alvo);
+      if (emb) return `${emb.dados.name} (Condição deste item)`;
       const it = ator?.items.find(i => (i.type === "condicao" || i.type === "efeito") && i.name.trim().toLowerCase() === alvo);
       if (it) return `${it.name} (Condição desta criatura)`;
       if (naurenCondicaoDoSistemaPorNome(alvo)) return `${uuid.slice(5).trim()} (Condição do sistema)`;

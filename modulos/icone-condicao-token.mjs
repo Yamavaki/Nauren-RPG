@@ -1,5 +1,6 @@
 /* Nauren RPG — Ícone da Condição no token. Separado do nauren.mjs na 0.94.31. */
 import { NAUREN_CM_PECS, NAUREN_QUERY_APLICAR_CONDICAO, NAUREN_QUERY_DISPARAR_EVENTO, NAUREN_QUERY_ITEM_MESTRE, NaurenActorData, NaurenConcessaoHelper, NaurenCondicaoData, NaurenCriadorMonstro, NaurenEfeitoData, NaurenHabilidadeData, NaurenPeculiaridadeData, NaurenProgressaoHelper, NaurenSubclasseData, calcularVidaBase, campoAcao, campoGatilho, campoRecursoDeclarado, naurenAtaqueBasicoNaReacao, naurenAvaliarExpressaoSimples, naurenBotoesDirecaoGrimorio, naurenCondicaoNegativa, naurenContarAliadosProximos, naurenDescricaoParaChat, naurenDeslocarToken, naurenDisposicaoDoAtor, naurenEhCondicaoModelo, naurenEhItem, naurenEscolherCorDaPintura, naurenEscolherPontoNoMapa, naurenFormulaComTokensDoAtor, naurenFormulaParaTexto, naurenGrimorio, naurenInterpretarModificador, naurenInterpretarModificadorComDado, naurenItemCorrespondeAoAlvo, naurenMedirDistanciaBordas, naurenModsAcima, naurenMontarDescricao, naurenMoverGrimorio, naurenMoverTokenPara, naurenNomeDeToken, naurenNomeDoRecurso, naurenOperarRecursoViaMestre, naurenOperarRegistroPrioridade, naurenPostarCard, naurenRecarregarUsos, naurenRecursoDoAtor, naurenResolverPorNivel, naurenResolverPorRank, naurenResolverSelfEmObjeto, naurenResolverTokenFormula, naurenRollToBreakdownText, naurenRotuloToken, naurenTemEstado, naurenTextoRolagem, naurenUsosExtrasPara, naurenUsuarioResponsavel, naurenUuidPorSeed } from "../nauren.mjs";
+import { naurenScriptsNoEvento } from "./itens-scripts.mjs";
 import { NAUREN_GATILHO_EVENTO_OPCOES, RECURSOS_ALVO, naurenChaveEscopoRelogio, naurenNotificarGanhoPerda } from "./ficha-item.mjs";
 import { NAUREN_HAB_MONSTROS_VERSAO } from "../data/habilidades-monstros.mjs";
 import { NAUREN_MASCOTES_INICIAIS, NAUREN_PACKS_DEFINICAO, NAUREN_VERSAO_SEED_MASCOTES, naurenFundoPersonalizado, naurenGarantirAtorNoPack, naurenGatilhoDanoDeArea, naurenReconciliarMascote, naurenUuidsMascotes } from "./compendios.mjs";
@@ -1989,6 +1990,8 @@ async function naurenProcessarGatilhosInterno(tipoEvento, atorEvento, contexto =
       }
       continue;
     }
+    // 0.102: scripts dos itens que reagem a este evento (aba Script da ficha de item).
+    await naurenScriptsNoEvento(tipoEvento, candidato, contexto, atorEvento).catch(err => console.warn("Nauren RPG | scripts do evento", err));
     for (const item of candidato.items) {
       if (!["habilidade", "peculiaridade", "magia", "condicao", "efeito"].includes(item.type) || !item.system.usaGatilhos) continue;
       if (item.type !== "condicao" && !item.system.ativo) continue;

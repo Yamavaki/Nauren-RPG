@@ -729,7 +729,7 @@ Clique para abrir">
             <li class="item-entry {{#if item.system.equipado}}equipped{{/if}}" data-item-id="{{item.id}}" draggable="true">
               <div class="item-img-container"><img src="{{item.img}}" title="{{item.name}}" /></div>
               <div class="item-info">
-                <h4>{{item.name}}{{#if item.torreTier}} <span class="nauren-tier tier-{{item.torreTier.classe}}" title="Tier da Torre Infinita">{{item.torreTier.rotulo}}</span>{{/if}}</h4>
+                <h4>{{item.name}}{{#if item.seloTier}} {{{item.seloTier}}}{{/if}}</h4>
                 <span class="item-category">{{#if item.acaoAtiva}}{{item.acaoAtiva.tipo}} | Alcance: {{item.acaoAtiva.alcance}}{{else}}Sem Ação configurada{{/if}}</span>
               </div>
               {{#if item.pesoOfensivo}}<span class="nauren-peso-arma {{#if item.naoCabe}}nao-cabe{{/if}}" title="{{#if item.naoCabe}}Não cabe no limite de equipamentos ofensivos agora: dá para carregar, não para equipar.{{else}}Ocupa {{item.pesoOfensivo}} ponto(s) do limite ao equipar.{{/if}}">{{item.pesoOfensivo}} pt{{#if item.naoCabe}} · não cabe{{/if}}</span>{{/if}}
@@ -780,7 +780,7 @@ Clique para abrir">
             <li class="item-entry {{#if item.system.equipado}}equipped{{/if}}" data-item-id="{{item.id}}" draggable="true">
               <div class="item-img-container"><img src="{{item.img}}" title="{{item.name}}" /></div>
               <div class="item-info">
-                <h4>{{item.name}}{{#if item.torreTier}} <span class="nauren-tier tier-{{item.torreTier.classe}}" title="Tier da Torre Infinita">{{item.torreTier.rotulo}}</span>{{/if}}</h4>
+                <h4>{{item.name}}{{#if item.seloTier}} {{{item.seloTier}}}{{/if}}</h4>
                 <span class="item-category">Defesa: +{{item.system.defesaBonus}} | {{item.system.tipo}}{{#if item.system.equipado}} · Equipada{{/if}}</span>
               </div>
               {{#if item.pesoOfensivo}}<span class="nauren-peso-arma {{#if item.naoCabe}}nao-cabe{{/if}}" title="{{#if item.naoCabe}}Não cabe no limite de Ataque agora (armas e escudos): dá para carregar, não para equipar.{{else}}Ocupa {{item.pesoOfensivo}} ponto(s) do limite de Ataque ao equipar.{{/if}}">{{item.pesoOfensivo}} pt{{#if item.naoCabe}} · não cabe{{/if}}</span>{{/if}}
@@ -832,7 +832,7 @@ Clique para abrir">
             <li class="item-entry {{#if item.system.equipado}}equipped{{/if}}" data-item-id="{{item.id}}" draggable="true">
               <div class="item-img-container"><img src="{{item.img}}" title="{{item.name}}" /></div>
               <div class="item-info">
-                <h4>{{item.name}}{{#if item.torreTier}} <span class="nauren-tier tier-{{item.torreTier.classe}}" title="Tier da Torre Infinita">{{item.torreTier.rotulo}}</span>{{/if}}</h4>
+                <h4>{{item.name}}{{#if item.seloTier}} {{{item.seloTier}}}{{/if}}</h4>
                 <span class="item-category">{{#if item.categoriaEquip}}{{item.categoriaEquip}}{{#if item.acaoAtiva}} · {{item.acaoAtiva.nome}}{{/if}}{{else}}{{#if item.acaoAtiva}}{{item.acaoAtiva.nome}}{{else}}{{item.system.efeito}}{{/if}}{{/if}}</span>
               </div>
               {{#if item.modificadoPor.length}}
