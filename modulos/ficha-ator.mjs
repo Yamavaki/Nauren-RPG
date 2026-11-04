@@ -11667,7 +11667,7 @@ class NaurenCriadorPersonagem extends foundry.applications.api.HandlebarsApplica
     }
     if (this._valorNaMao !== null && this._valorNaMao !== undefined && (usados.has(this._valorNaMao) || pool[this._valorNaMao] === null)) this._valorNaMao = null;
     const naMao = this._valorNaMao ?? null;
-    const recAtr = classe?.rec?.atributos ?? [];
+    const recAtr = (classe?.rec?.atributos ?? []).slice(0, 3); // 1º, 2º e 3º em destaque; o resto só entra na ordem da Sugestão
     const recMetas = classe?.rec?.metas ?? [];
     const nomeClasse = classe?.nome ?? "";
     const valores = this._valoresAtributosAtuais();
@@ -12023,7 +12023,7 @@ class NaurenCriadorPersonagem extends foundry.applications.api.HandlebarsApplica
     this.render();
   }
 
-  /** Sugestão da Classe: testa as 120 combinações dos 5 valores e fica com a que mais rende (pesos da Classe). */
+  /** Sugestão da Classe: o maior valor no 1º atributo da Classe, o seguinte no 2º, e assim por diante. */
   static async onSugestaoAtributos(event, target) {
     const est = this._atrEstado;
     if (!est?.pool?.length || est.pool.some(v => v === null)) return ui.notifications.warn("Gere os 5 valores primeiro.");
@@ -12031,7 +12031,7 @@ class NaurenCriadorPersonagem extends foundry.applications.api.HandlebarsApplica
     const perfis = classe ? naurenPerfisSugestaoClasse(classe.identifier, classe.rec) : [];
     const pf = perfis[Number(target.dataset.perfil) || 0] ?? perfis[0];
     if (!pf) return ui.notifications.warn("Escolha uma Classe para ver a sugestão.");
-    this._distrib = naurenMelhorDistribuicao(est.pool, pf.pesos);
+    this._distrib = naurenMelhorDistribuicao(est.pool, pf.ordem);
     this._valorNaMao = null;
     this.render();
   }

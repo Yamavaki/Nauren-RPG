@@ -102,7 +102,7 @@
         </div>
         {{/if}}
         {{#if classeSelecionada.rec.dica}}<span class="ncr-suave">{{classeSelecionada.rec.dica}}</span>{{/if}}
-        <span class="ncr-suave">No passo Atributos, <b>Sugestão</b> testa todas as combinações dos seus valores e escolhe a que mais rende para {{classeSelecionada.artigo}} {{classeSelecionada.nome}}. Você pode trocar depois.</span>
+        <span class="ncr-suave">No passo Atributos, <b>Sugestão</b> coloca seus maiores valores nessa ordem. Você pode trocar depois.</span>
       </div>
       <div class="ncr-bloco">
         <div class="ncr-rot">Armas e armaduras</div>
@@ -142,7 +142,7 @@
       <i class="fas {{#if atr.modoPreso}}fa-lock{{else}}fa-sliders{{/if}}"></i>
       <span class="ncr-trava-txt"><b>{{#if atr.modoRolar}}Rolar 5d6{{else}}Valores fixos{{/if}}</b>{{#if atr.valoresTexto}} · {{atr.valoresTexto}}{{/if}}{{#if atr.modoRolar}} <span class="ncr-suave">· no chat e no Registro</span>{{/if}}</span>
       {{#if atr.podeTrocarModo}}<a class="ncr-btn" data-action="modoAtributos" data-modo="{{#if atr.modoRolar}}fixo{{else}}rolar{{/if}}" title="{{#if atr.travado}}Só até rolar o primeiro dado{{/if}}"><i class="fas fa-right-left"></i> {{#if atr.modoRolar}}Usar valores fixos{{else}}Rolar 5d6{{/if}}</a>{{/if}}
-      {{#each atr.sugestoes as |s|}}<a class="ncr-btn" data-action="sugestaoAtributos" data-perfil="{{s.indice}}" title="Testa as combinações dos seus valores e escolhe a que mais rende para a Classe"><i class="fas fa-wand-magic-sparkles"></i> {{s.rotulo}}</a>{{/each}}
+      {{#each atr.sugestoes as |s|}}<a class="ncr-btn" data-action="sugestaoAtributos" data-perfil="{{s.indice}}" title="Coloca o maior valor no 1º atributo da Classe, o seguinte no 2º e assim por diante"><i class="fas fa-wand-magic-sparkles"></i> {{s.rotulo}}</a>{{/each}}
       <a class="ncr-btn" data-action="limparAtributos" title="Devolve todos os valores"><i class="fas fa-eraser"></i> Limpar</a>
     </div>
     <div class="ncr-pool">

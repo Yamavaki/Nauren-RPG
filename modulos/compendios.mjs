@@ -1,6 +1,6 @@
 /* Nauren RPG — Compêndios oficiais (auto-semeadura, Torre, Bestiário, mascotes). Separado do nauren.mjs na 0.94.22. */
 import { NAUREN_KIT_JANELA } from "./janelas-kit.mjs";
-import { NAUREN_CAPACIDADE_POR_NOME, NAUREN_CORES_PINTURA, NAUREN_EQUIPAMENTO_CLASSE_LIVRO, NAUREN_ATRIBUTOS_CLASSE_LIVRO, naurenAtributosRecomendadosPreenchido, NaurenActorSheet, NaurenAlvoHelper, NaurenCondicaoData, NaurenHabilidadeData, NaurenMagiaData, campoAcao, campoModificador, naurenAtorTemRecurso, naurenClamparRecursosAoMaximo, naurenEhCondicaoModelo, naurenEquipRecomendadoPreenchido, naurenFixarTipoAlcanceSemeado, naurenInterpretarModificador, naurenMontarDescricao, naurenNomeDoRecurso, naurenPostarCard, naurenPreencherRecursosNoMaximo, naurenProcessarGatilhos, naurenRecursoEstaTravado, naurenResetarCompendios, naurenUuidPorSeed } from "../nauren.mjs";
+import { NAUREN_CAPACIDADE_POR_NOME, NAUREN_CORES_PINTURA, NAUREN_EQUIPAMENTO_CLASSE_LIVRO, NAUREN_ATRIBUTOS_CLASSE_LIVRO, NAUREN_ATRIBUTOS_CLASSE_LIVRO_0_101_0, naurenAtributosRecomendadosPreenchido, NaurenActorSheet, NaurenAlvoHelper, NaurenCondicaoData, NaurenHabilidadeData, NaurenMagiaData, campoAcao, campoModificador, naurenAtorTemRecurso, naurenClamparRecursosAoMaximo, naurenEhCondicaoModelo, naurenEquipRecomendadoPreenchido, naurenFixarTipoAlcanceSemeado, naurenInterpretarModificador, naurenMontarDescricao, naurenNomeDoRecurso, naurenPostarCard, naurenPreencherRecursosNoMaximo, naurenProcessarGatilhos, naurenRecursoEstaTravado, naurenResetarCompendios, naurenUuidPorSeed } from "../nauren.mjs";
 /* =======================================
  * 7. COMPÊNDIOS OFICIAIS DO SISTEMA (auto-semeadura)
  * =======================================
@@ -224,7 +224,13 @@ async function naurenGarantirItemNoPack(pack, seedId, dados) {
       if (naurenFundoPersonalizado(doc.system?.imagemFundo) && novo.system) delete novo.system.imagemFundo;
       // Equipamento recomendado já configurado na Classe (pelo Mestre ou numa abertura anterior): não volta ao padrão.
       if (doc.type === "classe" && novo.system && naurenEquipRecomendadoPreenchido(doc.system?.equipamentoRecomendado)) delete novo.system.equipamentoRecomendado;
-      if (doc.type === "classe" && novo.system && naurenAtributosRecomendadosPreenchido(doc.system?.atributosRecomendados)) delete novo.system.atributosRecomendados;
+      if (doc.type === "classe" && novo.system && naurenAtributosRecomendadosPreenchido(doc.system?.atributosRecomendados)) {
+        // 0.101.2: ainda com a ordem que a 0.101.0 semeou (o Mestre não mexeu)? Passa para a ordem do livro nova.
+        const antiga = NAUREN_ATRIBUTOS_CLASSE_LIVRO_0_101_0[doc.system?.identifier];
+        const atual = doc.system?.atributosRecomendados?.atributos ?? [];
+        if (antiga && JSON.stringify(atual) === JSON.stringify(antiga) && NAUREN_ATRIBUTOS_CLASSE_LIVRO[doc.system.identifier]) novo.system.atributosRecomendados = foundry.utils.deepClone(NAUREN_ATRIBUTOS_CLASSE_LIVRO[doc.system.identifier]);
+        else delete novo.system.atributosRecomendados;
+      }
       await doc.update(novo);
       return doc;
     }

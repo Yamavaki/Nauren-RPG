@@ -7240,8 +7240,8 @@ li.chat-message.ncc-card > .message-content { padding-top: 0 !important; }
 #nauren-token-tooltip.nc2 .nome .num { font: 400 11px Signika, sans-serif; color: var(--nc-pc); letter-spacing: 0; }
 #nauren-token-tooltip.nc2 .estado { font-weight: 700; }
 #nauren-token-tooltip.nc2 .estado .num { color: var(--nc-pc); }
-#nauren-token-tooltip.nc2 .conds { color: #d8cfe6; margin-top: 6px; gap: 4px 5px; }
-#nauren-token-tooltip.nc2 .conds span { padding: 2px 7px 2px 3px; background: color-mix(in srgb, var(--nc-pd) 45%, #000 20%); border: 1px solid color-mix(in srgb, var(--nc-p) 40%, transparent); border-radius: 3px; }
+#nauren-token-tooltip.nc2 .conds { color: #d8cfe6; margin-top: 6px; gap: 4px 12px; }
+#nauren-token-tooltip.nc2 .conds span { padding: 1px 0; background: none; border: 0; }
 #nauren-token-tooltip.nc2 .conds img { width: 15px; height: 15px; }
 
 /* 0.100.3 — "Ver arte do personagem / do token" (janela de imagem do Foundry) na moldura da ficha;
@@ -7456,3 +7456,107 @@ li.chat-message.ncc-card > .message-content { padding-top: 0 !important; }
   .nauren-criador .nc2 .ncr-metas { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 .nauren-criador .nc2 .ncr-bonus-l b.esp { color: var(--ncr-suave); font-weight: 600; font-style: italic; }
+
+/* 0.101.2 — Firefox: o desfoque de fundo do Foundry (backdrop-filter) não respeita o recorte (clip-path) e aparecia
+   em quadrado nos cantos chanfrados (as "pontinhas"). As janelas do sistema já têm fundo sólido: sem desfoque. */
+.application.nc2, .application.nauren-kit, .application.nc-moldura, .application.nc-tela, .application.na-popout, .application.nauren-criador,
+.application.nc2 > .window-header, .application.nauren-kit > .window-header, .application.nc-moldura > .window-header,
+#nauren-token-tooltip, .nauren-roll-card.nc2, .nauren-deflexao-card.nc2, #nauren-hud-combate .nauren-hud-raiz.nc2 * {
+  backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+}
+
+/* 0.101.2 — Criador: respiro entre o conteúdo e a barra de rolagem; diagonais das caixas mais firmes; bônus dentro da coluna */
+.nauren-criador .nc2 .nauren-criador-etapa { padding: 2px 14px 8px 2px; scrollbar-gutter: stable; }
+.nauren-criador .nc2 :is(.ncr-dica-linha, .ncr-cl, .ncr-cl-detalhe, .ncr-bloco, .ncr-chip, .ncr-prio > div, .ncr-modo, .ncr-trava, .ncr-btn, .ncr-atr, .ncr-ok, .ncr-recursos, .ncr-perm, .ncr-fora > summary) { --cbw: 1.5px; }
+.nauren-criador .nc2 .ncr-bonus { --cbw: 1.5px; --cc: 7px; --ck: calc(var(--cc) * .7071 - var(--cbw) * .4142); --cbg: color-mix(in srgb, var(--nc-pd) 30%, #17121e); --cbd: color-mix(in srgb, var(--nc-s) 45%, #000);
+  align-self: stretch; margin: 0; padding: 8px 10px 9px; border: var(--cbw) solid transparent !important; box-sizing: border-box;
+  background:
+    linear-gradient(135deg, transparent var(--ck), var(--cbg) 0) top left / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(225deg, transparent var(--ck), var(--cbg) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(315deg, transparent var(--ck), var(--cbg) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(45deg, transparent var(--ck), var(--cbg) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(var(--cbd), var(--cbd)) border-box !important;
+  clip-path: polygon(var(--cc) 0, calc(100% - var(--cc)) 0, 100% var(--cc), 100% calc(100% - var(--cc)), calc(100% - var(--cc)) 100%, var(--cc) 100%, 0 calc(100% - var(--cc)), 0 var(--cc)); }
+.nauren-criador .nc2 .nauren-criador-nome input { border-radius: 0 !important; border: 1.5px solid var(--ncr-linha2) !important; background: #120e18 !important;
+  clip-path: polygon(7px 0, calc(100% - 7px) 0, 100% 7px, 100% calc(100% - 7px), calc(100% - 7px) 100%, 7px 100%, 0 calc(100% - 7px), 0 7px); }
+.nauren-criador .nc2 .nauren-criador-nome input:focus { border-color: var(--nc-s) !important; box-shadow: none !important; }
+/* janelas do kit: diagonais das caixas mais firmes (1 px ficava apagado no canto) */
+.application.nauren-kit.nc2 :is(.nk-cab, .nk-bloco, .nk-opcao, .nk-gasto, .nk-destino, .nk-faixa, .nk-vidadano, .nk-condicao, .nk-fontes-caixa, .nk-ajustes, .nk-escolha-card, .nauren-mov-opcao, .nauren-mov-resumo > div, label.nauren-popup-opt, .nauren-escolha-lista, .nauren-escolha-ver, .nauren-criador-escolha-btn) { --cbw: 1.5px; }
+
+/* 0.101.2 — Borda do token: a janela não ficava presa em 600 px (cortava a coluna da direita e não deixava aumentar) */
+.application.nauren-kit.nauren-borda-janela:not(.minimized):not(.minimizing):not(.maximizing) { max-width: calc((100vw - 16px) / var(--nauren-escala, 1)) !important; max-height: calc((100vh - 16px) / var(--nauren-escala, 1)) !important; min-width: 420px; }
+.application.nauren-borda-janela > .window-content { container: borda / inline-size; }
+.application.nauren-borda-janela .nauren-borda { grid-template-columns: minmax(230px, 1fr) minmax(250px, 330px); }
+.application.nauren-borda-janela .form-footer button { white-space: nowrap; }
+@container borda (max-width: 500px) {
+  .application.nauren-borda-janela .nauren-borda { grid-template-columns: minmax(0, 1fr); overflow-y: auto; padding-right: 8px; }
+  .application.nauren-borda-janela .dialog-content { overflow-y: auto; }
+}
+
+/* 0.101.2 — Barras do token: moldura da ficha e as formas novas, nas cores do dono */
+.application.nauren-barras-editor.nc2 { --nc-f: #1b1624; --be-painel: color-mix(in srgb, var(--nc-pd) 40%, #1f1829); --be-linha: color-mix(in srgb, var(--nc-p) 30%, #2e2640); --be-linha2: color-mix(in srgb, var(--nc-p) 55%, #2e2640); }
+.application.nauren-barras-editor.nc2.nc-fundo-escuro { --nc-f: #141317; }
+.application.nauren-barras-editor.nc2 > .window-content { background: radial-gradient(120% 60% at 50% 0%, color-mix(in srgb, var(--nc-pd) 45%, transparent), transparent 70%), var(--nc-f) !important; padding: 6px 8px 10px; }
+.application.nauren-barras-editor.nc2 .nauren-be-raiz { gap: 0; }
+.application.nauren-barras-editor.nc2 .nauren-be-lista { width: 300px; }
+.application.nauren-barras-editor.nc2 .nauren-be-lista { border-right: 1px solid var(--be-linha); }
+.application.nauren-barras-editor.nc2 .nauren-be-preview { border-left: 1px solid var(--be-linha); }
+.application.nauren-barras-editor.nc2 .nauren-be-props { padding-right: 16px; scrollbar-gutter: stable; }
+.application.nauren-barras-editor.nc2 .nauren-be-lista ul { padding-right: 6px; scrollbar-gutter: stable; }
+.application.nauren-barras-editor.nc2 .nauren-be-cab b, .application.nauren-barras-editor.nc2 .nauren-be-titulo b { font: 700 19px/1.1 "Modesto Condensed", Cinzel, Georgia, serif; letter-spacing: .03em; color: #fff; }
+.application.nauren-barras-editor.nc2 .nauren-be-cab span, .application.nauren-barras-editor.nc2 .nauren-be-titulo span { color: color-mix(in srgb, var(--nc-pc) 70%, #b3a6c9); font-style: italic; }
+.application.nauren-barras-editor.nc2 .nauren-be-subtitulo { display: flex; align-items: center; gap: 6px; font: 700 10.5px Signika, sans-serif; letter-spacing: .1em; text-transform: uppercase; color: var(--nc-sc); margin-top: 4px; }
+.application.nauren-barras-editor.nc2 .nauren-be-subtitulo::before { content: ""; width: 5px; height: 5px; transform: rotate(45deg); background: var(--nc-s); }
+.application.nauren-barras-editor.nc2 .nauren-be-campo > span { font-weight: 700; color: color-mix(in srgb, var(--nc-sc) 75%, #c9bfe0); letter-spacing: .02em; }
+/* caixas chanfradas com borda inteira (lista, botões, campos, mapa) */
+.application.nauren-barras-editor.nc2 :is(.nauren-be-item, .nauren-be-rodape button, .nauren-be-olho, .nauren-be-campo select, .nauren-be-campo input[type=number], .nauren-be-corcampo input[type=color], .nauren-be-mapa, .nauren-be-tooltip) {
+  --cbw: 1.5px; --cc: 7px; --ck: calc(var(--cc) * .7071 - var(--cbw) * .4142); --cbg: var(--be-painel); --cbd: var(--be-linha2);
+  border: var(--cbw) solid transparent !important; border-radius: 0 !important; box-shadow: none !important; outline: none;
+  background:
+    linear-gradient(135deg, transparent var(--ck), var(--cbg) 0) top left / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(225deg, transparent var(--ck), var(--cbg) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(315deg, transparent var(--ck), var(--cbg) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(45deg, transparent var(--ck), var(--cbg) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(var(--cbd), var(--cbd)) border-box !important;
+  clip-path: polygon(var(--cc) 0, calc(100% - var(--cc)) 0, 100% var(--cc), 100% calc(100% - var(--cc)), calc(100% - var(--cc)) 100%, var(--cc) 100%, 0 calc(100% - var(--cc)), 0 var(--cc));
+}
+.application.nauren-barras-editor.nc2 :is(.nauren-be-campo select, .nauren-be-campo input[type=number], .nauren-be-corcampo input[type=color]) { --cc: 5px; --cbg: #120e18; color: #ece6f3; }
+.application.nauren-barras-editor.nc2 :is(.nauren-be-campo select, .nauren-be-campo input[type=number]):focus { --cbd: var(--nc-s); }
+.application.nauren-barras-editor.nc2 .nauren-be-corcampo input[type=color] { padding: 4px 5px; }
+.application.nauren-barras-editor.nc2 .nauren-be-item { --cc: 8px; }
+.application.nauren-barras-editor.nc2 .nauren-be-item:hover { --cbd: color-mix(in srgb, var(--nc-s) 55%, #000); }
+.application.nauren-barras-editor.nc2 .nauren-be-item.ativa { --cbd: var(--nc-s); --cbg: color-mix(in srgb, var(--nc-s) 10%, var(--be-painel)); }
+.application.nauren-barras-editor.nc2 .nauren-be-item.alvo { outline: 0; --cbd: var(--nc-sc); }
+.application.nauren-barras-editor.nc2 .nauren-be-olho { --cc: 5px; --cbg: #120e18; --cbd: color-mix(in srgb, var(--nc-s) 50%, #000); color: var(--nc-sc); }
+.application.nauren-barras-editor.nc2 .nauren-be-item.escondida .nauren-be-olho { color: var(--nc-pc); --cbd: var(--be-linha); }
+.application.nauren-barras-editor.nc2 .nauren-be-cor { border-radius: 0; clip-path: polygon(0 3px, 50% 0, 100% 3px, 100% calc(100% - 3px), 50% 100%, 0 calc(100% - 3px)); }
+.application.nauren-barras-editor.nc2 .nauren-be-mover button { color: var(--nc-pc); }
+.application.nauren-barras-editor.nc2 .nauren-be-mover button:hover:not(:disabled) { color: var(--nc-sc); }
+.application.nauren-barras-editor.nc2 .nauren-be-rodape button { --cc: 6px; color: var(--nc-sc); font-weight: 700; --cbd: color-mix(in srgb, var(--nc-s) 50%, #000); }
+.application.nauren-barras-editor.nc2 .nauren-be-rodape button:hover { --cbd: var(--nc-s); color: #fff; }
+.application.nauren-barras-editor.nc2 .nauren-be-checks input[type=checkbox] { accent-color: var(--nc-s); }
+.application.nauren-barras-editor.nc2 .nauren-be-mapa { --cc: 10px; --cbd: var(--be-linha2); --cbg: #2a332d; }
+.application.nauren-barras-editor.nc2 .nauren-be-mapa::before { content: ""; position: absolute; inset: 1.5px; pointer-events: none; clip-path: polygon(8.5px 0, calc(100% - 8.5px) 0, 100% 8.5px, 100% calc(100% - 8.5px), calc(100% - 8.5px) 100%, 8.5px 100%, 0 calc(100% - 8.5px), 0 8.5px);
+  background-image: repeating-linear-gradient(0deg, rgba(0,0,0,.16) 0 1px, transparent 1px 50px), repeating-linear-gradient(90deg, rgba(0,0,0,.16) 0 1px, transparent 1px 50px); }
+.application.nauren-barras-editor.nc2 .nauren-be-token { border-color: var(--nc-s); }
+.application.nauren-barras-editor.nc2 .nauren-be-tooltip { --cc: 5px; --cbg: var(--nc-f); --cbd: color-mix(in srgb, var(--nc-p) 80%, #000); padding: 5px 10px; }
+.application.nauren-barras-editor.nc2 .nauren-be-tooltip .nome { font-family: "Modesto Condensed", Cinzel, Georgia, serif; font-size: 14px; color: #fff; }
+.application.nauren-barras-editor.nc2 .nauren-be-nota { color: color-mix(in srgb, var(--nc-pc) 50%, #c9bfe0); }
+/* 0.101.2 — Borda do token: caixas chanfradas com borda inteira, nas cores da ficha */
+.application.nauren-kit.nc2.nauren-borda-janela :is(.nauren-borda-grupo, .nauren-borda-abas, .nauren-borda-palco, .nauren-borda-botoes button, .nauren-borda-teste, .nauren-borda-remover, .nauren-borda-procurar, .nauren-borda-zoom button) {
+  --cbw: 1.5px; --cc: 8px; --ck: calc(var(--cc) * .7071 - var(--cbw) * .4142); --cbg: var(--nk-cartao); --cbd: var(--nk-linha2);
+  border: var(--cbw) solid transparent !important; border-radius: 0 !important; box-shadow: none !important;
+  background:
+    linear-gradient(135deg, transparent var(--ck), var(--cbg) 0) top left / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(225deg, transparent var(--ck), var(--cbg) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(315deg, transparent var(--ck), var(--cbg) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(45deg, transparent var(--ck), var(--cbg) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(var(--cbd), var(--cbd)) border-box !important;
+  clip-path: polygon(var(--cc) 0, calc(100% - var(--cc)) 0, 100% var(--cc), 100% calc(100% - var(--cc)), calc(100% - var(--cc)) 100%, var(--cc) 100%, 0 calc(100% - var(--cc)), 0 var(--cc));
+}
+.application.nauren-kit.nc2.nauren-borda-janela .nauren-borda-palco { --cc: 10px; --cbg: #120e18; }
+.application.nauren-kit.nc2.nauren-borda-janela :is(.nauren-borda-botoes button, .nauren-borda-teste, .nauren-borda-procurar, .nauren-borda-zoom button) { --cc: 6px; color: var(--nc-sc); }
+.application.nauren-kit.nc2.nauren-borda-janela .nauren-borda-botoes button.ativo { --cbg: var(--nc-s); --cbd: var(--nc-s); color: #15111b; }
+.application.nauren-kit.nc2.nauren-borda-janela .nauren-borda-remover { --cbd: color-mix(in srgb, #c2474f 55%, #000); --cbg: color-mix(in srgb, #c2474f 8%, var(--nk-cartao)); }
+.application.nauren-kit.nc2.nauren-borda-janela .nauren-borda-rotulo { color: var(--nc-sc); }
+.application.nauren-kit.nc2.nauren-borda-janela input[type=range] { accent-color: var(--nc-s); }
