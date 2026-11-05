@@ -248,16 +248,19 @@ export const NAUREN_MOLDURA_MODELOS = [
       return o; } },
   { id: "trigo", nome: "Trigo", grupo: "detalhadas", paleta: "branco", K: 78, buraco: CIRC(.915), fora: CIRC(1.1),
     corpo() { const K = this.K; let o = "";
+      // barbas: 6 arcos paralelos (concêntricos), desenhados ANTES dos grãos para nascerem por baixo deles.
+      // Cada fio começa no ponto em que cruza o meio do último grão (de fora: 3 de cima; de dentro: 3 de baixo)
+      // e termina escalonado (no grupo de cima o fio de fora é o mais longo; no de baixo, o de dentro).
+      const aUlt = 166 - 15 * 7.6; // base dos últimos grãos (52°); a ponta fica 8,6° adiante
+      const fio = (r, a0, a1) => (l => arco(K * r, l > 0 ? a1 : 360 - a0, l > 0 ? a0 : 360 - a1, .85));
+      const grupos = [
+        ...[[1.08, 12], [1.057, 14.5], [1.034, 17]].map(([r, fim]) => fio(r, aUlt - 8.6 * (r - .995) / .093, fim)),
+        ...[[.97, 19], [.947, 16.5], [.924, 14]].map(([r, fim]) => fio(r, aUlt - 8.6 * (1.005 - r) / .093, fim))
+      ];
+      for (const l of [1, -1]) for (const g of grupos) o += g(l);
       for (const l of [1, -1]) {
         for (let i = 0; i < 16; i++) { const a = l * (166 - i * 7.6), dir = -l * 8.6; o += lente([K * .995, a], [K * 1.088, a + dir], 2.7, "m") + lente([K * 1.005, a], [K * .912, a + dir], 2.7, "m"); }
         o += L(`M${P(K, l * 166)} Q${P(K * 1.07, l * 174)} ${P(K * 1.18, l * -174 + (l > 0 ? 360 : 0))}`, 1.1);
-        // barbas: dois grupos de 3 fios que nascem juntos na ponta do último grão (de fora e de dentro) e vão abrindo
-        const ultimo = 166 - 15 * 7.6 - 8.6; // ângulo da ponta dos últimos grãos
-        const barba = (r0, rFim, aFim) => { const a0 = ultimo + 1.2, n = 18; let d = "";
-          for (let q = 0; q <= n; q++) { const t = q / n, e = 1 - (1 - t) * (1 - t), ang = a0 + (aFim - a0) * t, r = r0 + (rFim - r0) * e; d += `${q ? " L" : "M"}${P(K * r, l * ang)}`; }
-          return `<path class="lm" ${W(.95)} stroke-linecap="round" fill="none" d="${d}"/>`; };
-        [[1.104, 13.5], [1.079, 16], [1.054, 18.5]].forEach(([r, a], j) => { o += barba(1.086 + (j - 1) * .011, r, a); });
-        [[1.012, 19.5], [.987, 22], [.962, 24.5]].forEach(([r, a], j) => { o += barba(.93 + (j - 1) * .011, r, a); });
       }
       return o; } },
   // ---------------- SIMPLES ----------------
