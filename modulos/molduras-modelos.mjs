@@ -49,7 +49,7 @@ function padraoPolar(n, r1, r2, linhas, cls, fechado = false, rot0 = 0) {
   }
   return `<path class="${cls}" d="${d}"/>`;
 }
-const realce = (r, w = 1.2, a0 = -70, a1 = 10) => `<path d="M${P(r, a0)} A${f(r)},${f(r)} 0 0 1 ${P(r, a1)}" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="${w}" stroke-linecap="round"/>`;
+const realce = () => ""; // (o risco de brilho por cima do aro foi tirado de todas as molduras — pedido do Gustavo)
 const W = w => `style="stroke-width:${w}"`;
 const L = (d, w = 1.5) => `<path class="lm" ${W(w)} d="${d}"/>`;
 const C = (r, w = 1.5) => `<circle class="lm" ${W(w)} r="${f(r)}"/>`;
