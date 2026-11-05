@@ -52,6 +52,20 @@ export function naurenTiersDoMundo() {
   const lista = Array.isArray(v?.lista) && v.lista.length ? v.lista : NAUREN_TIERS_PADRAO;
   return lista.map(naurenNormalizarTier);
 }
+/* Raridades do mundo (a lista padrão tem os ids que o bot da Torre conhece). */
+export const NAUREN_RARIDADES_PADRAO = Object.entries(NAUREN_TORRE_RARIDADES).map(([id, nome]) => ({ id, nome }));
+export function naurenRaridadesDoMundo() {
+  let v = null;
+  try { v = game.settings.get("nauren", "raridadesItens"); } catch (err) { v = null; }
+  const lista = Array.isArray(v?.lista) && v.lista.length ? v.lista : NAUREN_RARIDADES_PADRAO;
+  return lista.map((r, i) => ({ id: String(r?.id ?? "").replace(/[^\w-]/g, "") || `raridade${i}`, nome: String(r?.nome ?? "").trim().slice(0, 40) || "Raridade" }));
+}
+/** Itens deste mundo (no diretório e nas fichas) cujo catálogo usa o tier. */
+export function naurenItensComTier(id) {
+  const lista = [...(game.items?.contents ?? [])];
+  for (const a of game.actors?.contents ?? []) lista.push(...a.items.contents);
+  return lista.filter(i => naurenCatalogoDoItem(i).tier === id);
+}
 export function naurenTierPorId(id) { return id ? naurenTiersDoMundo().find(t => t.id === id) ?? null : null; }
 
 function degrade(cores, posicoes, angulo) {
@@ -111,11 +125,11 @@ export function naurenContextoCatalogo(item) {
     gm: game.user.isGM,
     tiers: [{ id: "", nome: "Sem tier", selo: `<span class="nt-sem-tier">Sem tier</span>`, on: !c.tier }, ...tiers.map(t => ({ id: t.id, nome: t.nome, selo: naurenSeloTierHtml(t, { titulo: false, tam: "nt-p" }), on: t.id === c.tier }))],
     tierDesconhecido: c.tier && !tiers.some(t => t.id === c.tier) ? c.tier : "",
-    raridades: { "": "—", ...NAUREN_TORRE_RARIDADES },
+    raridades: { "": "—", ...Object.fromEntries(naurenRaridadesDoMundo().map(r => [r.id, r.nome])), ...(c.raridade && !naurenRaridadesDoMundo().some(r => r.id === c.raridade) ? { [c.raridade]: c.raridade } : {}) },
     pigmentos: NAUREN_TORRE_PIGMENTOS,
     lojasTorre: { galeria: "Galeria", falsarios: "Falsários" },
     seloAtual: naurenSeloTierHtml(c.tier),
-    resumo: [tiers.find(t => t.id === c.tier)?.nome ?? (c.tier ? c.tier : "Sem tier"), NAUREN_TORRE_RARIDADES[c.raridade] ?? "", c.valor ? `ƒ ${c.valor.toLocaleString("pt-BR")}` : ""].filter(Boolean).join(" · ")
+    resumo: [tiers.find(t => t.id === c.tier)?.nome ?? (c.tier ? c.tier : "Sem tier"), (naurenRaridadesDoMundo().find(r => r.id === c.raridade)?.nome ?? c.raridade ?? ""), c.valor ? `ƒ ${c.valor.toLocaleString("pt-BR")}` : ""].filter(Boolean).join(" · ")
   };
 }
 
@@ -261,6 +275,8 @@ export class NaurenTiersEditor extends foundry.applications.api.ApplicationV2 {
       duplicar: function (ev, el) { const i = Number(el.dataset.i); const t = naurenNormalizarTier({ ...foundry.utils.deepClone(this.lista[i]), id: `tier-${foundry.utils.randomID(6)}`, nome: `${this.lista[i].nome} (cópia)` }); this.lista.splice(i + 1, 0, t); this.sel = i + 1; this.render(); },
       apagar: NaurenTiersEditor.#apagar,
       escolherIcone: async function () { const v = await naurenEscolherIcone({ atual: this.atual.icone, titulo: `Ícone do tier ${this.atual.nome}` }); if (v === null) return; this.atual.icone = v; this.render(); },
+      maisRaridade: function () { this.raridades.push({ id: `rar-${foundry.utils.randomID(5)}`, nome: "Nova raridade" }); this.render(); },
+      menosRaridade: function (ev, el) { this.raridades.splice(Number(el.dataset.k), 1); this.render(); },
       forma: function (ev, el) { this.atual.forma = el.dataset.v; this.render(); },
       efeito: function (ev, el) { this.atual.efeito = el.dataset.v; this.render(); },
       tipoFundo: function (ev, el) { const f = this.atual.fundo; if (el.dataset.v === "cor") { f.cores = [f.cores[1] ?? f.cores[0]]; f.posicoes = [0]; } else if (f.cores.length < 2) { f.cores = [f.cores[0], "#ffffff"]; f.posicoes = [0, 100]; } this.render(); },
@@ -278,6 +294,8 @@ export class NaurenTiersEditor extends foundry.applications.api.ApplicationV2 {
     super(opcoes);
     this.lista = naurenTiersDoMundo().map(t => foundry.utils.deepClone(t));
     this.sel = 0;
+    this.raridades = naurenRaridadesDoMundo();
+    this.mover = {}; // tier apagado → tier que os itens recebem ao salvar
   }
   get atual() { return this.lista[this.sel] ?? this.lista[0]; }
   #seg(acao, opcoes, valor) { return `<div class="nt-seg2 nt-ch">${opcoes.map(([v, r]) => `<button type="button" data-action="${acao}" data-v="${v}" class="${v === valor ? "on" : ""}">${r}</button>`).join("")}</div>`; }
@@ -299,6 +317,11 @@ export class NaurenTiersEditor extends foundry.applications.api.ApplicationV2 {
           <p class="nt-nota-k">De cima para baixo: do mais comum ao mais raro. Arraste para reordenar.</p>
           <div class="nt-lista-t">${lista}</div>
           <button type="button" class="nt-novo nt-ch" data-action="novo"><i class="fas fa-plus"></i> Novo tier</button>
+          <div class="nt-rar nt-ch">
+            <h3>Raridades <small>aparecem no Catálogo</small></h3>
+            ${this.raridades.map((r, k) => `<div class="nt-rar-l"><input type="text" class="nt-in nt-ch" data-rar="${k}" value="${esc(r.nome)}" maxlength="40" title="id: ${esc(r.id)}">${NAUREN_RARIDADES_PADRAO.some(p => p.id === r.id) ? `<span class="nt-rar-fixa" title="Usada pelo bot da Torre (o id não muda)"><i class="fas fa-lock"></i></span>` : `<button type="button" class="nt-x" data-action="menosRaridade" data-k="${k}" title="Apagar"><i class="fas fa-xmark"></i></button>`}</div>`).join("")}
+            <button type="button" class="nt-mais-l" data-action="maisRaridade"><i class="fas fa-plus"></i> Nova raridade</button>
+          </div>
         </div>
         <div class="nt-col">
           <div class="nt-ed nt-ch">
@@ -374,6 +397,7 @@ export class NaurenTiersEditor extends foundry.applications.api.ApplicationV2 {
       const code = inp.nextElementSibling; if (code?.tagName === "CODE") code.textContent = inp.value;
       this.#atualizarPrevia();
     }));
+    el.querySelectorAll("[data-rar]").forEach(inp => inp.addEventListener("input", () => { const r = this.raridades[Number(inp.dataset.rar)]; if (r) r.nome = inp.value; }));
     el.querySelectorAll(".nt-pos").forEach(inp => inp.addEventListener("input", () => { this.atual.fundo.posicoes[Number(inp.dataset.k)] = numero(inp.value, 0, 100, 0); this.#atualizarPrevia(); }));
     // Arrastar para reordenar.
     el.querySelectorAll("[data-arrasta]").forEach(row => {
@@ -394,8 +418,26 @@ export class NaurenTiersEditor extends foundry.applications.api.ApplicationV2 {
   static async #apagar(ev, el) {
     const i = Number(el.dataset.i), t = this.lista[i];
     if (!t) return;
-    const ok = await foundry.applications.api.DialogV2.confirm({ ...naurenKitSistema(), window: { title: `Apagar o tier ${t.nome}?` }, content: `<p>Os itens com este tier ficam sem selo até você escolher outro tier para eles (ou criar de novo um tier com o id <b>${esc(t.id)}</b>).</p>`, rejectClose: false }).catch(() => false);
-    if (!ok) return;
+    const usando = naurenItensComTier(t.id);
+    const outros = this.lista.filter(x => x.id !== t.id);
+    let destino = "";
+    if (usando.length) {
+      const opcoes = [`<option value="">Sem tier (o selo some)</option>`, ...outros.map(x => `<option value="${esc(x.id)}">${esc(x.nome)}</option>`)].join("");
+      const nomes = usando.slice(0, 6).map(x => `${esc(x.name)}${x.parent ? ` <small>(${esc(x.parent.name)})</small>` : ""}`).join(", ");
+      const r = await foundry.applications.api.DialogV2.wait({ ...naurenKitSistema(), window: { title: `Apagar o tier ${t.nome}?` }, rejectClose: false,
+        content: `<p><b>${usando.length}</b> ${usando.length === 1 ? "item usa" : "itens usam"} este tier: ${nomes}${usando.length > 6 ? "…" : ""}</p>
+          <label class="nt-c"><span>Esses itens passam para</span><select name="destino">${opcoes}</select></label>
+          <p class="nt-nota-k">Os itens mudam quando você clicar em Salvar. Itens dentro de compêndios não mudam.</p>`,
+        buttons: [{ action: "apagar", label: "Apagar e mover", default: true, callback: (e, btn) => btn.form?.elements?.destino?.value ?? "" }, { action: "cancelar", label: "Cancelar" }] }).catch(() => null);
+      if (r === null || r === "cancelar" || r === undefined) return;
+      destino = r === "apagar" ? "" : r;
+    } else {
+      const ok = await foundry.applications.api.DialogV2.confirm({ ...naurenKitSistema(), window: { title: `Apagar o tier ${t.nome}?` }, content: "<p>Nenhum item deste mundo usa este tier.</p>", rejectClose: false }).catch(() => false);
+      if (!ok) return;
+    }
+    // Quem ia para este tier (de um apagado antes) vai junto para o destino novo.
+    for (const [k, v] of Object.entries(this.mover)) if (v === t.id) this.mover[k] = destino;
+    this.mover[t.id] = destino;
     this.lista.splice(i, 1);
     this.sel = Math.min(this.sel, Math.max(0, this.lista.length - 1));
     this.render();
@@ -424,10 +466,21 @@ export class NaurenTiersEditor extends foundry.applications.api.ApplicationV2 {
     this.lista = NAUREN_TIERS_PADRAO.map(naurenNormalizarTier); this.sel = 0; this.render();
   }
   static async #salvar() {
+    if (!game.user.isGM) { ui.notifications.warn("Só o Mestre muda os tiers do mundo."); return; }
     const ids = new Set();
     const lista = this.lista.map((t, i) => { const n = naurenNormalizarTier(t, i); while (ids.has(n.id)) n.id = `${n.id}-${i}`; ids.add(n.id); return n; });
     await game.settings.set("nauren", "tiersItens", { lista });
-    ui.notifications.info("Tiers dos itens salvos.");
+    const rids = new Set();
+    const raridades = this.raridades.map((r, k) => { let id = String(r.id ?? "").replace(/[^\w-]/g, "") || `raridade${k}`; while (rids.has(id)) id = `${id}-${k}`; rids.add(id); return { id, nome: String(r.nome ?? "").trim() || id }; });
+    await game.settings.set("nauren", "raridadesItens", { lista: raridades });
+    // Itens dos tiers apagados vão para o tier escolhido.
+    let movidos = 0;
+    for (const [de, para] of Object.entries(this.mover)) {
+      if (ids.has(de)) continue; // o tier voltou a existir
+      for (const it of naurenItensComTier(de)) { await it.update({ "flags.nauren.catalogo.tier": para ?? "" }).catch(err => console.warn("Nauren RPG | mover tier", err)); movidos++; }
+    }
+    this.mover = {};
+    ui.notifications.info(`Tiers dos itens salvos.${movidos ? ` ${movidos} item(ns) trocaram de tier.` : ""}`);
     this.close();
   }
 }
@@ -436,7 +489,8 @@ export class NaurenTiersEditor extends foundry.applications.api.ApplicationV2 {
 export function naurenItensCatalogoInit() {
   game.settings.register("nauren", "tiersItens", { name: "Tiers dos itens", scope: "world", config: false, type: Object, default: { lista: NAUREN_TIERS_PADRAO },
     onChange: () => { for (const app of foundry.applications.instances.values()) if (app.document?.documentName === "Item" || app.document?.documentName === "Actor" || app.constructor?.name === "NaurenArmazemJanela") app.render?.(); } });
-  game.settings.registerMenu("nauren", "tiersItensMenu", { name: "Tiers dos itens", label: "Editar tiers", hint: "Crie, renomeie, reordene e pinte os tiers (selos) dos itens: cores, degradê, borda, forma e efeito.", icon: "fas fa-layer-group", type: NaurenTiersEditor, restricted: true });
+  game.settings.register("nauren", "raridadesItens", { name: "Raridades dos itens", scope: "world", config: false, type: Object, default: { lista: NAUREN_RARIDADES_PADRAO } });
+  game.settings.registerMenu("nauren", "tiersItensMenu", { name: "Tiers dos itens", label: "Editar tiers", hint: "Crie, renomeie, reordene e pinte os tiers (selos) dos itens: cores, degradê, borda, forma e efeito. Também edita a lista de raridades.", icon: "fas fa-layer-group", type: NaurenTiersEditor, restricted: true });
 }
 export function naurenItensCatalogoHooks() {
   // Catálogo → espelho da Torre (o bot lê flags.nauren.torre).

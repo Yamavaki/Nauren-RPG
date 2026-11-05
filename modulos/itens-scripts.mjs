@@ -108,6 +108,11 @@ export const NAUREN_SCRIPT_API = [
   { g: "Ações e itens", f: "somarDano", ins: 'nauren.somarDano(acao, "2d6");', d: "Antes de usar: soma um dano a esta Ação." },
   { g: "Ações e itens", f: "somarCura", ins: 'nauren.somarCura(acao, "1d6");', d: "Antes de usar: soma uma cura a esta Ação." },
   { g: "Ações e itens", f: "somarCondicao", ins: 'nauren.somarCondicao(acao, "Sangramento", 1);', d: "Antes de usar: a Ação também aplica esta Condição." },
+  { g: "Ações e itens", f: "somarFacilidade", ins: "nauren.somarFacilidade(acao);", d: "Antes de usar: o teste desta Ação ganha Facilidade (somarDificuldade faz o contrário)." },
+  { g: "Ações e itens", f: "somarDificuldade", ins: "nauren.somarDificuldade(acao);", d: "Antes de usar: o teste desta Ação ganha Dificuldade." },
+  { g: "Ações e itens", f: "somarCritico", ins: "nauren.somarCritico(acao, 1);", d: "Antes de usar: crítico mais fácil (o Crítico Mínimo cai N)." },
+  { g: "Ações e itens", f: "criticoNoAcerto", ins: "nauren.criticoNoAcerto(acao);", d: "Antes de usar: se acertar, o dano é crítico (o acerto continua normal)." },
+  { g: "Ações e itens", f: "atacar", ins: "await nauren.atacar(outroAlvo);", d: "Ataque extra num alvo, com a primeira Ação de ataque deste item (sem custo). { item, acao, gratis: false }." },
   { g: "Ações e itens", f: "cancelar", ins: 'return nauren.cancelar("motivo");', d: "Antes de usar: cancela a Ação sem gastar nada." },
   { g: "Ações e itens", f: "usarAcao", ins: 'await nauren.usarAcao("Nome da Ação");', d: "Usa outra Ação (deste item ou de outro: segundo valor)." },
   { g: "Ações e itens", f: "criarItem", ins: 'await nauren.criarItem(ator, "Poção de Vida");', d: "Dá um item (nome do compêndio, UUID ou dados)." },
@@ -210,12 +215,20 @@ function criarApi(run) {
     return "";
   };
   const tokensNaCena = () => (canvas?.tokens?.placeables ?? []).filter(t => t.actor && !t.actor.getFlag?.("nauren", "entidade")?.ativa);
+  // "aliados"/"inimigos" são sempre do ponto de vista de quem tem o item (mesmo medindo a partir de outro token).
   const filtroQuem = (quem, ref) => t => {
     if (!quem || quem === "todos") return true;
-    const disp = ref?.disposition ?? 0;
+    const disp = run.token?.disposition ?? ref?.disposition ?? 0;
     return quem === "aliados" ? t.document.disposition === disp : t.document.disposition !== disp;
   };
   const inicial = f => { try { if (typeof f?.getInitialValue === "function") return f.getInitialValue({}); } catch (err) { /* segue */ } if (f?.fields) return Object.fromEntries(Object.entries(f.fields).map(([k, x]) => [k, inicial(x)])); const v = typeof f?.initial === "function" ? f.initial() : f?.initial; return v === undefined ? (f?.constructor?.name === "ArrayField" ? [] : null) : foundry.utils.deepClone(v); };
+  // Ação nova só depois que a Ação que disparou o evento terminar (senão uma se mistura com a outra).
+  // Em "Antes de usar" não espera: a Ação em curso é a que está esperando este script.
+  const esperarAcaoEmCurso = async sheet => {
+    if (/^antesDe/.test(run.script?.quando ?? "")) return;
+    const p = sheet?._acaoEmCurso;
+    if (p && typeof p.then === "function") await Promise.race([p.catch(() => {}), new Promise(r => setTimeout(r, 30000))]);
+  };
   const novoBloco = (campoFn, extra) => ({ ...Object.fromEntries(Object.entries(campoFn()).map(([k, f]) => [k, inicial(f)])), ...extra });
   const api = {
     teste,
@@ -362,6 +375,56 @@ function criarApi(run) {
       linha("Condição a mais", nome, `${acumulos} acúmulo(s)`);
       return acaoAlvo;
     },
+    somarFacilidade(acaoAlvo, n = 1) {
+      if (!acaoAlvo) throw new Error("somarFacilidade: só funciona em \"Antes de usar\"");
+      acaoAlvo._scriptFacilidade = (Number(acaoAlvo._scriptFacilidade) || 0) + Number(n || 1);
+      linha("Facilidade", `+${n}`, "no teste desta Ação");
+      return acaoAlvo;
+    },
+    somarDificuldade(acaoAlvo, n = 1) {
+      if (!acaoAlvo) throw new Error("somarDificuldade: só funciona em \"Antes de usar\"");
+      acaoAlvo._scriptFacilidade = (Number(acaoAlvo._scriptFacilidade) || 0) - Number(n || 1);
+      linha("Dificuldade", `+${n}`, "no teste desta Ação");
+      return acaoAlvo;
+    },
+    somarCritico(acaoAlvo, n = 1) {
+      if (!acaoAlvo) throw new Error("somarCritico: só funciona em \"Antes de usar\"");
+      acaoAlvo._scriptCritico = (Number(acaoAlvo._scriptCritico) || 0) + Number(n || 1);
+      linha("Crítico mais fácil", `−${n}`, "no Crítico Mínimo desta Ação");
+      return acaoAlvo;
+    },
+    criticoNoAcerto(acaoAlvo, motivo = "") {
+      if (!acaoAlvo) throw new Error("criticoNoAcerto: só funciona em \"Antes de usar\"");
+      acaoAlvo._scriptCriticoNoAcerto = motivo || item.name;
+      linha("Crítico se acertar", "sim", "o acerto continua normal; o dano dobra");
+      return acaoAlvo;
+    },
+    async atacar(alvo, opc = {}) {
+      const t = naurenTokenDe(alvo);
+      if (!t) throw new Error("atacar: não achei o alvo (use um token)");
+      const it = opc.item ? (typeof opc.item === "string" ? run.ator?.items.find(i => nomeNorm(i.name) === nomeNorm(opc.item)) ?? docDe(opc.item) : opc.item) : item;
+      const sheet = run.ator?.sheet;
+      if (!it || !sheet?._executarAcao) throw new Error("atacar: item ou ficha não encontrados");
+      const acoes = it.system?.acoes ?? [];
+      let idx = typeof opc.acao === "number" ? opc.acao : opc.acao ? acoes.findIndex(a => nomeNorm(a.nome) === nomeNorm(opc.acao)) : acoes.findIndex(a => a.ehAtaque);
+      if (idx < 0) idx = 0;
+      if (!acoes[idx]) throw new Error(`atacar: ${it.name} não tem essa Ação`);
+      if (teste) { linha(`Atacaria ${t.name}`, `${it.name} — ${acoes[idx].nome}`, opc.gratis === false ? "" : "sem custo"); return; }
+      await esperarAcaoEmCurso(sheet);
+      const antes = [...(game.user.targets ?? [])].map(x => x.id);
+      const gratisAntes = sheet._acaoGratis, origemAntes = sheet._naurenOrigemScript;
+      linha(`Ataque extra em ${t.name}`, `${it.name} — ${acoes[idx].nome}`, opc.gratis === false ? "" : "sem custo");
+      try {
+        if (typeof game.user.updateTokenTargets === "function") game.user.updateTokenTargets([t.id]);
+        else { for (const x of game.user.targets ?? []) x.setTarget(false, { releaseOthers: false }); t.object?.setTarget(true, { releaseOthers: true }); }
+        if (opc.gratis !== false) sheet._acaoGratis = { motivo: `${item.name}: ataque extra`, fonte: item.name };
+        sheet._naurenOrigemScript = `${item.uuid}|${run.script?.id ?? ""}`;
+        await sheet._executarAcao(it, idx);
+      } finally {
+        sheet._acaoGratis = gratisAntes; sheet._naurenOrigemScript = origemAntes;
+        if (typeof game.user.updateTokenTargets === "function") game.user.updateTokenTargets(antes);
+      }
+    },
     cancelar(motivo = "") { run.cancelado = motivo || "cancelada pelo script"; linha("Ação cancelada", motivo || "—"); return false; },
     async usarAcao(nomeOuIndice, outroItem = null) {
       const it = outroItem ? (typeof outroItem === "string" ? run.ator?.items.find(i => i.name === outroItem) ?? docDe(outroItem) : outroItem) : item;
@@ -370,6 +433,7 @@ function criarApi(run) {
       const idx = typeof nomeOuIndice === "number" ? nomeOuIndice : acoes.findIndex(a => nomeNorm(a.nome) === nomeNorm(nomeOuIndice));
       if (idx < 0 || !acoes[idx]) throw new Error(`usarAcao: "${nomeOuIndice}" não existe em ${it.name}`);
       if (teste) { linha("Usaria", `${it.name} — ${acoes[idx].nome}`); return; }
+      await esperarAcaoEmCurso(run.ator.sheet);
       return run.ator.sheet._executarAcao(it, idx);
     },
     async criarItem(alvo, dados) {
@@ -482,6 +546,8 @@ export async function naurenScriptsNoEvento(tipoEvento, ator, contexto = {}, que
     const lista = naurenScriptsDoItem(item);
     if (!lista.length) continue;
     for (const s of lista) {
+      // O ataque extra (nauren.atacar) não dispara de novo o script que o pediu.
+      if (contexto?.origemScript && contexto.origemScript === `${item.uuid}|${s.id}`) continue;
       const casa = s.quando === tipoEvento || (DO_ITEM[s.quando] === tipoEvento && contexto?.itemUsadoUuid === item.uuid);
       if (!casa || !passaFiltros(item, s, contexto)) continue;
       await naurenRodarScript(item, s, { evento: tipoEvento, contexto, quem }).catch(err => console.warn("Nauren RPG | script", err));

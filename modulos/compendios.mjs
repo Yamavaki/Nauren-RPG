@@ -5688,7 +5688,8 @@ async function naurenSemearSubclasseEmpireoVirtude(pack, packHabilidades, packCo
   const seguirOExemplo = await naurenGarantirHabilidadeDeSubclasse(packHabilidades, "habilidade-empireo-seguir-o-exemplo", {
     name: "Seguir o Exemplo", type: "habilidade", img: "icons/sundries/flags/banner-flag-blue.webp",
     system: {
-      descricao: naurenMontarDescricao({ regra: "Passiva. 1x por dia, pode treinar por 1 hora com um aliado. Após 5 treinamentos, ambos recebem +1 em Força, Agilidade ou Estamina (à escolha), até 2 vezes por personagem.", automatico: "", manual: "contar os treinos fora de combate e somar o atributo escolhido na ficha dos dois." })
+      acoes: [{ nome: "Treinar com um aliado", custoEstamina: 0, alcance: "pessoal", modoAlvo: "nenhum", naoGeraPrioridade: true, prioridadeIndicador: "NP", usaUsos: true, usosMax: 1, usosAtual: 1, usosReset: "dia", seguirOExemplo: true }],
+      descricao: naurenMontarDescricao({ regra: "Passiva. 1x por dia, pode treinar por 1 hora com um aliado. Após 5 treinamentos, ambos recebem +1 em Força, Agilidade ou Estamina (à escolha), até 2 vezes por personagem.", automatico: "a Ação \"Treinar com um aliado\" (fora de combate, 1 vez por dia) conta os treinos com cada aliado; no 5º, pergunta o atributo e dá +1 permanente aos dois (Efeito \"Seguir o Exemplo\" na ficha), até 2 vezes por personagem.", manual: "" })
     }
   });
   const ataqueCombinado = await naurenGarantirHabilidadeDeSubclasse(packHabilidades, "habilidade-empireo-ataque-combinado", {

@@ -182,7 +182,8 @@ const NAUREN_GATILHO_EVENTO_OPCOES = {
   vidaZerou: "Minha Vida chegou a 0 (antes de cair)",
   aliadoCaiu: "Um aliado caiu a 0 de Vida",
   aoRecarregar: "Recarreguei uma arma ou item (Ação de Recarga)",
-  bebeuFrasco: "Bebi um Frasco (ou recebi um)"
+  bebeuFrasco: "Bebi um Frasco (ou recebi um)",
+  aoDescansar: "Descansei (botão Descansar da ficha)"
 };
 // Tipos de efeito de um Gatilho (campo "recurso"). "efeitoUuid" guarda o
 // UUID da Condição ou o id do Recurso Customizado quando o tipo precisa.

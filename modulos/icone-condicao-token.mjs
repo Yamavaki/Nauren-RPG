@@ -163,7 +163,7 @@ async function naurenReverterTransformacaoToken(item) {
  * DENTRO de cada Ação/Efeito Vinculado.
  */
 const NAUREN_CAMPOS_ESTADO_ITEM = [
-  "rankAtual", "ativo", "usosPassivaAtual", "acaoAtivaIndex",
+  "rankAtual", "ativo", "usosPassivaAtual", "usosAtual", "usosBonusConsumidoAtual", "paginaAberta", "paginaGrimorio", "acaoAtivaIndex",
   "equipado", "quantidade", "cargasAtual", "acumulos", "duracaoRestante", "conjuradorUuid",
   "duracaoAncoraCombatenteId", "duracaoAncoraCombateId", "duracaoAncoraIniciativa", "duracaoUltimaRodada",
   "recursosDeclarados", // as barras já criadas ficam em system.recursosCustom do ATOR, não aqui - mas o "valor" de cada declaração (se algum dia existir) preservaria por este mesmo motivo
@@ -218,6 +218,9 @@ async function naurenReconciliarItemComCompendio(item) {
   // 0.97.7: item feito ou melhorado na Bancada / Loja de Invenções — o "system" vem do projeto, não do compêndio.
   // Ressincronizar voltava o arco melhorado para o do compêndio e o jogador perdia os bônus da Loja.
   if (item.getFlag?.("nauren", "projeto")) return false;
+  // 0.102.4: Condição APLICADA (instância na ficha, não o molde) carrega parâmetros da aplicação
+  // (quem aplicou, valor rolado, custo para remover, dano no máximo…). É temporária: não ressincroniza.
+  if (item.type === "condicao" && !item.getFlag?.("nauren", "modelo")) return false;
   const uuidOrigem = item.getFlag("nauren", "origemUuid") || item.getFlag("core", "sourceId");
   if (!uuidOrigem) return false;
   let origem = await fromUuid(uuidOrigem).catch(() => null);
@@ -319,6 +322,16 @@ async function naurenReconciliarItemComCompendio(item) {
     });
   }
 
+  // 0.102.4: escolhas do jogador gravadas no próprio item não voltam ao modelo do compêndio:
+  // atributos escolhidos (Virtude da Nobreza…) e a opção "escolhida ao receber".
+  const escolheuAtributos = item.getFlag?.("nauren", "escolhaAtributos")
+    || ((systemOrigem.acoes ?? []).some(a => a?.escolherAtributos) && (systemAtual.modificadores ?? []).length > 0 && !(systemAtual.efeitosVinculados ?? []).length);
+  if (escolheuAtributos) {
+    systemOrigem.modificadores = foundry.utils.deepClone(systemAtual.modificadores ?? []);
+    systemOrigem.efeitosVinculados = foundry.utils.deepClone(systemAtual.efeitosVinculados ?? []);
+  }
+  if (item.getFlag?.("nauren", "escolhaFeita") !== undefined && Array.isArray(systemAtual.efeitosVinculados))
+    systemOrigem.efeitosVinculados = foundry.utils.deepClone(systemAtual.efeitosVinculados);
   if (naurenFundoPersonalizado(systemAtual.imagemFundo)) systemOrigem.imagemFundo = systemAtual.imagemFundo;
   // Itens da Torre: a opção "escolhida ao receber" (efeito vinculado ativo) é do jogador - mantém.
   if (item.getFlag("nauren", "torre") && Array.isArray(systemAtual.efeitosVinculados) && Array.isArray(systemOrigem.efeitosVinculados))
