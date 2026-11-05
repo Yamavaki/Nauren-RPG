@@ -18,9 +18,9 @@ const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": 
 export const NAUREN_TIERS_PADRAO = [
   { id: "bronze", nome: "Bronze", icone: "fa-shield-halved", texto: "#ffe1c2", fundo: { cores: ["#5b3016", "#9a5a2a", "#6a3a1a"], posicoes: [0, 55, 100], angulo: 135 }, borda: { cores: ["#f0b27a", "#8a4b22"], largura: 1.5 }, forma: "chanfro", efeito: "nenhum" },
   { id: "prata", nome: "Prata", icone: "fa-shield-halved", texto: "#ffffff", fundo: { cores: ["#4b5361", "#8e98a8", "#5a6373"], posicoes: [0, 55, 100], angulo: 135 }, borda: { cores: ["#f4f7fb", "#7b8494"], largura: 1.5 }, forma: "chanfro", efeito: "nenhum" },
-  { id: "ouro", nome: "Ouro", icone: "fa-crown", texto: "#fff6d6", fundo: { cores: ["#6e4a0c", "#c39227", "#7d560f"], posicoes: [0, 55, 100], angulo: 135 }, borda: { cores: ["#ffe8a0", "#a8771c"], largura: 1.5 }, forma: "chanfro", efeito: "brilho" },
-  { id: "diamante", nome: "Diamante", icone: "fa-gem", texto: "#effdff", fundo: { cores: ["#13506a", "#2fa0c8", "#185a78"], posicoes: [0, 55, 100], angulo: 135 }, borda: { cores: ["#d6f8ff", "#47b6dc"], largura: 1.5 }, forma: "losango", efeito: "brilho" },
-  { id: "prismatico", nome: "Prismático", icone: "fa-star", texto: "#ffffff", fundo: { cores: ["#d94c6a", "#e0a040", "#57c27a", "#4a9be0", "#9a62e0"], posicoes: [0, 25, 50, 75, 100], angulo: 90 }, borda: { cores: ["#ffd0dc", "#fff2c0", "#d0ffe0", "#d0e8ff", "#ecd8ff"], largura: 1.5 }, forma: "losango", efeito: "arco" }
+  { id: "ouro", nome: "Ouro", icone: "fa-crown", texto: "#fff6d6", fundo: { cores: ["#6e4a0c", "#c39227", "#7d560f"], posicoes: [0, 55, 100], angulo: 135 }, borda: { cores: ["#ffe8a0", "#a8771c"], largura: 1.5 }, forma: "chanfro", efeito: "brilho", efeitos: [{ tipo: "aura", cores: ["#ffe8a0"], vel: 3, int: 55 }, { tipo: "brilho", cores: ["#fff4cc"], vel: 3, int: 75 }] },
+  { id: "diamante", nome: "Diamante", icone: "fa-gem", texto: "#effdff", fundo: { cores: ["#13506a", "#2fa0c8", "#185a78"], posicoes: [0, 55, 100], angulo: 135 }, borda: { cores: ["#d6f8ff", "#47b6dc"], largura: 1.5 }, forma: "losango", efeito: "brilho", efeitos: [{ tipo: "aura", cores: ["#d6f8ff"], vel: 3, int: 55 }, { tipo: "cintilar", cores: ["#ffffff", "#bff4ff"], vel: 3, int: 90 }] },
+  { id: "prismatico", nome: "Prismático", icone: "fa-star", texto: "#ffffff", fundo: { cores: ["#d94c6a", "#e0a040", "#57c27a", "#4a9be0", "#9a62e0"], posicoes: [0, 25, 50, 75, 100], angulo: 90 }, borda: { cores: ["#ffd0dc", "#fff2c0", "#d0ffe0", "#d0e8ff", "#ecd8ff"], largura: 1.5 }, forma: "losango", efeito: "arco", efeitos: [{ tipo: "ciclo", cores: ["#d94c6a", "#e0a040", "#57c27a", "#4a9be0", "#9a62e0"], vel: 3, int: 60 }, { tipo: "borda", cores: ["#ffffff", "#ffe7a0"], vel: 3, int: 90 }] }
 ];
 // Valores do bot da Torre (flags.nauren.torre.tier) ⇄ id do tier.
 const TORRE_PARA_ID = { Bronze: "bronze", Prata: "prata", Ouro: "ouro", Diamante: "diamante", Prismatico: "prismatico" };
@@ -43,8 +43,85 @@ export function naurenNormalizarTier(t, i = 0) {
     fundo: { cores: fCores, posicoes: pos, angulo: numero(t?.fundo?.angulo, 0, 360, 135) },
     borda: { cores: cores(t?.borda?.cores, p.borda.cores), largura: numero(t?.borda?.largura, 0, 4, 1.5) },
     forma: ["chanfro", "losango", "pilula"].includes(t?.forma) ? t.forma : "chanfro",
-    efeito: ["nenhum", "brilho", "arco"].includes(t?.efeito) ? t.efeito : "nenhum"
+    efeitos: naurenNormalizarEfeitos(t)
   };
+}
+
+/* ---------- Efeitos animados do selo (0.102.5) ----------
+ * Até 2 por tier. Cada um: { tipo, cores, vel (1 lento … 5 rápido), int (10–100 %) }.
+ * Só CSS (transform/opacidade); "Animações dos selos" (opção do jogador) desliga tudo. */
+export const NAUREN_EFEITOS_TIER = [
+  { id: "aura", nome: "Aura", icone: "fa-sun", dica: "Brilho parado em volta do selo.", cores: [1, 1], anima: false, filtro: true, int: 60 },
+  { id: "brilho", nome: "Brilho", icone: "fa-wand-magic-sparkles", dica: "Uma faixa de luz atravessa o selo de tempos em tempos.", cores: [1, 1], base: 3.4, int: 75 },
+  { id: "ciclo", nome: "Ciclo de cores", icone: "fa-arrows-spin", dica: "O selo passa suavemente de uma cor para a outra.", cores: [2, 6], base: 2.4, int: 80 },
+  { id: "fluxo", nome: "Fluxo", icone: "fa-water", dica: "As cores correm por dentro do selo, como lava ou aurora.", cores: [2, 6], base: 4.5, int: 80 },
+  { id: "pulso", nome: "Pulso", icone: "fa-heart-pulse", dica: "O selo acende e apaga devagar, como se respirasse.", cores: [1, 2], base: 2.6, filtro: true, int: 70 },
+  { id: "borda", nome: "Borda viva", icone: "fa-circle-notch", dica: "Um ponto de luz contorna a borda sem parar.", cores: [1, 2], base: 3.2, int: 90 },
+  { id: "cintilar", nome: "Cintilar", icone: "fa-star", dica: "Pontinhos de luz aparecem e somem.", cores: [1, 2], base: 2.4, int: 85 },
+  { id: "holo", nome: "Holográfico", icone: "fa-compact-disc", dica: "Reflexo de carta brilhante. Se mexe quando o mouse passa por cima.", cores: [2, 4], anima: false, int: 65 },
+  { id: "arco", nome: "Arco-íris", icone: "fa-rainbow", dica: "Todas as cores do selo giram pelo arco-íris.", cores: [0, 0], base: 9, int: 100 }
+];
+const EF_POR_ID = Object.fromEntries(NAUREN_EFEITOS_TIER.map(e => [e.id, e]));
+const VEL = [1.8, 1.35, 1, 0.72, 0.5];
+export const NAUREN_VEL_ROTULO = ["Bem lento", "Lento", "Normal", "Rápido", "Bem rápido"];
+/** Cores iniciais de um efeito, tiradas do próprio tier. */
+export function naurenCoresPadraoEfeito(tipo, t) {
+  const b0 = t?.borda?.cores?.[0] ?? "#ffe8a0", f = t?.fundo?.cores ?? [];
+  switch (tipo) {
+    case "aura": case "pulso": return [b0];
+    case "brilho": return ["#ffffff"];
+    case "ciclo": case "fluxo": return f.length >= 2 ? f.slice(0, 6) : [f[0] ?? b0, "#ffffff"];
+    case "borda": case "cintilar": return ["#ffffff", b0];
+    case "holo": return ["#ff9ad5", "#9ae6ff", "#c9ff9a", "#ffe59a"];
+    default: return [];
+  }
+}
+function naurenNormalizarEfeitos(t) {
+  let lista = t?.efeitos;
+  if (!Array.isArray(lista)) {
+    // Mundos de antes da 0.102.5: "efeito" único. Tier padrão sem mudança ganha os efeitos novos do padrão.
+    const pad = NAUREN_TIERS_PADRAO.find(p => p.id === t?.id);
+    if (pad?.efeitos && (t?.efeito ?? "nenhum") === pad.efeito) lista = pad.efeitos;
+    else lista = t?.efeito === "brilho" ? [{ tipo: "aura" }] : t?.efeito === "arco" ? [{ tipo: "arco" }] : [];
+  }
+  const out = [];
+  for (const e of lista) {
+    const def = EF_POR_ID[e?.tipo];
+    if (!def || out.some(o => o.tipo === def.id) || out.length >= 2) continue;
+    if (def.filtro && out.some(o => EF_POR_ID[o.tipo].filtro)) continue; // Aura e Pulso usam o mesmo brilho de fora
+    const [mn, mx] = def.cores;
+    let cores = (Array.isArray(e.cores) ? e.cores : []).map(corValida).filter(Boolean).slice(0, mx);
+    if (cores.length < mn) { const p = naurenCoresPadraoEfeito(def.id, t); cores = [...cores, ...p.slice(cores.length)].slice(0, Math.max(mn, cores.length)); while (cores.length < mn) cores.push("#ffffff"); }
+    out.push({ tipo: def.id, cores, vel: Math.round(numero(e.vel, 1, 5, 3)), int: Math.round(numero(e.int, 10, 100, def.int)) });
+  }
+  return out;
+}
+const rgba = (c, a) => {
+  const h = String(c).replace("#", "");
+  if (!/^([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(h)) return c;
+  const f = h.length === 3 ? h.split("").map(x => x + x).join("") : h.slice(0, 6);
+  return `rgba(${parseInt(f.slice(0, 2), 16)}, ${parseInt(f.slice(2, 4), 16)}, ${parseInt(f.slice(4, 6), 16)}, ${Math.max(0, Math.min(1, a)).toFixed(2)})`;
+};
+/** Classes, variáveis e camadas que cada efeito acrescenta ao selo. */
+function fxDoTier(t) {
+  const cls = [], vars = [], camadas = [];
+  for (const e of t.efeitos ?? []) {
+    const def = EF_POR_ID[e.tipo]; if (!def) continue;
+    const c = e.cores, i = (e.int / 100).toFixed(2), d = `${((def.base ?? 3) * VEL[e.vel - 1] * (e.tipo === "ciclo" ? c.length : 1)).toFixed(2)}s`;
+    const g = lista => `linear-gradient(90deg, ${lista.map((x, k) => `${x} ${(k * 100 / (lista.length - 1)).toFixed(2)}%`).join(", ")})`;
+    switch (e.tipo) {
+      case "aura": cls.push("nt-fx-aura"); vars.push(`--au-c:${rgba(c[0], .35 + .6 * i)};--au-r:${(1.5 + 4.5 * i).toFixed(1)}px`); break;
+      case "pulso": cls.push("nt-fx-pulso"); vars.push(`--pu-a:${rgba(c[0], .25 * i)};--pu-b:${rgba(c[1] ?? c[0], .35 + .6 * i)};--pu-r:${(2 + 6 * i).toFixed(1)}px;--pu-br:${(1 + .22 * i).toFixed(2)};--pu-d:${d}`); break;
+      case "arco": cls.push("nt-fx-arco"); vars.push(`--ar-d:${d}`); break;
+      case "borda": camadas.unshift(`<span class="nt-fx-anel" style="--c1:${c[0]};--c2:${c[1] ?? c[0]};--d:${d};--i:${i}"></span>`); break;
+      case "brilho": camadas.push(`<span class="nt-fx nt-fx-brilho" style="--c1:${c[0]};--d:${d};--i:${i}"></span>`); break;
+      case "ciclo": camadas.push(`<span class="nt-fx nt-fx-ciclo" style="--g:${g([...c, c[0]])};--d:${d};--i:${i}"></span>`); break;
+      case "fluxo": camadas.push(`<span class="nt-fx nt-fx-fluxo" style="--g:${g([...c, ...c, c[0]])};--d:${d};--i:${i}"></span>`); break;
+      case "cintilar": camadas.push(`<span class="nt-fx nt-fx-cintilar" style="--c1:${c[0]};--c2:${c[1] ?? c[0]};--d:${d};--i:${i}"><i></i></span>`); break;
+      case "holo": cls.push("nt-fx-holo"); camadas.push(`<span class="nt-fx nt-fx-holo-l" style="--g:linear-gradient(115deg, transparent 12%, ${c.map((x, k) => `${x} ${(30 + k * 40 / Math.max(1, c.length - 1)).toFixed(1)}%`).join(", ")}, transparent 88%);--i:${i}"></span>`); break;
+    }
+  }
+  return { cls, vars: vars.join(";"), camadas: camadas.join("") };
 }
 export function naurenTiersDoMundo() {
   let v = null;
@@ -83,8 +160,9 @@ export function naurenVarsTier(t) {
 export function naurenSeloTierHtml(tierOuId, { tam = "", titulo = true } = {}) {
   const t = typeof tierOuId === "string" ? naurenTierPorId(tierOuId) : tierOuId ? naurenNormalizarTier(tierOuId) : null;
   if (!t) return "";
-  const cls = ["nt-selo", `nt-${t.forma}`, t.efeito === "brilho" ? "nt-brilho" : "", t.efeito === "arco" ? "nt-brilho nt-arco" : "", tam].filter(Boolean).join(" ");
-  return `<span class="${cls}" style="${naurenVarsTier(t)}"${titulo ? ` title="Tier: ${esc(t.nome)}"` : ""}>${t.icone ? `<i class="fas ${t.icone}"></i>` : ""}${esc(t.nome)}</span>`;
+  const fx = fxDoTier(t);
+  const cls = ["nt-selo", `nt-${t.forma}`, ...fx.cls, tam].filter(Boolean).join(" ");
+  return `<span class="${cls}" style="${naurenVarsTier(t)}${fx.vars ? `;${fx.vars}` : ""}"${titulo ? ` title="Tier: ${esc(t.nome)}"` : ""}>${fx.camadas}${t.icone ? `<i class="fas ${t.icone}"></i>` : ""}<span class="nt-rot">${esc(t.nome)}</span></span>`;
 }
 
 /* ============================== CATÁLOGO ============================== */
@@ -262,7 +340,7 @@ export async function naurenEscolherCondicao(item, valorAtual = "") {
 
 /* ============================== JANELA: TIERS DOS ITENS ============================== */
 const FORMAS = [["chanfro", "Chanfro"], ["losango", "Losango"], ["pilula", "Pílula"]];
-const EFEITOS = [["nenhum", "Nenhum"], ["brilho", "Brilho"], ["arco", "Arco-íris"]];
+const rotuloEfeitos = t => (t.efeitos ?? []).map(e => EF_POR_ID[e.tipo]?.nome).filter(Boolean).join(" + ") || "Nenhum";
 export class NaurenTiersEditor extends foundry.applications.api.ApplicationV2 {
   static DEFAULT_OPTIONS = {
     id: "nauren-tiers-editor",
@@ -270,7 +348,7 @@ export class NaurenTiersEditor extends foundry.applications.api.ApplicationV2 {
     position: { width: 900, height: "auto" },
     window: { title: "Tiers dos itens", icon: "fas fa-layer-group", resizable: true },
     actions: {
-      selecionar: function (ev, el) { this.sel = Number(el.dataset.i); this.render(); },
+      selecionar: function (ev, el) { this.sel = Number(el.dataset.i); this.slot = 0; this.render(); },
       novo: function () { const t = naurenNormalizarTier({ ...foundry.utils.deepClone(NAUREN_TIERS_PADRAO[0]), id: `tier-${foundry.utils.randomID(6)}`, nome: "Novo tier" }); this.lista.push(t); this.sel = this.lista.length - 1; this.render(); },
       duplicar: function (ev, el) { const i = Number(el.dataset.i); const t = naurenNormalizarTier({ ...foundry.utils.deepClone(this.lista[i]), id: `tier-${foundry.utils.randomID(6)}`, nome: `${this.lista[i].nome} (cópia)` }); this.lista.splice(i + 1, 0, t); this.sel = i + 1; this.render(); },
       apagar: NaurenTiersEditor.#apagar,
@@ -278,11 +356,23 @@ export class NaurenTiersEditor extends foundry.applications.api.ApplicationV2 {
       maisRaridade: function () { this.raridades.push({ id: `rar-${foundry.utils.randomID(5)}`, nome: "Nova raridade" }); this.render(); },
       menosRaridade: function (ev, el) { this.raridades.splice(Number(el.dataset.k), 1); this.render(); },
       forma: function (ev, el) { this.atual.forma = el.dataset.v; this.render(); },
-      efeito: function (ev, el) { this.atual.efeito = el.dataset.v; this.render(); },
+      aba: function (ev, el) { this.aba = el.dataset.v; this.render(); },
+      slotEfeito: function (ev, el) { this.slot = Number(el.dataset.k) || 0; this.render(); },
+      maisEfeito: function () { if ((this.atual.efeitos ?? []).length === 1) { this.slot = 1; this.render(); } },
+      tirarEfeito: function (ev, el) { ev?.stopPropagation?.(); const k = Number(el.dataset.k) || 0; this.atual.efeitos.splice(k, 1); this.slot = 0; this.render(); },
+      escolherEfeito: function (ev, el) {
+        const t = this.atual, tipo = el.dataset.v, lista = t.efeitos ??= [];
+        if (el.classList.contains("off")) return;
+        if (tipo === "nenhum") { if (lista[this.slot]) lista.splice(this.slot, 1); this.slot = 0; this.render(); return; }
+        if (lista[this.slot]?.tipo === tipo) return;
+        const def = EF_POR_ID[tipo];
+        lista[Math.min(this.slot, lista.length)] = { tipo, cores: naurenCoresPadraoEfeito(tipo, t), vel: 3, int: def.int };
+        this.render();
+      },
       tipoFundo: function (ev, el) { const f = this.atual.fundo; if (el.dataset.v === "cor") { f.cores = [f.cores[1] ?? f.cores[0]]; f.posicoes = [0]; } else if (f.cores.length < 2) { f.cores = [f.cores[0], "#ffffff"]; f.posicoes = [0, 100]; } this.render(); },
       tipoBorda: function (ev, el) { const b = this.atual.borda; if (el.dataset.v === "cor") b.cores = [b.cores[0]]; else if (b.cores.length < 2) b.cores = [b.cores[0], "#ffffff"]; this.render(); },
-      maisCor: function (ev, el) { const alvo = el.dataset.alvo === "borda" ? this.atual.borda : this.atual.fundo; if (alvo.cores.length >= 6) return; alvo.cores.push(alvo.cores.at(-1)); if (alvo.posicoes) { alvo.posicoes = alvo.cores.map((_, k) => Math.round(k * 100 / (alvo.cores.length - 1))); } this.render(); },
-      menosCor: function (ev, el) { const alvo = el.dataset.alvo === "borda" ? this.atual.borda : this.atual.fundo; if (alvo.cores.length <= 1) return; const k = Number(el.dataset.k); alvo.cores.splice(k, 1); alvo.posicoes?.splice(k, 1); this.render(); },
+      maisCor: function (ev, el) { const [alvo, , max] = this.#alvoCores(el.dataset.alvo); if (!alvo || alvo.cores.length >= max) return; alvo.cores.push(alvo.cores.at(-1)); if (alvo.posicoes) { alvo.posicoes = alvo.cores.map((_, k) => Math.round(k * 100 / (alvo.cores.length - 1))); } this.render(); },
+      menosCor: function (ev, el) { const [alvo, min] = this.#alvoCores(el.dataset.alvo); if (!alvo || alvo.cores.length <= Math.max(1, min)) return; const k = Number(el.dataset.k); alvo.cores.splice(k, 1); alvo.posicoes?.splice(k, 1); this.render(); },
       exportar: NaurenTiersEditor.#exportar,
       importar: NaurenTiersEditor.#importar,
       padrao: NaurenTiersEditor.#padrao,
@@ -296,12 +386,54 @@ export class NaurenTiersEditor extends foundry.applications.api.ApplicationV2 {
     this.sel = 0;
     this.raridades = naurenRaridadesDoMundo();
     this.mover = {}; // tier apagado → tier que os itens recebem ao salvar
+    this.aba = "aparencia";
+    this.slot = 0; // qual dos 2 efeitos está sendo editado
+  }
+  #alvoCores(nome) {
+    if (nome === "borda") return [this.atual.borda, 1, 6];
+    if (nome === "fx") { const e = this.atual.efeitos?.[this.slot], d = EF_POR_ID[e?.tipo]; return [e, d?.cores[0] ?? 1, d?.cores[1] ?? 6]; }
+    return [this.atual.fundo, 1, 6];
+  }
+  /** Selo do tier com um só efeito (galeria). Usa as cores do efeito em edição quando é o mesmo tipo. */
+  #seloComEfeito(t, tipo) {
+    if (tipo === "nenhum") return naurenSeloTierHtml({ ...t, efeitos: [] }, { titulo: false });
+    const atual = (t.efeitos ?? []).find(e => e.tipo === tipo);
+    return naurenSeloTierHtml({ ...t, efeitos: [atual ?? { tipo, cores: naurenCoresPadraoEfeito(tipo, t), vel: 3, int: EF_POR_ID[tipo].int }] }, { titulo: false });
+  }
+  #abaEfeitos(t) {
+    const lista = t.efeitos ?? [], slot = Math.min(this.slot, lista.length >= 2 ? 1 : lista.length ? (this.slot === 1 ? 1 : 0) : 0);
+    this.slot = slot;
+    const e = lista[slot], def = EF_POR_ID[e?.tipo];
+    const outro = lista[slot === 0 ? 1 : 0];
+    const chip = k => { const x = lista[k], d = EF_POR_ID[x?.tipo];
+      return `<button type="button" class="nt-fx-slot nt-ch ${k === slot ? "on" : ""}" data-action="slotEfeito" data-k="${k}"><b>${k + 1}</b>${d ? `<i class="fas ${d.icone}"></i>${esc(d.nome)}` : `<em>${k === 0 ? "Nenhum efeito" : "Escolha abaixo"}</em>`}${d || k === 1 ? `<span class="nt-x" data-action="tirarEfeito" data-k="${k}" title="Tirar este efeito"><i class="fas fa-xmark"></i></span>` : ""}</button>`; };
+    const slots = [chip(0)];
+    if (lista.length >= 2 || slot === 1) slots.push(chip(1));
+    else if (lista.length === 1) slots.push(`<button type="button" class="nt-mais-l" data-action="maisEfeito"><i class="fas fa-plus"></i> Combinar com outro efeito</button>`);
+    const tiles = [["nenhum", "Nenhum", "fa-ban", "Sem efeito."], ...NAUREN_EFEITOS_TIER.map(d => [d.id, d.nome, d.icone, d.dica])].map(([id, nome, icone, dica]) => {
+      const usadoNoOutro = outro?.tipo === id;
+      const bloqueado = id !== "nenhum" && (usadoNoOutro || (EF_POR_ID[id]?.filtro && outro && EF_POR_ID[outro.tipo]?.filtro));
+      const on = (e?.tipo ?? "nenhum") === id;
+      const motivo = usadoNoOutro ? "Já está no outro efeito." : bloqueado ? "Aura e Pulso não combinam (os dois brilham por fora)." : dica;
+      return `<button type="button" class="nt-fx-tile nt-ch ${on ? "on" : ""} ${bloqueado ? "off" : ""}" data-action="escolherEfeito" data-v="${id}" title="${esc(motivo)}"><span class="nt-fx-tile-sel" data-galeria="${id}">${this.#seloComEfeito(t, id)}</span><span class="nt-fx-tile-n"><i class="fas ${icone}"></i>${esc(nome)}</span></button>`;
+    }).join("");
+    let cfg = `<p class="nt-fx-dica"><i class="fas fa-circle-info"></i> Escolha um efeito na galeria. Os selos se mexem em todo lugar: mochila, loja e chat. Cada jogador pode desligar as animações em Configurações → Animações dos selos.</p>`;
+    if (def) {
+      const [mn, mx] = def.cores;
+      const cores = mx ? `<div class="nt-c nt-c-2"><span>${mx === 1 ? "Cor" : `Cores <small class="nt-fx-qt">${mn === mx ? mn : `de ${mn} a ${mx}`}</small>`}</span><div class="nt-paradas-l">${this.#cores("fx", e.cores, null, mn, mx)}</div></div>` : `<div class="nt-c nt-c-2"><span>Cores</span><p class="nt-fx-sem">Usa as cores do próprio selo.</p></div>`;
+      const vel = def.anima === false ? `<div class="nt-c"><span>Velocidade</span><p class="nt-fx-sem">${e.tipo === "holo" ? "Segue o mouse" : "Parado"}</p></div>`
+        : `<label class="nt-c"><span>Velocidade <b data-ver="vel">${NAUREN_VEL_ROTULO[e.vel - 1]}</b></span><input type="range" class="nt-rng" data-campo="vel" min="1" max="5" step="1" value="${e.vel}"></label>`;
+      const int = e.tipo === "arco" ? `<div class="nt-c"><span>Intensidade</span><p class="nt-fx-sem">Total</p></div>`
+        : `<label class="nt-c"><span>Intensidade <b data-ver="int">${e.int}%</b></span><input type="range" class="nt-rng" data-campo="int" min="10" max="100" step="5" value="${e.int}"></label>`;
+      cfg = `<p class="nt-fx-dica"><i class="fas ${def.icone}"></i> <b>${esc(def.nome)}:</b> ${esc(def.dica)}</p>${cores}<div class="nt-g2">${vel}${int}</div>`;
+    }
+    return `<div class="nt-fx-slots">${slots.join("")}</div><div class="nt-fx-gal">${tiles}</div>${cfg}`;
   }
   get atual() { return this.lista[this.sel] ?? this.lista[0]; }
   #seg(acao, opcoes, valor) { return `<div class="nt-seg2 nt-ch">${opcoes.map(([v, r]) => `<button type="button" data-action="${acao}" data-v="${v}" class="${v === valor ? "on" : ""}">${r}</button>`).join("")}</div>`; }
-  #cores(alvo, lista, posicoes) {
-    return lista.map((c, k) => `<span class="nt-parada nt-ch" title="${esc(c)}"><input type="color" class="nt-cor" data-cor="${alvo}" data-k="${k}" value="${c.startsWith("#") && c.length === 7 ? c : "#ffffff"}">${posicoes ? `<input type="number" class="nt-pos" data-k="${k}" min="0" max="100" value="${posicoes[k]}"><small>%</small>` : ""}${lista.length > 1 ? `<button type="button" class="nt-x" data-action="menosCor" data-alvo="${alvo}" data-k="${k}" title="Tirar esta cor"><i class="fas fa-xmark"></i></button>` : ""}</span>`).join("")
-      + (lista.length < 6 ? `<button type="button" class="nt-mais nt-ch" data-action="maisCor" data-alvo="${alvo}" title="Mais uma cor (até 6)"><i class="fas fa-plus"></i></button>` : "");
+  #cores(alvo, lista, posicoes, min = 1, max = 6) {
+    return lista.map((c, k) => `<span class="nt-parada nt-ch" title="${esc(c)}"><input type="color" class="nt-cor" data-cor="${alvo}" data-k="${k}" value="${c.startsWith("#") && c.length === 7 ? c : "#ffffff"}">${posicoes ? `<input type="number" class="nt-pos" data-k="${k}" min="0" max="100" value="${posicoes[k]}"><small>%</small>` : ""}${lista.length > Math.max(1, min) ? `<button type="button" class="nt-x" data-action="menosCor" data-alvo="${alvo}" data-k="${k}" title="Tirar esta cor"><i class="fas fa-xmark"></i></button>` : ""}</span>`).join("")
+      + (lista.length < max ? `<button type="button" class="nt-mais nt-ch" data-action="maisCor" data-alvo="${alvo}" title="Mais uma cor (até ${max})"><i class="fas fa-plus"></i></button>` : "");
   }
   async _renderHTML() {
     const t = naurenNormalizarTier(this.atual, this.sel);
@@ -325,7 +457,8 @@ export class NaurenTiersEditor extends foundry.applications.api.ApplicationV2 {
         </div>
         <div class="nt-col">
           <div class="nt-ed nt-ch">
-            <h3>${esc(t.nome)} <small>id: ${esc(t.id)}</small></h3>
+            <h3><span class="nt-ed-nome" title="id: ${esc(t.id)}">${esc(t.nome)}</span>${this.#seg("aba", [["aparencia", `<i class="fas fa-palette"></i> Cores e forma`], ["efeitos", `<i class="fas fa-wand-magic-sparkles"></i> Efeitos${(t.efeitos ?? []).length ? ` <em>${t.efeitos.length}</em>` : ""}`]], this.aba).replace("nt-seg2 nt-ch", "nt-seg2 nt-ch nt-ed-abas")}</h3>
+            ${this.aba === "efeitos" ? `<div class="nt-ed-corpo nt-ed-fx">${this.#abaEfeitos(t)}</div>` : `<div class="nt-ed-corpo">
             <div class="nt-g3">
               <label class="nt-c"><span>Nome</span><input type="text" class="nt-in nt-ch" data-campo="nome" value="${esc(t.nome)}" maxlength="40"></label>
               <div class="nt-c"><span>Ícone</span><button type="button" class="nt-in nt-ch nt-in-ic nt-ic-bt" data-action="escolherIcone" title="Escolher no catálogo de ícones"><i class="fas ${esc(t.icone || "fa-ban")}"></i><span>${esc(t.icone ? t.icone.replace(/^fa-/, "") : "sem ícone")}</span><em title="Trocar"><i class="fas fa-icons"></i></em></button></div>
@@ -344,8 +477,9 @@ export class NaurenTiersEditor extends foundry.applications.api.ApplicationV2 {
             </div>
             <div class="nt-g2">
               <div class="nt-c"><span>Forma</span>${this.#seg("forma", FORMAS, t.forma)}</div>
-              <div class="nt-c"><span>Efeito</span>${this.#seg("efeito", EFEITOS, t.efeito)}</div>
+              <div class="nt-c"><span>Efeitos</span><button type="button" class="nt-in nt-ch nt-in-ic nt-fx-resumo" data-action="aba" data-v="efeitos" title="Abrir a aba Efeitos"><i class="fas fa-wand-magic-sparkles"></i><span>${esc(rotuloEfeitos(t))}</span><i class="fas fa-chevron-right"></i></button></div>
             </div>
+            </div>`}
           </div>
           <div class="nt-prev nt-ch">
             <h3>Prévia <small>como aparece em cada lugar</small></h3>
@@ -378,7 +512,11 @@ export class NaurenTiersEditor extends foundry.applications.api.ApplicationV2 {
     el.querySelectorAll(".nt-marca").forEach((m, k) => { m.style.left = `${t.fundo.posicoes[k]}%`; m.style.setProperty("--c", t.fundo.cores[k]); });
     const ang = el.querySelector('[data-ver="angulo"]'); if (ang) ang.textContent = `${t.fundo.angulo}°`;
     const lar = el.querySelector('[data-ver="largura"]'); if (lar) lar.textContent = `${String(t.borda.largura).replace(".", ",")} px`;
-    const h3 = el.querySelector(".nt-ed h3"); if (h3?.firstChild) h3.firstChild.textContent = `${t.nome} `;
+    const nome = el.querySelector(".nt-ed-nome"); if (nome) nome.textContent = t.nome;
+    el.querySelectorAll("[data-galeria]").forEach(g => { g.innerHTML = this.#seloComEfeito(t, g.dataset.galeria); });
+    const e = this.atual.efeitos?.[this.slot];
+    const vel = el.querySelector('[data-ver="vel"]'); if (vel && e) vel.textContent = NAUREN_VEL_ROTULO[(Number(e.vel) || 3) - 1];
+    const int = el.querySelector('[data-ver="int"]'); if (int && e) int.textContent = `${e.int}%`;
   }
   _onRender() {
     const el = this.element;
@@ -387,6 +525,7 @@ export class NaurenTiersEditor extends foundry.applications.api.ApplicationV2 {
       if (inp.dataset.campo === "nome") t.nome = v;
       else if (inp.dataset.campo === "angulo") t.fundo.angulo = Number(v);
       else if (inp.dataset.campo === "largura") t.borda.largura = Number(v);
+      else if ((inp.dataset.campo === "vel" || inp.dataset.campo === "int") && t.efeitos?.[this.slot]) t.efeitos[this.slot][inp.dataset.campo] = Number(v);
       this.#atualizarPrevia();
     }));
     el.querySelectorAll(".nt-cor").forEach(inp => inp.addEventListener("input", () => {
@@ -394,6 +533,7 @@ export class NaurenTiersEditor extends foundry.applications.api.ApplicationV2 {
       if (inp.dataset.cor === "texto") t.texto = inp.value;
       else if (inp.dataset.cor === "fundo") t.fundo.cores[k] = inp.value;
       else if (inp.dataset.cor === "borda") t.borda.cores[k] = inp.value;
+      else if (inp.dataset.cor === "fx" && t.efeitos?.[this.slot]) t.efeitos[this.slot].cores[k] = inp.value;
       const code = inp.nextElementSibling; if (code?.tagName === "CODE") code.textContent = inp.value;
       this.#atualizarPrevia();
     }));
@@ -489,10 +629,27 @@ export class NaurenTiersEditor extends foundry.applications.api.ApplicationV2 {
 export function naurenItensCatalogoInit() {
   game.settings.register("nauren", "tiersItens", { name: "Tiers dos itens", scope: "world", config: false, type: Object, default: { lista: NAUREN_TIERS_PADRAO },
     onChange: () => { for (const app of foundry.applications.instances.values()) if (app.document?.documentName === "Item" || app.document?.documentName === "Actor" || app.constructor?.name === "NaurenArmazemJanela") app.render?.(); } });
+  game.settings.register("nauren", "selosAnimados", { name: "Animações dos selos", hint: "Liga os efeitos animados dos selos de tier (brilho, ciclo de cores, cintilar…). Desligado, os selos ficam parados. Vale só para você.",
+    scope: "client", config: true, type: Boolean, default: true, onChange: v => document.body?.classList.toggle("nauren-selos-parados", !v) });
+  try { document.body?.classList.toggle("nauren-selos-parados", !game.settings.get("nauren", "selosAnimados")); } catch (err) { /* sem body ainda */ }
   game.settings.register("nauren", "raridadesItens", { name: "Raridades dos itens", scope: "world", config: false, type: Object, default: { lista: NAUREN_RARIDADES_PADRAO } });
   game.settings.registerMenu("nauren", "tiersItensMenu", { name: "Tiers dos itens", label: "Editar tiers", hint: "Crie, renomeie, reordene e pinte os tiers (selos) dos itens: cores, degradê, borda, forma e efeito. Também edita a lista de raridades.", icon: "fas fa-layer-group", type: NaurenTiersEditor, restricted: true });
 }
 export function naurenItensCatalogoHooks() {
+  Hooks.once("ready", () => { try { document.body.classList.toggle("nauren-selos-parados", !game.settings.get("nauren", "selosAnimados")); } catch (err) { /* nada */ } });
+  // Holográfico: o reflexo segue o mouse (um ouvinte só, para todos os selos).
+  let pend = null;
+  document.addEventListener("pointermove", ev => {
+    const selo = ev.target?.closest?.(".nt-selo.nt-fx-holo");
+    if (!selo || pend) return;
+    pend = requestAnimationFrame(() => {
+      pend = null;
+      const r = selo.getBoundingClientRect(); if (!r.width) return;
+      selo.style.setProperty("--mx", `${Math.round(((ev.clientX - r.left) / r.width) * 100)}%`);
+      selo.style.setProperty("--my", `${Math.round(((ev.clientY - r.top) / r.height) * 100)}%`);
+    });
+  }, { passive: true });
+  document.addEventListener("pointerout", ev => { const selo = ev.target?.closest?.(".nt-selo.nt-fx-holo"); if (selo && !selo.contains(ev.relatedTarget)) { selo.style.removeProperty("--mx"); selo.style.removeProperty("--my"); } }, { passive: true });
   // Catálogo → espelho da Torre (o bot lê flags.nauren.torre).
   Hooks.on("preUpdateItem", (item, changes) => {
     const cat = changes?.flags?.nauren?.catalogo;

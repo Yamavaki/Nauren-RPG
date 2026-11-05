@@ -7708,19 +7708,68 @@ li.chat-message.ncc-card > .message-content { padding-top: 0 !important; }
   height: var(--t-h); padding: 0 9px; font: 800 10.5px/1 Signika, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--t-txt, #fff);
   white-space: nowrap; vertical-align: middle; text-shadow: 0 1px 1px rgba(0,0,0,.55); flex: 0 0 auto; width: max-content; max-width: 100%; border: 0; background: none; margin: 0; }
 .nt-selo > i { font-size: 9px; opacity: .95; }
+.nt-selo > i, .nt-selo > .nt-rot { position: relative; z-index: 1; }
 .nt-selo::before, .nt-selo::after { content: ""; position: absolute; z-index: -1; pointer-events: none; }
 .nt-selo::before { inset: 0; background: var(--t-bord); }
 .nt-selo::after { inset: var(--t-bw); background: var(--t-fill), var(--t-base, #1d1728); }
-.nt-selo.nt-chanfro::before { clip-path: polygon(var(--t-cc) 0, calc(100% - var(--t-cc)) 0, 100% var(--t-cc), 100% calc(100% - var(--t-cc)), calc(100% - var(--t-cc)) 100%, var(--t-cc) 100%, 0 calc(100% - var(--t-cc)), 0 var(--t-cc)); }
-.nt-selo.nt-chanfro::after { --k: calc(var(--t-cc) - var(--t-bw) * .4142); clip-path: polygon(var(--k) 0, calc(100% - var(--k)) 0, 100% var(--k), 100% calc(100% - var(--k)), calc(100% - var(--k)) 100%, var(--k) 100%, 0 calc(100% - var(--k)), 0 var(--k)); }
+.nt-selo.nt-chanfro::before, .nt-selo.nt-chanfro > .nt-fx-anel { clip-path: polygon(var(--t-cc) 0, calc(100% - var(--t-cc)) 0, 100% var(--t-cc), 100% calc(100% - var(--t-cc)), calc(100% - var(--t-cc)) 100%, var(--t-cc) 100%, 0 calc(100% - var(--t-cc)), 0 var(--t-cc)); }
+.nt-selo.nt-chanfro::after, .nt-selo.nt-chanfro > .nt-fx { --k: calc(var(--t-cc) - var(--t-bw) * .4142); clip-path: polygon(var(--k) 0, calc(100% - var(--k)) 0, 100% var(--k), 100% calc(100% - var(--k)), calc(100% - var(--k)) 100%, var(--k) 100%, 0 calc(100% - var(--k)), 0 var(--k)); }
 .nt-selo.nt-losango { padding: 0 calc(var(--t-h) / 2 + 3px); }
-.nt-selo.nt-losango::before { --m: calc(var(--t-h) / 2); clip-path: polygon(var(--m) 0, calc(100% - var(--m)) 0, 100% 50%, calc(100% - var(--m)) 100%, var(--m) 100%, 0 50%); }
-.nt-selo.nt-losango::after { --a: calc(var(--t-h) / 2 - var(--t-bw) * .5858); --p: calc(var(--t-bw) * .4142); clip-path: polygon(var(--a) 0, calc(100% - var(--a)) 0, calc(100% - var(--p)) 50%, calc(100% - var(--a)) 100%, var(--a) 100%, var(--p) 50%); }
-.nt-selo.nt-pilula::before, .nt-selo.nt-pilula::after { border-radius: 999px; }
-.nt-selo.nt-brilho { filter: drop-shadow(0 0 3px var(--t-luz, rgba(255,220,120,.55))); }
-.nt-selo.nt-arco::after { animation: nt-arco 9s linear infinite; }
+.nt-selo.nt-losango::before, .nt-selo.nt-losango > .nt-fx-anel { --m: calc(var(--t-h) / 2); clip-path: polygon(var(--m) 0, calc(100% - var(--m)) 0, 100% 50%, calc(100% - var(--m)) 100%, var(--m) 100%, 0 50%); }
+.nt-selo.nt-losango::after, .nt-selo.nt-losango > .nt-fx { --a: calc(var(--t-h) / 2 - var(--t-bw) * .5858); --p: calc(var(--t-bw) * .4142); clip-path: polygon(var(--a) 0, calc(100% - var(--a)) 0, calc(100% - var(--p)) 50%, calc(100% - var(--a)) 100%, var(--a) 100%, var(--p) 50%); }
+.nt-selo.nt-pilula::before, .nt-selo.nt-pilula::after, .nt-selo.nt-pilula > .nt-fx, .nt-selo.nt-pilula > .nt-fx-anel { border-radius: 999px; }
+/* Efeitos do selo (0.102.5). Camadas: anel (borda viva) entre a borda e o preenchimento; .nt-fx por cima do
+   preenchimento, recortadas com a mesma forma; texto e ícone acima de tudo. Só transform/opacidade animam,
+   menos o Pulso (filtro). Cores com transparência já vêm prontas do JS (sem color-mix com calc). */
+.nt-selo { --sp: 1.25px; }
+.nt-selo.nt-g { --sp: 1.55px; }
+.nt-selo.nt-gg { --sp: 2.2px; }
+.nt-selo > .nt-fx, .nt-selo > .nt-fx-anel { position: absolute; pointer-events: none; overflow: hidden; }
+.nt-selo > .nt-fx { inset: var(--t-bw); z-index: 0; }
+.nt-selo > .nt-fx-anel { inset: 0; z-index: -1; }
+.nt-fx::before, .nt-fx::after, .nt-fx > i, .nt-fx-anel::before { content: ""; position: absolute; pointer-events: none; }
+/* Aura e Pulso: brilho de fora (drop-shadow segue o recorte, inclusive as diagonais). */
+.nt-selo.nt-fx-aura { filter: drop-shadow(0 0 var(--au-r) var(--au-c)); }
+.nt-selo.nt-fx-pulso { animation: nt-fx-pulso var(--pu-d) ease-in-out infinite; }
+@keyframes nt-fx-pulso { 0%, 100% { filter: drop-shadow(0 0 1px var(--pu-a)) brightness(1); } 50% { filter: drop-shadow(0 0 var(--pu-r) var(--pu-b)) brightness(var(--pu-br)); } }
+/* Brilho: faixa de luz. */
+.nt-fx-brilho { mix-blend-mode: screen; }
+.nt-fx-brilho::before { top: -30%; bottom: -30%; left: 0; width: 38%; background: linear-gradient(90deg, transparent, var(--c1) 50%, transparent); opacity: var(--i); transform: translateX(-140%) skewX(-22deg); animation: nt-fx-varre var(--d) ease-in-out infinite; }
+@keyframes nt-fx-varre { 0% { transform: translateX(-140%) skewX(-22deg); } 55%, 100% { transform: translateX(320%) skewX(-22deg); } }
+/* Ciclo de cores e Fluxo: uma tira com as cores passa por trás da janela do selo. */
+.nt-fx-ciclo, .nt-fx-fluxo { opacity: var(--i); }
+.nt-fx-ciclo::before, .nt-fx-fluxo::before { top: 0; bottom: 0; left: 0; background: var(--g); will-change: transform; }
+.nt-fx-ciclo::before { width: 2000%; animation: nt-fx-ciclo var(--d) linear infinite; }
+.nt-fx-fluxo::before { width: 300%; animation: nt-fx-fluxo var(--d) linear infinite; }
+@keyframes nt-fx-ciclo { to { transform: translateX(-95%); } }
+@keyframes nt-fx-fluxo { to { transform: translateX(-50%); } }
+.nt-fx-ciclo::after, .nt-fx-fluxo::after { inset: 0; background: linear-gradient(165deg, rgba(255,255,255,.24), rgba(255,255,255,0) 45%, rgba(0,0,0,.24)); }
+/* Borda viva: luz girando, visível só no anel da borda. */
+.nt-fx-anel::before { left: 50%; top: 50%; width: 300%; aspect-ratio: 1; background: conic-gradient(from 0deg, transparent 0 70%, var(--c2) 87%, var(--c1) 97%, transparent 100%); opacity: var(--i); transform: translate(-50%, -50%) rotate(0turn); animation: nt-fx-gira var(--d) linear infinite; will-change: transform; }
+@keyframes nt-fx-gira { to { transform: translate(-50%, -50%) rotate(1turn); } }
+/* Cintilar: três grupos de pontos piscando fora de compasso. */
+.nt-fx-cintilar::before, .nt-fx-cintilar::after, .nt-fx-cintilar > i { inset: 0; opacity: 0; animation: nt-fx-cint var(--d) ease-in-out infinite; --p1: calc(var(--sp) * .55); --p2: calc(var(--sp) * 1.1); --p3: calc(var(--sp) * 2.4); }
+.nt-fx-cintilar::before { background: radial-gradient(circle at 12% 32%, #fff 0 var(--p1), var(--c1) var(--p2), transparent var(--p3)), radial-gradient(circle at 57% 74%, #fff 0 var(--p1), var(--c1) var(--p2), transparent var(--p3)), radial-gradient(circle at 87% 26%, #fff 0 var(--p1), var(--c1) var(--p2), transparent var(--p3)); }
+.nt-fx-cintilar::after { background: radial-gradient(circle at 31% 70%, #fff 0 var(--p1), var(--c2) var(--p2), transparent var(--p3)), radial-gradient(circle at 70% 24%, #fff 0 var(--p1), var(--c2) var(--p2), transparent var(--p3)), radial-gradient(circle at 95% 66%, #fff 0 var(--p1), var(--c2) var(--p2), transparent var(--p3)); animation-duration: calc(var(--d) * 1.37); animation-delay: calc(var(--d) * -.45); }
+.nt-fx-cintilar > i { background: radial-gradient(circle at 43% 30%, #fff 0 var(--p1), var(--c1) var(--p2), transparent var(--p3)), radial-gradient(circle at 5% 72%, #fff 0 var(--p1), var(--c2) var(--p2), transparent var(--p3)), radial-gradient(circle at 78% 82%, #fff 0 var(--p1), var(--c1) var(--p2), transparent var(--p3)); animation-duration: calc(var(--d) * .81); animation-delay: calc(var(--d) * -.2); }
+@keyframes nt-fx-cint { 0%, 100% { opacity: 0; } 16% { opacity: var(--i); } 34% { opacity: 0; } }
+/* Holográfico: reflexo que segue o mouse (o JS grava --mx/--my no selo). */
+.nt-fx-holo-l { background: var(--g); background-size: 260% 260%; background-position: var(--mx, 30%) var(--my, 40%); mix-blend-mode: screen; opacity: calc(var(--i) * .5); transition: opacity .25s ease, background-position .12s linear; }
+.nt-selo.nt-fx-holo:hover > .nt-fx-holo-l { opacity: var(--i); }
+/* Arco-íris: gira o matiz do preenchimento. */
+.nt-selo.nt-fx-arco::after { animation: nt-arco var(--ar-d, 9s) linear infinite; }
 @keyframes nt-arco { to { filter: hue-rotate(360deg); } }
-@media (prefers-reduced-motion: reduce) { .nt-selo.nt-arco::after { animation: none; } }
+/* Animações desligadas (opção do jogador ou "reduzir movimento" do sistema): o selo fica parado e bonito. */
+body.nauren-selos-parados .nt-selo, body.nauren-selos-parados .nt-selo::after, body.nauren-selos-parados .nt-selo .nt-fx::before,
+body.nauren-selos-parados .nt-selo .nt-fx::after, body.nauren-selos-parados .nt-selo .nt-fx > i, body.nauren-selos-parados .nt-selo .nt-fx-anel::before { animation: none !important; }
+body.nauren-selos-parados .nt-selo.nt-fx-pulso { filter: drop-shadow(0 0 var(--pu-r) var(--pu-b)); }
+body.nauren-selos-parados .nt-fx-cintilar::before, body.nauren-selos-parados .nt-fx-cintilar > i { opacity: calc(var(--i) * .8); }
+body.nauren-selos-parados .nt-fx-brilho::before { transform: translateX(110%) skewX(-22deg); opacity: calc(var(--i) * .6); }
+body.nauren-selos-parados .nt-fx-anel::before { transform: translate(-50%, -50%) rotate(.12turn); }
+@media (prefers-reduced-motion: reduce) {
+  .nt-selo, .nt-selo::after, .nt-selo .nt-fx::before, .nt-selo .nt-fx::after, .nt-selo .nt-fx > i, .nt-selo .nt-fx-anel::before { animation: none !important; }
+  .nt-selo.nt-fx-pulso { filter: drop-shadow(0 0 var(--pu-r) var(--pu-b)); }
+}
 .nt-selo.nt-p { --t-h: 16px; font-size: 9.5px; padding: 0 7px; }
 .nt-selo.nt-p.nt-losango { padding: 0 11px; }
 .nt-selo.nt-g { --t-h: 24px; font-size: 12.5px; padding: 0 13px; gap: 6px; }
@@ -8031,3 +8080,41 @@ input.nt-icone-texto { font-family: "Fira Code", Consolas, monospace; font-size:
 .nauren-kit button.nt-mais-l { align-self: flex-start; height: 26px; min-height: 0; margin: 2px 0 0; padding: 0 4px; border: 0; background: transparent; color: var(--nk-ouro-claro, #ffd98a); font: 600 12.5px Signika, sans-serif; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: none; }
 .nauren-kit button.nt-mais-l:hover { text-decoration: underline; }
 .nauren-sheet.ns2 .ns-sub-nome b { white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.2; overflow-wrap: anywhere; } /* 0.102.4: "Caçador — Subclasses" cabe inteiro */
+
+/* ---------- Editor de tiers: abas e aba Efeitos (0.102.5) ---------- */
+.nt-ed h3 .nt-ed-nome { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nauren-kit .nt-ed h3 .nt-seg2.nt-ed-abas { margin-left: auto; height: 28px; flex: 0 0 auto; text-transform: none; letter-spacing: 0; }
+.nauren-kit .nt-ed h3 .nt-ed-abas > button { flex: 0 0 auto; padding: 0 12px; gap: 6px; font-size: 12.5px; }
+.nauren-kit .nt-ed h3 .nt-ed-abas > button i { font-size: 11px; color: var(--nk-ouro); }
+.nauren-kit .nt-ed h3 .nt-ed-abas > button em { font-style: normal; font-size: 10.5px; min-width: 16px; height: 16px; line-height: 16px; border-radius: 8px; text-align: center; background: color-mix(in srgb, var(--nk-ouro) 30%, #1a1424); color: var(--nk-ouro-claro, #ffd98a); }
+.nt-ed-corpo { display: flex; flex-direction: column; gap: 12px; min-height: 322px; }
+.nt-ed-fx { gap: 10px; }
+.nt-fx-slots { display: flex; align-items: center; gap: 8px; min-height: 30px; }
+.nauren-kit button.nt-fx-slot { display: inline-flex; align-items: center; gap: 7px; height: 30px; min-height: 0; margin: 0; padding: 0 4px 0 10px; font: 12.5px Signika, sans-serif; color: var(--nk-suave); cursor: pointer; --cc: 6px; --cbg: color-mix(in srgb, #000 28%, #241c31); --cbd: var(--nk-linha2, #4a3d66); }
+.nauren-kit button.nt-fx-slot > b { font: 700 10.5px Signika, sans-serif; width: 16px; height: 16px; display: grid; place-items: center; border-radius: 50%; background: #3a2f4e; color: var(--nk-texto); }
+.nauren-kit button.nt-fx-slot > i { color: var(--nk-ouro); font-size: 11px; }
+.nauren-kit button.nt-fx-slot > em { font-style: italic; }
+.nauren-kit button.nt-fx-slot.on { color: var(--nk-texto); font-weight: 600; --cbg: color-mix(in srgb, var(--nk-ouro, #e0b25a) 18%, #241c31); --cbd: var(--nk-ouro, #e0b25a); }
+.nauren-kit button.nt-fx-slot.on > b { background: var(--nk-ouro, #e0b25a); color: #241c31; }
+.nauren-kit button.nt-fx-slot > .nt-x { width: 22px; height: 22px; display: grid; place-items: center; color: var(--nk-suave); font-size: 11px; }
+.nauren-kit button.nt-fx-slot > .nt-x:hover { color: var(--nk-texto); }
+.nt-fx-gal { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.nauren-kit button.nt-fx-tile { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; height: 62px; min-height: 0; margin: 0; padding: 6px 4px 5px; cursor: pointer; min-width: 0;
+  --cc: 7px; --cbg: #15101d; --cbd: var(--nk-linha2, #4a3d66); }
+.nauren-kit button.nt-fx-tile:hover:not(.off) { --cbd: color-mix(in srgb, var(--nk-ouro, #e0b25a) 60%, #4a3d66); }
+.nauren-kit button.nt-fx-tile.on { --cbg: color-mix(in srgb, var(--nk-ouro, #e0b25a) 14%, #15101d); --cbd: var(--nk-ouro, #e0b25a); }
+.nauren-kit button.nt-fx-tile.off { cursor: not-allowed; opacity: .42; }
+.nt-fx-tile-sel { display: flex; justify-content: center; align-items: center; height: 24px; max-width: 100%; min-width: 0; padding: 0 3px; }
+.nt-fx-tile-sel .nt-selo { max-width: 100%; }
+.nt-fx-tile-sel .nt-selo > .nt-rot { overflow: hidden; text-overflow: ellipsis; }
+.nt-fx-tile-n { display: flex; align-items: center; gap: 5px; max-width: 100%; font: 11.5px Signika, sans-serif; color: var(--nk-suave); white-space: nowrap; overflow: hidden; }
+.nt-fx-tile-n > i { font-size: 10px; color: var(--nk-ouro); flex: 0 0 auto; }
+.nt-fx-tile.on .nt-fx-tile-n { color: var(--nk-texto); }
+.nt-c > span:first-child .nt-fx-qt { margin-right: auto; font-size: 11px; color: var(--nk-suave); opacity: .8; }
+.nt-fx-dica { margin: 2px 0 0; font: 12.5px/1.4 Signika, sans-serif; color: var(--nk-suave); display: flex; gap: 7px; align-items: baseline; }
+.nt-fx-dica > i { color: var(--nk-ouro); font-size: 11.5px; flex: 0 0 auto; }
+.nt-fx-dica b { color: var(--nk-texto); }
+.nt-fx-sem { margin: 0; height: 32px; display: flex; align-items: center; font: italic 12.5px Signika, sans-serif; color: var(--nk-suave); }
+.nauren-kit button.nt-fx-resumo { cursor: pointer; justify-content: flex-start; }
+.nauren-kit button.nt-fx-resumo > span { flex: 1 1 auto; min-width: 0; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nauren-kit button.nt-fx-resumo > i:last-child { color: var(--nk-suave); font-size: 10px; }
