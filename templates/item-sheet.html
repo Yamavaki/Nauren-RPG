@@ -4078,6 +4078,9 @@
       {{#if (eq system.motion "cor")}}<div class="field"><label>Cor</label><input type="color" name="system.motionCor" value="{{system.motionCor}}"></div>{{/if}}
     </div>
     {{#if (eq system.motion "auto")}}<p class="item-meta-hint" style="margin: 4px 0 0;">Automático agora: <b>{{motionCondicaoAuto}}</b>.</p>{{/if}}
+    <div class="field-grid cols-2" style="margin-top: 6px;">
+      <div class="field"><label title="Enquanto a Condição durar, a moldura do token (Borda do token, modelos do Nauren) ganha uma aura nesta cor. Vazio = não muda.">Aura da moldura</label><div style="display:flex;gap:6px;align-items:center"><input type="color" value="{{#if system.molduraCor}}{{system.molduraCor}}{{else}}#ffffff{{/if}}" data-moldura-cor-picker><input type="text" name="system.molduraCor" value="{{system.molduraCor}}" placeholder="sem aura" style="flex:1"></div></div>
+    </div>
   </div>
   {{/if}}
   {{#if isCondicao}}

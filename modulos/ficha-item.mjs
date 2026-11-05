@@ -1505,6 +1505,8 @@ class NaurenItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
   _onRender(context, options) {
     // Campos de fórmula: botão ƒ com os termos disponíveis (insere no cursor).
     naurenBotoesDeFormula(this.element, { actor: this.item.actor ?? null, item: this.item });
+    // 0.103: seletor de cor da aura da moldura (Condição) escreve no campo de texto ao lado.
+    this.element.querySelectorAll("[data-moldura-cor-picker]").forEach(p => p.addEventListener("input", () => { const t = p.parentElement?.querySelector('input[name="system.molduraCor"]'); if (t) { t.value = p.value; t.dispatchEvent(new Event("change", { bubbles: true })); } }));
     // Dicas longas ficam em 2 linhas; clicar abre o resto.
     this.element.querySelectorAll(".item-meta-hint").forEach(p => {
       if (p.dataset.naurenDica) return;

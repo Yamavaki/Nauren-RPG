@@ -4,6 +4,9 @@ import { naurenArteInit, naurenNomeVisivel, naurenNomeOculto, naurenMostrarArteA
 import { naurenChatInit, naurenChatPintarBalao, naurenChatBalao } from "./modulos/chat.mjs";
 import { naurenArmazemInit, naurenArmazemHooks, NaurenArmazemJanela, NaurenArmazemSheet, naurenArmazemPedir, naurenArmazemPontosDaCena, naurenArmazemDistancia, naurenArmazemPreco, naurenArmazemColocarNoMapa } from "./modulos/armazenamento.mjs";
 import { naurenTreinosInit, naurenTreinarSeguirOExemplo, naurenRecebidosSeguirOExemplo } from "./modulos/treinos.mjs";
+import { NAUREN_MOLDURA_MODELOS, NAUREN_MOLDURA_PALETAS, NAUREN_MOLDURA_EFEITOS, naurenMolduraModelo, naurenMolduraSvg, naurenMolduraMascaraPath, naurenMolduraNormalizar, naurenMolduraConfigPadrao, naurenMolduraEstado, naurenMolduraRaioDoPath } from "./modulos/molduras-modelos.mjs";
+import { naurenMoldurasInit, naurenMoldurasHooks, naurenMolduraEhNauren, naurenMolduraDe, naurenMolduraPrepararPrevia, naurenMolduraDesenharPrevia, naurenMolduraProcessarImagem, naurenMolduraExtensao, naurenMolduraCamadaDe, naurenMolduraTodas, naurenMolduraAnexar, naurenMolduraPiscar, NaurenMolduraCamada, naurenMolduraMascaraCanvas, naurenMolduraTick } from "./modulos/molduras-token.mjs";
+import { NaurenMolduraEditor, naurenAbrirMolduraEditor } from "./modulos/molduras-editor.mjs";
 import { naurenEscolherIcone, naurenLigarSeletorIcones, naurenListaIcones } from "./modulos/seletor-icones.mjs";
 import { NAUREN_EFEITOS_TIER, NAUREN_RARIDADES_PADRAO, naurenItensComTier, naurenRaridadesDoMundo, NAUREN_TIERS_PADRAO, NaurenTiersEditor, naurenCatalogoDoItem, naurenCondicoesEmbutidas, naurenContextoCatalogo, naurenEmbutirCondicao, naurenItensCatalogoHooks, naurenItensCatalogoInit, naurenNormalizarTier, naurenSeloDoItem, naurenSeloTierHtml, naurenSincronizarCondicoesDoItem, naurenTiersDoMundo, naurenTorreDoCatalogo } from "./modulos/itens-catalogo.mjs";
 import { naurenRotuloQuando, NAUREN_SCRIPT_API, NaurenScriptEditorJanela, naurenAprovarScripts, naurenAssinaturaScript, naurenItensScriptsHooks, naurenItensScriptsInit, naurenRealcarCodigo, naurenRodarScript, naurenScriptAprovado, naurenScriptsDoItem, naurenExecutarScriptBotao } from "./modulos/itens-scripts.mjs";
@@ -3122,6 +3125,7 @@ class NaurenCondicaoData extends foundry.abstract.TypeDataModel {
       // 0.94.16: aparência do token enquanto a Condição durar (Sequencer Motion) - ver NAUREN_MOTION_CONDICAO_OPCOES.
       motion: new StringField({ initial: "auto" }),
       motionCor: new StringField({ initial: "#ffffff" }),
+      molduraCor: new StringField({ initial: "" }), // 0.103: enquanto a Condição durar, a aura da moldura do token fica nesta cor ("" = não muda)
       pagarMovimentoCom: new ArrayField(new SchemaField({ recurso: new StringField({ initial: "mana" }), quantidade: new StringField({ initial: "1" }) })),
       proximaAcaoEscolherAcertoOuDano: new BooleanField({ initial: false }), // o bônus de dano pode ir para o acerto: pergunta ao usar (ex.: Poesia Lunar)
       danoRecebidoPercentual: new NumberField({ initial: 0, min: 0, max: 100, integer: true }), // reduz o dano recebido em % (ex.: Instinto de Sobrevivência: 50)
@@ -7927,6 +7931,7 @@ Hooks.once("init", () => {
   naurenItensScriptsInit(); // 0.102: scripts dos itens (modulos/itens-scripts.mjs)
   naurenItensScriptsHooks();
   naurenTreinosInit(); // 0.102.4: Seguir o Exemplo (modulos/treinos.mjs)
+  naurenMoldurasInit(); naurenMoldurasHooks(); // 0.103: molduras de token (modulos/molduras-token.mjs)
   naurenChatInit(); // 0.99.2: chat no estilo do sistema (modulos/chat.mjs)
   naurenArteInit(); // 0.100: arte do personagem ao passar o mouse no token (modulos/arte-hover.mjs)
 
@@ -13075,7 +13080,7 @@ Hooks.on("renderTokenHUD", (hud, html) => {
   if (tokenDoc?.isOwner) {
     const borda = document.createElement("button");
     borda.type = "button";
-    borda.className = `control-icon nauren-hud-borda-btn${tokenDoc.getFlag("nauren", "borda")?.ativa && tokenDoc.ring?.enabled ? " active" : ""}`;
+    borda.className = `control-icon nauren-hud-borda-btn${tokenDoc.getFlag("nauren", "borda")?.ativa && (tokenDoc.ring?.enabled || naurenMolduraEhNauren(tokenDoc.getFlag("nauren", "borda"))) ? " active" : ""}`;
     borda.title = "Borda do token";
     borda.innerHTML = '<i class="fas fa-circle-dot"></i>';
     borda.addEventListener("click", ev => { ev.preventDefault(); naurenAbrirBorda(actor, { tokenDoc }); });

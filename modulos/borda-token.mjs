@@ -15,6 +15,8 @@ import { NaurenToken, naurenCardMovimento, naurenConsumirUsoDaHabilidade, nauren
  * (NaurenToken#_draw). A borda pisca na cor do dano / da cura quando a Vida muda
  * (TokenRing#flashColor, a mesma animação do Foundry).
  * ==================================================================== */
+import { naurenMolduraNormalizar, naurenMolduraMascaraPath, naurenMolduraRaioDoPath } from "./molduras-modelos.mjs";
+import { naurenMolduraVb, naurenMolduraProcessarImagem, naurenMolduraPiscar, naurenMolduraDesenharPrevia, naurenMolduraPrepararPrevia, naurenMolduraEhNauren } from "./molduras-token.mjs";
 const NAUREN_BORDA_PADRAO = Object.freeze({
   ativa: false, src: "", x: 50, y: 50, zoom: 1, recorte: "redondo",
   corBorda: "#cca162", corFundo: "#1b1729", corDano: "#ff2a2a", corCura: "#3ddc6a",
@@ -23,7 +25,9 @@ const NAUREN_BORDA_PADRAO = Object.freeze({
   borda: 1,      // tamanho da borda em casas (1 = encosta na casa)
   cores: null,   // cores da borda (1 a 5); com 2+ a borda vira gradiente (e com 3+ as cores vão passando)
   mascara: [],   // traços do pincel: { m: "mostrar"|"esconder", d: "duro"|"suave", r, p: [x,y,...] } em casas a partir do centro
-  pedra: null    // cor da moldura (a parte cinza da borda): { colorir, cor, forca, matiz, saturacao, brilho, contraste }
+  pedra: null,   // cor da moldura (a parte cinza da borda): { colorir, cor, forca, matiz, saturacao, brilho, contraste }
+  modelo: "foundry", // "foundry" = borda dinâmica do Foundry; id de um modelo Nauren ou "imagem" = moldura do Nauren (0.103)
+  moldura: null  // opções da moldura Nauren (ver molduras-modelos.mjs: paleta, cores, máscara, efeitos, reações, vb/ext/raio medidos)
 });
 const NAUREN_BORDA_PEDRA_PADRAO = Object.freeze({ colorir: false, cor: "#b0703a", forca: 0.8, matiz: 0, saturacao: 1, brilho: 1, contraste: 1 });
 /** Ajustes da moldura, já limpos. */
@@ -81,6 +85,19 @@ function naurenBordaConfig(origem) {
   cfg.corBorda = cfg.cores[0];
   if (cfg.recorte !== "livre") cfg.recorte = "redondo";
   cfg.pedra = naurenBordaPedraConfig(salvo.pedra);
+  // 0.103: moldura Nauren
+  cfg.modelo = typeof salvo.modelo === "string" && salvo.modelo ? salvo.modelo : "foundry";
+  if (cfg.modelo !== "foundry") {
+    const m = naurenMolduraNormalizar({ ...(salvo.moldura ?? {}), modelo: cfg.modelo });
+    const med = salvo.moldura ?? {};
+    m.vb = Math.max(80, Math.min(260, Number(med.vb) || naurenMolduraVb(m)));
+    m.ext = Math.max(60, Math.min(240, Number(med.ext) || m.vb / 1.08));
+    m.raio = Math.max(20, Math.min(240, Number(med.raio) || (m.modelo === "imagem" ? 70 : naurenMolduraRaioDoPath(naurenMolduraMascaraPath(m)))));
+    cfg.moldura = m;
+    cfg.recorte = "redondo";
+    cfg.arte = m.vb / 100; // a textura do token cobre o quadro inteiro da moldura
+    cfg.escala = 1; cfg.borda = m.ext / 100;
+  } else cfg.moldura = null;
   return cfg;
 }
 
@@ -119,6 +136,7 @@ async function naurenAvisarSeLinkBloqueado(link, uso = "token") {
 function naurenBordaCodigo(cfg) {
   const texto = [cfg.src, cfg.x.toFixed(1), cfg.y.toFixed(1), cfg.zoom.toFixed(3), cfg.recorte, Number(cfg.escala || 1).toFixed(3),
     Number(cfg.arte || 1).toFixed(3), Number(cfg.borda || 1).toFixed(3), JSON.stringify(cfg.mascara ?? []),
+    ...(cfg.modelo && cfg.modelo !== "foundry" ? [cfg.modelo, cfg.moldura?.mascara, cfg.moldura?.escala, cfg.moldura?.vb, cfg.moldura?.raio, JSON.stringify(cfg.moldura?.imagem ?? null)] : []),
     // a moldura colorida vai dentro do recorte: entra no código (e o tamanho da borda junto)
     ...(naurenBordaPedraNeutra(cfg.pedra) ? [] : [JSON.stringify(cfg.pedra), Number(cfg.tamGrade) || 1])].join("|");
   // (as cores não entram: mudar cor não precisa refazer o recorte)
@@ -165,10 +183,12 @@ function naurenBordaCarregarImagem(src) {
  *   qualquer que seja a arte ou a borda), com zoom e posição (x, y em %, como object-position).
  */
 function naurenBordaDiametro(S, cfg) {
+  if (cfg?.moldura && cfg.modelo !== "foundry") return S * cfg.moldura.raio / cfg.moldura.vb;
   const e = Math.max(0.5, Number(cfg?.escala) || 1);
   return Math.min(S, S * NAUREN_BORDA_DIAMETRO / e * (cfg?.recorte === "redondo" ? NAUREN_BORDA_FOLGA : 1));
 }
 function naurenBordaCaixaImagem(S, cfg) {
+  if (cfg?.moldura && cfg.modelo !== "foundry") return S * cfg.moldura.raio / cfg.moldura.vb; // a arte cobre o quadro da máscara
   const e = Math.max(0.5, Number(cfg?.escala) || 1), b = Math.max(0.3, Number(cfg?.borda) || 1);
   return S * NAUREN_BORDA_DIAMETRO / (e * b);
 }
@@ -247,8 +267,19 @@ function naurenBordaPintarTraco(ctx, traco, S, arte) {
 function naurenBordaMascara(S, cfg) {
   const m = document.createElement("canvas"); m.width = m.height = S;
   const x = m.getContext("2d");
-  const D = naurenBordaDiametro(S, cfg);
-  x.fillStyle = "#000"; x.beginPath(); x.arc(S / 2, S / 2, D / 2, 0, Math.PI * 2); x.fill();
+  if (cfg.moldura && cfg.modelo !== "foundry") {
+    // Moldura Nauren: a máscara é a forma do modelo (normal = buraco, expandida = contorno de fora) ou o
+    // raster da imagem própria (processada antes, em naurenBordaGarantirTextura/na prévia).
+    const mo = cfg.moldura, k = S / (2 * mo.vb);
+    if (mo.modelo === "imagem") {
+      const r = cfg._imagemProcessada;
+      if (r) { const mk = mo.mascara === "expandida" ? r.mascaraExpandida : r.mascaraNormal; const lado = 200 * mo.imagem.tamanho * k; x.drawImage(mk, S / 2 - lado / 2, S / 2 - lado / 2, lado, lado); }
+      else { x.fillStyle = "#000"; x.beginPath(); x.arc(S / 2, S / 2, 70 * k, 0, Math.PI * 2); x.fill(); }
+    } else { x.save(); x.translate(S / 2, S / 2); x.scale(k, k); x.fillStyle = "#000"; x.fill(new Path2D(naurenMolduraMascaraPath(mo))); x.restore(); }
+  } else {
+    const D = naurenBordaDiametro(S, cfg);
+    x.fillStyle = "#000"; x.beginPath(); x.arc(S / 2, S / 2, D / 2, 0, Math.PI * 2); x.fill();
+  }
   for (const t of cfg.mascara ?? []) naurenBordaPintarTraco(x, t, S, cfg.arte);
   return m;
 }
@@ -321,7 +352,11 @@ async function naurenBordaGarantirTextura(chave, cfg, tam) {
   if (naurenBordaGerando.has(id)) return naurenBordaGerando.get(id);
   const p = (async () => {
     const img = await naurenBordaCarregarImagem(cfg.src);
-    const folha = naurenBordaPedraNeutra(cfg.pedra) ? null : await naurenBordaFolha().catch(() => null);
+    if (cfg.moldura?.modelo === "imagem" && cfg.moldura.imagem?.src) {
+      const fr = await naurenBordaCarregarImagem(cfg.moldura.imagem.src).catch(() => null);
+      if (fr) cfg = { ...cfg, _imagemProcessada: naurenMolduraProcessarImagem(fr, cfg.moldura.imagem) };
+    }
+    const folha = cfg.modelo !== "foundry" || naurenBordaPedraNeutra(cfg.pedra) ? null : await naurenBordaFolha().catch(() => null);
     const cnv = naurenBordaGerarCanvas(img, tam, cfg, folha);
     const base = new PIXI.BaseTexture(cnv);
     naurenBordaTexturas.set(chave, { base, tam });
@@ -334,10 +369,12 @@ async function naurenBordaGarantirTextura(chave, cfg, tam) {
 
 /** Antes de o Foundry desenhar o token: deixa o recorte pronto no cache (chamado por NaurenToken#_draw). */
 async function naurenBordaPrepararSujeito(doc) {
-  if (!doc?.ring?.enabled) return;
-  const chave = doc.ring.subject?.texture;
+  const flag = doc?.getFlag?.("nauren", "borda");
+  const nauren = naurenMolduraEhNauren(flag);
+  if (!nauren && !doc?.ring?.enabled) return;
+  const chave = nauren ? doc.texture?.src : doc.ring.subject?.texture;
   if (!naurenBordaEhChave(chave) || naurenBordaFalhas.has(chave)) return;
-  const cfg = { ...naurenBordaConfig(doc), escala: Number(doc.ring.subject?.scale) || 1, tamGrade: naurenBordaTamGrade(doc) };
+  const cfg = { ...naurenBordaConfig(doc), escala: nauren ? 1 : (Number(doc.ring.subject?.scale) || 1), tamGrade: naurenBordaTamGrade(doc) };
   if (!cfg.src) return;
   try { await naurenBordaGarantirTextura(chave, cfg, naurenBordaTamanhoTextura(doc, cfg.arte)); }
   catch (err) {
@@ -350,6 +387,13 @@ async function naurenBordaPrepararSujeito(doc) {
 /** Pisca a borda na cor do dano (Vida desceu) ou da cura (subiu). Só na tela de quem vê o token. */
 function naurenBordaPiscar(token, dano) {
   try {
+    const flag = token?.document?.getFlag?.("nauren", "borda");
+    if (naurenMolduraEhNauren(flag)) {
+      if (!token.visible || !naurenHudAnimacoesLigadas()) return false;
+      const cfgN = naurenBordaConfig(token.document), r = cfgN.moldura?.reacoes ?? {};
+      if (dano ? r.dano === false : r.cura === false) return false;
+      return naurenMolduraPiscar(token, dano ? cfgN.corDano : cfgN.corCura);
+    }
     const ring = token?.ring;
     if (!ring?.flashColor || !token.document?.ring?.enabled || !token.visible) return false;
     if (!naurenHudAnimacoesLigadas()) return false;
@@ -444,11 +488,11 @@ async function naurenBordaEscalaPara(tamGrade = 1) {
 /** Caixa visível do token: com a borda, as barras do HUD se encostam no círculo da borda, não no quadrado da casa. */
 function naurenBordaCaixaVisual(token) {
   const w = token.w, h = token.h;
-  if (!token.document?.ring?.enabled) return { x: 0, y: 0, w, h };
+  if (!token.document?.ring?.enabled && !naurenMolduraEhNauren(token.document?.getFlag?.("nauren", "borda"))) return { x: 0, y: 0, w, h };
   let ajuste = 100; try { ajuste = Number(game.settings.get("nauren", "bordaEncaixeBarras")) || 100; } catch (err) { ajuste = 100; }
   const cfgB = token.document.getFlag?.("nauren", "borda");
   // Borda do Nauren: o tamanho da borda em casas é o que foi escolhido na janela.
-  const base = cfgB?.ativa ? naurenBordaConfig(token.document).borda
+  const base = cfgB?.ativa ? (naurenMolduraEhNauren(cfgB) ? naurenBordaConfig(token.document).moldura.ext / 100 : naurenBordaConfig(token.document).borda)
     : naurenBordaRaioDoToken(token.document) / Math.max(0.1, Number(token.document.ring.subject?.scale) || 1) * Math.abs(Number(token.document.texture?.scaleX) || 1);
   const f = Math.max(0.3, Math.min(1.5, base * ajuste / 100));
   const nw = w * f, nh = h * f;
@@ -458,7 +502,12 @@ function naurenBordaCaixaVisual(token) {
 /** Dados de token (ring + flags) para uma configuração. */
 function naurenBordaDadosToken(cfg, raio = 1, tamGrade = 1) {
   const E = naurenBordaBits();
-  if (!cfg.ativa) return { "ring.enabled": false, "flags.nauren.borda": cfg, ...(Number(cfg.arte) > 1 ? { "texture.scaleX": 1, "texture.scaleY": 1 } : {}) };
+  if (!cfg.ativa) return { "ring.enabled": false, "flags.nauren.borda": cfg, "texture.scaleX": 1, "texture.scaleY": 1, lockRotation: false };
+  if (naurenMolduraEhNauren(cfg)) {
+    // Moldura Nauren: sem a borda dinâmica; a textura do token é o recorte na forma da moldura, cobrindo o quadro inteiro (vb).
+    const arte = cfg.moldura.vb / 100;
+    return { "ring.enabled": false, "texture.src": naurenBordaChave({ ...cfg, escala: 1, tamGrade }), "texture.scaleX": arte, "texture.scaleY": arte, lockRotation: true, "flags.nauren.borda": cfg };
+  }
   // A arte cobre "arte" casas (escala do token); a borda fica com "borda" casas (Correção de Escala).
   const arte = Math.max(1, Number(cfg.arte) || 1), borda = Math.max(0.5, Number(cfg.borda) || 1);
   const escala = Math.max(0.5, Math.round(arte * raio / borda * 1000) / 1000);
@@ -481,7 +530,11 @@ async function naurenBordaDadosPreparados(cfg, doc) {
   const tamGrade = naurenBordaTamGrade(doc);
   const raio = await naurenBordaEscalaPara(tamGrade);
   const dados = naurenBordaDadosToken(cfg, raio, tamGrade);
-  if (cfg.ativa) await naurenBordaGarantirTextura(dados["ring.subject.texture"], { ...cfg, escala: dados["ring.subject.scale"], tamGrade }, naurenBordaTamanhoTextura(doc, cfg.arte)).catch(() => null);
+  const nauren = cfg.ativa && naurenMolduraEhNauren(cfg);
+  // Saindo de uma moldura Nauren (para a do Foundry ou para "sem borda"): a imagem do token volta a ser a original.
+  if (!nauren && naurenBordaEhChave(doc?.texture?.src)) dados["texture.src"] = String(doc.texture.src).replace(/([?&])nauren-borda=[^&]*&?/, "$1").replace(/[?&]$/, "");
+  if (nauren) await naurenBordaGarantirTextura(dados["texture.src"], { ...cfg, escala: 1, tamGrade }, naurenBordaTamanhoTextura(doc, cfg.arte)).catch(() => null);
+  else if (cfg.ativa) await naurenBordaGarantirTextura(dados["ring.subject.texture"], { ...cfg, escala: dados["ring.subject.scale"], tamGrade }, naurenBordaTamanhoTextura(doc, cfg.arte)).catch(() => null);
   return dados;
 }
 /** Tamanho do token na grade (o menor lado, como o TokenRing). */
@@ -729,8 +782,13 @@ function naurenBordaDesenharPrevia(cnv, img, cfg, { piscar = null, folha = null,
 /** Prévia pequena em data URL (usada no Criador de Personagem): o token como fica no mapa, sem as guias do editor. */
 async function naurenBordaPreviaDataUrl(cfg, tamanho = 160) {
   const img = await naurenBordaCarregarImagem(cfg.src).catch(() => null);
-  const folha = await naurenBordaFolha().catch(() => null);
   const cnv = document.createElement("canvas"); cnv.width = cnv.height = tamanho;
+  if (naurenMolduraEhNauren(cfg)) {
+    const tex = await naurenMolduraPrepararPrevia(cfg, Math.max(256, tamanho), naurenBordaCarregarImagem).catch(() => null);
+    naurenMolduraDesenharPrevia(cnv, img, cfg, tex, { guias: false, fundo: null, desenharImagem: naurenBordaDesenharImagem, pintarTraco: naurenBordaPintarTraco, extra: { animar: false } });
+    try { return cnv.toDataURL("image/png"); } catch (err) { return null; }
+  }
+  const folha = await naurenBordaFolha().catch(() => null);
   naurenBordaDesenharPrevia(cnv, img, cfg, { folha, tamGrade: Number(cfg.tamGrade) || 1, guias: false });
   try { return cnv.toDataURL("image/png"); } catch (err) { return null; }
 }
@@ -754,420 +812,9 @@ async function naurenBordaPreviaDoAtor(actor, tamanho = 160) {
  * Devolve a configuração salva (ou null se cancelou).
  */
 async function naurenAbrirBorda(actor, { tokenDoc = null, srcInicial = "" } = {}) {
-  if (!actor) return null;
-  const origem = tokenDoc ?? actor.prototypeToken ?? actor;
-  const salvo = tokenDoc?.getFlag?.("nauren", "borda") ?? actor.getFlag("nauren", "borda");
-  const cfg = naurenBordaConfig(salvo ? { flags: { nauren: { borda: salvo } } } : origem);
-  const imgToken = tokenDoc?.texture?.src ?? actor.prototypeToken?.texture?.src ?? "";
-  if (!cfg.src) cfg.src = srcInicial || imgToken || actor.img || "";
-  const tinhaBorda = !!salvo?.ativa;
-  const qtdTokens = naurenBordaTokensDaFicha(actor).filter(td => td !== tokenDoc).length;
-  const podeNavegar = game.user.can?.("FILES_BROWSE");
-  const esc = v => foundry.utils.escapeHTML(String(v ?? ""));
-  let P = 480; // resolução da prévia (muda com o tamanho da janela)
-  const cor = (nome, rotulo, dica) => `<label class="nauren-borda-cor" title="${esc(dica)}"><input type="color" name="${nome}" value="${esc(cfg[nome])}"><span>${rotulo}</span></label>`;
-  const conteudo = `<div class="nauren-borda">
-    <div class="nauren-borda-col-previa">
-      <div class="nauren-borda-palco"><div class="nauren-borda-carregando" hidden><i class="fas fa-spinner fa-spin"></i></div></div>
-      <div class="nauren-borda-zoom">
-        <i class="fas fa-magnifying-glass-minus"></i>
-        <input type="range" name="zoom" min="0.5" max="4" step="0.01" value="${cfg.zoom}">
-        <i class="fas fa-magnifying-glass-plus"></i>
-        <button type="button" class="nauren-borda-centro" title="Centralizar a imagem"><i class="fas fa-crosshairs"></i></button>
-      </div>
-      <p class="nauren-borda-dica nauren-borda-dica-modo">Arraste para enquadrar · roda do mouse = zoom</p>
-      <div class="nauren-borda-testes">
-        <button type="button" class="nauren-borda-teste" data-tipo="dano"><i class="fas fa-heart-crack"></i> Testar dano</button>
-        <button type="button" class="nauren-borda-teste" data-tipo="cura"><i class="fas fa-heart-pulse"></i> Testar cura</button>
-      </div>
-    </div>
-    <div class="nauren-borda-col-opcoes">
-      <nav class="nauren-borda-abas">
-        <button type="button" data-aba="imagem" class="ativo"><i class="fas fa-image"></i> Imagem</button>
-        <button type="button" data-aba="pincel"><i class="fas fa-paintbrush"></i> Pincel</button>
-        <button type="button" data-aba="cores"><i class="fas fa-palette"></i> Cores</button>
-      </nav>
-
-      <section class="nauren-borda-aba" data-aba="imagem">
-        <div class="nauren-borda-grupo">
-          <span class="nauren-borda-rotulo">Imagem</span>
-          <div class="nauren-borda-linha">
-            <input type="text" name="src" value="${esc(cfg.src)}" placeholder="arquivo do servidor ou link (ex.: Imgur)" autocomplete="off">
-            ${podeNavegar ? `<button type="button" class="nauren-borda-procurar" title="Escolher arquivo"><i class="fas fa-folder-open"></i></button>` : ""}
-          </div>
-          <div class="nauren-borda-atalhos">
-            ${imgToken ? `<button type="button" data-usar="${esc(imgToken)}"><i class="fas fa-circle-user"></i> Imagem do token</button>` : ""}
-            ${actor.img && actor.img !== imgToken ? `<button type="button" data-usar="${esc(actor.img)}"><i class="fas fa-image"></i> Retrato</button>` : ""}
-          </div>
-          <p class="nauren-borda-aviso" hidden></p>
-        </div>
-        <div class="nauren-borda-grupo">
-          <span class="nauren-borda-rotulo">Recorte</span>
-          <div class="nauren-borda-botoes" data-grupo="recorte">
-            <button type="button" data-recorte="redondo" class="${cfg.recorte === "redondo" ? "ativo" : ""}" title="A imagem fica dentro do círculo; com o Pincel você escolhe o que sai da borda"><i class="fas fa-circle"></i> Redondo</button>
-            <button type="button" data-recorte="livre" class="${cfg.recorte === "livre" ? "ativo" : ""}" title="Para PNG com fundo transparente: a imagem fica como é e pode sair da borda"><i class="fas fa-shapes"></i> Sem fundo (PNG)</button>
-          </div>
-        </div>
-        <div class="nauren-borda-grupo">
-          <span class="nauren-borda-rotulo">Tamanho no mapa</span>
-          <label class="nauren-borda-escala" title="Quanto a arte pode passar da casa no mapa (100% = só a casa)">Arte <input type="range" name="arte" min="1" max="1.6" step="0.01" value="${cfg.arte}"><output>${Math.round(cfg.arte * 100)}%</output></label>
-          <label class="nauren-borda-escala" title="Tamanho da borda dentro da casa (100% = encosta nas linhas)">Borda <input type="range" name="borda" min="0.5" max="1" step="0.01" value="${cfg.borda}"><output>${Math.round(cfg.borda * 100)}%</output></label>
-          <p class="nauren-borda-dica">O quadrado tracejado na prévia é a casa do mapa.</p>
-        </div>
-      </section>
-
-      <section class="nauren-borda-aba" data-aba="pincel" hidden>
-        <p class="nauren-borda-dica nauren-borda-so-redondo">O pincel é para o recorte "Redondo": pinte o que deve sair da borda (cabeça, arma, escudo...).</p>
-        <div class="nauren-borda-grupo">
-          <span class="nauren-borda-rotulo">Ferramenta</span>
-          <div class="nauren-borda-botoes" data-grupo="modo">
-            <button type="button" data-modo="mover" class="ativo" title="Arrastar para enquadrar a imagem"><i class="fas fa-up-down-left-right"></i> Mover</button>
-            <button type="button" data-modo="mostrar" title="Pintar as partes da imagem que aparecem fora do círculo"><i class="fas fa-paintbrush"></i> Mostrar</button>
-            <button type="button" data-modo="esconder" title="Apagar partes (fora ou dentro do círculo)"><i class="fas fa-eraser"></i> Esconder</button>
-          </div>
-        </div>
-        <div class="nauren-borda-grupo">
-          <span class="nauren-borda-rotulo">Ponta</span>
-          <div class="nauren-borda-botoes" data-grupo="ponta">
-            <button type="button" data-ponta="duro" class="ativo" title="Borda definida"><i class="fas fa-circle"></i> Dura</button>
-            <button type="button" data-ponta="suave" title="Borda esfumada"><i class="fas fa-circle-half-stroke"></i> Suave</button>
-          </div>
-          <label class="nauren-borda-escala">Tamanho <input type="range" name="pincel" min="0.01" max="0.25" step="0.005" value="0.06"><output>6</output></label>
-          <label class="nauren-borda-escala nauren-borda-so-suave" title="Quanto da ponta suave é esfumada">Suavidade <input type="range" name="suavidade" min="0.05" max="1" step="0.05" value="0.55"><output>55%</output></label>
-        </div>
-        <div class="nauren-borda-grupo">
-          <span class="nauren-borda-rotulo">Guia</span>
-          <label class="nauren-borda-check" title="Mostra a imagem inteira, transparente, por baixo: para saber onde pintar (só na prévia)"><input type="checkbox" name="fantasma" checked> Mostrar a imagem inteira por baixo</label>
-          <label class="nauren-borda-escala">Opacidade <input type="range" name="fantasmaOpacidade" min="0.05" max="0.8" step="0.05" value="0.3"><output>30%</output></label>
-        </div>
-        <div class="nauren-borda-botoes">
-          <button type="button" class="nauren-borda-desfazer" title="Desfazer o último traço (Ctrl+Z)"><i class="fas fa-rotate-left"></i> Desfazer</button>
-          <button type="button" class="nauren-borda-refazer" title="Refazer (Ctrl+Y ou Ctrl+Shift+Z)"><i class="fas fa-rotate-right"></i> Refazer</button>
-          <button type="button" class="nauren-borda-limpar" title="Apagar todos os traços"><i class="fas fa-circle-notch"></i> Voltar ao círculo</button>
-        </div>
-      </section>
-
-      <section class="nauren-borda-aba" data-aba="cores" hidden>
-        <div class="nauren-borda-grupo">
-          <span class="nauren-borda-rotulo">Cores da borda</span>
-          <div class="nauren-borda-paleta"></div>
-          <p class="nauren-borda-dica nauren-borda-dica-cores"></p>
-        </div>
-        <div class="nauren-borda-grupo nauren-borda-pedra">
-          <span class="nauren-borda-rotulo">Moldura</span>
-          <div class="nauren-borda-pedra-colorir">
-            <label class="nauren-borda-check" title="Pinta a moldura mantendo a luz e a sombra da pedra"><input type="checkbox" data-pedra="colorir" ${cfg.pedra.colorir ? "checked" : ""}> Colorir</label>
-            <input type="color" data-pedra="cor" value="${esc(cfg.pedra.cor)}" title="Cor da moldura">
-          </div>
-          ${[["forca", "Força", 0, 1, 0.05], ["matiz", "Matiz", -180, 180, 1], ["saturacao", "Saturação", 0, 2, 0.05], ["brilho", "Brilho", 0.3, 2, 0.05], ["contraste", "Contraste", 0.5, 2, 0.05]].map(([k, rot, a, b, passo]) =>
-            `<label class="nauren-borda-escala">${rot} <input type="range" data-pedra="${k}" min="${a}" max="${b}" step="${passo}" value="${cfg.pedra[k]}"><output></output></label>`).join("")}
-          <div class="nauren-borda-botoes"><button type="button" class="nauren-borda-pedra-original" title="Volta à moldura do Foundry, sem ajustes"><i class="fas fa-rotate-left"></i> Moldura original</button></div>
-          <p class="nauren-borda-dica">A pedra é cinza: use "Colorir" para dar cor. "Matiz" troca a cor depois de colorida.</p>
-        </div>
-        <div class="nauren-borda-grupo">
-          <span class="nauren-borda-rotulo">Fundo e piscar</span>
-          <div class="nauren-borda-cores">
-            ${cor("corFundo", "Fundo", "Cor do fundo atrás da imagem (com 2+ cores na borda, o fundo usa a 2ª cor)")}
-            ${cor("corDano", "Ao tomar dano", "A borda pisca nesta cor quando a Vida desce")}
-            ${cor("corCura", "Ao ser curado", "A borda pisca nesta cor quando a Vida sobe")}
-          </div>
-        </div>
-        <div class="nauren-borda-grupo">
-          <span class="nauren-borda-rotulo">Efeitos</span>
-          <div class="nauren-borda-efeitos">${Object.entries(NAUREN_BORDA_EFEITOS).map(([k, e]) =>
-            `<label class="nauren-borda-check" title="${esc(e.dica)}"><input type="checkbox" name="ef-${k}" ${cfg.efeitos.includes(k) ? "checked" : ""}> ${e.rotulo}</label>`).join("")}</div>
-        </div>
-      </section>
-
-      <div class="nauren-borda-rodape">
-        ${qtdTokens ? `<label class="nauren-borda-check nauren-borda-tokens"><input type="checkbox" name="nosTokens" checked> ${qtdTokens === 1 ? "Aplicar também no token desta ficha que já está no mapa" : `Aplicar também nos ${qtdTokens} tokens desta ficha já colocados nas cenas`}</label>` : ""}
-        <button type="button" class="nauren-borda-remover" ${tinhaBorda ? "" : `disabled title="Este token ainda não tem borda salva: depois de usar uma borda, este botão tira ela."`}><i class="fas fa-ban"></i> Remover a borda</button>
-      </div>
-    </div>
-  </div>`;
-
-  const estado = { ...cfg, efeitos: [...cfg.efeitos], cores: [...cfg.cores], mascara: cfg.mascara.map(t => ({ ...t, p: [...t.p] })), pedra: { ...cfg.pedra } };
-  let img = null, imgOk = false, acao = null, nosTokens = qtdTokens > 0;
-  let animFlash = null;
-  const resultado = await foundry.applications.api.DialogV2.wait({
-    window: { title: `Borda do token · ${actor.name}`, icon: "fas fa-circle-dot", resizable: true },
-    classes: ["nauren-borda-janela"], naurenAtorUuid: actor?.uuid ?? null,
-    position: { width: Math.min(900, Math.max(640, window.innerWidth - 80)), height: Math.max(560, Math.min(window.innerHeight - 60, 760)) },
-    content: conteudo,
-    buttons: [
-      { action: "salvar", label: tinhaBorda ? "Salvar" : "Usar esta borda", icon: "fas fa-check", default: true,
-        callback: () => { acao = "salvar"; return "salvar"; } },
-      { action: "cancelar", label: "Cancelar", icon: "fas fa-xmark" }
-    ],
-    rejectClose: false,
-    render: (ev, dialog) => { try {
-      const raiz = dialog.element;
-      // O Foundry limpa o HTML do conteúdo do diálogo e tira o <canvas>: a prévia é criada aqui.
-      const cnv = document.createElement("canvas");
-      cnv.width = cnv.height = P; cnv.className = "nauren-borda-canvas";
-      raiz.querySelector(".nauren-borda-palco")?.prepend(cnv);
-      const aviso = raiz.querySelector(".nauren-borda-aviso");
-      const carregando = raiz.querySelector(".nauren-borda-carregando");
-      const btnSalvar = raiz.querySelector('[data-action="salvar"]');
-      // A prévia usa a folha de bordas do próprio Foundry (a mesma do mapa).
-      let folha = null;
-      const tamGrade = Math.min(Number(tokenDoc?.width ?? actor.prototypeToken?.width) || 1, Number(tokenDoc?.height ?? actor.prototypeToken?.height) || 1);
-      // Prévia animada: redesenha sozinha enquanto houver efeito ligado ou um piscar em andamento.
-      let piscando = null, ultimoQuadro = 0;
-      const curvaPiscar = f => (Math.sin(4 * Math.PI * f - Math.PI / 2) + 1) / 2; // dois picos, como no mapa
-      let modo = "mover", ponta = "duro", raioPincel = 0.06, suavidade = 0.55, cursor = null, traco = null, abaAtual = "imagem";
-      const guia = { ligada: true, opacidade: 0.3 };
-      const refazer = []; // traços desfeitos (Ctrl+Y)
-      const desenhar = () => {
-        const agora = performance.now();
-        let piscar = null;
-        if (piscando) { const f = (agora - piscando.ini) / 1000; if (f >= 1) piscando = null; else piscar = { cor: piscando.cor, e: curvaPiscar(f) }; }
-        const fantasma = imgOk && guia.ligada && estado.recorte === "redondo" && abaAtual === "pincel" ? guia.opacidade : 0;
-        naurenBordaDesenharPrevia(cnv, imgOk ? img : null, estado, { folha, tamGrade, tempo: agora / 1000, piscar, fantasma });
-        if (cursor && modo !== "mover") {
-          // Contorno do pincel onde está o mouse.
-          const ctx = cnv.getContext("2d"), r = raioPincel * P / estado.arte;
-          ctx.save(); ctx.lineWidth = 1.5; ctx.strokeStyle = modo === "esconder" ? "rgba(255,120,110,.95)" : "rgba(255,255,255,.95)";
-          if (ponta === "suave") ctx.setLineDash([3, 3]);
-          ctx.beginPath(); ctx.arc(cursor.x, cursor.y, r, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
-        }
-      };
-      // A prévia acompanha o tamanho da janela: fica quadrada, do maior tamanho que couber, e a
-      // resolução do desenho sobe junto (para pintar com precisão).
-      const palco = raiz.querySelector(".nauren-borda-palco");
-      const ajustarTamanho = () => {
-        if (!palco?.isConnected) return;
-        const lado = Math.max(200, Math.floor(Math.min(palco.clientWidth, palco.clientHeight)));
-        cnv.style.width = cnv.style.height = `${lado}px`;
-        const novoP = Math.max(300, Math.min(1024, Math.round(lado * (window.devicePixelRatio || 1))));
-        if (Math.abs(novoP - P) >= 8) { P = novoP; cnv.width = cnv.height = P; desenhar(); }
-      };
-      if (palco && typeof ResizeObserver === "function") new ResizeObserver(() => ajustarTamanho()).observe(palco);
-      requestAnimationFrame(ajustarTamanho);
-      // Raio da borda na folha do Foundry (para a borda ocupar "borda" casas com a arte em "arte" casas).
-      let raioArte = 0.8;
-      const recalcularEscala = () => { estado.escala = Math.max(0.5, estado.arte * raioArte / estado.borda); };
-      const laco = (t) => {
-        if (!cnv.isConnected) return;
-        if ((estado.efeitos.length || estado.cores.length > 1 || piscando) && t - ultimoQuadro > 33) { ultimoQuadro = t; desenhar(); }
-        animFlash = requestAnimationFrame(laco);
-      };
-      animFlash = requestAnimationFrame(laco);
-      naurenBordaFolha().then(async f => { folha = f; raioArte = await naurenBordaEscalaPara(tamGrade); recalcularEscala(); desenhar(); }).catch(err => console.warn("Nauren RPG | Borda do token: não achei a folha de bordas do Foundry", err));
-      const avisar = (texto) => { aviso.hidden = !texto; aviso.textContent = texto ?? ""; };
-      const travarSalvar = () => { if (btnSalvar) btnSalvar.disabled = !imgOk; };
-      const carregar = async (src) => {
-        const link = naurenBordaLinkDireto(src);
-        estado.src = link;
-        const campo = raiz.querySelector('input[name="src"]'); if (campo && campo.value !== link) campo.value = link;
-        imgOk = false; img = null; travarSalvar();
-        if (!link) { avisar("Escolha um arquivo ou cole o link de uma imagem."); desenhar(); return; }
-        if (!naurenBordaLinkValido(link)) { avisar("O link precisa ser direto para a imagem: terminar em .png, .jpg, .webp ou .gif."); desenhar(); return; }
-        carregando.hidden = false;
-        try { img = await naurenBordaCarregarImagem(link); imgOk = true; avisar(""); }
-        catch (err) { avisar(naurenTextoLinkBloqueado(link)); }
-        carregando.hidden = true; travarSalvar(); desenhar();
-      };
-      // Enquadrar: arrastar e zoom
-      let arr = null;
-      const ponto = e => { const r = cnv.getBoundingClientRect(), k = P / (r.width || P); return { x: (e.clientX - r.left) * k, y: (e.clientY - r.top) * k }; };
-      const emCasas = pt => { const casa = P / estado.arte; return [Math.round((pt.x - P / 2) / casa * 1000) / 1000, Math.round((pt.y - P / 2) / casa * 1000) / 1000]; };
-      cnv.addEventListener("pointerdown", e => {
-        try { cnv.setPointerCapture(e.pointerId); } catch (err) { /* sem captura */ }
-        if (modo === "mover") { arr = { x: e.clientX, y: e.clientY, ex: estado.x, ey: estado.y }; cnv.classList.add("arrastando"); return; }
-        if (!imgOk || estado.recorte !== "redondo") { arr = { x: e.clientX, y: e.clientY, ex: estado.x, ey: estado.y }; return; }
-        traco = { m: modo, d: ponta, r: raioPincel, s: suavidade, p: emCasas(ponto(e)) };
-        refazer.length = 0;
-        estado.mascara = [...estado.mascara, traco];
-        desenhar();
-      });
-      cnv.addEventListener("pointermove", e => {
-        cursor = ponto(e);
-        if (traco) {
-          const [x, y] = emCasas(cursor), n = traco.p.length;
-          if (Math.hypot(x - traco.p[n - 2], y - traco.p[n - 1]) >= traco.r * 0.2) traco.p.push(x, y);
-          desenhar(); return;
-        }
-        if (!arr || !imgOk) { if (modo !== "mover") desenhar(); return; }
-        const B = naurenBordaCaixaImagem(P, estado);
-        const iw = img.naturalWidth, ih = img.naturalHeight, s = Math.max(B / iw, B / ih) * estado.zoom;
-        const sobraX = B - iw * s, sobraY = B - ih * s;
-        const r = cnv.getBoundingClientRect(), k = P / (r.width || P);
-        if (Math.abs(sobraX) > 0.5) estado.x = Math.max(0, Math.min(100, arr.ex + (e.clientX - arr.x) * k * 100 / sobraX));
-        if (Math.abs(sobraY) > 0.5) estado.y = Math.max(0, Math.min(100, arr.ey + (e.clientY - arr.y) * k * 100 / sobraY));
-        desenhar();
-      });
-      cnv.addEventListener("pointerleave", () => { cursor = null; if (modo !== "mover") desenhar(); });
-      const soltar = () => { arr = null; traco = null; cnv.classList.remove("arrastando"); };
-      cnv.addEventListener("pointerup", soltar); cnv.addEventListener("pointercancel", soltar);
-      const zoom = raiz.querySelector('input[name="zoom"]');
-      cnv.addEventListener("wheel", e => {
-        e.preventDefault();
-        if (modo !== "mover") { // roda do mouse no pincel = tamanho do pincel
-          raioPincel = Math.min(0.25, Math.max(0.01, raioPincel - Math.sign(e.deltaY) * 0.005));
-          const sl = raiz.querySelector('input[name="pincel"]'); if (sl) { sl.value = raioPincel; sl.nextElementSibling.value = Math.round(raioPincel * 100); }
-          desenhar(); return;
-        }
-        estado.zoom = Math.min(4, Math.max(0.5, estado.zoom - Math.sign(e.deltaY) * 0.05)); zoom.value = estado.zoom; desenhar(); }, { passive: false });
-      zoom.addEventListener("input", () => { estado.zoom = Number(zoom.value); desenhar(); });
-      raiz.querySelector(".nauren-borda-centro").addEventListener("click", () => { estado.x = 50; estado.y = 50; estado.zoom = 1; zoom.value = 1; desenhar(); });
-      // Imagem
-      const campoSrc = raiz.querySelector('input[name="src"]');
-      campoSrc.addEventListener("change", () => carregar(campoSrc.value));
-      raiz.querySelectorAll("[data-usar]").forEach(b => b.addEventListener("click", () => { estado.x = 50; estado.y = 50; carregar(b.dataset.usar); }));
-      raiz.querySelector(".nauren-borda-procurar")?.addEventListener("click", () => {
-        const FP = foundry.applications?.apps?.FilePicker?.implementation ?? globalThis.FilePicker;
-        new FP({ type: "image", current: estado.src, callback: c => { estado.x = 50; estado.y = 50; carregar(c); } }).browse();
-      });
-      // Recorte, tamanho da arte e da borda, pincel, cores, efeitos
-      const mostrarPincel = () => {
-        const sec = raiz.querySelector('section[data-aba="pincel"]'); if (!sec) return;
-        sec.classList.toggle("bloqueado", estado.recorte !== "redondo");
-      };
-      raiz.querySelectorAll("[data-recorte]").forEach(b => b.addEventListener("click", () => {
-        estado.recorte = b.dataset.recorte; raiz.querySelectorAll("[data-recorte]").forEach(x => x.classList.toggle("ativo", x === b));
-        mostrarPincel(); desenhar();
-      }));
-      mostrarPincel();
-      // Abas
-      raiz.querySelectorAll(".nauren-borda-abas [data-aba]").forEach(b => b.addEventListener("click", () => {
-        raiz.querySelectorAll(".nauren-borda-abas [data-aba]").forEach(x => x.classList.toggle("ativo", x === b));
-        raiz.querySelectorAll("section.nauren-borda-aba").forEach(sec => { sec.hidden = sec.dataset.aba !== b.dataset.aba; });
-        abaAtual = b.dataset.aba; desenhar();
-        // Fora da aba Pincel, o arrastar volta a ser "Mover".
-        if (b.dataset.aba !== "pincel" && modo !== "mover") raiz.querySelector('[data-modo="mover"]')?.click();
-      }));
-      // Paleta de cores da borda (1 a 5)
-      const paleta = raiz.querySelector(".nauren-borda-paleta"), dicaCores = raiz.querySelector(".nauren-borda-dica-cores");
-      const fundoInput = raiz.querySelector('input[name="corFundo"]');
-      const montarPaleta = () => {
-        paleta.innerHTML = "";
-        estado.cores.forEach((c, i) => {
-          const item = document.createElement("div"); item.className = "nauren-borda-amostra";
-          const inp = document.createElement("input"); inp.type = "color"; inp.value = c; inp.title = `Cor ${i + 1}`;
-          inp.addEventListener("input", () => { estado.cores[i] = inp.value; estado.corBorda = estado.cores[0]; desenhar(); });
-          item.append(inp);
-          if (estado.cores.length > 1) {
-            const x = document.createElement("button"); x.type = "button"; x.className = "nauren-borda-tirar"; x.title = "Tirar esta cor"; x.innerHTML = '<i class="fas fa-xmark"></i>';
-            x.addEventListener("click", () => { estado.cores.splice(i, 1); estado.corBorda = estado.cores[0]; montarPaleta(); desenhar(); });
-            item.append(x);
-          }
-          paleta.append(item);
-        });
-        if (estado.cores.length < 5) {
-          const mais = document.createElement("button"); mais.type = "button"; mais.className = "nauren-borda-mais"; mais.title = "Adicionar uma cor (vira gradiente)";
-          mais.innerHTML = '<i class="fas fa-plus"></i>';
-          mais.addEventListener("click", () => { estado.cores.push(estado.cores.length === 1 ? estado.corFundo : estado.cores[estado.cores.length - 1]); montarPaleta(); desenhar(); });
-          paleta.append(mais);
-        }
-        const n = estado.cores.length;
-        dicaCores.textContent = n === 1 ? "Uma cor. Adicione mais para a borda virar gradiente."
-          : n === 2 ? "Gradiente girando entre as 2 cores (o fundo usa a 2ª cor)."
-          : `Gradiente passando pelas ${n} cores.`;
-        if (fundoInput) { fundoInput.disabled = n > 1; fundoInput.closest("label")?.classList.toggle("desligado", n > 1); }
-      };
-      montarPaleta();
-      for (const nome of ["arte", "borda"]) {
-        const sl = raiz.querySelector(`input[name="${nome}"]`);
-        sl?.addEventListener("input", () => { estado[nome] = Number(sl.value); sl.nextElementSibling.value = `${Math.round(estado[nome] * 100)}%`; recalcularEscala(); desenhar(); });
-      }
-      raiz.querySelectorAll("[data-modo]").forEach(b => b.addEventListener("click", () => {
-        modo = b.dataset.modo; raiz.querySelectorAll("[data-modo]").forEach(x => x.classList.toggle("ativo", x === b));
-        const dm = raiz.querySelector(".nauren-borda-dica-modo");
-        if (dm) dm.textContent = modo === "mover" ? "Arraste para enquadrar · roda do mouse = zoom" : `Pinte na prévia para ${modo === "mostrar" ? "mostrar" : "esconder"} · roda do mouse = tamanho do pincel`;
-        cnv.classList.toggle("pintando", modo !== "mover"); desenhar();
-      }));
-      raiz.querySelectorAll("[data-ponta]").forEach(b => b.addEventListener("click", () => {
-        ponta = b.dataset.ponta; raiz.querySelectorAll("[data-ponta]").forEach(x => x.classList.toggle("ativo", x === b)); mostrarSuavidade(); desenhar();
-      }));
-      const slPincel = raiz.querySelector('input[name="pincel"]');
-      slPincel?.addEventListener("input", () => { raioPincel = Number(slPincel.value); slPincel.nextElementSibling.value = Math.round(raioPincel * 100); desenhar(); });
-      const desfazer = () => { if (!estado.mascara.length) return; refazer.push(estado.mascara[estado.mascara.length - 1]); estado.mascara = estado.mascara.slice(0, -1); desenhar(); };
-      const refazerUm = () => { if (!refazer.length) return; estado.mascara = [...estado.mascara, refazer.pop()]; desenhar(); };
-      raiz.querySelector(".nauren-borda-desfazer")?.addEventListener("click", desfazer);
-      raiz.querySelector(".nauren-borda-refazer")?.addEventListener("click", refazerUm);
-      raiz.querySelector(".nauren-borda-limpar")?.addEventListener("click", () => { if (!estado.mascara.length) return; refazer.push(...[...estado.mascara].reverse()); estado.mascara = []; desenhar(); });
-      // Ctrl+Z / Ctrl+Y (e Ctrl+Shift+Z) com a janela aberta — fora de campos de texto.
-      const teclas = ev => {
-        if (!raiz.isConnected) { document.removeEventListener("keydown", teclas, true); return; }
-        if (!(ev.ctrlKey || ev.metaKey) || ev.altKey) return;
-        const alvo = ev.target; if (alvo?.matches?.('input[type="text"], textarea')) return;
-        const k = ev.key.toLowerCase();
-        if (k === "z" && !ev.shiftKey) { ev.preventDefault(); ev.stopPropagation(); desfazer(); }
-        else if (k === "y" || (k === "z" && ev.shiftKey)) { ev.preventDefault(); ev.stopPropagation(); refazerUm(); }
-      };
-      document.addEventListener("keydown", teclas, true);
-      const slSuav = raiz.querySelector('input[name="suavidade"]');
-      slSuav?.addEventListener("input", () => { suavidade = Number(slSuav.value); slSuav.nextElementSibling.value = `${Math.round(suavidade * 100)}%`; });
-      const mostrarSuavidade = () => { const l = raiz.querySelector(".nauren-borda-so-suave"); if (l) l.hidden = ponta !== "suave"; };
-      mostrarSuavidade();
-      raiz.querySelector('input[name="fantasma"]')?.addEventListener("change", ev2 => { guia.ligada = ev2.target.checked; desenhar(); });
-      const slFant = raiz.querySelector('input[name="fantasmaOpacidade"]');
-      slFant?.addEventListener("input", () => { guia.opacidade = Number(slFant.value); slFant.nextElementSibling.value = `${Math.round(guia.opacidade * 100)}%`; desenhar(); });
-      // Moldura (parte de pedra)
-      const textoPedra = (k, v) => k === "matiz" ? `${v > 0 ? "+" : ""}${v}°` : `${Math.round(v * 100)}%`;
-      const mostrarPedra = () => {
-        raiz.querySelectorAll("[data-pedra]").forEach(el => {
-          const k = el.dataset.pedra;
-          if (el.type === "checkbox") el.checked = estado.pedra.colorir;
-          else { el.value = estado.pedra[k]; if (el.type === "range") el.nextElementSibling.value = textoPedra(k, estado.pedra[k]); }
-        });
-        raiz.querySelectorAll('[data-pedra="cor"], [data-pedra="forca"]').forEach(el => { (el.closest("label") ?? el).classList.toggle("desligado", !estado.pedra.colorir); });
-      };
-      raiz.querySelectorAll("[data-pedra]").forEach(el => el.addEventListener(el.type === "checkbox" ? "change" : "input", () => {
-        const k = el.dataset.pedra;
-        const v = el.type === "checkbox" ? el.checked : el.type === "color" ? el.value : Number(el.value);
-        estado.pedra = naurenBordaPedraConfig({ ...estado.pedra, [k]: v, ...(k === "cor" ? { colorir: true } : {}) });
-        mostrarPedra(); desenhar();
-      }));
-      raiz.querySelector(".nauren-borda-pedra-original")?.addEventListener("click", () => { estado.pedra = naurenBordaPedraConfig(null); mostrarPedra(); desenhar(); });
-      mostrarPedra();
-      for (const nome of ["corFundo", "corDano", "corCura"]) {
-        raiz.querySelector(`input[name="${nome}"]`)?.addEventListener("input", ev2 => { estado[nome] = ev2.target.value; desenhar(); });
-      }
-      for (const k of Object.keys(NAUREN_BORDA_EFEITOS)) {
-        raiz.querySelector(`input[name="ef-${k}"]`)?.addEventListener("change", ev2 => {
-          estado.efeitos = estado.efeitos.filter(x => x !== k); if (ev2.target.checked) estado.efeitos.push(k);
-          desenhar();
-        });
-      }
-      raiz.querySelector('input[name="nosTokens"]')?.addEventListener("change", ev2 => { nosTokens = ev2.target.checked; });
-      // Testar: pisca a prévia e, se o token estiver no mapa com a borda, o token de verdade.
-      raiz.querySelectorAll(".nauren-borda-teste").forEach(b => b.addEventListener("click", () => {
-        const dano = b.dataset.tipo === "dano";
-        const corT = dano ? estado.corDano : estado.corCura;
-        // Dois piscos rápidos (TokenRing.easeTwoPeaks, 1 s), igual ao mapa.
-        piscando = { cor: corT, ini: performance.now() };
-        const tokens = tokenDoc?.object ? [tokenDoc.object] : (actor.getActiveTokens?.(true, false) ?? []);
-        for (const t of tokens) {
-          if (!t.document?.ring?.enabled) continue;
-          const Cor = foundry.utils?.Color ?? globalThis.Color;
-          try { t.ring?.flashColor?.(Cor.from(corT), { duration: 1000, easing: t.ring.constructor?.easeTwoPeaks }); } catch (err) { /* sem borda */ }
-        }
-      }));
-      raiz.querySelector(".nauren-borda-remover")?.addEventListener("click", () => { acao = "remover"; dialog.close(); });
-      carregar(estado.src);
-    } catch (err) { console.error("Nauren RPG | Borda do token: falha ao montar a janela", err); ui.notifications?.error("Borda do token: a janela não abriu direito. Veja o console (F12)."); } }
-  }).catch(() => null);
-  cancelAnimationFrame(animFlash);
-  if (acao === "remover") {
-    const cfgOff = { ...naurenBordaConfig({ flags: { nauren: { borda: salvo ?? {} } } }), ativa: false };
-    await naurenBordaAplicar(actor, cfgOff, { tokenDoc, nosTokens: true });
-    ui.notifications?.info(`Borda do token removida de ${actor.name}.`);
-    return cfgOff;
-  }
-  if (resultado !== "salvar" || acao !== "salvar" || !imgOk) return null;
-  const final = {
-    ativa: true, src: estado.src, x: Math.round(estado.x * 10) / 10, y: Math.round(estado.y * 10) / 10,
-    zoom: Math.round(estado.zoom * 100) / 100, recorte: estado.recorte,
-    corBorda: estado.cores[0], cores: [...estado.cores], corFundo: estado.corFundo, corDano: estado.corDano, corCura: estado.corCura,
-    efeitos: [...estado.efeitos], escala: 1,
-    arte: Math.round(estado.arte * 100) / 100, borda: Math.round(estado.borda * 100) / 100,
-    mascara: estado.recorte === "redondo" ? estado.mascara.map(t => ({ ...t, p: [...t.p] })) : [],
-    pedra: naurenBordaPedraNeutra(estado.pedra) ? null : { ...estado.pedra }
-  };
-  await naurenBordaAplicar(actor, final, { tokenDoc, nosTokens });
-  return final;
+  // 0.103: a janela única das bordas (Padrão do Foundry + molduras do Nauren) fica em molduras-editor.mjs.
+  const { naurenAbrirMolduraEditor } = await import("./molduras-editor.mjs");
+  return naurenAbrirMolduraEditor(actor, { tokenDoc, srcInicial });
 }
 
 // Aviso ao Mestre: tokens da cena com imagem de site que não libera (ex.: Pinterest) — o Foundry
