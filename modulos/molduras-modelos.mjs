@@ -251,7 +251,13 @@ export const NAUREN_MOLDURA_MODELOS = [
       for (const l of [1, -1]) {
         for (let i = 0; i < 16; i++) { const a = l * (166 - i * 7.6), dir = -l * 8.6; o += lente([K * .995, a], [K * 1.088, a + dir], 2.7, "m") + lente([K * 1.005, a], [K * .912, a + dir], 2.7, "m"); }
         o += L(`M${P(K, l * 166)} Q${P(K * 1.07, l * 174)} ${P(K * 1.18, l * -174 + (l > 0 ? 360 : 0))}`, 1.1);
-        [1.093, 1.066, 1.04, .975, .95, .925].forEach((r, j) => { o += arco(K * r, l > 0 ? 44.5 - 30.5 + (j % 3) * 1.2 : 315.5, l > 0 ? 44.5 : 346 - (j % 3) * 1.2, .9); });
+        // barbas: dois grupos de 3 fios que nascem juntos na ponta do último grão (de fora e de dentro) e vão abrindo
+        const ultimo = 166 - 15 * 7.6 - 8.6; // ângulo da ponta dos últimos grãos
+        const barba = (r0, rFim, aFim) => { const a0 = ultimo + 1.2, n = 18; let d = "";
+          for (let q = 0; q <= n; q++) { const t = q / n, e = 1 - (1 - t) * (1 - t), ang = a0 + (aFim - a0) * t, r = r0 + (rFim - r0) * e; d += `${q ? " L" : "M"}${P(K * r, l * ang)}`; }
+          return `<path class="lm" ${W(.95)} stroke-linecap="round" fill="none" d="${d}"/>`; };
+        [[1.104, 13.5], [1.079, 16], [1.054, 18.5]].forEach(([r, a], j) => { o += barba(1.086 + (j - 1) * .011, r, a); });
+        [[1.012, 19.5], [.987, 22], [.962, 24.5]].forEach(([r, a], j) => { o += barba(.93 + (j - 1) * .011, r, a); });
       }
       return o; } },
   // ---------------- SIMPLES ----------------
