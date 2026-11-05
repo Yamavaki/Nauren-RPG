@@ -53,6 +53,11 @@ const realce = (r, w = 1.2, a0 = -70, a1 = 10) => `<path d="M${P(r, a0)} A${f(r)
 const W = w => `style="stroke-width:${w}"`;
 const L = (d, w = 1.5) => `<path class="lm" ${W(w)} d="${d}"/>`;
 const C = (r, w = 1.5) => `<circle class="lm" ${W(w)} r="${f(r)}"/>`;
+/** Ponto do segmento a→b que fica no raio r (a e b em [x, y]). */
+const noRaio = (a, b, r) => { const dx = b[0] - a[0], dy = b[1] - a[1], A2 = dx * dx + dy * dy, B = 2 * (a[0] * dx + a[1] * dy), C2 = a[0] * a[0] + a[1] * a[1] - r * r, d = Math.max(0, B * B - 4 * A2 * C2), t = (-B + Math.sqrt(d)) / (2 * A2), t2 = (-B - Math.sqrt(d)) / (2 * A2), tt = t >= -1e-6 && t <= 1 + 1e-6 ? t : t2; return [a[0] + tt * dx, a[1] + tt * dy]; };
+const angDe = q => (Math.atan2(q[0], -q[1]) * 180 / Math.PI + 360) % 360;
+/** Círculo como faixa de metal (preenchida, com o contorno escuro das peças). */
+const aro = (r, w) => anel(r - w / 2, r + w / 2, "m");
 const A = (r, a0, a1) => `A${f(r)},${f(r)} 0 ${((a1 - a0 + 360) % 360) > 180 ? 1 : 0} 1 ${P(r, a1)}`;
 const Ai = (r, a0, a1) => `A${f(r)},${f(r)} 0 ${((a0 - a1 + 360) % 360) > 180 ? 1 : 0} 0 ${P(r, a1)}`;
 const arco = (r, a0, a1, w, cls = "lm") => `<path class="${cls}" ${W(w)} d="M${P(r, a0)} ${A(r, a0, a1)}"/>`;
@@ -211,19 +216,28 @@ export const NAUREN_MOLDURA_MODELOS = [
     buraco: K => { const i = .925 * K, ex = 1.065 * K, h = 8.5; let d = `M${P(i, h)}`; for (const c of [0, 90, 180, 270]) d += ` ${A(i, c + h, c + 90 - h)} L${P(ex, c + 90)} L${P(i, c + 90 + h)}`; return d + "Z"; },
     corpo() { const K = this.K; return C(1.065 * K, 1.7) + L(this.buraco(K), 1.4) + sim4(c => polyL([[1.042 * K, c - 2.2], [.99 * K, c], [1.042 * K, c + 2.2]], .9)); } },
   { id: "estrela-foliada", nome: "Estrela Foliada", grupo: "detalhadas", paleta: "branco", esmalte: "#161616", K: 78.9, buraco: CIRC(.887), fora: CIRC(1.16),
-    corpo() { const K = this.K, N = 20, s = 360 / N; let o = `<path class="m" fill-rule="evenodd" d="${circulo(K)} M0,-70 A70,70 0 1 0 0,70 A70,70 0 1 0 0,-70Z"/>`;
-      for (let k = 0; k < N; k++) { const c = k * s; o += poly([[K, c - s / 2], [1.16 * K, c], [K, c + s / 2], [.985 * K, c]]); }
+    corpo() { const K = this.K, N = 20, s = 360 / N;
+      // faixa e folhas num caminho só (sem linhas internas cruzando as folhas)
+      const estrela = Array.from({ length: N }, (_, k) => `${P(K, k * s - s / 2)} L${P(1.16 * K, k * s)}`).join(" L");
+      let o = `<path class="m" fill-rule="evenodd" d="M${estrela}Z M0,-70 A70,70 0 1 0 0,70 A70,70 0 1 0 0,-70Z"/>`;
       for (let k = 0; k < N; k++) { const c = k * s; o += lente([.935 * K, c], [1.14 * K, c], 2.5) + lente([.935 * K, c + .4], [.993 * K, c + s / 2 - .9], 1.7) + lente([.935 * K, c - .4], [.993 * K, c - s / 2 + .9], 1.7); }
       return o; } },
   { id: "triangulos-encaixados", nome: "Triângulos Encaixados", grupo: "deco", paleta: "branco", esmalte: "#161616", K: 78.2, fora: CIRC(1.048),
-    buraco: K => { const N = 28, s = 360 / N; return `M${Array.from({ length: N }, (_, k) => [P(.905 * K, k * s), P(1.043 * K, k * s + s * .47), P(1.043 * K, k * s + s * .53)].join(" L")).join(" L")}Z`; },
-    corpo() { const K = this.K, N = 28, s = 360 / N; let o = C(1.048 * K, 1.1);
+    buraco: K => { const N = 28, s = 360 / N, rB = 1.048 * K - .7; return `M${Array.from({ length: N }, (_, k) => [P(.905 * K, k * s), P(rB, k * s + s / 2)].join(" L")).join(" L")}Z`; },
+    corpo() { const K = this.K, N = 28, s = 360 / N; let o = "";
       for (let k = 0; k < N; k++) { const c = k * s; o += poly([[1.043 * K, c - s * .47], [1.043 * K, c + s * .47], [.905 * K, c]]) + poly([[1.013 * K, c - s * .1], [1.013 * K, c + s * .1], [.983 * K, c]], "e") + poly([[.937 * K, c + s / 2 - s * .13], [.937 * K, c + s / 2 + s * .13], [.977 * K, c + s / 2]]); }
-      return o; } },
+      // faixa de fora + triângulos grandes numa peça só: disco com o vão em estrela (os vãos dão para o miolo)
+      const rFora = 1.048 * K + .7, rB = 1.048 * K - .7; let d = `${circulo(rFora)} M`;
+      // triângulos grandes encostados em ponta na faixa de fora (o vão entre eles termina em ponta no anel)
+      for (let k = 0; k < N; k++) { const c = k * s; d += `${k ? " L" : ""}${P(rB, c - s / 2)} L${P(.905 * K, c)}`; }
+      return `<path class="m" fill-rule="evenodd" d="${d}Z"/>` + o.replace(/<polygon class="m" points="[^"]*"\/>(?=<polygon class="e")/g, ""); } },
   { id: "dente-de-serra", nome: "Dente de Serra", grupo: "deco", paleta: "branco", K: 78.2, expandida: true, buraco: CIRC(.905), fora: CIRC(1.063),
-    corpo() { const K = this.K, N = 28, s = 360 / N; let o = C(.905 * K, .95) + C(1.033 * K, 1.1) + C(1.063 * K, .85);
-      for (let k = 0; k < N; k++) { const c = k * s + s / 2; o += poly([[1.033 * K, c - s * .5], [1.033 * K, c + s * .5], [.905 * K, c]]); }
-      return o; } },
+    corpo() { const K = this.K, N = 28, s = 360 / N, rFora = 1.033 * K + .75, rB = 1.033 * K - .75, rI = .905 * K + .65, rI0 = .905 * K - .65;
+      // faixa de fora + triângulos + aro de dentro numa peça só: um disco com o miolo e os vãos entre os triângulos vazados
+      // vãos = triângulos com a ponta encostando na faixa de fora e a base no aro de dentro (pontas dos triângulos de metal no aro)
+      let d = `${circulo(rFora)} ${circulo(rI0)}`;
+      for (let k = 0; k < N; k++) { const c1 = k * s + s / 2, c2 = c1 + s, v = c1 + s / 2; d += ` M${P(rB, v)} L${P(rI, c1)} A${f(rI)},${f(rI)} 0 0 1 ${P(rI, c2)}Z`; }
+      return `<path class="m" fill-rule="evenodd" d="${d}"/>` + aro(1.063 * K, 1.2); } },
   { id: "estrela-entrelacada", nome: "Estrela Entrelaçada", grupo: "deco", paleta: "branco", K: 79.5, expandida: true,
     fora: K => { const N = 10, s = 360 / N, t = 1.09 * K, v = .99 * K; return `M${Array.from({ length: N }, (_, k) => [P(t, k * s), P(v, k * s + .23 * s), P(t, k * s + .5 * s), P(v, k * s + .77 * s)].join(" L")).join(" L")}Z`; },
     buraco: K => { const N = 10, s = 360 / N; return `M${Array.from({ length: N }, (_, k) => [P(.905 * K, k * s), P(.99 * K, k * s + .23 * s), P(1.09 * K, k * s + .5 * s), P(.99 * K, k * s + .77 * s)].join(" L")).join(" L")}Z`; },
@@ -256,7 +270,7 @@ export const NAUREN_MOLDURA_MODELOS = [
   { id: "estrela-octogonal", nome: "Estrela Octogonal", grupo: "artdeco", paleta: "prata", atras: () => `<rect x="-78" y="-78" width="156" height="156" class="m"/><rect x="-78" y="-78" width="156" height="156" class="m" transform="rotate(45)"/><rect x="-74" y="-74" width="148" height="148" class="e"/><rect x="-74" y="-74" width="148" height="148" class="e" transform="rotate(45)"/>`, corpo: () => anel(70, 80, "m") + repetir(8, 86, M.ponto(2), 22.5) + realce(75, 1.6) },
   { id: "bussola-deco", nome: "Bússola Déco", grupo: "artdeco", paleta: "ouro", esmalte: "#2d3a1e", corpo: () => anel(70, 88, "e") + circ(71.2, 2.4) + circ(88, 3.2) + padraoPolar(40, 76, 84, [[[.5, 0], [.5, 1]]], "lm\" style=\"stroke-width:1.2", false, 4.5) + repetir(4, 88, M.bussola(7.5)) + repetir(4, 88, M.estrela4(3.2), 45) },
   { id: "segmentos", nome: "Segmentos", grupo: "artdeco", paleta: "ouro", corpo: () => [0, 90, 180, 270].map(a => arco(77, a + 8, a + 82, 4.4)).join("") + circ(85, 1.1) + circ(70.6, 1.1) + repetir(4, 77, M.bloco(7, 11)) + repetir(4, 85, M.losangoLinha(2.6, 1.4), 45) },
-  { id: "hextech", nome: "Hextech", grupo: "artdeco", paleta: "ouro", corpo: () => `<polygon class="lm" style="stroke-width:2" points="${pts(poligono(4, 104))}"/><polygon class="lm" style="stroke-width:1" points="${pts(poligono(4, 96))}"/>` + anel(70, 76, "m") + circ(81, 1) + repetir(4, 81, M.losango(3.4, 1.4)) + repetir(4, 104, M.losangoLinha(3, 1.2)) + realce(73, 1.4) },
+  { id: "prisma", nome: "Prisma", grupo: "artdeco", paleta: "ouro", corpo: () => `<polygon class="lm" style="stroke-width:2" points="${pts(poligono(4, 104))}"/><polygon class="lm" style="stroke-width:1" points="${pts(poligono(4, 96))}"/>` + anel(70, 76, "m") + circ(81, 1) + repetir(4, 81, M.losango(3.4, 1.4)) + repetir(4, 104, M.losangoLinha(3, 1.2)) + realce(73, 1.4) },
   { id: "leque", nome: "Leque", grupo: "artdeco", paleta: "ouro", corpo: () => anel(70, 77, "m") + circ(82.5, 1.4) + circ(86.5, .9) + repetir(4, 82, M.leque(12, 9)) + repetir(4, 84.5, M.losangoLinha(2.4, 1.4), 45) + realce(73.5, 1.5) },
   { id: "zigurate", nome: "Zigurate", grupo: "artdeco", paleta: "ouro", forma: "chanfro", corpo: fo => anel(70, 78, "m", fo) + contorno(fo, 84, 1.3) + repetir(4, 78.4, M.zigurate(7.5)) + repetir(4, 84 * 1.18, M.losangoLinha(2.6, 1.3), 45) },
   { id: "relicario", nome: "Relicário", grupo: "artdeco", paleta: "ouro", esmalte: "#1c1430", corpo: () => anel(70, 86, "e") + circ(70.8, 1.6) + circ(86, 2.4) + circ(78, .7) + padraoPolar(72, 80, 84.5, [[[.5, 0], [.5, 1]]], "lm\" style=\"stroke-width:.8") + repetir(8, 78, M.losango(4, 1.45)) + repetir(8, 92, M.estrela4(3.4), 22.5) },
@@ -284,20 +298,38 @@ export const NAUREN_MOLDURA_MODELOS = [
   { id: "engrenagem", nome: "Engrenagem", grupo: "detalhadas", paleta: "cobre", corpo: () => repetir(18, 84, `<polygon class="m" points="-6.6,4 6.6,4 4.6,-7 -4.6,-7"/>`) + anel(70, 86, "m") + anel(75, 81, "e") + repetir(18, 78, M.rebite(1.7), 10) + realce(83, 1.4) + circ(70.5, .9, "le") },
   { id: "neon-estelar", nome: "Neon Estelar", grupo: "detalhadas", paleta: "neon", neon: true, esmalte: "#03161c", corpo: () => circ(72, 2.6) + circ(79, 1.1) + circ(83.5, 1.6) + repetir(24, 81.2, M.estrela4(3, .2), 7.5) + repetir(4, 86, M.lanca(5, 28), 45) + repetir(8, 83.5, M.estrela4(7.5, .2)) + repetir(36, 90, M.ponto(.7), 5) }
 ];
-export const NAUREN_MOLDURA_GRUPOS = [["deco", "Art déco (referências)"], ["simples", "Simples"], ["artdeco", "Art déco"], ["detalhadas", "Detalhadas"]];
+/* Categorias da galeria (pela aparência). */
+const CATEGORIAS = {
+  essenciais: ["aro-liso", "aro-duplo", "contas", "corda", "serrilha", "octogono", "losango", "hexagono"],
+  geometricas: ["picos-cardeais", "triangulos-encaixados", "dente-de-serra", "estrela-entrelacada", "triangulos", "segmentos", "prisma", "zigurate", "estrela-octogonal", "grega", "engrenagem"],
+  elegantes: ["deco-placas", "deco-entalhe", "deco-partido", "deco-coroa", "deco-colchetes", "leque", "relicario", "portal-deco", "bussola-deco", "selo-real"],
+  natureza: ["estrela-foliada", "trigo", "louros", "flor-de-lis", "espinhos", "sol-de-petalas", "coroa-solar"],
+  arcanas: ["mandala", "portal-arcano", "neon-estelar", "estrela-de-lancas"]
+};
+for (const [g, ids] of Object.entries(CATEGORIAS)) for (const id of ids) { const m = NAUREN_MOLDURA_MODELOS.find(x => x.id === id); if (m) m.grupo = g; }
+export const NAUREN_MOLDURA_GRUPOS = [["essenciais", "Essenciais"], ["geometricas", "Geométricas"], ["elegantes", "Elegantes"], ["natureza", "Natureza"], ["arcanas", "Arcanas"]];
 const POR_ID = Object.fromEntries(NAUREN_MOLDURA_MODELOS.map(m => [m.id, m]));
-export function naurenMolduraModelo(id) { return POR_ID[id] ?? null; }
+const ANTIGOS = { hextech: "prisma" }; // nomes antigos de modelos (bordas já salvas continuam valendo)
+export function naurenMolduraModelo(id) { return POR_ID[ANTIGOS[id] ?? id] ?? null; }
+/** O modelo usa esmalte (cor entre as linhas) e/ou gemas? (para mostrar só os controles que mudam algo) */
+const detalhes = new Map();
+export function naurenMolduraDetalhes(id) {
+  if (detalhes.has(id)) return detalhes.get(id);
+  let r = { esmalte: false, joia: false };
+  try { const svg = naurenMolduraSvg(naurenMolduraConfigPadrao(id), { px: 64, sombra: false, comAtras: true }) + (naurenMolduraTemAtras({ modelo: id }) ? naurenMolduraSvgAtras(naurenMolduraConfigPadrao(id), { px: 64 }) : ""); r = { esmalte: /class="(e|le)"|class="le\b|class="e\b/.test(svg), joia: /class="joia"/.test(svg) }; } catch (err) { /* sem detalhes */ }
+  detalhes.set(id, r); return r;
+}
 
 /* ============================== configuração ============================== */
 export const NAUREN_MOLDURA_EFEITOS = [
-  { id: "aura", nome: "Aura", icone: "fa-sun", dica: "Brilho parado em volta da moldura.", cores: 1, anima: false },
+  { id: "aura", nome: "Aura", icone: "fa-sun", dica: "Brilho parado em volta da moldura.", cores: 1, anima: false, fora: true },
   { id: "pulso", nome: "Pulso", icone: "fa-heart-pulse", dica: "A moldura acende e apaga devagar.", cores: 1 },
   { id: "brilho", nome: "Brilho", icone: "fa-wand-magic-sparkles", dica: "Uma faixa de luz atravessa a moldura de tempos em tempos.", cores: 1 },
   { id: "ciclo", nome: "Ciclo de cores", icone: "fa-arrows-spin", dica: "O metal passa suavemente de uma cor para outra.", cores: 3 },
-  { id: "cintilar", nome: "Cintilar", icone: "fa-star", dica: "Pontinhos de luz aparecem e somem na moldura.", cores: 1 },
+  { id: "cintilar", nome: "Cintilar", icone: "fa-star", dica: "Estrelinhas de luz aparecem e somem na moldura.", cores: 1, fora: true },
   { id: "respirar", nome: "Respirar", icone: "fa-circle-dot", dica: "A moldura cresce e encolhe de leve.", cores: 0 },
   { id: "arco", nome: "Arco-íris", icone: "fa-rainbow", dica: "As cores da moldura giram pelo arco-íris.", cores: 0 },
-  { id: "neon", nome: "Neon", icone: "fa-bolt", dica: "Brilho forte de fora, com piscadas leves.", cores: 1 }
+  { id: "neon", nome: "Neon", icone: "fa-bolt", dica: "Brilho forte de fora, com piscadas leves.", cores: 1, fora: true }
 ];
 export const NAUREN_MOLDURA_VEL = ["Bem lento", "Lento", "Normal", "Rápido", "Bem rápido"];
 const VEL = [0.45, 0.7, 1, 1.45, 2.1];
@@ -335,7 +367,7 @@ export function naurenMolduraNormalizar(c) {
     let cores = (Array.isArray(e.cores) ? e.cores.map(corValida).filter(Boolean) : []).slice(0, 6);
     while (cores.length < d.cores) cores.push(["#ffffff", "#ff6a9a", "#7ad3ff"][cores.length] ?? "#ffffff");
     if (!d.cores) cores = [];
-    lista.push({ tipo: d.id, cores, vel: Math.round(num(e.vel, 1, 5, 3)), int: Math.round(num(e.int, 10, 100, 70)) });
+    lista.push({ tipo: d.id, cores, vel: Math.round(num(e.vel, 1, 5, 3)), int: Math.round(num(e.int, 10, 100, 70)), fora: d.fora ? !!e.fora : false });
   }
   o.efeitos = lista;
   o.reacoes = { ...NAUREN_MOLDURA_REACOES_PADRAO, ...(o.reacoes && typeof o.reacoes === "object" ? Object.fromEntries(Object.entries(o.reacoes).filter(([k]) => k in NAUREN_MOLDURA_REACOES_PADRAO).map(([k, v]) => [k, !!v])) : {}) };
@@ -376,7 +408,7 @@ export function naurenMolduraSvg(cfgIn, opc = {}) {
   const forma = m.forma ?? "circulo";
   let corpo = escalaDeTracos(m.corpo.call(m, forma, id), cfg.espessura);
   let atras = m.atras && opc.comAtras !== false ? escalaDeTracos(m.atras.call(m, forma, id), cfg.espessura) : "";
-  if (opc.soBranco) { corpo = corpo.replace(/stroke-opacity="[^"]*"/g, "").replace(/stroke="#fff"/g, `stroke="#fff" fill="none"`); }
+  if (opc.soBranco) { corpo = corpo.replace(/stroke-opacity="[^"]*"/g, "").replace(/<([a-zA-Z]+)([^>]*?)\sstroke="#fff"([^>]*?)(\/?)>/g, (tudo, tag, a, b, fim) => /\sfill=/.test(a + b) ? tudo : `<${tag}${a} stroke="#fff" fill="none"${b}${fim}>`); }
   const filtro = semSombra ? "" : `filter="url(#${m.neon ? "gl" : "sh"}${id})"`;
   const esc = cfg.escala !== 1 ? ` transform="scale(${f(cfg.escala)})"` : "";
   return `<svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" viewBox="${-vb} ${-vb} ${2 * vb} ${2 * vb}" width="${px}" height="${px}"><defs>${defs}</defs>${css}<g${esc}>${atras ? `<g id="q${id}b" ${filtro}>${atras}</g>` : ""}<g id="q${id}" ${filtro}>${corpo}</g></g></svg>`;
@@ -434,17 +466,17 @@ export function naurenMolduraRaioDoPath(d) {
  */
 export function naurenMolduraEstado(cfgIn, t, extra = {}) {
   const cfg = naurenMolduraNormalizar(cfgIn), animar = extra.animar !== false, leve = !!extra.leve;
-  const s = { rotacao: 0, escala: 1, auraCor: null, auraAlpha: 0, pulsoCor: null, pulsoAlpha: 0, brilho: null, hue: 0, cicloCor: null, cintilar: [], flash: null, cinza: !!extra.morto };
+  const s = { rotacao: 0, escala: 1, auraCor: null, auraAlpha: 0, auraFora: false, pulsoCor: null, pulsoAlpha: 0, brilho: null, hue: 0, cicloCor: null, cintilar: [], cintilarFora: false, flash: null, cinza: !!extra.morto };
   if (cfg.girar.modo === "tudo" && animar) s.rotacao = (t * VEL[cfg.girar.vel - 1] * 0.35 * cfg.girar.sentido) % TAU;
   for (const e of cfg.efeitos) {
     const v = VEL[e.vel - 1], i = e.int / 100, c = e.cores[0] ?? "#ffffff";
     switch (e.tipo) {
-      case "aura": s.auraCor = c; s.auraAlpha = .35 + .65 * i; break;
-      case "neon": s.auraCor = c; s.auraAlpha = (.55 + .45 * i) * (animar ? (1 - .12 * Math.abs(Math.sin(t * 9.1 * v)) * (Math.sin(t * 2.3) > .7 ? 1 : .25)) : 1); break;
+      case "aura": s.auraCor = c; s.auraAlpha = .35 + .65 * i; s.auraFora = !!e.fora; break;
+      case "neon": s.auraCor = c; s.auraFora = !!e.fora; s.auraAlpha = (.55 + .45 * i) * (animar ? (1 - .12 * Math.abs(Math.sin(t * 9.1 * v)) * (Math.sin(t * 2.3) > .7 ? 1 : .25)) : 1); break;
       case "pulso": s.pulsoCor = c; s.pulsoAlpha = animar ? i * (.5 + .5 * Math.sin(t * 2.4 * v)) * .8 : i * .5; break;
       case "brilho": { if (!animar || leve) break; const per = 3.4 / v, fase = (t % per) / per; s.brilho = fase < .55 ? { pos: fase / .55, cor: c, int: i } : null; break; }
       case "ciclo": { const cs = e.cores, per = 2.4 / v, pos = animar ? (t / per) % cs.length : 0, k = Math.floor(pos), fr = pos - k; s.cicloCor = misturar(cs[k], cs[(k + 1) % cs.length], fr * fr * (3 - 2 * fr)); s.cicloInt = i; break; }
-      case "cintilar": { if (leve || !animar) break; const n = Math.round(4 + 10 * i); for (let k = 0; k < n; k++) { const seed = k * 1.618 + .37; const per = (1.6 + (seed % 1) * 1.6) / v, fase = animar ? ((t + seed * 7.3) % per) / per : .3; const a = fase < .5 ? fase * 2 : 2 - fase * 2; const ang = (seed * 2.399 + Math.floor((t + seed * 7.3) / per) * 1.7) % TAU; s.cintilar.push({ ang, r: .78 + ((seed * 3.1 + Math.floor((t + seed * 7.3) / per)) % 1) * .34, a: a * a * i, s: .5 + (seed % .5), cor: c }); } break; }
+      case "cintilar": { if (leve || !animar) break; s.cintilarFora = !!e.fora; const n = Math.round(8 + 16 * i); for (let k = 0; k < n; k++) { const seed = k * 1.618 + .37; const per = (1.4 + (seed % 1) * 1.4) / v, ciclo = Math.floor((t + seed * 7.3) / per), fase = ((t + seed * 7.3) % per) / per; const a = Math.sin(Math.PI * fase); const ang = (seed * 2.399 + ciclo * 1.7) % TAU; s.cintilar.push({ ang, r: .8 + ((seed * 3.1 + ciclo * .618) % 1) * .3, a: Math.min(1, a * (.55 + .6 * i)), s: .75 + (seed % .5) + .4 * a, giro: (seed * 5 + t * .6) % TAU, cor: c }); } break; }
       case "respirar": if (animar) s.escala = 1 + .028 * (.5 + .5 * Math.sin(t * 1.6 * v)) * i; break;
       case "arco": if (!leve) s.hue = animar ? (t * 40 * v) % 360 : 0; break;
     }
@@ -455,4 +487,11 @@ export function naurenMolduraEstado(cfgIn, t, extra = {}) {
   return s;
 }
 export const naurenMolduraMisturar = misturar;
+/** A máscara é um círculo no centro? (então girar a moldura não muda o recorte) */
+export function naurenMolduraMascaraCircular(cfg) {
+  if (cfg?.modelo === "imagem") return false;
+  return /^M0,-([\d.]+) A\1,\1 0 1 1 0,\1 A\1,\1 0 1 1 0,-\1Z$/.test(naurenMolduraMascaraPath({ ...cfg, escala: 1 }).trim());
+}
+/** A arte precisa girar o recorte junto com a moldura (máscara que não é círculo + moldura girando). */
+export function naurenMolduraRecorteGira(cfg) { return cfg?.girar?.modo === "tudo" && !naurenMolduraMascaraCircular(cfg); }
 export { circulo as naurenMolduraCirculo, R0 as NAUREN_MOLDURA_R0 };

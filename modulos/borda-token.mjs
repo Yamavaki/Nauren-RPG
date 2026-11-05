@@ -15,7 +15,7 @@ import { NaurenToken, naurenCardMovimento, naurenConsumirUsoDaHabilidade, nauren
  * (NaurenToken#_draw). A borda pisca na cor do dano / da cura quando a Vida muda
  * (TokenRing#flashColor, a mesma animação do Foundry).
  * ==================================================================== */
-import { naurenMolduraNormalizar, naurenMolduraMascaraPath, naurenMolduraRaioDoPath } from "./molduras-modelos.mjs";
+import { naurenMolduraNormalizar, naurenMolduraMascaraPath, naurenMolduraRaioDoPath, naurenMolduraRecorteGira } from "./molduras-modelos.mjs";
 import { naurenMolduraVb, naurenMolduraProcessarImagem, naurenMolduraPiscar, naurenMolduraDesenharPrevia, naurenMolduraPrepararPrevia, naurenMolduraEhNauren } from "./molduras-token.mjs";
 const NAUREN_BORDA_PADRAO = Object.freeze({
   ativa: false, src: "", x: 50, y: 50, zoom: 1, recorte: "redondo",
@@ -136,7 +136,7 @@ async function naurenAvisarSeLinkBloqueado(link, uso = "token") {
 function naurenBordaCodigo(cfg) {
   const texto = [cfg.src, cfg.x.toFixed(1), cfg.y.toFixed(1), cfg.zoom.toFixed(3), cfg.recorte, Number(cfg.escala || 1).toFixed(3),
     Number(cfg.arte || 1).toFixed(3), Number(cfg.borda || 1).toFixed(3), JSON.stringify(cfg.mascara ?? []),
-    ...(cfg.modelo && cfg.modelo !== "foundry" ? [cfg.modelo, cfg.moldura?.mascara, cfg.moldura?.escala, cfg.moldura?.vb, cfg.moldura?.raio, JSON.stringify(cfg.moldura?.imagem ?? null)] : []),
+    ...(cfg.modelo && cfg.modelo !== "foundry" ? [cfg.modelo, cfg.moldura?.mascara, cfg.moldura?.escala, cfg.moldura?.vb, cfg.moldura?.raio, JSON.stringify(cfg.moldura?.imagem ?? null), naurenMolduraRecorteGira(cfg.moldura) ? `gira${cfg.moldura?.ext}` : ""] : []),
     // a moldura colorida vai dentro do recorte: entra no código (e o tamanho da borda junto)
     ...(naurenBordaPedraNeutra(cfg.pedra) ? [] : [JSON.stringify(cfg.pedra), Number(cfg.tamGrade) || 1])].join("|");
   // (as cores não entram: mudar cor não precisa refazer o recorte)
@@ -275,6 +275,9 @@ function naurenBordaMascara(S, cfg) {
       const r = cfg._imagemProcessada;
       if (r) { const mk = mo.mascara === "expandida" ? r.mascaraExpandida : r.mascaraNormal; const lado = 200 * mo.imagem.tamanho * k; x.drawImage(mk, S / 2 - lado / 2, S / 2 - lado / 2, lado, lado); }
       else { x.fillStyle = "#000"; x.beginPath(); x.arc(S / 2, S / 2, 70 * k, 0, Math.PI * 2); x.fill(); }
+    } else if (naurenMolduraRecorteGira(mo)) {
+      // a moldura gira e o recorte não é redondo: a arte vai até o contorno de fora e a máscara que gira (no mapa) recorta
+      x.fillStyle = "#000"; x.beginPath(); x.arc(S / 2, S / 2, (Number(mo.ext) || 100) * k, 0, Math.PI * 2); x.fill();
     } else { x.save(); x.translate(S / 2, S / 2); x.scale(k, k); x.fillStyle = "#000"; x.fill(new Path2D(naurenMolduraMascaraPath(mo))); x.restore(); }
   } else {
     const D = naurenBordaDiametro(S, cfg);

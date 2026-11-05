@@ -8205,6 +8205,21 @@ input.nt-icone-texto { font-family: "Fira Code", Consolas, monospace; font-size:
 .nauren-kit .nm-efeito select.nt-in { flex: 1 1 auto; height: 30px; min-width: 0; appearance: auto; }
 .nauren-kit .nm-girar, .nauren-kit .nm-sentido { height: 30px; }
 .nauren-kit .nm-girar > button, .nauren-kit .nm-sentido > button { padding: 0 10px; font-size: 12.5px; gap: 5px; }
-.nm-reacoes { display: flex; flex-direction: column; gap: 8px; }
+.nm-reacoes { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 8px; }
+.nm-reacao { display: flex; align-items: center; gap: 10px; padding: 8px 10px; min-width: 0; cursor: pointer; --cc: 7px; --cbg: #15101d; --cbd: var(--nk-linha2, #4a3d66); transition: opacity .15s; }
+.nm-reacao:not(.on) { opacity: .62; }
+.nm-reacao.on { --cbg: color-mix(in srgb, var(--nk-ouro) 10%, #15101d); --cbd: color-mix(in srgb, var(--nk-ouro) 55%, #4a3d66); }
+.nm-reacao-ic { flex: 0 0 30px; width: 30px; height: 30px; display: grid; place-items: center; font-size: 13px; color: var(--nk-ouro-claro, #ffd98a); --cc: 6px; --cbg: #0e0a14; --cbd: var(--nk-linha2, #4a3d66); }
+.nm-reacao-t { display: flex; flex-direction: column; flex: 1 1 auto; min-width: 0; line-height: 1.25; }
+.nm-reacao-t b { font-size: 13px; color: var(--nk-texto); font-weight: 600; }
+.nm-reacao-t small { font-size: 11px; color: var(--nk-suave); }
+.nauren-moldura input[type="color"].nm-reacao-cor { flex: 0 0 auto; width: 28px; height: 24px; }
+.nauren-kit input.nm-chave { appearance: none; -webkit-appearance: none; flex: 0 0 34px; width: 34px; height: 18px; margin: 0; border-radius: 9px; background: #2a2238; border: 1px solid var(--nk-linha2, #4a3d66); position: relative; cursor: pointer; transition: background .15s; }
+.nauren-kit input.nm-chave::after { content: ""; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; border-radius: 50%; background: #8a7da0; transition: left .15s, background .15s; }
+.nauren-kit input.nm-chave:checked { background: color-mix(in srgb, var(--nk-ouro) 55%, #2a2238); border-color: var(--nk-ouro); }
+.nauren-kit input.nm-chave:checked::after { left: 18px; background: #fff; }
+.nm-tile-foundry { width: 64px; height: 64px; display: block; }
+/* a janela da borda pode crescer para os lados (a regra do armazém limita a 980 px) */
+.application.nauren-kit.nauren-armazem.nauren-moldura:not(.minimized):not(.minimizing):not(.maximizing) { max-width: calc((100vw - 16px) / var(--nauren-escala, 1)) !important; max-height: calc((100vh - 16px) / var(--nauren-escala, 1)) !important; }
 .nauren-kit .nt-rod .nm-check { font-size: 12.5px; color: var(--nk-suave); }
 @media (max-width: 900px) { .nm-corpo { grid-template-columns: 1fr; overflow-y: auto; } .nm-palco { min-height: 260px; max-height: 320px; } }

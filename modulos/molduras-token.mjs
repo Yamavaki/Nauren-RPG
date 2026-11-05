@@ -8,7 +8,8 @@
  *
  * Texturas: SVG do modelo → imagem → canvas → PIXI.BaseTexture, uma por (modelo + cores + tamanho),
  * compartilhada por todos os tokens iguais. Efeitos: um ticker só, que só anima o que está visível. */
-import { naurenMolduraSvg, naurenMolduraSvgAtras, naurenMolduraTemAtras, naurenMolduraMascaraPath, naurenMolduraRaioDoPath, naurenMolduraNormalizar, naurenMolduraEstado, naurenMolduraModelo, naurenMolduraMisturar } from "./molduras-modelos.mjs";
+import { naurenMolduraSvg, naurenMolduraSvgAtras, naurenMolduraTemAtras, naurenMolduraMascaraPath, naurenMolduraRaioDoPath, naurenMolduraNormalizar, naurenMolduraEstado, naurenMolduraModelo, naurenMolduraMisturar, naurenMolduraRecorteGira } from "./molduras-modelos.mjs";
+import { naurenBordaPintarTraco } from "./borda-token.mjs"; // (import circular: só usado em tempo de execução)
 
 const TAM_MAX = 2048;
 const hash = s => { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) >>> 0; return h.toString(36); };
@@ -82,12 +83,15 @@ export function naurenMolduraTingir(fonte, cor) {
   return c;
 }
 let estrelaCanvas = null, faixaCanvas = null;
+const vazios = new Map();
+function vazio(px) { if (!vazios.has(px)) { const c = document.createElement("canvas"); c.width = c.height = px; vazios.set(px, c); } return vazios.get(px); }
 function estrela() {
   if (estrelaCanvas) return estrelaCanvas;
-  const c = document.createElement("canvas"); c.width = c.height = 32; const x = c.getContext("2d");
-  const g = x.createRadialGradient(16, 16, 0, 16, 16, 16); g.addColorStop(0, "rgba(255,255,255,1)"); g.addColorStop(.35, "rgba(255,255,255,.55)"); g.addColorStop(1, "rgba(255,255,255,0)");
-  x.fillStyle = g; x.fillRect(0, 0, 32, 32);
-  x.fillStyle = "#fff"; x.beginPath(); x.moveTo(16, 1); x.quadraticCurveTo(17.5, 14.5, 31, 16); x.quadraticCurveTo(17.5, 17.5, 16, 31); x.quadraticCurveTo(14.5, 17.5, 1, 16); x.quadraticCurveTo(14.5, 14.5, 16, 1); x.fill();
+  // estrela de 4 pontas com halo: bem visível mesmo pequena no mapa
+  const N = 64, h = N / 2, c = document.createElement("canvas"); c.width = c.height = N; const x = c.getContext("2d");
+  const g = x.createRadialGradient(h, h, 0, h, h, h); g.addColorStop(0, "rgba(255,255,255,1)"); g.addColorStop(.18, "rgba(255,255,255,.85)"); g.addColorStop(.45, "rgba(255,255,255,.25)"); g.addColorStop(1, "rgba(255,255,255,0)");
+  x.fillStyle = g; x.fillRect(0, 0, N, N);
+  x.fillStyle = "#fff"; x.beginPath(); x.moveTo(h, 0); x.quadraticCurveTo(h + 3, h - 3, N, h); x.quadraticCurveTo(h + 3, h + 3, h, N); x.quadraticCurveTo(h - 3, h + 3, 0, h); x.quadraticCurveTo(h - 3, h - 3, h, 0); x.fill();
   return estrelaCanvas = c;
 }
 function faixa() {
@@ -169,20 +173,25 @@ export function naurenMolduraDesenharPrevia(cnv, img, cfg, tex, { t = 0, extra =
   if (guias) { ctx.save(); ctx.setLineDash([5, 4]); ctx.lineWidth = 1; ctx.strokeStyle = "rgba(204,161,98,.6)"; const lado = 200 * k; ctx.strokeRect(P / 2 - lado / 2 + .5, P / 2 - lado / 2 + .5, lado - 1, lado - 1); ctx.restore(); }
   if (!tex?.moldura) { ctx.restore(); return false; }
   const est = naurenMolduraEstado(m, t, extra);
-  // camada de trás (Estrela Octogonal)
-  if (tex.atras) { ctx.save(); ctx.translate(P / 2, P / 2); ctx.rotate(est.rotacao); ctx.scale(est.escala, est.escala); ctx.drawImage(tex.atras, -P / 2, -P / 2, P, P); ctx.restore(); }
-  // arte recortada (quadro próprio, para o pincel e a máscara)
+  const giro = (f) => { ctx.save(); ctx.translate(P / 2, P / 2); ctx.rotate(est.rotacao); ctx.scale(est.escala, est.escala); f(); ctx.restore(); };
+  const desenhar = (c, alpha = 1, comp = "source-over") => { if (!c) return; ctx.save(); ctx.globalAlpha = alpha; ctx.globalCompositeOperation = comp; ctx.drawImage(c, -P / 2, -P / 2, P, P); ctx.restore(); };
+  const aura = () => { if (est.auraCor && est.auraAlpha > 0 && tex.aura) desenhar(naurenMolduraTingir(tex.aura, est.auraCor), est.auraAlpha, "lighter"); };
+  const cintilar = () => { if (!est.cintilar.length) return; const ext = (tex.ext ?? 100) * k; for (const c of est.cintilar) { const r = c.r * ext, x = r * Math.sin(c.ang), y = -r * Math.cos(c.ang), sz = P * .085 * c.s; ctx.save(); ctx.globalAlpha = c.a; ctx.globalCompositeOperation = "lighter"; ctx.translate(x, y); ctx.rotate(c.giro ?? 0); ctx.drawImage(naurenMolduraTingir(estrela(), c.cor), -sz / 2, -sz / 2, sz, sz); ctx.restore(); } };
+  // camada de trás (Estrela Octogonal) e os efeitos "só por fora" (ficam atrás da arte)
+  if (tex.atras) giro(() => ctx.drawImage(tex.atras, -P / 2, -P / 2, P, P));
+  if (est.auraFora) giro(aura);
+  if (est.cintilarFora) giro(cintilar);
+  // arte recortada (quadro próprio, para o pincel e a máscara; a máscara gira com a moldura)
   if (img && desenharImagem) {
     const a = document.createElement("canvas"); a.width = a.height = P; const ax = a.getContext("2d");
     if (fantasma > 0) { ctx.save(); ctx.globalAlpha = fantasma; desenharImagem(ctx, img, P, cfg); ctx.restore(); }
     desenharImagem(ax, img, P, cfg);
     ax.globalCompositeOperation = "destination-in";
-    ax.drawImage(naurenMolduraMascaraCanvas(cfg, tex, P), 0, 0);
+    ax.drawImage(naurenMolduraMascaraCanvas(cfg, tex, P, pintarTraco, naurenMolduraRecorteGira(m) ? { rot: est.rotacao, escala: est.escala } : null), 0, 0);
     ctx.drawImage(a, 0, 0);
   }
   ctx.translate(P / 2, P / 2); ctx.rotate(est.rotacao); ctx.scale(est.escala, est.escala);
-  const desenhar = (c, alpha = 1, comp = "source-over") => { if (!c) return; ctx.save(); ctx.globalAlpha = alpha; ctx.globalCompositeOperation = comp; ctx.drawImage(c, -P / 2, -P / 2, P, P); ctx.restore(); };
-  if (est.auraCor && est.auraAlpha > 0 && tex.aura) desenhar(naurenMolduraTingir(tex.aura, est.auraCor), est.auraAlpha, "lighter");
+  if (!est.auraFora) aura();
   const filtros = []; if (est.hue) filtros.push(`hue-rotate(${Math.round(est.hue)}deg)`); if (est.cinza) filtros.push("grayscale(1) brightness(.65)");
   ctx.save(); if (filtros.length) ctx.filter = filtros.join(" ");
   if (est.cicloCor && tex.branco) { desenhar(tex.moldura); desenhar(naurenMolduraTingir(tex.branco, est.cicloCor), est.cicloInt ?? .8, "source-over"); }
@@ -197,20 +206,22 @@ export function naurenMolduraDesenharPrevia(cnv, img, cfg, tex, { t = 0, extra =
     bx.drawImage(faixa(), pos - P * .22, -P, P * .44, 2 * P);
     desenhar(naurenMolduraTingir(b, est.brilho.cor), est.brilho.int, "lighter");
   }
-  if (est.cintilar.length) { const ext = (tex.ext ?? 100) * k; for (const c of est.cintilar) { const r = c.r * ext, x = r * Math.sin(c.ang), y = -r * Math.cos(c.ang), sz = P * .05 * c.s; ctx.save(); ctx.globalAlpha = c.a; ctx.globalCompositeOperation = "lighter"; ctx.drawImage(naurenMolduraTingir(estrela(), c.cor), x - sz / 2, y - sz / 2, sz, sz); ctx.restore(); } }
+  if (!est.cintilarFora) cintilar();
   ctx.restore();
   return true;
 }
 /** Máscara da arte como canvas P×P (caminho do modelo, ou raster da imagem própria) + traços do pincel. */
-export function naurenMolduraMascaraCanvas(cfg, tex, P, pintarTraco = null) {
+export function naurenMolduraMascaraCanvas(cfg, tex, P, pintarTraco = null, giro = null) {
   const m = naurenMolduraDe(cfg), vb = tex?.vb ?? naurenMolduraVb(m), k = P / (2 * vb);
   const c = document.createElement("canvas"); c.width = c.height = P; const x = c.getContext("2d");
+  if (giro) { x.save(); x.translate(P / 2, P / 2); x.rotate(giro.rot || 0); x.scale(giro.escala || 1, giro.escala || 1); x.translate(-P / 2, -P / 2); }
   if (m.modelo === "imagem") {
     const r = tex?.imagem; if (r) { const mk = m.mascara === "expandida" ? r.mascaraExpandida : r.mascaraNormal; const lado = 200 * m.imagem.tamanho * k; x.drawImage(mk, P / 2 - lado / 2, P / 2 - lado / 2, lado, lado); }
     else { x.fillStyle = "#000"; x.beginPath(); x.arc(P / 2, P / 2, 70 * k, 0, Math.PI * 2); x.fill(); }
   } else {
     x.save(); x.translate(P / 2, P / 2); x.scale(k, k); x.fillStyle = "#000"; x.fill(new Path2D(naurenMolduraMascaraPath(m))); x.restore();
   }
+  if (giro) x.restore();
   if (pintarTraco) for (const tr of cfg.mascara ?? []) pintarTraco(x, tr, P, cfg.arte);
   return c;
 }
@@ -238,7 +249,8 @@ export async function naurenMolduraPrepararPrevia(cfg, px = 512, carregarImagem 
 }
 
 /* ============================== camada no mapa (PIXI) ============================== */
-const camadas = new Map(); // token.id → NaurenMolduraCamada
+// Chave = o objeto Token (não o id): o clone de arrastar tem o mesmo id do token e não pode trocar a camada dele.
+const camadas = new Map(); // Token → NaurenMolduraCamada
 const texturasPixi = new Map(); // chave → PIXI.Texture
 function texturaDe(canvas, chave) {
   let t = texturasPixi.get(chave);
@@ -252,7 +264,7 @@ function opcoes() {
   return { animar, leve };
 }
 export class NaurenMolduraCamada {
-  constructor(token) { this.token = token; this.mesh = null; this.atras = null; this.fx = {}; this.cfg = null; this.m = null; this.tex = null; this.flash = null; this.estado = {}; this.pronta = false; }
+  constructor(token) { this.token = token; this.mesh = null; this.atras = null; this.fundo = null; this.fx = {}; this.cfg = null; this.m = null; this.tex = null; this.flash = null; this.estado = {}; this.pronta = false; }
   get viva() { return !!this.mesh && !this.mesh.destroyed && !this.token.destroyed; }
   /** Monta (ou remonta) a camada para a configuração atual do token. */
   async montar() {
@@ -274,9 +286,11 @@ export class NaurenMolduraCamada {
     mesh.anchor.set(.5, .5); mesh.eventMode = "none";
     this.mesh = mesh;
     if (tex.atras) { const a = new PSM({ name: `${nomeTok}.moldura.atras`, object: token, texture: texturaDe(tex.atras, `${chaveBase}|atras`) }); a.anchor.set(.5, .5); a.eventMode = "none"; this.atras = a; }
+    // camada de trás para os efeitos "só por fora" (aura/cintilar atrás da arte do token): textura vazia do mesmo tamanho
+    const fundo = new PSM({ name: `${nomeTok}.moldura.fundo`, object: token, texture: texturaDe(vazio(px), `vazio|${px}`) }); fundo.anchor.set(.5, .5); fundo.eventMode = "none"; this.fundo = fundo;
     // efeitos (filhos da malha: herdam posição, escala e rotação)
     const sil = texturaDe(tex.silhueta, `${chaveBase}|sil`);
-    const novo = (textura, blend = "add") => { const s = new PIXI.Sprite(textura); s.anchor.set(.5); s.blendMode = PIXI.BLEND_MODES[blend.toUpperCase()] ?? PIXI.BLEND_MODES.ADD; s.visible = false; mesh.addChild(s); return s; };
+    const novo = (textura, blend = "add", pai = mesh) => { const s = new PIXI.Sprite(textura); s.anchor.set(.5); s.blendMode = PIXI.BLEND_MODES[blend.toUpperCase()] ?? PIXI.BLEND_MODES.ADD; s.visible = false; pai.addChild(s); return s; };
     this.fx.aura = novo(texturaDe(tex.aura, `${chaveBase}|aura`));
     this.fx.pulso = novo(sil); this.fx.flash = novo(sil);
     if (tex.branco) { this.fx.ciclo = novo(texturaDe(tex.branco, `${chaveBase}|branco`), "normal"); }
@@ -284,18 +298,53 @@ export class NaurenMolduraCamada {
     this.fx.brilhoMascara = new PIXI.Sprite(sil); this.fx.brilhoMascara.anchor.set(.5); this.fx.brilhoMascara.renderable = false; mesh.addChild(this.fx.brilhoMascara); this.fx.brilho.mask = this.fx.brilhoMascara;
     this.fx.cintilar = new PIXI.Container(); mesh.addChild(this.fx.cintilar);
     this.px = px; this.ext = tex.ext;
+    // recorte que gira junto com a moldura: máscara (filha da moldura) aplicada na arte do token
+    this.montarMascaraGiro(cfg, tex, px);
     this.inserir();
     this.sincronizar();
     this.pronta = true;
-    camadas.set(token.id, this);
+    camadas.set(token, this);
     this.pedirAtualizacao = true; this.ultimoParado = false;
     ligarTicker();
     return true;
   }
+  /** Máscara da arte que gira com a moldura (só quando o recorte não é um círculo e a moldura gira). */
+  montarMascaraGiro(cfg, tex, px) {
+    this.tirarMascaraGiro();
+    if (!naurenMolduraRecorteGira(this.m)) return;
+    try {
+      const forma = naurenMolduraTingir(naurenMolduraMascaraCanvas({ ...cfg, mascara: [] }, tex, px), "#ffffff"); // máscara do PIXI lê o vermelho: branca
+      const tForma = PIXI.Texture.from(forma);
+      const mostrar = (cfg.mascara ?? []).filter(t => t.m === "mostrar");
+      const esp = new PIXI.Sprite(tForma); esp.anchor.set(.5); esp.renderable = false; esp.width = esp.height = px;
+      this.mesh.addChild(esp); this.mascaraGiro = { sprite: esp, texturas: [tForma] };
+      if (mostrar.length) {
+        // forma + traços "mostrar" (fixos na arte): compostos numa textura a cada quadro, girando os traços ao contrário
+        const tr = document.createElement("canvas"); tr.width = tr.height = px; const x = tr.getContext("2d");
+        for (const t of mostrar) naurenBordaPintarTraco(x, t, px, cfg.arte);
+        const tTr = PIXI.Texture.from(naurenMolduraTingir(tr, "#ffffff")), rt = PIXI.RenderTexture.create({ width: px, height: px });
+        const cont = new PIXI.Container(), sF = new PIXI.Sprite(tForma), sT = new PIXI.Sprite(tTr);
+        for (const q of [sF, sT]) { q.anchor.set(.5); q.position.set(px / 2, px / 2); cont.addChild(q); }
+        esp.texture = rt; Object.assign(this.mascaraGiro, { rt, cont, tracos: sT, texturas: [tForma, tTr] });
+      }
+      const tm = this.token.mesh; if (tm) { this.mascaraGiro.dono = tm; tm.mask = esp; }
+      this.atualizarMascaraGiro();
+    } catch (err) { console.warn("Nauren RPG | Moldura do token: máscara girando", err); this.tirarMascaraGiro(); }
+  }
+  atualizarMascaraGiro() {
+    const g = this.mascaraGiro; if (!g) return;
+    const tm = this.token.mesh; if (tm && tm.mask !== g.sprite) { tm.mask = g.sprite; g.dono = tm; }
+    if (g.rt && canvas.app?.renderer) { g.tracos.rotation = -(this.estado?.rotacao ?? 0); const e = this.estado?.escala ?? 1; g.tracos.scale.set(1 / e); canvas.app.renderer.render(g.cont, { renderTexture: g.rt, clear: true }); }
+  }
+  tirarMascaraGiro() {
+    const g = this.mascaraGiro; if (!g) return;
+    try { if (g.dono && !g.dono.destroyed && g.dono.mask === g.sprite) g.dono.mask = null; } catch (err) { /* ok */ }
+    try { g.cont?.destroy({ children: true }); g.rt?.destroy(true); for (const t of g.texturas ?? []) t.destroy(true); } catch (err) { /* ok */ }
+    this.mascaraGiro = null;
+  }
   inserir() {
     const prim = canvas.primary, tm = this.token.mesh;
-    const i = prim.children.indexOf(tm);
-    if (this.atras) { if (i >= 0) prim.addChildAt(this.atras, i); else prim.addChild(this.atras); }
+    for (const s of [this.fundo, this.atras]) { if (!s) continue; const i = prim.children.indexOf(tm); if (i >= 0) prim.addChildAt(s, i); else prim.addChild(s); }
     const j = prim.children.indexOf(tm);
     if (j >= 0) prim.addChildAt(this.mesh, j + 1); else prim.addChild(this.mesh);
     prim.sortDirty = true;
@@ -308,7 +357,7 @@ export class NaurenMolduraCamada {
     const casa = canvas.dimensions?.size ?? 100, tam = Math.min(Number(doc.width) || 1, Number(doc.height) || 1);
     const lado = casa * tam * (2 * this.tex.vb) / 200;
     const est = this.estado?.escala ?? 1;
-    for (const s of [this.mesh, this.atras]) {
+    for (const s of [this.mesh, this.atras, this.fundo]) {
       if (!s) continue;
       s.position.set(tm.position.x, tm.position.y);
       s.width = s.height = lado * est;
@@ -344,8 +393,12 @@ export class NaurenMolduraCamada {
     if (this.flash && t - this.flash.ini >= (this.flash.dur ?? 1)) this.flash = null;
     const mesh = this.mesh, lado = this.lado ?? mesh.width, px = this.px;
     mesh.rotation = est.rotacao; mesh.width = mesh.height = lado * est.escala;
-    if (this.atras) { this.atras.rotation = est.rotacao; this.atras.width = this.atras.height = lado * est.escala; }
+    for (const s of [this.atras, this.fundo]) if (s) { s.rotation = est.rotacao; s.width = s.height = lado * est.escala; }
     const fx = this.fx, cor = c => PIXI.utils.string2hex(c);
+    // efeitos "só por fora": vão para a camada de trás da arte
+    const lugar = (s, fora) => { const pai = fora && this.fundo ? this.fundo : mesh; if (s && s.parent !== pai) pai.addChildAt(s, pai === mesh ? 0 : pai.children.length); };
+    lugar(fx.aura, est.auraFora); lugar(fx.cintilar, est.cintilarFora);
+    this.atualizarMascaraGiro();
     const liga = (s, on, tint, alpha) => { if (!s) return; s.visible = on && alpha > 0.005; if (!s.visible) return; if (tint != null) s.tint = cor(tint); s.alpha = alpha; s.width = s.height = px; };
     liga(fx.aura, !!est.auraCor, est.auraCor, est.auraAlpha);
     liga(fx.pulso, !!est.pulsoCor, est.pulsoCor, est.pulsoAlpha);
@@ -355,7 +408,7 @@ export class NaurenMolduraCamada {
     if (fx.cintilar) {
       const lista = est.cintilar, cont = fx.cintilar;
       while (cont.children.length < lista.length) { const s = new PIXI.Sprite(texturaDe(estrela(), "estrela")); s.anchor.set(.5); s.blendMode = PIXI.BLEND_MODES.ADD; cont.addChild(s); }
-      cont.children.forEach((s, i) => { const c = lista[i]; if (!c) { s.visible = false; return; } s.visible = c.a > .01; const r = c.r * (this.ext / this.tex.vb) * px / 2; s.position.set(r * Math.sin(c.ang), -r * Math.cos(c.ang)); s.width = s.height = px * .05 * c.s; s.alpha = c.a; s.tint = cor(c.cor); });
+      cont.children.forEach((s, i) => { const c = lista[i]; if (!c) { s.visible = false; return; } s.visible = c.a > .01; const r = c.r * (this.ext / this.tex.vb) * px / 2; s.position.set(r * Math.sin(c.ang), -r * Math.cos(c.ang)); s.width = s.height = px * .085 * c.s; s.rotation = c.giro ?? 0; s.alpha = c.a; s.tint = cor(c.cor); });
     }
     // filtros (matiz do arco-íris, cinza do morto): só quando precisa
     const quer = (est.hue && !leve) || est.cinza;
@@ -367,30 +420,31 @@ export class NaurenMolduraCamada {
   piscar(cor, dur = 1) { this.flash = { ini: performance.now() / 1000, cor, dur }; this.pedirAtualizacao = true; }
   invalidarSituacao() { this.sit = null; this.pedirAtualizacao = true; }
   destruirMalhas() {
-    for (const s of [this.mesh, this.atras]) { try { if (s && !s.destroyed) { s.parent?.removeChild(s); s.destroy({ children: true }); } } catch (err) { /* já foi */ } }
-    this.mesh = this.atras = null; this.fx = {}; this.filtro = null; this.pronta = false;
+    this.tirarMascaraGiro();
+    for (const s of [this.mesh, this.atras, this.fundo]) { try { if (s && !s.destroyed) { s.parent?.removeChild(s); s.destroy({ children: true }); } } catch (err) { /* já foi */ } }
+    this.mesh = this.atras = this.fundo = null; this.fx = {}; this.filtro = null; this.pronta = false;
   }
-  destruir() { this.destruirMalhas(); camadas.delete(this.token.id); }
+  destruir() { this.destruirMalhas(); if (camadas.get(this.token) === this) camadas.delete(this.token); }
 }
 async function carregarImagemHttp(src) {
   return new Promise((resolve, reject) => { const img = new Image(); img.crossOrigin = "anonymous"; img.onload = () => resolve(img); img.onerror = () => reject(new Error("imagem")); img.src = src; });
 }
 /** Configuração da borda gravada no token (mesma flag da borda do Foundry: nauren.borda). */
 export function naurenBordaConfigDoToken(doc) { const f = doc?.getFlag?.("nauren", "borda") ?? doc?.flags?.nauren?.borda ?? null; return f ? { ...f } : null; }
-export function naurenMolduraCamadaDe(token) { return camadas.get(token?.id) ?? null; }
+export function naurenMolduraCamadaDe(token) { return (token && camadas.get(token)) ?? null; }
 /** Cria/atualiza a camada do token (chamado no drawToken e quando a flag muda). */
 export async function naurenMolduraAnexar(token) {
   if (!token?.document || !canvas?.primary) return;
   const cfg = naurenBordaConfigDoToken(token.document);
-  let camada = camadas.get(token.id);
+  let camada = camadas.get(token);
   if (!naurenMolduraEhNauren(cfg)) { if (camada) camada.destruir(); return; }
-  if (!camada) { camada = new NaurenMolduraCamada(token); camadas.set(token.id, camada); }
+  if (!camada) { camada = new NaurenMolduraCamada(token); camadas.set(token, camada); }
   await camada.montar().catch(err => console.warn("Nauren RPG | Moldura do token", err));
 }
-export function naurenMolduraSincronizar(token) { camadas.get(token?.id)?.sincronizar(); }
-export function naurenMolduraRemover(token) { camadas.get(token?.id)?.destruir(); }
-export function naurenMolduraPiscar(token, cor) { const c = camadas.get(token?.id); if (!c?.viva) return false; c.piscar(cor); return true; }
-export function naurenMolduraInvalidar(token) { camadas.get(token?.id)?.invalidarSituacao(); }
+export function naurenMolduraSincronizar(token) { const c = token && camadas.get(token); if (!c) return; if (c.mascaraGiro && token.mesh && c.mascaraGiro.dono !== token.mesh) c.atualizarMascaraGiro(); c.sincronizar(); }
+export function naurenMolduraRemover(token) { (token && camadas.get(token))?.destruir(); }
+export function naurenMolduraPiscar(token, cor) { const c = token && camadas.get(token); if (!c?.viva) return false; c.piscar(cor); return true; }
+export function naurenMolduraInvalidar(token) { (token && camadas.get(token))?.invalidarSituacao(); }
 export function naurenMolduraTodas() { return [...camadas.values()]; }
 let tickerLigado = false;
 function ligarTicker() {
