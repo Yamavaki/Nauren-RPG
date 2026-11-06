@@ -65,11 +65,38 @@ export function naurenMolduraCanvas(m, tipo, px, vb) {
     x.filter = `blur(${r}px)`; x.drawImage(sil, 0, 0); x.drawImage(sil, 0, 0); x.filter = "none";
     return c;
   });
-  else if (tipo === "atras") p = svgParaCanvas(naurenMolduraSvgAtras(m, { px, vb }), px);
-  else p = svgParaCanvas(naurenMolduraSvg(m, { px, vb, soBranco: tipo === "silhueta", branco: tipo === "branco", comAtras: false }), px);
+  else if (tipo === "atras") p = furar(svgParaCanvas(naurenMolduraSvgAtras(m, { px, vb }), px), m, px, vb, true);
+  else p = furar(svgParaCanvas(naurenMolduraSvg(m, { px, vb, soBranco: tipo === "silhueta", branco: tipo === "branco", comAtras: false }), px), m, px, vb, false);
   p.catch(() => imagensSvg.delete(chave));
   imagensSvg.set(chave, p);
   return p;
+}
+/**
+ * 0.105.3: detalhes invisíveis de verdade. Esconder o esmalte/gema não basta: muitos modelos têm metal por baixo
+ * deles, e o metal aparecia (e pegava a cor dos efeitos). Aqui o lugar do detalhe vira buraco em todas as imagens.
+ */
+const furos = new Map();
+function moldeFuro(m, px, vb, atras) {
+  const chave = `${atras ? "a" : "c"}|${px}|${vb}|${hash(JSON.stringify({ ...m, efeitos: undefined, reacoes: undefined, girar: undefined }))}`;
+  if (!furos.has(chave)) {
+    const pr = svgParaCanvas(naurenMolduraSvg(m, { px, vb, furo: true, soAtras: atras }), px).then(c => {
+      const x = c.getContext("2d", { willReadFrequently: true }), d = x.getImageData(0, 0, px, px), v = d.data;
+      for (let i = 0; i < v.length; i += 4) { const a = v[i] * v[i + 3] / 255; v[i] = v[i + 1] = v[i + 2] = 255; v[i + 3] = a; }
+      x.putImageData(d, 0, 0); return c;
+    });
+    pr.catch(() => furos.delete(chave)); furos.set(chave, pr);
+  }
+  return furos.get(chave);
+}
+async function furar(prom, m, px, vb, atras) {
+  const c = await prom;
+  if (!m?.semEsmalte && !m?.semJoia) return c;
+  try {
+    const furo = await moldeFuro(m, px, vb, atras);
+    const o = document.createElement("canvas"); o.width = o.height = px; const x = o.getContext("2d");
+    x.drawImage(c, 0, 0); x.globalCompositeOperation = "destination-out"; x.drawImage(furo, 0, 0);
+    return o;
+  } catch (err) { return c; }
 }
 const tingidos = new Map();
 /** Cópia de um canvas pintada de uma cor (mantém só o alfa). */

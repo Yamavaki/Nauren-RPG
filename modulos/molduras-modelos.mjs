@@ -427,6 +427,21 @@ export function naurenMolduraSvg(cfgIn, opc = {}) {
     ${ACABAMENTO(`sh${id}`)}
     <filter id="gl${id}" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>`;
   const semSombra = opc.sombra === false || opc.soBranco || opc.semFiltro;
+  if (opc.furo) {
+    // 0.105.3: "molde do furo" dos detalhes invisíveis: branco só onde o esmalte/gema aparece por cima; o resto preto.
+    // Quem desenha a moldura usa isto para recortar o metal que fica por baixo deles (senão o metal aparece no lugar).
+    const W = "#fff", K = "#000";
+    const q = `#q${id}`, qb = `#q${id}b`, T = (sel) => `${q} ${sel}, ${qb} ${sel}`;
+    const cssF = `<style>${q} *, ${qb} *{filter:none} ${T(`[fill]:not([fill="none"])`)}{fill:${K}} ${T(`[stroke]:not([stroke="none"])`)}{stroke:${K}}
+      ${T(".m.m.m")}{fill:${K}} ${T(".lm.lm.lm")}{fill:none;stroke:${K}} ${T(".brilho.brilho.brilho")}{fill:${cfg.semJoia ? W : K};stroke:none}
+      ${T(".e.e.e")}{fill:${cfg.semEsmalte ? W : K};stroke:none} ${T(".le.le.le")}{fill:none;stroke:${cfg.semEsmalte ? W : K}}
+      ${T(".joia.joia.joia")}{fill:${cfg.semJoia ? W : K};stroke:none}</style>`;
+    const forma0 = m.forma ?? "circulo";
+    const corpoF = escalaDeTracos(m.corpo.call(m, forma0, id), cfg.espessura);
+    const atrasF = opc.soAtras ? escalaDeTracos(m.atras.call(m, forma0, id), cfg.espessura) : "";
+    const escF = cfg.escala !== 1 ? ` transform="scale(${f(cfg.escala)})"` : "";
+    return `<svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" viewBox="${-vb} ${-vb} ${2 * vb} ${2 * vb}" width="${px}" height="${px}">${cssF}<g${escF}>${opc.soAtras ? `<g id="q${id}b">${atrasF}</g>` : `<g id="q${id}">${corpoF}</g>`}</g></svg>`;
+  }
   const css = `<style>#q${id} .m, #q${id}b .m{fill:url(#mt${id});stroke:${m.neon || semSombra ? "none" : CONTORNO_INTERNO};stroke-width:.3}
     #q${id} .lm{fill:none;stroke:url(#ml${id});stroke-linejoin:miter;stroke-linecap:butt}
     #q${id} .e, #q${id}b .e{fill:${cfg.semEsmalte ? "none" : esmalte}} #q${id} .le{fill:none;stroke:${cfg.semEsmalte ? "none" : esmalte}}

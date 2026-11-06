@@ -222,23 +222,28 @@ export function naurenAparenciaAnimValida(anim) {
   try { const db = globalThis.Sequencer?.Database; if (db?.entryExists) return !!db.entryExists(anim); } catch (err) { /* segue */ }
   return naurenAparenciaAnimacoes().includes(anim);
 }
-/** Animação + som no token. Acompanha o tamanho do token (em vezes o token) e os ajustes da transição. */
-export async function naurenAparenciaTransicao(td, t) {
+/**
+ * Animação + som no token. 0.105.3: começa junto com a troca, no centro e no tamanho que o token vai ter (tamFinal, em casas),
+ * usando o "molde" das animações do JB2A (scaleToObject), para a parte visível da animação cobrir o token.
+ */
+export async function naurenAparenciaTransicao(td, t, { tamFinal = null } = {}) {
   t = normTrans(t);
   if (!t.anim && !t.som) return;
   try {
-    if (t.anim && naurenAparenciaSequencerAtivo() && td?.parent && naurenAparenciaAnimValida(t.anim)) {
-      const g = canvas.dimensions?.size ?? 100, w = Number(td.width) || 1, h = Number(td.height) || 1;
-      const centro = { x: (Number(td.x) || 0) + w * g / 2, y: (Number(td.y) || 0) + h * g / 2 };
-      const lado = Math.max(w, h) * t.escala;
-      let ef = new Sequence().effect().file(t.anim).atLocation(centro).size({ width: lado, height: lado }, { gridUnits: true })
-        .opacity(t.opacidade).playbackRate(t.velocidade).elevation((Number(td.elevation) || 0) + (t.porBaixo ? -.01 : .01));
-      if (t.porBaixo) ef = ef.belowTokens(); else ef = ef.aboveLighting?.() ?? ef;
+    const obj = td?.object;
+    if (t.anim && naurenAparenciaSequencerAtivo() && obj && !obj.destroyed && naurenAparenciaAnimValida(t.anim)) {
+      const agora = Math.max(Number(td.width) || 1, Number(td.height) || 1);
+      const fim = Math.max(agora, Number(tamFinal) || agora);
+      // tamanho calculado uma vez, já no tamanho final (o token cresce a partir do canto de cima à esquerda)
+      const g = canvas.dimensions?.size ?? 100, desl = (fim - agora) * g / 2;
+      let ef = new Sequence().effect().file(t.anim).atLocation(obj, desl ? { offset: { x: desl, y: desl } } : {}).scaleToObject(t.escala * fim / agora)
+        .opacity(t.opacidade).playbackRate(t.velocidade);
+      if (t.porBaixo) ef = ef.belowTokens(); else if (typeof ef.aboveLighting === "function") ef = ef.aboveLighting();
       if (t.repetir > 1) ef = ef.repeats(t.repetir, 120);
       if (t.atraso) ef = ef.delay(t.atraso);
       if (t.matiz) ef = ef.filter("ColorMatrix", { hue: t.matiz });
       if (t.espelhar) ef = ef.mirrorX();
-      ef.play();
+      ef.play(); // não espera: a troca acontece enquanto a animação toca
     }
     if (t.som) foundry.audio?.AudioHelper?.play?.({ src: t.som, volume: t.volume, autoplay: true, loop: false }, true);
   } catch (err) { console.warn("Nauren RPG | Aparência: transição", err); }
@@ -246,47 +251,46 @@ export async function naurenAparenciaTransicao(td, t) {
 
 /* --------------------------- troca suave da imagem --------------------------- */
 /**
- * 0.105.2: antes de trocar a imagem/tamanho/borda, cada tela tira uma "foto" do token como ele está e deixa essa
- * foto por cima, sumindo aos poucos, enquanto a aparência nova é montada por baixo. Assim não se vê a imagem
- * trocando em etapas (imagem, depois a borda, depois o tamanho).
+ * 0.105.3: troca suave = o token (arte + moldura) esmaece, a aparência nova é montada enquanto ele está apagado
+ * e depois ele volta aos poucos. Roda em cada tela, só mexendo no alfa local (nada vai para o banco de dados).
+ * (A 0.105.2 tirava uma "foto" do mapa, mas a foto saía deslocada.)
  */
-const fotos = new Map();
-function naurenAparenciaFoto(token) {
+const SAI = 220, VOLTA = 380, MAX = 3500;
+const fades = new Map();
+function alfaBase(token) { return (token?.alpha ?? 1) * (token?.document?.alpha ?? 1); }
+function aplicarAlfa(token, f) {
+  if (!token || token.destroyed) return;
+  const tm = token.mesh; if (tm && !tm.destroyed) tm.alpha = alfaBase(token) * f;
+  const cam = naurenMolduraCamadaDe(token);
+  if (cam) for (const m of [cam.atras, cam.fundo, cam.mesh, cam.frente]) if (m && !m.destroyed) m.alpha = (tm?.alpha ?? f);
+}
+function naurenAparenciaEsmaecer(td) {
   try {
-    if (!token || token.destroyed || !canvas?.ready || !token.visible || !token.renderable) return;
-    const ant = fotos.get(token.document.id); if (ant && !ant.sp.destroyed) return; // já tem uma foto segurando
-    const r = canvas.app.renderer, st = canvas.stage, z = st.scale.x || 1;
-    const b = token.bounds ?? new PIXI.Rectangle(token.document.x, token.document.y, token.w, token.h);
-    const pad = Math.max(b.width, b.height) * .45;
-    const reg = new PIXI.Rectangle(b.x - pad, b.y - pad, b.width + 2 * pad, b.height + 2 * pad);
-    // a região vai em coordenadas de tela (o palco já tem o zoom e a posição da câmera)
-    const p0 = st.worldTransform.apply({ x: reg.x, y: reg.y });
-    const telaReg = new PIXI.Rectangle(Math.floor(p0.x), Math.floor(p0.y), Math.ceil(reg.width * z), Math.ceil(reg.height * z));
-    if (telaReg.width < 2 || telaReg.height < 2 || telaReg.width * telaReg.height > 4e6) return;
-    const tex = r.generateTexture(st, { region: telaReg, resolution: r.resolution ?? 1 });
-    const sp = new PIXI.Sprite(tex); sp.eventMode = "none";
-    sp.position.set(reg.x, reg.y); sp.width = reg.width; sp.height = reg.height;
-    canvas.interface.addChild(sp);
-    const foto = { sp, tex, ini: performance.now(), soltar: 0 };
-    fotos.set(token.document.id, foto);
+    if (!td || !canvas?.ready || td.parent?.id !== canvas.scene?.id) return;
+    const ant = fades.get(td.id); if (ant) { ant.fim = 0; return; }
+    const st = { ini: performance.now(), fim: 0 };
+    fades.set(td.id, st);
     const passo = () => {
-      if (sp.destroyed) return;
-      const agora = performance.now();
-      if (!foto.soltar && agora - foto.ini > 3000) foto.soltar = agora; // segurança: no máximo 3 s
-      if (foto.soltar) {
-        const a = 1 - (agora - foto.soltar) / 450;
-        if (a <= 0) { canvas.app.ticker.remove(passo); sp.parent?.removeChild(sp); sp.destroy(); tex.destroy(true); if (fotos.get(token.document.id) === foto) fotos.delete(token.document.id); return; }
-        sp.alpha = a;
+      const token = td.object, agora = performance.now();
+      if (!st.fim && agora - st.ini > MAX) st.fim = agora; // segurança
+      let f;
+      if (!st.fim || agora < st.fim) f = Math.max(0, 1 - (agora - st.ini) / SAI);
+      else f = Math.min(1, (agora - st.fim) / VOLTA);
+      const e = f * f * (3 - 2 * f); // suaviza
+      aplicarAlfa(token, e);
+      if (st.fim && agora - st.fim >= VOLTA) {
+        canvas.app.ticker.remove(passo); fades.delete(td.id);
+        aplicarAlfa(token, 1); try { naurenMolduraCamadaDe(token)?.sincronizar?.(); } catch (err) { /* ok */ }
       }
     };
-    canvas.app.ticker.add(passo);
+    canvas.app.ticker.add(passo, null, PIXI.UPDATE_PRIORITY?.NORMAL ?? 0);
   } catch (err) { console.debug?.("Nauren RPG | Aparência: troca suave indisponível", err); }
 }
-function naurenAparenciaSoltarFoto(id) { const f = fotos.get(id); if (f && !f.soltar) f.soltar = performance.now() + 120; }
+function naurenAparenciaReacender(id) { const f = fades.get(id); if (f && !f.fim) f.fim = Math.max(performance.now(), f.ini + SAI); }
 
 /** Faz a troca com a foto por cima (em todas as telas): avisa o início, troca, avisa o fim. */
 async function trocar(td, suave, fazer) {
-  if (suave && td?.parent) await td.update({ "flags.nauren.aparenciaTroca": { fase: "ini", t: Date.now() } }).catch(() => {});
+  if (suave && td?.parent) { await td.update({ "flags.nauren.aparenciaTroca": { fase: "ini", t: Date.now() } }).catch(() => {}); await new Promise(r => setTimeout(r, 240)); }
   try { await fazer(); }
   finally { if (suave && td?.parent) await td.update({ "flags.nauren.aparenciaTroca": { fase: "fim", t: Date.now() } }).catch(() => {}); }
 }
@@ -312,14 +316,21 @@ export async function naurenAparenciaAtualizar(actor, { forcar = false } = {}) {
     const sig = JSON.stringify({ i: r.imagem, t: r.tamanho, b: r.borda, ret: r.retrato, base: base?.src });
     if (!ativas.length) {
       if (!base) return;
-      for (const td of tds) { await trocar(td, antes.suave !== false, () => restaurarToken(actor, td, base)); await td.unsetFlag?.(SIS, "aparenciaSig"); }
+      for (const td of tds) {
+        for (const id of antes.ids) await naurenAparenciaTransicao(td, antes.saidas?.[id], { tamFinal: base.width });
+        await trocar(td, antes.suave !== false, () => restaurarToken(actor, td, base)); await td.unsetFlag?.(SIS, "aparenciaSig");
+      }
       if (base.retratoTrocado && actor.img !== base.retrato) await actor.update({ img: base.retrato });
-      for (const id of antes.ids) for (const td of tds) await naurenAparenciaTransicao(td, antes.saidas?.[id]);
       await actor.unsetFlag(SIS, "aparenciaBase"); await actor.unsetFlag(SIS, "aparenciaAplicada");
       return;
     }
     if (!base) { base = capturarBase(actor, tds[0]); await actor.setFlag(SIS, "aparenciaBase", base); }
+    const entraram = ativas.filter(x => !antes.ids.includes(x.item.id)), sairam = antes.ids.filter(id => !ids.includes(id));
+    const tamFinal = Number(r.tamanho) || base.width;
     for (const td of tds) {
+      // transições primeiro: a animação cobre a troca e já vem no tamanho final
+      for (const x of entraram) await naurenAparenciaTransicao(td, x.a.entrada, { tamFinal });
+      for (const id of sairam) await naurenAparenciaTransicao(td, antes.saidas?.[id], { tamFinal });
       if (!forcar && td.getFlag?.(SIS, "aparenciaSig") === sig) continue;
       await trocar(td, ativas.some(x => x.a.suave !== false), () => aplicarNoToken(actor, td, r, base));
       await td.setFlag?.(SIS, "aparenciaSig", sig);
@@ -327,10 +338,6 @@ export async function naurenAparenciaAtualizar(actor, { forcar = false } = {}) {
     // retrato da ficha junto (opcional)
     if (r.imagem && r.retrato) { if (actor.img !== r.imagem) { await actor.update({ img: r.imagem }); if (!base.retratoTrocado) await actor.setFlag(SIS, "aparenciaBase", { ...base, retratoTrocado: true }); } }
     else if (base.retratoTrocado && actor.img !== base.retrato) { await actor.update({ img: base.retrato }); await actor.setFlag(SIS, "aparenciaBase", { ...base, retratoTrocado: false }); }
-    // transições: quem entrou e quem saiu
-    const entraram = ativas.filter(x => !antes.ids.includes(x.item.id)), sairam = antes.ids.filter(id => !ids.includes(id));
-    for (const x of entraram) for (const td of tds) await naurenAparenciaTransicao(td, x.a.entrada);
-    for (const id of sairam) for (const td of tds) await naurenAparenciaTransicao(td, antes.saidas?.[id]);
     await actor.setFlag(SIS, "aparenciaAplicada", { ids, saidas: Object.fromEntries(ativas.map(x => [x.item.id, x.a.saida])), suave: ativas.some(x => x.a.suave !== false) });
   } catch (err) { console.warn("Nauren RPG | Aparência", err); }
   finally {
@@ -344,7 +351,7 @@ const temAparencia = actor => (actor?.items ?? []).some(i => i.getFlag?.(SIS, "a
 export function naurenAparenciaHooks() {
   Hooks.on("updateToken", (td, changes) => {
     const f = changes?.flags?.nauren?.aparenciaTroca; if (!f || td.parent?.id !== canvas?.scene?.id) return;
-    if (f.fase === "ini") naurenAparenciaFoto(td.object);
+    if (f.fase === "ini") naurenAparenciaEsmaecer(td);
     else if (f.fase === "fim") {
       // espera a arte nova (e a moldura Nauren, se tiver) estarem prontas antes de soltar a foto
       const t0 = performance.now();
@@ -353,7 +360,7 @@ export function naurenAparenciaHooks() {
         const artePronta = !!tex?.baseTexture?.valid;
         const bordaNauren = td.getFlag?.(SIS, "borda")?.ativa && td.getFlag(SIS, "borda")?.modelo && td.getFlag(SIS, "borda").modelo !== "foundry";
         const cam = bordaNauren ? naurenMolduraCamadaDe(tk) : null;
-        if ((artePronta && (!bordaNauren || cam?.pronta)) || performance.now() - t0 > 2500) return naurenAparenciaSoltarFoto(td.id);
+        if ((artePronta && (!bordaNauren || cam?.pronta)) || performance.now() - t0 > 2500) return naurenAparenciaReacender(td.id);
         setTimeout(ver, 60);
       };
       setTimeout(ver, 150);
