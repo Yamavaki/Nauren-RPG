@@ -428,7 +428,7 @@ class NaurenHudCombate extends foundry.applications.api.ApplicationV2 {
     // Condições.
     // Posturas ativas (Efeitos de grupo exclusivo, ex.: as Guardas do Guerreiro) aparecem primeiro, com borda dourada.
     const posturas = actor.items.filter(i => i.type === "efeito" && i.system.ativo && i.system.grupoExclusivo);
-    const todasCondicoes = [...posturas, ...actor.items.filter(i => i.type === "condicao" && i.system.ativo !== false && !naurenEhCondicaoModelo(i))];
+    const todasCondicoes = [...posturas, ...actor.items.filter(i => i.type === "condicao" && i.system.ativo !== false && !naurenEhCondicaoModelo(i) && i.system.iconeVisivel !== "ficha")];
     const cabem = c.expandido ? todasCondicoes.length : (todasCondicoes.length > 4 ? 3 : 4);   // com "+N" no fim, cabem 3 ícones
     c.condicoesExtra = Math.max(0, todasCondicoes.length - cabem);
     c.temPostura = posturas.length > 0;

@@ -6,6 +6,7 @@ import { naurenArmazemInit, naurenArmazemHooks, NaurenArmazemJanela, NaurenArmaz
 import { naurenTreinosInit, naurenTreinarSeguirOExemplo, naurenRecebidosSeguirOExemplo } from "./modulos/treinos.mjs";
 import { NAUREN_MOLDURA_MODELOS, NAUREN_MOLDURA_PALETAS, NAUREN_MOLDURA_EFEITOS, naurenMolduraModelo, naurenMolduraSvg, naurenMolduraMascaraPath, naurenMolduraNormalizar, naurenMolduraConfigPadrao, naurenMolduraEstado, naurenMolduraRaioDoPath, NAUREN_MOLDURA_GRUPOS, naurenMolduraRecorteGira, naurenMolduraMascaraCircular, naurenMolduraDetalhes } from "./modulos/molduras-modelos.mjs";
 import { naurenMoldurasProntasInit, naurenMoldurasProntasHooks, naurenProntasLista, naurenProntaSalvar, naurenProntaApagar, naurenProntaAplicarEmTokens, naurenProntaCfgPara, naurenProntaDados, naurenProntaParaDisposicao, naurenMolduraFavoritas, naurenMolduraFavoritar, naurenMolduraRecentes, naurenMolduraUsada, NAUREN_DISPOSICOES, naurenMoldurasAutomaticas } from "./modulos/molduras-prontas.mjs";
+import { NAUREN_APARENCIA_TIPOS, NAUREN_APARENCIA_PADRAO, naurenAparenciaDe, naurenAparenciaNormalizar, naurenAparenciasAtivas, naurenAparenciaResolver, naurenAparenciaGatilhoBate, naurenAparenciaAtualizar, naurenAparenciaAgendar, naurenAparenciaHooks, naurenAparenciaMigrar, naurenAparenciaHtml, naurenAparenciaLigar, naurenAparenciaMontarBorda, naurenAparenciaPrevia, naurenAparenciaItemValendo } from "./modulos/aparencia.mjs";
 import { naurenConfiguracoesInit, naurenConfiguracoesRecolher, naurenConfiguracoesRecolhidas, NaurenConfiguracoes, NAUREN_CONFIG_SECOES } from "./modulos/configuracoes.mjs";
 import { naurenMoldurasInit, naurenMoldurasHooks, naurenMolduraEhNauren, naurenMolduraDe, naurenMolduraPrepararPrevia, naurenMolduraDesenharPrevia, naurenMolduraProcessarImagem, naurenMolduraExtensao, naurenMolduraCamadaDe, naurenMolduraTodas, naurenMolduraAnexar, naurenMolduraPiscar, NaurenMolduraCamada, naurenMolduraMascaraCanvas, naurenMolduraTick } from "./modulos/molduras-token.mjs";
 import { NaurenMolduraEditor, naurenAbrirMolduraEditor } from "./modulos/molduras-editor.mjs";
@@ -3145,7 +3146,9 @@ class NaurenCondicaoData extends foundry.abstract.TypeDataModel {
       // 0.94.16: aparência do token enquanto a Condição durar (Sequencer Motion) - ver NAUREN_MOTION_CONDICAO_OPCOES.
       motion: new StringField({ initial: "auto" }),
       motionCor: new StringField({ initial: "#ffffff" }),
-      molduraCor: new StringField({ initial: "" }), // 0.103: enquanto a Condição durar, a aura da moldura do token fica nesta cor ("" = não muda)
+      molduraCor: new StringField({ initial: "" }),
+      // 0.105: onde o ícone desta Condição aparece: "sempre" (token, HUD e ficha) ou "ficha" (só na ficha; útil para Condições só de aparência)
+      iconeVisivel: new StringField({ initial: "sempre", choices: ["sempre", "ficha"] }), // 0.103: enquanto a Condição durar, a aura da moldura do token fica nesta cor ("" = não muda)
       pagarMovimentoCom: new ArrayField(new SchemaField({ recurso: new StringField({ initial: "mana" }), quantidade: new StringField({ initial: "1" }) })),
       proximaAcaoEscolherAcertoOuDano: new BooleanField({ initial: false }), // o bônus de dano pode ir para o acerto: pergunta ao usar (ex.: Poesia Lunar)
       danoRecebidoPercentual: new NumberField({ initial: 0, min: 0, max: 100, integer: true }), // reduz o dano recebido em % (ex.: Instinto de Sobrevivência: 50)
@@ -7290,6 +7293,7 @@ Hooks.once("init", () => {
   naurenItensScriptsInit(); // 0.102: scripts dos itens (modulos/itens-scripts.mjs)
   naurenItensScriptsHooks();
   naurenTreinosInit(); // 0.102.4: Seguir o Exemplo (modulos/treinos.mjs)
+  naurenAparenciaHooks(); Hooks.once("ready", () => naurenAparenciaMigrar().catch(err => console.warn("Nauren RPG | Migração da Aparência", err))); // 0.105: Aparência (modulos/aparencia.mjs)
   naurenConfiguracoesInit(); // 0.104: painel único "Configurações do Nauren" (modulos/configuracoes.mjs)
   naurenMoldurasInit(); naurenMoldurasHooks(); naurenMoldurasProntasInit(); naurenMoldurasProntasHooks(); // 0.103: molduras de token (modulos/molduras-token.mjs)
   naurenChatInit(); // 0.99.2: chat no estilo do sistema (modulos/chat.mjs)

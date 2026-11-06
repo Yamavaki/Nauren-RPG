@@ -220,7 +220,7 @@ function naurenHudPodeVerCondicoes(actor) {
 }
 
 function naurenHudCondicoesDoAtor(actor) {
-  return (actor?.items ?? []).filter(i => i.type === "condicao" && i.system.ativo !== false && !i.getFlag("nauren", "modelo"))
+  return (actor?.items ?? []).filter(i => i.type === "condicao" && i.system.ativo !== false && !i.getFlag("nauren", "modelo") && i.system.iconeVisivel !== "ficha")
     .map(i => ({ id: i.id, nome: i.name, img: i.img, acumulos: i.system.acumulativel ? (i.system.acumulos ?? 1) : 0 }));
 }
 

@@ -3891,7 +3891,7 @@ async function naurenRemoverIconeDaCondicao(item) {
   naurenRegistrarStatusDeCondicao(item);
   await actor.toggleStatusEffect(statusId, { active: false }).catch(err => console.warn("Nauren RPG | Falha ao remover ícone da condição.", err));
 }
-function naurenCondicaoMostraIcone(item) { return item.system.ativo !== false && !naurenEhCondicaoModelo(item); }
+function naurenCondicaoMostraIcone(item) { return item.system.ativo !== false && !naurenEhCondicaoModelo(item) && item.system.iconeVisivel !== "ficha"; }
 // Ícones que sobraram de Condições inativas ou modelos (antes da 0.68.3 elas mostravam ícone): limpa ao abrir.
 Hooks.once("ready", () => {
   if (game.users.activeGM !== game.user) return;
@@ -3921,7 +3921,7 @@ Hooks.on("updateItem", (item, changes, options, userId) => {
   if (userId !== game.user.id) return;
   if (item.type !== "condicao" || !item.parent) return;
   // Desligar pelo raio tira o ícone (e a animação); religar recria (e a animação toca de novo).
-  if (foundry.utils.hasProperty(changes, "system.ativo")) {
+  if (foundry.utils.hasProperty(changes, "system.ativo") || foundry.utils.hasProperty(changes, "system.iconeVisivel")) {
     if (naurenCondicaoMostraIcone(item)) naurenSincronizarIconeDaCondicao(item); else naurenRemoverIconeDaCondicao(item);
     return;
   }

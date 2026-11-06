@@ -69,10 +69,11 @@ export class NaurenMolduraEditor extends foundry.applications.api.ApplicationV2 
       salvar: function () { this.#salvar(); }
     }
   };
-  constructor({ actor, tokenDoc = null, srcInicial = "", resolver = null } = {}) {
-    super({});
-    this.actor = actor; this.tokenDoc = tokenDoc; this.resolver = resolver;
-    const salvo = tokenDoc?.getFlag?.("nauren", "borda") ?? actor.getFlag("nauren", "borda");
+  constructor({ actor, tokenDoc = null, srcInicial = "", resolver = null, soDevolver = false, cfgInicial = null, titulo = "" } = {}) {
+    // soDevolver (0.105, Aparência): monta a borda e devolve a configuração, sem gravar na ficha nem nos tokens
+    super(soDevolver ? { id: "nauren-moldura-editor-aparencia" } : {});
+    this.actor = actor; this.tokenDoc = tokenDoc; this.resolver = resolver; this.soDevolver = soDevolver; this.tituloExtra = titulo;
+    const salvo = cfgInicial ? { ...cfgInicial, ativa: true } : (tokenDoc?.getFlag?.("nauren", "borda") ?? actor.getFlag("nauren", "borda"));
     const cfg = naurenBordaConfig(salvo ? { flags: { nauren: { borda: salvo } } } : (tokenDoc ?? actor.prototypeToken ?? actor));
     const imgToken = tokenDoc?.texture?.src ?? actor.prototypeToken?.texture?.src ?? "";
     this.imgToken = String(imgToken).replace(/([?&])nauren-borda=[^&]*&?/, "$1").replace(/[?&]$/, "");
@@ -93,7 +94,7 @@ export class NaurenMolduraEditor extends foundry.applications.api.ApplicationV2 
     this.#carregarArte(this.estado.src);
     if (this.estado.modelo !== "foundry") this.#remontarTexturas();
   }
-  get title() { return `Borda do token · ${this.actor.name}`; }
+  get title() { return this.soDevolver ? `Borda da aparência · ${this.tituloExtra || this.actor.name}` : `Borda do token · ${this.actor.name}`; }
   /** Carrega uma borda exportada (JSON) por cima da atual, sem mexer na imagem do personagem nem no pincel. */
   importarDados(o, { manterGaleria = false } = {}) {
     if (!o || o.tipo !== "bordaToken") throw new Error("não é borda");
@@ -177,13 +178,13 @@ export class NaurenMolduraEditor extends foundry.applications.api.ApplicationV2 
         </div>
       </div>
       <div class="nt-rod">
-        ${this.qtdTokens ? `<label class="nm-check"><input type="checkbox" name="nosTokens" ${this.nosTokens ? "checked" : ""}> ${this.qtdTokens === 1 ? "Aplicar também no token desta ficha que já está no mapa" : `Aplicar também nos ${this.qtdTokens} tokens desta ficha que já estão no mapa`}</label>` : ""}
-        <button type="button" class="na-btn" data-action="remover" ${this.tinhaBorda ? "" : `disabled title="Este token ainda não tem borda salva."`}><i class="fas fa-ban"></i> Remover a borda</button>
+        ${this.qtdTokens && !this.soDevolver ? `<label class="nm-check"><input type="checkbox" name="nosTokens" ${this.nosTokens ? "checked" : ""}> ${this.qtdTokens === 1 ? "Aplicar também no token desta ficha que já está no mapa" : `Aplicar também nos ${this.qtdTokens} tokens desta ficha que já estão no mapa`}</label>` : ""}
+        ${this.soDevolver ? `<span class="nm-nota">Esta borda vale só enquanto a aparência estiver ativa.</span>` : `<button type="button" class="na-btn" data-action="remover" ${this.tinhaBorda ? "" : `disabled title="Este token ainda não tem borda salva."`}><i class="fas fa-ban"></i> Remover a borda</button>`}
         <button type="button" class="nm-ic" data-action="exportar" title="Exportar esta borda (JSON) para usar em outro personagem ou mundo"><i class="fas fa-file-export"></i></button>
         <button type="button" class="nm-ic" data-action="importar" title="Importar uma borda exportada (JSON)"><i class="fas fa-file-import"></i></button>
         <span class="nt-esp"></span>
         <button type="button" class="na-btn" data-action="cancelar">Cancelar</button>
-        <button type="button" class="na-btn na-principal" data-action="salvar" ${this.imgOk ? "" : "disabled"}><i class="fas fa-check"></i> ${this.tinhaBorda ? "Salvar" : "Usar esta borda"}</button>
+        <button type="button" class="na-btn na-principal" data-action="salvar" ${this.imgOk ? "" : "disabled"}><i class="fas fa-check"></i> ${this.soDevolver ? "Usar na aparência" : this.tinhaBorda ? "Salvar" : "Usar esta borda"}</button>
       </div>
     </div>`;
   }
@@ -529,6 +530,7 @@ export class NaurenMolduraEditor extends foundry.applications.api.ApplicationV2 
       moldura: nauren ? { ...naurenMolduraNormalizar(e.moldura), vb: e.moldura.vb, ext: e.moldura.ext, raio: e.moldura.raio } : null
     };
     this.resultado = final;
+    if (this.soDevolver) { this.acao = "salvo"; this.close(); return; }
     await naurenBordaAplicar(this.actor, final, { tokenDoc: this.tokenDoc, nosTokens: this.nosTokens });
     naurenMolduraUsada(e.modelo).catch(() => {});
     this.acao = "salvo"; this.close();
@@ -550,8 +552,8 @@ export class NaurenMolduraEditor extends foundry.applications.api.ApplicationV2 
   }
 }
 /** Abre o editor e devolve a configuração salva (ou null se cancelou). */
-export function naurenAbrirMolduraEditor(actor, { tokenDoc = null, srcInicial = "" } = {}) {
+export function naurenAbrirMolduraEditor(actor, { tokenDoc = null, srcInicial = "", soDevolver = false, cfgInicial = null, titulo = "" } = {}) {
   if (!actor) return Promise.resolve(null);
-  return new Promise(resolver => { const ed = new NaurenMolduraEditor({ actor, tokenDoc, srcInicial, resolver }); ed.render(true); });
+  return new Promise(resolver => { const ed = new NaurenMolduraEditor({ actor, tokenDoc, srcInicial, resolver, soDevolver, cfgInicial, titulo }); ed.render(true); });
 }
 export { naurenMolduraEhNauren };

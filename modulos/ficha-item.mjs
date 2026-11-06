@@ -6,6 +6,8 @@ import { NAUREN_TORRE_LOJAS, NAUREN_TORRE_PIGMENTOS, NAUREN_TORRE_RARIDADES, NAU
 import { NaurenActorSheet } from "./ficha-ator.mjs";
 import { NAUREN_CONDICOES_TIPOS, NaurenTiersEditor, naurenCondicoesEmbutidas, naurenContextoCatalogo, naurenDadosParaEmbutir, naurenEditarCondicaoEmbutida, naurenGravarCondicoesEmbutidas, naurenHtmlAbaCondicoes, naurenLigarFichaItemExtras, naurenSeloDoItem, naurenTorreDoCatalogo } from "./itens-catalogo.mjs";
 import { naurenLigarSeletorIcones } from "./seletor-icones.mjs";
+import { NAUREN_APARENCIA_TIPOS, naurenAparenciaHtml, naurenAparenciaLigar } from "./aparencia.mjs";
+import { naurenProntasLista } from "./molduras-prontas.mjs";
 import { NAUREN_SCRIPT_TIPOS, naurenHtmlAbaScript, naurenHtmlBotoesScript, naurenLigarBotoesScript, naurenLigarFichaScripts, naurenScriptAprovado, naurenScriptsDoItem } from "./itens-scripts.mjs";
 /* =======================================
  * 5. FICHA DE ITEM (ApplicationV2 - padrão atual do Foundry V13/V14)
@@ -900,6 +902,8 @@ class NaurenItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
         context.scriptsPendentes = naurenScriptsDoItem(item).filter(x => String(x.codigo ?? "").trim() && !naurenScriptAprovado(x)).length;
       }
       context.botoesScriptHtml = naurenHtmlBotoesScript(item);
+      // 0.105: aba Aparência (imagem/tamanho/borda no mapa enquanto o item valer)
+      if (NAUREN_APARENCIA_TIPOS.has(item.type) && !ehModelo) { context.aparenciaHtml = naurenAparenciaHtml(item, naurenProntasLista()); context.aparenciaAtiva = !!item.getFlag("nauren", "aparencia")?.ativa; }
       context.torreOpcoes = { tiers: NAUREN_TORRE_TIERS, raridades: NAUREN_TORRE_RARIDADES, lojas: NAUREN_TORRE_LOJAS, pigmentos: NAUREN_TORRE_PIGMENTOS };
       context.podeEditarTorre = game.user.isGM;
       if (item.type === "arma" || item.type === "armadura") {
@@ -1543,6 +1547,7 @@ class NaurenItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     this.element.querySelectorAll("details").forEach(d => d.addEventListener("toggle", () => naurenAjustarListasLargas(this.element)));
     super._onRender(context, options);
     // 0.102: aba Condições, seletor de Condição, aba Script e botões de script.
+    try { naurenAparenciaLigar(this); } catch (err) { console.warn("Nauren RPG | Aparência na ficha", err); }
     try { naurenLigarFichaItemExtras(this); naurenLigarFichaScripts(this); naurenLigarBotoesScript(this); naurenLigarSeletorIcones(this.element); } catch (err) { console.warn("Nauren RPG | ficha do item (0.102)", err); }
     if (this.item.type === "grupo") this._ligarAbasGrupo();
     this._ligarScrollItemBody();
