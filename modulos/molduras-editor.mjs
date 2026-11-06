@@ -241,7 +241,11 @@ export class NaurenMolduraEditor extends foundry.applications.api.ApplicationV2 
   }
   #htmlPincel() {
     const e = this.estado;
-    return this.#sec("pincel", `${!this.nauren && e.recorte !== "redondo" ? `<p class="nm-nota nm-bloqueado">O pincel é para o recorte "Redondo".</p>` : `<p class="nm-nota">Pinte na prévia o que deve sair da moldura (cabeça, arma, escudo…) ou apague pedaços. Use a lupa para pintar com precisão.</p>`}
+    return this.#sec("pincel", `${!this.nauren && e.recorte !== "redondo" ? `<p class="nm-nota nm-bloqueado">O pincel é para o recorte "Redondo".</p>` : `<div class="nm-ajuda"><p><b>Para que serve:</b> a arte do personagem fica recortada dentro da moldura. Com o pincel você escolhe, à mão, partes que <b>saem</b> do recorte (cabeça, chifres, arma, asa, escudo) ou partes que <b>somem</b> (um fundo que sobrou).</p>
+        <ol><li>Escolha a ferramenta no alto da prévia: <b>Mostrar</b> pinta a arte de volta, <b>Esconder</b> apaga. <b>Mover</b> volta a arrastar a imagem.</li>
+        <li>Ligue a <b>Guia</b> abaixo: a imagem inteira aparece transparente, para você ver onde pintar.</li>
+        <li>Pinte por cima da prévia. A roda do mouse muda o tamanho do pincel; a lupa ajuda nos detalhes; Ctrl+Z desfaz.</li></ol></div>`}
+      ${this.nauren ? this.#campo("Na frente", `<label class="nm-check" title="Ligado: o que você pintou com Mostrar aparece por cima do aro da moldura (e fica parado se a moldura girar). Desligado: fica por trás do aro."><input type="checkbox" name="pincelNaFrente" ${e.pincelNaFrente !== false ? "checked" : ""}> O que eu pintar com Mostrar fica na frente da moldura</label>`) : ""}
       ${this.#campo("Ponta", `<div class="nt-seg2 nt-ch"><button type="button" data-action="ponta" data-v="duro" class="${this.ponta === "duro" ? "on" : ""}"><i class="fas fa-circle"></i> Dura</button><button type="button" data-action="ponta" data-v="suave" class="${this.ponta === "suave" ? "on" : ""}"><i class="fas fa-circle-half-stroke"></i> Suave</button></div>
         ${this.#range({ id: "pincel", rot: "Tamanho" }, .01, .25, .005, this.raioPincel, `${Math.round(this.raioPincel * 100)}`, "pincel")}
         <span data-so-suave ${this.ponta === "suave" ? "" : "hidden"}>${this.#range({ id: "suavidade", rot: "Suavidade" }, .05, 1, .05, this.suavidade, `${Math.round(this.suavidade * 100)}%`, "pincel")}</span>`)}
@@ -268,7 +272,8 @@ export class NaurenMolduraEditor extends foundry.applications.api.ApplicationV2 
   }
   #htmlDetalhes(m) {
     const d = naurenMolduraDetalhes(m.modelo); if (!d.esmalte && !d.joia) return "";
-    return this.#campo("Detalhes", `<div class="nm-cores">${d.esmalte ? `<label class="nm-cor" title="Cor do fundo entre as linhas e os ornamentos"><input type="color" data-moldura-cor="esmalte" value="${m.esmalte}"><span>Esmalte</span></label>` : ""}${d.joia ? `<label class="nm-cor" title="Cor das gemas"><input type="color" data-moldura-cor="joia" value="${m.joia}"><span>Gema</span></label>` : ""}</div>`);
+    const item = (k, sem, rot, dica) => `<div class="nm-det ${m[sem] ? "nm-det-sem" : ""}"><label class="nm-cor" title="${dica}"><input type="color" data-moldura-cor="${k}" value="${m[k]}" ${m[sem] ? "disabled" : ""}><span>${rot}</span></label><label class="nm-check nm-det-inv" title="Deixa esta parte transparente: nem cor, nem nada. A moldura fica só com o metal."><input type="checkbox" data-detalhe-sem="${sem}" ${m[sem] ? "checked" : ""}> Invisível</label></div>`;
+    return this.#campo("Detalhes", `<div class="nm-cores nm-dets">${d.esmalte ? item("esmalte", "semEsmalte", "Esmalte", "Cor do fundo entre as linhas e os ornamentos") : ""}${d.joia ? item("joia", "semJoia", "Gema", "Cor das gemas") : ""}</div>`);
   }
   #htmlEfeitos() {
     const m = this.estado.moldura, g = m.girar;
@@ -331,6 +336,7 @@ export class NaurenMolduraEditor extends foundry.applications.api.ApplicationV2 
     raiz.querySelectorAll("[data-moldura]").forEach(sl => sl.addEventListener("input", () => { const k = sl.dataset.moldura; this.estado.moldura[k] = Number(sl.value); this.#ver(k, `${Math.round(this.estado.moldura[k] * 100)}%`); this.#remontarTexturas(); }));
     raiz.querySelectorAll("[data-imagem]").forEach(el => el.addEventListener(el.type === "checkbox" ? "change" : "input", () => { const k = el.dataset.imagem, im = this.estado.moldura.imagem; im[k] = el.type === "checkbox" ? el.checked : el.type === "color" ? el.value : Number(el.value); if (el.type === "range") this.#ver(k, k === "rotacao" ? `${im[k]}°` : k === "tolerancia" ? `${im[k]}` : `${Math.round(im[k] * 100)}%`); this.#remontarTexturas(); }));
     raiz.querySelectorAll("[data-pincel]").forEach(sl => sl.addEventListener("input", () => { const k = sl.dataset.pincel, v = Number(sl.value); if (k === "pincel") { this.raioPincel = v; this.#ver(k, `${Math.round(v * 100)}`); } else if (k === "suavidade") { this.suavidade = v; this.#ver(k, `${Math.round(v * 100)}%`); } else if (k === "fantasmaOpacidade") { this.guia.opacidade = v; this.#ver(k, `${Math.round(v * 100)}%`); } this.desenhar(); }));
+    raiz.querySelector('input[name="pincelNaFrente"]')?.addEventListener("change", ev => { this.estado.pincelNaFrente = ev.target.checked; this.desenhar(); });
     raiz.querySelector('input[name="fantasma"]')?.addEventListener("change", ev => { this.guia.ligada = ev.target.checked; this.desenhar(); });
     raiz.querySelector('input[name="nosTokens"]')?.addEventListener("change", ev => { this.nosTokens = ev.target.checked; });
     for (const nome of ["corFundo", "corDano", "corCura"]) raiz.querySelector(`input[name="${nome}"]`)?.addEventListener("input", ev => { this.estado[nome] = ev.target.value; this.desenhar(); });
@@ -339,6 +345,7 @@ export class NaurenMolduraEditor extends foundry.applications.api.ApplicationV2 
     if (!this.nauren) { this.#montarPaleta(); this.#mostrarPedra(); }
     raiz.querySelectorAll("[data-cor-moldura]").forEach(inp => inp.addEventListener("input", () => { this.estado.moldura.cores[Number(inp.dataset.corMoldura)] = inp.value; this.#remontarTexturas(); }));
     raiz.querySelectorAll("[data-moldura-cor]").forEach(inp => inp.addEventListener("input", () => { this.estado.moldura[inp.dataset.molduraCor] = inp.value; this.#remontarTexturas(); }));
+    raiz.querySelectorAll("[data-detalhe-sem]").forEach(cb => cb.addEventListener("change", () => { const k = cb.dataset.detalheSem; this.estado.moldura[k] = cb.checked; const box = cb.closest(".nm-det"); box?.classList.toggle("nm-det-sem", cb.checked); const cor = box?.querySelector("[data-moldura-cor]"); if (cor) cor.disabled = cb.checked; this.#remontarTexturas(); }));
     raiz.querySelectorAll("[data-efeito-tipo]").forEach(sel => sel.addEventListener("change", () => NaurenMolduraEditor.DEFAULT_OPTIONS.actions.efeitoTipo.call(this, null, { dataset: { k: sel.dataset.efeitoTipo, v: sel.value } })));
     raiz.querySelectorAll("[data-efeito-cor]").forEach(inp => inp.addEventListener("input", () => { const [k, i] = inp.dataset.efeitoCor.split(":").map(Number); this.estado.moldura.efeitos[k].cores[i] = inp.value; this.#remontarTexturas(); }));
     raiz.querySelectorAll("[data-efeito]").forEach(sl => sl.addEventListener("input", () => { const [campo, k] = sl.dataset.efeito.split("-"); const e = this.estado.moldura.efeitos[Number(k)]; if (!e) return; e[campo] = Number(sl.value); this.#ver(sl.dataset.efeito, campo === "vel" ? NAUREN_MOLDURA_VEL[e.vel - 1] : `${e.int}%`); this.desenhar(); }));
@@ -526,6 +533,7 @@ export class NaurenMolduraEditor extends foundry.applications.api.ApplicationV2 
       corBorda: e.cores[0], cores: [...e.cores], corFundo: e.corFundo, corDano: e.corDano, corCura: e.corCura, efeitos: [...e.efeitos], escala: 1,
       arte: Math.round(e.arte * 1000) / 1000, borda: Math.round(e.borda * 1000) / 1000,
       mascara: nauren || e.recorte === "redondo" ? e.mascara.map(t => ({ ...t, p: [...t.p] })) : [],
+      pincelNaFrente: e.pincelNaFrente !== false,
       pedra: naurenBordaPedraNeutra(e.pedra) ? null : { ...e.pedra },
       moldura: nauren ? { ...naurenMolduraNormalizar(e.moldura), vb: e.moldura.vb, ext: e.moldura.ext, raio: e.moldura.raio } : null
     };

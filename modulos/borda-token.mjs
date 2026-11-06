@@ -24,6 +24,7 @@ const NAUREN_BORDA_PADRAO = Object.freeze({
   arte: 1,       // tamanho da arte em casas (1 = a casa; 1,3 = passa 30% da casa)
   borda: 1,      // tamanho da borda em casas (1 = encosta na casa)
   cores: null,   // cores da borda (1 a 5); com 2+ a borda vira gradiente (e com 3+ as cores vão passando)
+  pincelNaFrente: true, // 0.105.1: o que o pincel "Mostrar" pintou fica na frente da moldura Nauren
   mascara: [],   // traços do pincel: { m: "mostrar"|"esconder", d: "duro"|"suave", r, p: [x,y,...] } em casas a partir do centro
   pedra: null,   // cor da moldura (a parte cinza da borda): { colorir, cor, forca, matiz, saturacao, brilho, contraste }
   modelo: "foundry", // "foundry" = borda dinâmica do Foundry; id de um modelo Nauren ou "imagem" = moldura do Nauren (0.103)
@@ -79,6 +80,7 @@ function naurenBordaConfig(origem) {
     r: Math.max(0.005, Math.min(0.5, Number(t.r) || 0.05)), p: t.p.map(Number).filter(Number.isFinite),
     s: Math.max(0, Math.min(1, Number(t.s ?? 0.55)))
   })) : [];
+  cfg.pincelNaFrente = salvo.pincelNaFrente !== false;
   const hexOk = c => /^#[0-9a-f]{6}$/i.test(String(c ?? ""));
   cfg.cores = (Array.isArray(salvo.cores) ? salvo.cores.filter(hexOk) : []).slice(0, 5);
   if (!cfg.cores.length) cfg.cores = [hexOk(cfg.corBorda) ? cfg.corBorda : NAUREN_BORDA_PADRAO.corBorda];
@@ -285,6 +287,27 @@ function naurenBordaMascara(S, cfg) {
   }
   for (const t of cfg.mascara ?? []) naurenBordaPintarTraco(x, t, S, cfg.arte);
   return m;
+}
+/**
+ * 0.105.1: o que o pincel "Mostrar" pintou, para ficar NA FRENTE da moldura Nauren (cabeça, arma, asa saindo
+ * por cima do aro). Só os traços, na ordem (o "Esconder" pintado depois apaga). null se não houver nada a mostrar.
+ */
+function naurenBordaTemFrente(cfg) { return !!cfg && cfg.pincelNaFrente !== false && (cfg.mascara ?? []).some(t => t.m === "mostrar"); }
+function naurenBordaMascaraFrente(S, cfg) {
+  if (!naurenBordaTemFrente(cfg)) return null;
+  const m = document.createElement("canvas"); m.width = m.height = S;
+  const x = m.getContext("2d");
+  for (const t of cfg.mascara ?? []) naurenBordaPintarTraco(x, t, S, cfg.arte);
+  return m;
+}
+/** A arte enquadrada só onde o pincel mostrou (mesmo quadro S da textura do token). */
+function naurenBordaGerarFrente(img, S, cfg, desenharImagem = naurenBordaDesenharImagem) {
+  const mk = naurenBordaMascaraFrente(S, cfg); if (!mk || !img) return null;
+  const c = document.createElement("canvas"); c.width = c.height = S;
+  const x = c.getContext("2d");
+  desenharImagem(x, img, S, cfg);
+  x.globalCompositeOperation = "destination-in"; x.drawImage(mk, 0, 0);
+  return c;
 }
 /** Compatível com o uso antigo: desenha a imagem já recortada (círculo + pincel) num contexto. */
 let naurenBordaRecorteCache = null; // o último recorte da prévia (redesenhar a animação não refaz o recorte)
@@ -1096,4 +1119,4 @@ Hooks.on("updateToken", async (tokenDoc, changes, options, userId) => {
 });
 
 
-export { NAUREN_BORDA_BITS_RESERVA, NAUREN_BORDA_DIAMETRO, NAUREN_BORDA_EFEITOS, NAUREN_BORDA_FOLGA, NAUREN_BORDA_MARCA, NAUREN_BORDA_PADRAO, NAUREN_BORDA_PEDRA_PADRAO, NAUREN_BORDA_SEG_POR_COR, naurenAbrirBorda, naurenAplicarEscalaEAjuste, naurenAvisarSeLinkBloqueado, naurenBordaAplicar, naurenBordaBits, naurenBordaCaixaImagem, naurenBordaCaixaVisual, naurenBordaCamadas, naurenBordaCamadasPrevia, naurenBordaCaminhoFolha, naurenBordaCarregarImagem, naurenBordaCenasAvisadas, naurenBordaChave, naurenBordaCodigo, naurenBordaConfig, naurenBordaContornoCasa, naurenBordaCoresNoTempo, naurenBordaCurvaPiscar, naurenBordaDadosPreparados, naurenBordaDadosToken, naurenBordaDesenhar, naurenBordaDesenharImagem, naurenBordaDesenharPedra, naurenBordaDesenharPrevia, naurenBordaDiametro, naurenBordaEhChave, naurenBordaEscalaPara, naurenBordaFalhas, naurenBordaFolha, naurenBordaFolhaPromessa, naurenBordaGarantirTextura, naurenBordaGerando, naurenBordaGerarCanvas, naurenBordaGerarRecorte, naurenBordaImagens, naurenBordaLinkDireto, naurenBordaLinkValido, naurenBordaLoader, naurenBordaMascara, naurenBordaMedirRaio, naurenBordaMisturarHex, naurenBordaMisturarLE, naurenBordaNoCache, naurenBordaPedraCanvas, naurenBordaPedraConfig, naurenBordaPedraNeutra, naurenBordaPedras, naurenBordaPintarTraco, naurenBordaPiscar, naurenBordaPrepararSujeito, naurenBordaPreviaDataUrl, naurenBordaPreviaDoAtor, naurenBordaPreviasCache, naurenBordaQuadros, naurenBordaRaioDoToken, naurenBordaRaios, naurenBordaRecorteCache, naurenBordaRegistrar, naurenBordaTamGrade, naurenBordaTamanhoTextura, naurenBordaTexturas, naurenBordaTickerCores, naurenBordaTokensDaFicha, naurenEhJanelaDoNauren, naurenEscalaInterface, naurenReaplicarEscalaInterface, naurenTextoLinkBloqueado };
+export { NAUREN_BORDA_BITS_RESERVA, NAUREN_BORDA_DIAMETRO, NAUREN_BORDA_EFEITOS, NAUREN_BORDA_FOLGA, NAUREN_BORDA_MARCA, NAUREN_BORDA_PADRAO, NAUREN_BORDA_PEDRA_PADRAO, NAUREN_BORDA_SEG_POR_COR, naurenAbrirBorda, naurenAplicarEscalaEAjuste, naurenAvisarSeLinkBloqueado, naurenBordaAplicar, naurenBordaBits, naurenBordaCaixaImagem, naurenBordaCaixaVisual, naurenBordaCamadas, naurenBordaCamadasPrevia, naurenBordaCaminhoFolha, naurenBordaCarregarImagem, naurenBordaCenasAvisadas, naurenBordaChave, naurenBordaCodigo, naurenBordaConfig, naurenBordaContornoCasa, naurenBordaCoresNoTempo, naurenBordaCurvaPiscar, naurenBordaDadosPreparados, naurenBordaDadosToken, naurenBordaDesenhar, naurenBordaDesenharImagem, naurenBordaDesenharPedra, naurenBordaDesenharPrevia, naurenBordaDiametro, naurenBordaEhChave, naurenBordaEscalaPara, naurenBordaFalhas, naurenBordaFolha, naurenBordaFolhaPromessa, naurenBordaGarantirTextura, naurenBordaGerando, naurenBordaGerarCanvas, naurenBordaGerarFrente, naurenBordaGerarRecorte, naurenBordaMascaraFrente, naurenBordaTemFrente, naurenBordaImagens, naurenBordaLinkDireto, naurenBordaLinkValido, naurenBordaLoader, naurenBordaMascara, naurenBordaMedirRaio, naurenBordaMisturarHex, naurenBordaMisturarLE, naurenBordaNoCache, naurenBordaPedraCanvas, naurenBordaPedraConfig, naurenBordaPedraNeutra, naurenBordaPedras, naurenBordaPintarTraco, naurenBordaPiscar, naurenBordaPrepararSujeito, naurenBordaPreviaDataUrl, naurenBordaPreviaDoAtor, naurenBordaPreviasCache, naurenBordaQuadros, naurenBordaRaioDoToken, naurenBordaRaios, naurenBordaRecorteCache, naurenBordaRegistrar, naurenBordaTamGrade, naurenBordaTamanhoTextura, naurenBordaTexturas, naurenBordaTickerCores, naurenBordaTokensDaFicha, naurenEhJanelaDoNauren, naurenEscalaInterface, naurenReaplicarEscalaInterface, naurenTextoLinkBloqueado };

@@ -365,6 +365,7 @@ export function naurenMolduraNormalizar(c) {
   o.paleta = o.paleta === "livre" || NAUREN_MOLDURA_PALETAS[o.paleta] ? o.paleta : base.paleta;
   o.cores = (Array.isArray(o.cores) ? o.cores.map(corValida).filter(Boolean) : []).slice(0, 2); if (!o.cores.length) o.cores = ["#e6bf5c"];
   o.esmalte = corValida(o.esmalte) ?? base.esmalte; o.joia = corValida(o.joia) ?? base.joia;
+  o.semEsmalte = !!o.semEsmalte; o.semJoia = !!o.semJoia; // 0.105.1: detalhes invisíveis
   o.espessura = num(o.espessura, .5, 2, 1); o.escala = num(o.escala, .8, 1.2, 1);
   o.mascara = o.mascara === "expandida" && (m?.fora || o.modelo === "imagem") ? "expandida" : "normal";
   o.girar = { modo: ["nenhum", "tudo"].includes(o.girar?.modo) ? o.girar.modo : "nenhum", vel: Math.round(num(o.girar?.vel, 1, 5, 3)), sentido: Number(o.girar?.sentido) === -1 ? -1 : 1 };
@@ -425,8 +426,8 @@ export function naurenMolduraSvg(cfgIn, opc = {}) {
   const semSombra = opc.sombra === false || opc.soBranco || opc.semFiltro;
   const css = `<style>#q${id} .m, #q${id}b .m{fill:url(#mt${id});stroke:${m.neon || semSombra ? "none" : CONTORNO_INTERNO};stroke-width:.3}
     #q${id} .lm{fill:none;stroke:url(#ml${id});stroke-linejoin:miter;stroke-linecap:butt}
-    #q${id} .e, #q${id}b .e{fill:${esmalte}} #q${id} .le{fill:none;stroke:${esmalte}}
-    #q${id} .joia{fill:url(#jo${id})} #q${id} .brilho{fill:#fff;opacity:${opc.soBranco ? 1 : .55}} #q${id} {--esc:${opc.soBranco ? "#fff" : p[3]}}</style>`;
+    #q${id} .e, #q${id}b .e{fill:${cfg.semEsmalte ? "none" : esmalte}} #q${id} .le{fill:none;stroke:${cfg.semEsmalte ? "none" : esmalte}}
+    #q${id} .joia{fill:${cfg.semJoia ? "none" : `url(#jo${id})`}} #q${id} .brilho{fill:#fff;opacity:${opc.soBranco ? 1 : .55}${cfg.semJoia ? ";display:none" : ""}} #q${id} {--esc:${opc.soBranco ? "#fff" : p[3]}}</style>`;
   const forma = m.forma ?? "circulo";
   let corpo = escalaDeTracos(m.corpo.call(m, forma, id), cfg.espessura);
   let atras = m.atras && opc.comAtras !== false ? escalaDeTracos(m.atras.call(m, forma, id), cfg.espessura) : "";
@@ -440,7 +441,7 @@ export function naurenMolduraSvgAtras(cfgIn, opc = {}) {
   const cfg = naurenMolduraNormalizar(cfgIn), m = naurenMolduraModelo(cfg.modelo);
   if (!m?.atras) return "";
   const id = ++uid, vb = opc.vb ?? 125, px = opc.px ?? 256, p = naurenMolduraCoresDe(cfg);
-  const css = `<style>#q${id}b .m{fill:url(#mt${id});stroke:${CONTORNO_INTERNO};stroke-width:.3} #q${id}b .e{fill:${cfg.esmalte}}</style>`;
+  const css = `<style>#q${id}b .m{fill:url(#mt${id});stroke:${CONTORNO_INTERNO};stroke-width:.3} #q${id}b .e{fill:${cfg.semEsmalte ? "none" : cfg.esmalte}}</style>`;
   const defs = `<linearGradient id="mt${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${p[0]}"/><stop offset=".28" stop-color="${p[1]}"/><stop offset=".55" stop-color="${p[2]}"/><stop offset=".78" stop-color="${p[4]}"/><stop offset="1" stop-color="${p[3]}"/></linearGradient>${ACABAMENTO(`sh${id}`)}`;
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${-vb} ${-vb} ${2 * vb} ${2 * vb}" width="${px}" height="${px}"><defs>${defs}</defs>${css}<g${cfg.escala !== 1 ? ` transform="scale(${f(cfg.escala)})"` : ""}><g id="q${id}b" filter="url(#sh${id})">${escalaDeTracos(m.atras.call(m, m.forma ?? "circulo", id), cfg.espessura)}</g></g></svg>`;
 }

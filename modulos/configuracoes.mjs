@@ -45,9 +45,11 @@ export function naurenConfiguracoesRecolher() {
     if (s.namespace !== SIS || !s.config) continue;
     recolhidas.set(s.key, s); s.config = false;
   }
-  for (const [id, m] of game.settings.menus) {
-    if (m.namespace !== SIS || m.key === "painelConfiguracoes") continue;
-    menus.set(m.key, m); game.settings.menus.delete(id);
+  for (const [id, m] of [...game.settings.menus]) {
+    // no V14 o key do menu vem com o sistema na frente ("nauren.tiersItensMenu")
+    const curto = String(m.key ?? id).replace(/^nauren\./, "");
+    if (m.namespace !== SIS || curto === "painelConfiguracoes") continue;
+    menus.set(curto, m); game.settings.menus.delete(id);
   }
 }
 export function naurenConfiguracoesRecolhidas() { return [...recolhidas.keys()]; }
