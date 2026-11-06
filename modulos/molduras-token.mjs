@@ -381,6 +381,19 @@ export class NaurenMolduraCamada {
     const j = prim.children.indexOf(tm);
     if (j >= 0) prim.addChildAt(this.mesh, j + 1); else prim.addChild(this.mesh);
     prim.sortDirty = true;
+    this.montarVazio();
+  }
+  /**
+   * 0.105.2: o Foundry "fura" a camada da interface (realce das Regiões, grade destacada…) no formato da arte do
+   * token (Token#voidMesh). A moldura também precisa furar, senão as Regiões aparecem por cima dela e não da arte.
+   */
+  montarVazio() {
+    const token = this.token; if (!token || token.destroyed || this.vazio || typeof token.addChild !== "function") return;
+    const v = new PIXI.Container(); v.eventMode = "none"; v.updateTransform = () => {};
+    v.render = renderer => { for (const s of [this.atras, this.mesh, this.frente]) { try { if (s && !s.destroyed && s._renderVoid) s._renderVoid(renderer); } catch (err) { /* segue */ } } };
+    const i = token.voidMesh && token.children ? token.children.indexOf(token.voidMesh) : -1;
+    if (i >= 0) token.addChildAt(v, i + 1); else token.addChild(v);
+    this.vazio = v;
   }
   /** Copia posição, tamanho, ordem e visibilidade da malha do token (chamado no refreshToken). */
   sincronizar() {
@@ -464,6 +477,8 @@ export class NaurenMolduraCamada {
   invalidarSituacao() { this.sit = null; this.pedirAtualizacao = true; }
   destruirMalhas() {
     this.tirarMascaraGiro(); this.tirarFrente();
+    try { if (this.vazio && !this.vazio.destroyed) { this.vazio.parent?.removeChild(this.vazio); this.vazio.destroy(); } } catch (err) { /* já foi */ }
+    this.vazio = null;
     for (const s of [this.mesh, this.atras, this.fundo]) { try { if (s && !s.destroyed) { s.parent?.removeChild(s); s.destroy({ children: true }); } } catch (err) { /* já foi */ } }
     this.mesh = this.atras = this.fundo = null; this.fx = {}; this.filtro = null; this.pronta = false;
   }

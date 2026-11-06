@@ -106,7 +106,9 @@ class NaurenCarrosselTurnos extends foundry.applications.api.ApplicationV2 {
     turnos.forEach((c, i) => {
       if (!this.#podeVer(c)) return;
       const actor = c.actor;
-      const tokenImg = c.token?.texture?.src || c.img;
+      // 0.105.2: uma Aparência só muda o mapa; o carrossel acompanha o retrato (a imagem nova só se ela trocar o retrato)
+      const apBase = actor?.getFlag?.("nauren", "aparenciaBase");
+      const tokenImg = (apBase?.src ? (apBase.retratoTrocado ? actor.img : apBase.src) : null) || c.token?.texture?.src || c.img;
       const img = (usarRetrato ? (!semImagem(actor?.img) ? actor.img : (tokenImg || actor?.img)) : (tokenImg || actor?.img)) || "icons/svg/mystery-man.svg";
       const dono = gm || !!actor?.isOwner;
       const mostraBarras = !!actor && (gm || actor.hasPlayerOwner);

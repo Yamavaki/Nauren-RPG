@@ -377,7 +377,10 @@ export function naurenMolduraNormalizar(c) {
     let cores = (Array.isArray(e.cores) ? e.cores.map(corValida).filter(Boolean) : []).slice(0, 6);
     while (cores.length < d.cores) cores.push(["#ffffff", "#ff6a9a", "#7ad3ff"][cores.length] ?? "#ffffff");
     if (!d.cores) cores = [];
-    lista.push({ tipo: d.id, cores, vel: Math.round(num(e.vel, 1, 5, 3)), int: Math.round(num(e.int, 10, 100, 70)), fora: d.fora ? !!e.fora : false });
+    const ef = { tipo: d.id, cores, vel: Math.round(num(e.vel, 1, 5, 3)), int: Math.round(num(e.int, 10, 100, 70)), fora: d.fora ? !!e.fora : false };
+    // 0.105.2: cintilar com distância (quão longe da moldura as estrelinhas aparecem) e tamanho delas
+    if (d.id === "cintilar") { ef.dist = Math.round(num(e.dist, 60, 130, 88)); ef.tam = Math.round(num(e.tam, 40, 160, 80)); }
+    lista.push(ef);
   }
   o.efeitos = lista;
   o.reacoes = { ...NAUREN_MOLDURA_REACOES_PADRAO, ...(o.reacoes && typeof o.reacoes === "object" ? Object.fromEntries(Object.entries(o.reacoes).filter(([k]) => k in NAUREN_MOLDURA_REACOES_PADRAO).map(([k, v]) => [k, !!v])) : {}) };
@@ -499,7 +502,7 @@ export function naurenMolduraEstado(cfgIn, t, extra = {}) {
       case "pulso": s.pulsoCor = c; s.pulsoAlpha = animar ? i * (.5 + .5 * Math.sin(t * 2.4 * v)) * .8 : i * .5; break;
       case "brilho": { if (!animar || leve) break; const per = 3.4 / v, fase = (t % per) / per; s.brilho = fase < .55 ? { pos: fase / .55, cor: c, int: i } : null; break; }
       case "ciclo": { const cs = e.cores, per = 2.4 / v, pos = animar ? (t / per) % cs.length : 0, k = Math.floor(pos), fr = pos - k; s.cicloCor = misturar(cs[k], cs[(k + 1) % cs.length], fr * fr * (3 - 2 * fr)); s.cicloInt = i; break; }
-      case "cintilar": { if (leve || !animar) break; s.cintilarFora = !!e.fora; const n = Math.round(8 + 16 * i); for (let k = 0; k < n; k++) { const seed = k * 1.618 + .37; const per = (1.4 + (seed % 1) * 1.4) / v, ciclo = Math.floor((t + seed * 7.3) / per), fase = ((t + seed * 7.3) % per) / per; const a = Math.sin(Math.PI * fase); const ang = (seed * 2.399 + ciclo * 1.7) % TAU; s.cintilar.push({ ang, r: .8 + ((seed * 3.1 + ciclo * .618) % 1) * .3, a: Math.min(1, a * (.55 + .6 * i)), s: .75 + (seed % .5) + .4 * a, giro: (seed * 5 + t * .6) % TAU, cor: c }); } break; }
+      case "cintilar": { if (leve || !animar) break; s.cintilarFora = !!e.fora; const n = Math.round(8 + 16 * i); for (let k = 0; k < n; k++) { const seed = k * 1.618 + .37; const per = (1.4 + (seed % 1) * 1.4) / v, ciclo = Math.floor((t + seed * 7.3) / per), fase = ((t + seed * 7.3) % per) / per; const a = Math.sin(Math.PI * fase); const ang = (seed * 2.399 + ciclo * 1.7) % TAU; const dist = (e.dist ?? 88) / 100, tam = (e.tam ?? 80) / 100; s.cintilar.push({ ang, r: (.8 + ((seed * 3.1 + ciclo * .618) % 1) * .3) * dist, a: Math.min(1, a * (.55 + .6 * i)), s: (.75 + (seed % .5) + .4 * a) * tam, giro: (seed * 5 + t * .6) % TAU, cor: c }); } break; }
       case "respirar": if (animar) s.escala = 1 + .028 * (.5 + .5 * Math.sin(t * 1.6 * v)) * i; break;
       case "arco": if (!leve) s.hue = animar ? (t * 40 * v) % 360 : 0; break;
     }

@@ -1548,6 +1548,14 @@ class NaurenItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     super._onRender(context, options);
     // 0.102: aba Condições, seletor de Condição, aba Script e botões de script.
     try { naurenAparenciaLigar(this); } catch (err) { console.warn("Nauren RPG | Aparência na ficha", err); }
+    // 0.105.2: guarda a rolagem entre renders (qualquer item.update re-desenha a ficha e ela voltava para o topo)
+    this._naurenRolagem ??= {};
+    for (const sel of [".nauren-sheet", ".window-content"]) {
+      const r = sel === ".window-content" ? this.element?.querySelector(":scope > .window-content") : this.element?.querySelector(sel);
+      if (!r) continue;
+      if (this._naurenRolagem[sel]) r.scrollTop = this._naurenRolagem[sel];
+      r.addEventListener("scroll", () => { this._naurenRolagem[sel] = r.scrollTop; }, { passive: true });
+    }
     try { naurenLigarFichaItemExtras(this); naurenLigarFichaScripts(this); naurenLigarBotoesScript(this); naurenLigarSeletorIcones(this.element); } catch (err) { console.warn("Nauren RPG | ficha do item (0.102)", err); }
     if (this.item.type === "grupo") this._ligarAbasGrupo();
     this._ligarScrollItemBody();

@@ -8360,7 +8360,6 @@ input.nt-icone-texto { font-family: "Fira Code", Consolas, monospace; font-size:
 .ap-dica > i { color: var(--ap-ouro); margin-right: 4px; }
 .ap-corpo { display: flex; flex-direction: column; gap: 12px; }
 .ap-corpo.ap-off { opacity: .55; }
-.ap-grade { display: grid; grid-template-columns: minmax(0, 1fr) 170px; gap: 12px; align-items: start; }
 .ap-campo { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .ap-rot { font: 600 11px Signika, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--ap-ouro); }
 .ap-arq { display: flex; align-items: center; gap: 6px; min-width: 0; }
@@ -8372,7 +8371,7 @@ input.nt-icone-texto { font-family: "Fira Code", Consolas, monospace; font-size:
 .ap-check { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--ap-txt); cursor: pointer; }
 .ap-check input { accent-color: var(--ap-ouro); }
 .ap-segs { display: flex; flex-wrap: wrap; gap: 6px; }
-.nauren-rpg.sheet.item .nauren-sheet .ap-painel button.ap-seg { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 11px; font: 12.5px Signika, sans-serif; color: var(--ap-suave); cursor: pointer; --cc: 6px; --cbw: 1px; --ck: calc(var(--cc) * .7071 - var(--cbw) * .4142); --cbg: #17111f; --cbd: var(--n-borda, #3b3154);
+.nauren-rpg.sheet.item .nauren-sheet .ap-painel button.ap-seg, .nauren-rpg.sheet.item .nauren-sheet .ap-painel button.ap-testar { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 11px; font: 12.5px Signika, sans-serif; color: var(--ap-suave); cursor: pointer; --cc: 6px; --cbw: 1px; --ck: calc(var(--cc) * .7071 - var(--cbw) * .4142); --cbg: #17111f; --cbd: var(--n-borda, #3b3154);
   border: var(--cbw) solid transparent; background:
     linear-gradient(135deg, transparent var(--ck), var(--cbg) 0) top left / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
     linear-gradient(225deg, transparent var(--ck), var(--cbg) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
@@ -8393,11 +8392,51 @@ input.nt-icone-texto { font-family: "Fira Code", Consolas, monospace; font-size:
 .ap-u { font-size: 12px; color: var(--ap-suave); }
 .nauren-rpg.sheet.item .nauren-sheet .ap-painel button.ap-mais { all: unset; align-self: flex-start; cursor: pointer; font: 600 12.5px Signika, sans-serif; color: var(--n-ouro-claro, #ffd98a); padding: 2px 2px; }
 .nauren-rpg.sheet.item .nauren-sheet .ap-painel button.ap-mais:hover { text-decoration: underline; }
-.ap-trans { display: grid; grid-template-columns: 70px minmax(0, 1fr) minmax(0, 1fr); gap: 6px; align-items: center; }
-.ap-trans .ap-rot { text-transform: none; letter-spacing: 0; font-size: 12px; color: var(--ap-suave); }
 .ap-tam select { width: 100%; }
-.ap-tam .ap-num { width: 80px !important; flex: 0 0 auto; align-self: flex-start; }
-.ap-previa { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 6px; }
-.ap-previa img { width: 110px; height: 110px; object-fit: contain; }
 .ap-previa img:not([src]) { display: none; }
-@container (max-width: 520px) { .ap-grade, .ap-trans { grid-template-columns: 1fr; } }
+/* 0.105.2: Aparência reorganizada — coluna de campos + coluna da prévia; seções com título; transições em cartões */
+.ap-corpo { gap: 14px; }
+.ap-colunas { display: grid; grid-template-columns: minmax(0, 1fr) 176px; gap: 14px; align-items: start; }
+.ap-esq { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.ap-sec { display: flex; flex-direction: column; gap: 8px; margin: 0; min-width: 0; }
+.ap-sec + .ap-sec { padding-top: 12px; border-top: 1px solid color-mix(in srgb, var(--n-borda, #3b3154) 70%, transparent); }
+.ap-colunas + .ap-sec { padding-top: 12px; border-top: 1px solid color-mix(in srgb, var(--n-borda, #3b3154) 70%, transparent); }
+h4.ap-rot { margin: 0; padding: 0; border: 0; line-height: 1.2; }
+.ap-sub { font-size: 12px; color: var(--ap-suave); line-height: 1.2; }
+.ap-linha2 { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 10px; align-items: end; }
+.ap-linha2 .ap-campo { gap: 5px; }
+.ap-painel .ap-txt, .ap-painel select { height: 30px; box-sizing: border-box; }
+.ap-tam select { width: 100%; }
+.ap-checks { display: flex; flex-wrap: wrap; gap: 6px 18px; }
+.ap-mini { width: 30px; height: 30px; }
+.ap-mini-vazia { display: grid; place-items: center; color: var(--ap-suave); font-size: 12px; background: #17111f; }
+.ap-segs { gap: 6px; }
+.ap-gats:empty { display: none; }
+.ap-dir { display: flex; flex-direction: column; align-items: stretch; gap: 8px; padding: 10px; --cc: 8px; --cbg: #17111f; --cbd: var(--n-borda, #3b3154); }
+.ap-previa { display: flex; flex-direction: column; align-items: center; gap: 6px; min-height: 120px; justify-content: center; }
+.ap-previa img { width: 132px; height: 132px; object-fit: contain; }
+.ap-previa .ap-dica { text-align: center; }
+.ap-prio { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.ap-prio .ap-num { width: 64px !important; flex: 0 0 64px; }
+.ap-aviso { margin: 0; font-size: 12px; line-height: 1.4; color: #ffcf7a; }
+.ap-aviso > i { margin-right: 5px; }
+.ap-aviso-p { color: #ff9a8a; margin-top: -2px; }
+.ap-painel .ap-txt.ap-ruim { border-color: #c4574b !important; }
+.ap-tcards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-items: start; }
+.ap-tcard { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; min-width: 0; --cc: 8px; --cbg: #17111f; --cbd: var(--n-borda, #3b3154); }
+.ap-tcab { display: flex; align-items: center; gap: 8px; min-height: 26px; font: 600 13px Signika, sans-serif; color: var(--ap-txt); }
+.ap-tcab > i { color: var(--ap-ouro); font-size: 12px; }
+.ap-tcab b { flex: 1 1 auto; }
+.nauren-rpg.sheet.item .nauren-sheet .ap-painel button.ap-testar { height: 24px; padding: 0 9px; font-size: 12px; --cc: 5px; }
+.nauren-rpg.sheet.item .nauren-sheet .ap-painel button.ap-testar i { color: var(--ap-ouro); font-size: 10px; }
+.nauren-rpg.sheet.item .nauren-sheet .ap-painel button.ap-testar:hover { color: var(--ap-txt); --cbd: var(--ap-ouro); }
+.ap-tlinha { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 8px; align-items: center; }
+.ap-trot { font-size: 12px; color: var(--ap-suave); }
+.ap-ajustes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 12px; padding-top: 8px; border-top: 1px dashed color-mix(in srgb, var(--n-borda, #3b3154) 80%, transparent); }
+.ap-faixa { display: flex; flex-direction: column; gap: 3px; min-width: 0; margin: 0; }
+.ap-faixa > span { display: flex; justify-content: space-between; gap: 6px; font-size: 11.5px; color: var(--ap-suave); }
+.ap-faixa > span b { font-weight: 600; color: var(--ap-txt); white-space: nowrap; }
+.ap-faixa input[type=range] { width: 100%; margin: 0; accent-color: var(--ap-ouro); }
+.ap-tchecks { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px 18px; }
+@container (max-width: 620px) { .ap-colunas, .ap-tcards { grid-template-columns: 1fr; } .ap-dir { flex-direction: row; flex-wrap: wrap; align-items: center; } }
+@container (max-width: 440px) { .ap-linha2 { grid-template-columns: 1fr; } }

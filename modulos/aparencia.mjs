@@ -15,6 +15,7 @@
  * Quem aplica: o Mestre ativo; sem Mestre conectado, o primeiro dono conectado (evita aplicar duas vezes).
  */
 import { naurenBordaAplicar, naurenBordaConfig, naurenBordaPreviaDataUrl } from "./borda-token.mjs";
+import { naurenMolduraCamadaDe } from "./molduras-token.mjs";
 import { naurenProntaCfgPara, naurenProntaPorId, naurenProntaDados } from "./molduras-prontas.mjs";
 
 const SIS = "nauren";
@@ -37,10 +38,23 @@ export const NAUREN_APARENCIA_ANIMS = [
   "jb2a.fumes.fire.orange", "jb2a.smoke.puff.centered.grey", "jb2a.sparkles.01.yellow", "jb2a.token_border.circle.static.orange.003"
 ];
 
+/** 0.105.2: ajustes da animação de transição (como no Automated Animations). Tamanho é em vezes o token. */
+export const NAUREN_APARENCIA_TRANS_PADRAO = () => ({ anim: "", som: "", volume: .8, escala: 1.5, opacidade: 1, velocidade: 1, porBaixo: false, repetir: 1, atraso: 0, matiz: 0, espelhar: false });
+function normTrans(t) {
+  const p = NAUREN_APARENCIA_TRANS_PADRAO(); t = t && typeof t === "object" ? t : {};
+  const n = (v, min, max, d) => { const x = Number(v); return Number.isFinite(x) ? Math.min(max, Math.max(min, x)) : d; };
+  return {
+    anim: typeof t.anim === "string" ? t.anim.trim() : "", som: typeof t.som === "string" ? t.som.trim() : "",
+    volume: n(t.volume, 0, 1, p.volume), escala: n(t.escala, .25, 6, p.escala), opacidade: n(t.opacidade, .1, 1, p.opacidade),
+    velocidade: n(t.velocidade, .25, 3, p.velocidade), porBaixo: !!t.porBaixo, repetir: Math.round(n(t.repetir, 1, 5, 1)),
+    atraso: Math.round(n(t.atraso, 0, 5000, 0)), matiz: Math.round(n(t.matiz, -180, 180, 0)), espelhar: !!t.espelhar
+  };
+}
 export const NAUREN_APARENCIA_PADRAO = () => ({
   ativa: false, prioridade: 1, imagem: "", retrato: false, tamanho: "",
   borda: { modo: "manter", prontaId: "", dados: null },
-  entrada: { anim: "", som: "" }, saida: { anim: "", som: "" },
+  entrada: NAUREN_APARENCIA_TRANS_PADRAO(), saida: NAUREN_APARENCIA_TRANS_PADRAO(),
+  suave: true, // 0.105.2: a imagem antiga some aos poucos por cima da nova
   gatilhos: []
 });
 
@@ -54,8 +68,7 @@ export function naurenAparenciaNormalizar(a) {
     imagem: str(a.imagem), retrato: !!a.retrato,
     tamanho: /^\d+(\.\d+)?$/.test(String(a.tamanho ?? "").trim()) ? String(a.tamanho).trim() : "",
     borda: { modo: ["manter", "pronta", "propria", "sem"].includes(a.borda?.modo) ? a.borda.modo : "manter", prontaId: str(a.borda?.prontaId), dados: a.borda?.dados && typeof a.borda.dados === "object" ? a.borda.dados : null },
-    entrada: { anim: str(a.entrada?.anim), som: str(a.entrada?.som) },
-    saida: { anim: str(a.saida?.anim), som: str(a.saida?.som) },
+    entrada: normTrans(a.entrada), saida: normTrans(a.saida), suave: a.suave !== false,
     gatilhos: (Array.isArray(a.gatilhos) ? a.gatilhos : []).filter(g => NAUREN_APARENCIA_GATILHOS.some(d => d.id === g?.tipo)).slice(0, 8).map(g => ({
       tipo: g.tipo, pct: Math.max(1, Math.min(99, Number(g.pct) || 50)), nome: str(g.nome), acumulos: Math.max(1, Math.round(Number(g.acumulos) || 1)),
       recurso: str(g.recurso) || "vida", op: g.op === "le" ? "le" : "ge", valor: Math.round(Number(g.valor) || 0)
@@ -147,14 +160,28 @@ function capturarBase(actor, td) {
     retrato: actor.img
   };
 }
-async function cfgBorda(r, base, src) {
-  const b = r.borda;
-  if (!b) return base.borda?.ativa ? { ...base.borda, src } : null; // manter a de sempre (com a imagem nova)
-  if (b.modo === "sem") return null;
-  const dados = b.modo === "pronta" ? naurenProntaPorId(b.prontaId)?.dados : b.dados;
-  if (!dados) return base.borda?.ativa ? { ...base.borda, src } : null;
-  return naurenProntaCfgPara(dados, { ...(base.borda ?? {}), src });
+/**
+ * 0.105.2: o enquadre (posição, zoom e o que o pincel pintou) é da IMAGEM. Com imagem nova, o enquadre da imagem
+ * antiga não serve: a borda montada na aparência traz o seu (feito sobre a imagem nova); senão, volta ao padrão.
+ */
+const ENQ = ["x", "y", "zoom", "mascara", "pincelNaFrente"];
+function comEnquadre(cfg, src, enquadre, srcAntiga) {
+  if (!cfg) return cfg;
+  const out = { ...cfg, src };
+  if (enquadre && limparSrc(enquadre.src) === limparSrc(src)) { for (const k of ENQ) if (enquadre[k] !== undefined) out[k] = foundry.utils.deepClone(enquadre[k]); }
+  else if (limparSrc(srcAntiga) !== limparSrc(src)) { out.x = 50; out.y = 50; out.zoom = 1; out.mascara = []; }
+  return out;
 }
+async function cfgBordaDe(borda, baseBorda, src) {
+  const manter = () => baseBorda?.ativa ? comEnquadre({ ...baseBorda }, src, null, baseBorda.src) : null; // a de sempre (com a imagem nova)
+  if (!borda || borda.modo === "manter") return manter();
+  if (borda.modo === "sem") return null;
+  const dados = borda.modo === "pronta" ? naurenProntaPorId(borda.prontaId)?.dados : borda.dados;
+  if (!dados) return manter();
+  return comEnquadre(await naurenProntaCfgPara(dados, { ...(baseBorda ?? {}), src }), src, dados.enquadre, baseBorda?.src);
+}
+const cfgBorda = (r, base, src) => cfgBordaDe(r.borda, base.borda, src);
+export { cfgBordaDe as naurenAparenciaCfgBorda };
 async function aplicarNoToken(actor, td, r, base) {
   const src = r.imagem || base.src;
   const cfg = await cfgBorda(r, base, src);
@@ -174,16 +201,95 @@ async function restaurarToken(actor, td, base) {
   }
   await td.update({ width: base.width, height: base.height });
 }
-/** Animação + som (Sequencer, se estiver instalado) no token. */
+/* --------------------------- animações (Sequencer / JB2A) --------------------------- */
+export function naurenAparenciaSequencerAtivo() { return !!(game.modules?.get("sequencer")?.active && globalThis.Sequence); }
+/** Módulos de animação conhecidos que estão ativos (JB2A grátis, JB2A Patreon). */
+export function naurenAparenciaJb2aAtivo() { return ["jb2a_patreon", "JB2A_DnD5e"].some(id => game.modules?.get(id)?.active); }
+/** Todas as animações que o Sequencer conhece (o banco dele é preenchido pelos módulos ativos: JB2A e outros). */
+export function naurenAparenciaAnimacoes() {
+  if (!naurenAparenciaSequencerAtivo()) return [];
+  const db = globalThis.Sequencer?.Database;
+  let lista = [];
+  try { lista = db?.publicFlattenedSimpleEntries ?? db?.publicFlattenedEntries ?? []; } catch (err) { lista = []; }
+  lista = [...new Set((Array.isArray(lista) ? lista : []).filter(x => typeof x === "string"))];
+  return lista.length ? lista.sort() : (naurenAparenciaJb2aAtivo() ? NAUREN_APARENCIA_ANIMS : []);
+}
+/** A animação existe? (no banco do Sequencer, ou é um arquivo .webm/.webp/.png/.gif) */
+export function naurenAparenciaAnimValida(anim) {
+  if (!anim) return true;
+  if (/\.(webm|webp|png|gif|apng|mp4|json)(\?|$)/i.test(anim)) return true;
+  if (!naurenAparenciaSequencerAtivo()) return false;
+  try { const db = globalThis.Sequencer?.Database; if (db?.entryExists) return !!db.entryExists(anim); } catch (err) { /* segue */ }
+  return naurenAparenciaAnimacoes().includes(anim);
+}
+/** Animação + som no token. Acompanha o tamanho do token (em vezes o token) e os ajustes da transição. */
 export async function naurenAparenciaTransicao(td, t) {
-  if (!t || (!t.anim && !t.som)) return;
+  t = normTrans(t);
+  if (!t.anim && !t.som) return;
   try {
-    const obj = td?.object;
-    if (t.anim && obj && globalThis.Sequence && game.modules?.get("sequencer")?.active) new Sequence().effect().file(t.anim).atLocation(obj).scaleToObject(2).play();
-    if (t.som) foundry.audio?.AudioHelper?.play?.({ src: t.som, volume: .8, autoplay: true, loop: false }, true);
+    if (t.anim && naurenAparenciaSequencerAtivo() && td?.parent && naurenAparenciaAnimValida(t.anim)) {
+      const g = canvas.dimensions?.size ?? 100, w = Number(td.width) || 1, h = Number(td.height) || 1;
+      const centro = { x: (Number(td.x) || 0) + w * g / 2, y: (Number(td.y) || 0) + h * g / 2 };
+      const lado = Math.max(w, h) * t.escala;
+      let ef = new Sequence().effect().file(t.anim).atLocation(centro).size({ width: lado, height: lado }, { gridUnits: true })
+        .opacity(t.opacidade).playbackRate(t.velocidade).elevation((Number(td.elevation) || 0) + (t.porBaixo ? -.01 : .01));
+      if (t.porBaixo) ef = ef.belowTokens(); else ef = ef.aboveLighting?.() ?? ef;
+      if (t.repetir > 1) ef = ef.repeats(t.repetir, 120);
+      if (t.atraso) ef = ef.delay(t.atraso);
+      if (t.matiz) ef = ef.filter("ColorMatrix", { hue: t.matiz });
+      if (t.espelhar) ef = ef.mirrorX();
+      ef.play();
+    }
+    if (t.som) foundry.audio?.AudioHelper?.play?.({ src: t.som, volume: t.volume, autoplay: true, loop: false }, true);
   } catch (err) { console.warn("Nauren RPG | Aparência: transição", err); }
 }
 
+/* --------------------------- troca suave da imagem --------------------------- */
+/**
+ * 0.105.2: antes de trocar a imagem/tamanho/borda, cada tela tira uma "foto" do token como ele está e deixa essa
+ * foto por cima, sumindo aos poucos, enquanto a aparência nova é montada por baixo. Assim não se vê a imagem
+ * trocando em etapas (imagem, depois a borda, depois o tamanho).
+ */
+const fotos = new Map();
+function naurenAparenciaFoto(token) {
+  try {
+    if (!token || token.destroyed || !canvas?.ready || !token.visible || !token.renderable) return;
+    const ant = fotos.get(token.document.id); if (ant && !ant.sp.destroyed) return; // já tem uma foto segurando
+    const r = canvas.app.renderer, st = canvas.stage, z = st.scale.x || 1;
+    const b = token.bounds ?? new PIXI.Rectangle(token.document.x, token.document.y, token.w, token.h);
+    const pad = Math.max(b.width, b.height) * .45;
+    const reg = new PIXI.Rectangle(b.x - pad, b.y - pad, b.width + 2 * pad, b.height + 2 * pad);
+    // a região vai em coordenadas de tela (o palco já tem o zoom e a posição da câmera)
+    const p0 = st.worldTransform.apply({ x: reg.x, y: reg.y });
+    const telaReg = new PIXI.Rectangle(Math.floor(p0.x), Math.floor(p0.y), Math.ceil(reg.width * z), Math.ceil(reg.height * z));
+    if (telaReg.width < 2 || telaReg.height < 2 || telaReg.width * telaReg.height > 4e6) return;
+    const tex = r.generateTexture(st, { region: telaReg, resolution: r.resolution ?? 1 });
+    const sp = new PIXI.Sprite(tex); sp.eventMode = "none";
+    sp.position.set(reg.x, reg.y); sp.width = reg.width; sp.height = reg.height;
+    canvas.interface.addChild(sp);
+    const foto = { sp, tex, ini: performance.now(), soltar: 0 };
+    fotos.set(token.document.id, foto);
+    const passo = () => {
+      if (sp.destroyed) return;
+      const agora = performance.now();
+      if (!foto.soltar && agora - foto.ini > 3000) foto.soltar = agora; // segurança: no máximo 3 s
+      if (foto.soltar) {
+        const a = 1 - (agora - foto.soltar) / 450;
+        if (a <= 0) { canvas.app.ticker.remove(passo); sp.parent?.removeChild(sp); sp.destroy(); tex.destroy(true); if (fotos.get(token.document.id) === foto) fotos.delete(token.document.id); return; }
+        sp.alpha = a;
+      }
+    };
+    canvas.app.ticker.add(passo);
+  } catch (err) { console.debug?.("Nauren RPG | Aparência: troca suave indisponível", err); }
+}
+function naurenAparenciaSoltarFoto(id) { const f = fotos.get(id); if (f && !f.soltar) f.soltar = performance.now() + 120; }
+
+/** Faz a troca com a foto por cima (em todas as telas): avisa o início, troca, avisa o fim. */
+async function trocar(td, suave, fazer) {
+  if (suave && td?.parent) await td.update({ "flags.nauren.aparenciaTroca": { fase: "ini", t: Date.now() } }).catch(() => {});
+  try { await fazer(); }
+  finally { if (suave && td?.parent) await td.update({ "flags.nauren.aparenciaTroca": { fase: "fim", t: Date.now() } }).catch(() => {}); }
+}
 const emAndamento = new Map(), pendentes = new Map();
 /** Reavalia e aplica a aparência do ator (com espera curta para juntar várias mudanças). */
 export function naurenAparenciaAgendar(actor, { forcar = false } = {}) {
@@ -206,7 +312,7 @@ export async function naurenAparenciaAtualizar(actor, { forcar = false } = {}) {
     const sig = JSON.stringify({ i: r.imagem, t: r.tamanho, b: r.borda, ret: r.retrato, base: base?.src });
     if (!ativas.length) {
       if (!base) return;
-      for (const td of tds) { await restaurarToken(actor, td, base); await td.unsetFlag?.(SIS, "aparenciaSig"); }
+      for (const td of tds) { await trocar(td, antes.suave !== false, () => restaurarToken(actor, td, base)); await td.unsetFlag?.(SIS, "aparenciaSig"); }
       if (base.retratoTrocado && actor.img !== base.retrato) await actor.update({ img: base.retrato });
       for (const id of antes.ids) for (const td of tds) await naurenAparenciaTransicao(td, antes.saidas?.[id]);
       await actor.unsetFlag(SIS, "aparenciaBase"); await actor.unsetFlag(SIS, "aparenciaAplicada");
@@ -215,7 +321,7 @@ export async function naurenAparenciaAtualizar(actor, { forcar = false } = {}) {
     if (!base) { base = capturarBase(actor, tds[0]); await actor.setFlag(SIS, "aparenciaBase", base); }
     for (const td of tds) {
       if (!forcar && td.getFlag?.(SIS, "aparenciaSig") === sig) continue;
-      await aplicarNoToken(actor, td, r, base);
+      await trocar(td, ativas.some(x => x.a.suave !== false), () => aplicarNoToken(actor, td, r, base));
       await td.setFlag?.(SIS, "aparenciaSig", sig);
     }
     // retrato da ficha junto (opcional)
@@ -225,7 +331,7 @@ export async function naurenAparenciaAtualizar(actor, { forcar = false } = {}) {
     const entraram = ativas.filter(x => !antes.ids.includes(x.item.id)), sairam = antes.ids.filter(id => !ids.includes(id));
     for (const x of entraram) for (const td of tds) await naurenAparenciaTransicao(td, x.a.entrada);
     for (const id of sairam) for (const td of tds) await naurenAparenciaTransicao(td, antes.saidas?.[id]);
-    await actor.setFlag(SIS, "aparenciaAplicada", { ids, saidas: Object.fromEntries(ativas.map(x => [x.item.id, x.a.saida])) });
+    await actor.setFlag(SIS, "aparenciaAplicada", { ids, saidas: Object.fromEntries(ativas.map(x => [x.item.id, x.a.saida])), suave: ativas.some(x => x.a.suave !== false) });
   } catch (err) { console.warn("Nauren RPG | Aparência", err); }
   finally {
     const denovo = emAndamento.get(k) === "denovo"; emAndamento.delete(k);
@@ -236,6 +342,23 @@ export async function naurenAparenciaAtualizar(actor, { forcar = false } = {}) {
 /* ------------------------------ ganchos ------------------------------ */
 const temAparencia = actor => (actor?.items ?? []).some(i => i.getFlag?.(SIS, "aparencia")?.ativa) || !!actor?.getFlag?.(SIS, "aparenciaBase");
 export function naurenAparenciaHooks() {
+  Hooks.on("updateToken", (td, changes) => {
+    const f = changes?.flags?.nauren?.aparenciaTroca; if (!f || td.parent?.id !== canvas?.scene?.id) return;
+    if (f.fase === "ini") naurenAparenciaFoto(td.object);
+    else if (f.fase === "fim") {
+      // espera a arte nova (e a moldura Nauren, se tiver) estarem prontas antes de soltar a foto
+      const t0 = performance.now();
+      const ver = () => {
+        const tk = td.object, tex = tk?.mesh?.texture;
+        const artePronta = !!tex?.baseTexture?.valid;
+        const bordaNauren = td.getFlag?.(SIS, "borda")?.ativa && td.getFlag(SIS, "borda")?.modelo && td.getFlag(SIS, "borda").modelo !== "foundry";
+        const cam = bordaNauren ? naurenMolduraCamadaDe(tk) : null;
+        if ((artePronta && (!bordaNauren || cam?.pronta)) || performance.now() - t0 > 2500) return naurenAparenciaSoltarFoto(td.id);
+        setTimeout(ver, 60);
+      };
+      setTimeout(ver, 150);
+    }
+  });
   const doItem = item => { const a = item?.parent; if (a?.documentName === "Actor" && temAparencia(a)) naurenAparenciaAgendar(a); };
   Hooks.on("createItem", doItem); Hooks.on("updateItem", doItem); Hooks.on("deleteItem", (item) => { const a = item?.parent; if (a?.documentName === "Actor" && (a.getFlag?.(SIS, "aparenciaBase") || temAparencia(a))) naurenAparenciaAgendar(a); });
   Hooks.on("updateActor", (actor, changes) => {
@@ -287,37 +410,71 @@ export function naurenAparenciaHtml(item, prontas = []) {
   const cond = item.type === "condicao";
   const bm = a.borda.modo;
   const seg = (v, rot, ic) => `<button type="button" class="ap-seg ${bm === v ? "on" : ""}" data-ap-acao="bordaModo" data-v="${v}"><i class="fas ${ic}"></i> ${rot}</button>`;
-  const opTam = ["", "1", "2", "3", "4"].map(v => `<option value="${v}" ${a.tamanho === v ? "selected" : ""}>${v ? `${v}×${v}` : "Manter"}</option>`).join("") + (a.tamanho && !["1", "2", "3", "4"].includes(a.tamanho) ? `<option value="${a.tamanho}" selected>${a.tamanho}×${a.tamanho}</option>` : "");
-  const anims = `<datalist id="ap-anims-${item.id}">${NAUREN_APARENCIA_ANIMS.map(x => `<option value="${x}">`).join("")}</datalist>`;
-  const trans = (k, rot) => `<div class="ap-trans"><span class="ap-rot">${rot}</span><input type="text" class="ap-txt" data-ap="${k}.anim" list="ap-anims-${item.id}" value="${esc(a[k].anim)}" placeholder="animação (ex.: jb2a.misty_step.01.blue)"><span class="ap-arq"><input type="text" class="ap-txt" data-ap="${k}.som" value="${esc(a[k].som)}" placeholder="som (.ogg)"><button type="button" class="ap-ic" data-ap-acao="arquivo" data-alvo="${k}.som" data-tipo="audio" title="Escolher som"><i class="fas fa-folder-open"></i></button></span></div>`;
+  const TAMS = ["1", "2", "3", "4", "5", "6", "8", "10", "12", "16"];
+  const opTam = ["", ...TAMS].map(v => `<option value="${v}" ${a.tamanho === v ? "selected" : ""}>${v ? `${v}×${v}` : "Manter o tamanho"}</option>`).join("") + (a.tamanho && !TAMS.includes(a.tamanho) ? `<option value="${a.tamanho}" selected>${a.tamanho}×${a.tamanho}</option>` : "");
+  const seq = naurenAparenciaSequencerAtivo(), jb2a = naurenAparenciaJb2aAtivo(), lista = naurenAparenciaAnimacoes();
+  const anims = `<datalist id="ap-anims-${item.id}">${lista.map(x => `<option value="${esc(x)}">`).join("")}</datalist>`;
+  const aviso = !seq ? `<p class="ap-aviso"><i class="fas fa-triangle-exclamation"></i> O módulo <b>Sequencer</b> não está ativo: as animações não tocam (só o som).</p>`
+    : !jb2a && !lista.length ? `<p class="ap-aviso"><i class="fas fa-triangle-exclamation"></i> Nenhum módulo de animações (como o <b>JB2A</b>) está ativo: a lista fica vazia. Ainda dá para escolher um arquivo .webm.</p>`
+    : `<p class="ap-dica"><i class="fas fa-circle-check"></i> ${lista.length} animações disponíveis${jb2a ? " (JB2A ativo)" : ""}. Digite para filtrar.</p>`;
+  const faixa = (k, campo, rot, min, max, passo, txt) => `<label class="ap-faixa"><span>${rot}<b data-ap-ver="${k}.${campo}">${txt(a[k][campo])}</b></span><input type="range" class="nt-rng" data-ap="${k}.${campo}" data-ap-fmt="${campo}" min="${min}" max="${max}" step="${passo}" value="${a[k][campo]}"></label>`;
+  const trans = (k, rot, ic) => { const t = a[k], ruim = t.anim && !naurenAparenciaAnimValida(t.anim);
+    return `<div class="ap-tcard nt-ch">
+      <div class="ap-tcab"><i class="fas ${ic}"></i><b>${rot}</b>${t.anim || t.som ? `<button type="button" class="ap-testar nt-ch" data-ap-acao="testar" data-v="${k}" title="Toca no token deste personagem (se estiver no mapa)"><i class="fas fa-play"></i> Testar</button>` : ""}</div>
+      <div class="ap-tlinha"><span class="ap-trot">Animação</span><span class="ap-arq"><input type="text" class="ap-txt ${ruim ? "ap-ruim" : ""}" data-ap="${k}.anim" list="ap-anims-${item.id}" value="${esc(t.anim)}" placeholder="${seq ? "ex.: jb2a.misty_step.01.blue" : "precisa do Sequencer"}"><button type="button" class="ap-ic" data-ap-acao="arquivo" data-alvo="${k}.anim" data-tipo="imagevideo" title="Escolher arquivo de animação"><i class="fas fa-folder-open"></i></button></span></div>
+      ${ruim ? `<p class="ap-aviso ap-aviso-p"><i class="fas fa-circle-xmark"></i> Essa animação não existe nos módulos ativos.</p>` : ""}
+      <div class="ap-tlinha"><span class="ap-trot">Som</span><span class="ap-arq"><input type="text" class="ap-txt" data-ap="${k}.som" value="${esc(t.som)}" placeholder="arquivo .ogg / .mp3"><button type="button" class="ap-ic" data-ap-acao="arquivo" data-alvo="${k}.som" data-tipo="audio" title="Escolher som"><i class="fas fa-folder-open"></i></button></span></div>
+      ${t.anim ? `<div class="ap-ajustes">
+        ${faixa(k, "escala", "Tamanho", .5, 5, .1, v => `${Number(v).toFixed(1)}× o token`)}
+        ${faixa(k, "opacidade", "Opacidade", .1, 1, .05, v => `${Math.round(v * 100)}%`)}
+        ${faixa(k, "velocidade", "Velocidade", .25, 3, .05, v => `${Number(v).toFixed(2)}×`)}
+        ${faixa(k, "matiz", "Cor (matiz)", -180, 180, 5, v => Number(v) ? `${v}°` : "original")}
+        ${faixa(k, "repetir", "Repetir", 1, 5, 1, v => `${v}×`)}
+        ${faixa(k, "atraso", "Atraso", 0, 3000, 100, v => `${(v / 1000).toFixed(1)} s`)}
+        <div class="ap-tchecks"><label class="ap-check"><input type="checkbox" data-ap="${k}.porBaixo" ${t.porBaixo ? "checked" : ""}> Por baixo do token</label><label class="ap-check"><input type="checkbox" data-ap="${k}.espelhar" ${t.espelhar ? "checked" : ""}> Espelhar</label></div>
+      </div>` : ""}
+      ${t.som ? faixa(k, "volume", "Volume do som", 0, 1, .05, v => `${Math.round(v * 100)}%`) : ""}
+    </div>`; };
   return `<div class="ap-painel">
     ${cond ? `<div class="ap-bloco nt-ch"><div class="ap-cab"><i class="fas fa-eye"></i><b>Ícone desta Condição</b></div>
       <div class="ap-segs">${["sempre", "ficha"].map(v => `<button type="button" class="ap-seg ${(item.system.iconeVisivel ?? "sempre") === v ? "on" : ""}" data-ap-acao="icone" data-v="${v}">${v === "sempre" ? `<i class="fas fa-location-dot"></i> No token e na ficha` : `<i class="fas fa-eye-slash"></i> Só na ficha`}</button>`).join("")}</div>
       <p class="ap-dica">"Só na ficha": o ícone não aparece no token, no HUD de Combate nem nas barras. Boa para Condições que só mudam a aparência.</p></div>` : ""}
     <div class="ap-bloco nt-ch">
       <div class="ap-cab"><i class="fas fa-masks-theater"></i><b>Aparência no mapa</b><label class="ap-sw"><input type="checkbox" class="nm-chave" data-ap="ativa" ${a.ativa ? "checked" : ""}> ${a.ativa ? "Ligada" : "Desligada"}</label></div>
-      <p class="ap-dica">Muda como o personagem aparece no mapa enquanto valer. Só o que estiver preenchido muda; o resto fica como está. Sai sozinho e volta ao normal.</p>
+      <p class="ap-dica">Muda como o personagem aparece no mapa enquanto valer. Só o que estiver preenchido muda; o resto fica como está. Quando para de valer, volta ao normal sozinho.</p>
       <div class="ap-corpo ${a.ativa ? "" : "ap-off"}">
-        <div class="ap-grade">
-          <div class="ap-campo"><span class="ap-rot">Imagem nova</span>
-            <span class="ap-arq">${a.imagem ? `<img class="ap-mini" src="${esc(a.imagem)}" alt="">` : ""}<input type="text" class="ap-txt" data-ap="imagem" value="${esc(a.imagem)}" placeholder="vazio = mantém a imagem"><button type="button" class="ap-ic" data-ap-acao="arquivo" data-alvo="imagem" data-tipo="image" title="Escolher imagem"><i class="fas fa-folder-open"></i></button></span>
-            <label class="ap-check"><input type="checkbox" data-ap="retrato" ${a.retrato ? "checked" : ""}> Trocar também o retrato da ficha</label></div>
-          <div class="ap-campo ap-tam"><span class="ap-rot">Tamanho do token</span><select data-ap="tamanho">${opTam}</select></div>
+        <div class="ap-colunas">
+          <div class="ap-esq">
+            <section class="ap-sec"><h4 class="ap-rot">Imagem e tamanho</h4>
+              <div class="ap-linha2">
+                <div class="ap-campo"><span class="ap-sub">Imagem nova</span>
+                  <span class="ap-arq">${a.imagem ? `<img class="ap-mini" src="${esc(a.imagem)}" alt="">` : `<span class="ap-mini ap-mini-vazia"><i class="fas fa-image"></i></span>`}<input type="text" class="ap-txt" data-ap="imagem" value="${esc(a.imagem)}" placeholder="vazio = mantém a imagem"><button type="button" class="ap-ic" data-ap-acao="arquivo" data-alvo="imagem" data-tipo="image" title="Escolher imagem"><i class="fas fa-folder-open"></i></button></span></div>
+                <div class="ap-campo ap-tam"><span class="ap-sub">Tamanho do token</span><select data-ap="tamanho">${opTam}</select></div>
+              </div>
+              <div class="ap-checks"><label class="ap-check"><input type="checkbox" data-ap="retrato" ${a.retrato ? "checked" : ""}> Trocar também o retrato da ficha</label><label class="ap-check" title="A imagem antiga some aos poucos por cima da nova, sem dar para ver a troca em etapas"><input type="checkbox" data-ap="suave" ${a.suave ? "checked" : ""}> Troca suave</label></div>
+            </section>
+            <section class="ap-sec"><h4 class="ap-rot">Borda</h4>
+              <div class="ap-segs">${seg("manter", "Manter a atual", "fa-equals")}${seg("pronta", "Uma pronta", "fa-crown")}${seg("propria", "Montar a minha", "fa-palette")}${seg("sem", "Sem borda", "fa-ban")}</div>
+              ${bm === "pronta" ? `<select data-ap="borda.prontaId"><option value="">Escolha uma pronta…</option>${prontas.map(p => `<option value="${esc(p.id)}" ${a.borda.prontaId === p.id ? "selected" : ""}>${esc(p.nome)}</option>`).join("")}</select>${prontas.length ? "" : `<p class="ap-dica">Ainda não há molduras prontas (o Mestre cria na janela da borda → Prontas do Mestre).</p>`}` : ""}
+              ${bm === "propria" ? `<div class="ap-propria"><button type="button" class="na-btn" data-ap-acao="montarBorda"><i class="fas fa-palette"></i> ${a.borda.dados ? "Editar a borda" : "Montar a borda"}</button><span class="ap-dica">${a.borda.dados ? `Modelo: <b>${esc(a.borda.dados.modelo === "foundry" ? "Padrão do Foundry" : a.borda.dados.modelo)}</b>${a.borda.dados.enquadre?.mascara?.length ? " · com pincel" : ""}` : `Abre o editor com ${a.imagem ? "a imagem nova" : "a imagem de sempre"}; ela fica guardada neste item.`}</span></div>` : ""}
+              ${bm === "manter" && a.imagem ? `<p class="ap-dica">Com imagem nova, a borda de sempre vale sem o pincel e o enquadre (eram da imagem antiga). Para pintar na imagem nova, use <b>Montar a minha</b>.</p>` : ""}
+            </section>
+            <section class="ap-sec"><h4 class="ap-rot">Quando vale</h4>
+              <p class="ap-dica"><i class="fas fa-circle-check"></i> ${QUANDO[item.type] ?? "Enquanto este item valer"}${a.gatilhos.length ? " <b>e</b> tudo isto:" : "."}</p>
+              ${a.gatilhos.length ? `<div class="ap-gats">${a.gatilhos.map(linhaGatilho).join("")}</div>` : ""}
+              <button type="button" class="ap-mais" data-ap-acao="maisGatilho"><i class="fas fa-plus"></i> Gatilho</button>
+            </section>
+          </div>
+          <aside class="ap-dir nt-ch">
+            <span class="ap-rot">Prévia</span>
+            <div class="ap-previa"><img data-ap-previa alt=""><span data-ap-previa-txt class="ap-dica">${a.imagem ? "" : "Sem imagem nova: usa a imagem de sempre."}</span></div>
+            <div class="ap-prio"><span class="ap-sub">Prioridade</span><input type="number" class="ap-num" data-ap="prioridade" min="1" max="10" value="${a.prioridade}"></div>
+            <p class="ap-dica">Com duas valendo, a maior ganha em cada parte.</p>
+          </aside>
         </div>
-        <div class="ap-campo"><span class="ap-rot">Borda</span>
-          <div class="ap-segs">${seg("manter", "Manter a atual", "fa-equals")}${seg("pronta", "Uma pronta", "fa-crown")}${seg("propria", "Montar a minha", "fa-palette")}${seg("sem", "Sem borda", "fa-ban")}</div>
-          ${bm === "pronta" ? `<select data-ap="borda.prontaId"><option value="">Escolha uma pronta…</option>${prontas.map(p => `<option value="${esc(p.id)}" ${a.borda.prontaId === p.id ? "selected" : ""}>${esc(p.nome)}</option>`).join("")}</select>${prontas.length ? "" : `<p class="ap-dica">Ainda não há molduras prontas (o Mestre cria na janela da borda → Prontas do Mestre).</p>`}` : ""}
-          ${bm === "propria" ? `<div class="ap-propria"><button type="button" class="na-btn" data-ap-acao="montarBorda"><i class="fas fa-palette"></i> ${a.borda.dados ? "Editar a borda" : "Montar a borda"}</button><span class="ap-dica">${a.borda.dados ? `Modelo: <b>${esc(a.borda.dados.modelo === "foundry" ? "Padrão do Foundry" : a.borda.dados.modelo)}</b>` : "Abre o editor de bordas; ela fica guardada neste item."}</span></div>` : ""}
-        </div>
-        <div class="ap-campo"><span class="ap-rot">Quando vale</span>
-          <p class="ap-dica"><i class="fas fa-circle-check"></i> ${QUANDO[item.type] ?? "Enquanto este item valer"}${a.gatilhos.length ? " <b>e</b> tudo isto:" : "."}</p>
-          <div class="ap-gats">${a.gatilhos.map(linhaGatilho).join("")}</div>
-          <button type="button" class="ap-mais" data-ap-acao="maisGatilho"><i class="fas fa-plus"></i> Gatilho</button></div>
-        <div class="ap-campo"><span class="ap-rot">Transição (precisa do Sequencer para a animação)</span>${anims}${trans("entrada", "Ao entrar")}${trans("saida", "Ao sair")}</div>
-        <div class="ap-grade">
-          <div class="ap-campo ap-tam"><span class="ap-rot">Prioridade</span><input type="number" class="ap-num" data-ap="prioridade" min="1" max="10" value="${a.prioridade}"><span class="ap-dica">Com duas valendo, a maior ganha em cada parte.</span></div>
-          <div class="ap-campo"><span class="ap-rot">Prévia</span><div class="ap-previa"><img data-ap-previa alt=""><span data-ap-previa-txt class="ap-dica">${a.imagem ? "" : "Sem imagem nova: a prévia usa a imagem do item."}</span></div></div>
-        </div>
+        <section class="ap-sec"><h4 class="ap-rot">Transição</h4>${aviso}${anims}
+          <div class="ap-tcards">${trans("entrada", "Ao entrar", "fa-right-to-bracket")}${trans("saida", "Ao sair", "fa-right-from-bracket")}</div>
+        </section>
       </div>
     </div></div>`;
 }
@@ -327,7 +484,10 @@ export function naurenAparenciaLigar(sheet) {
   const el = sheet.element, item = sheet.item;
   const painel = el?.querySelector('.nauren-aba-painel[data-aba="aparencia"]'); if (!painel || !item) return;
   const ler = () => naurenAparenciaNormalizar(foundry.utils.deepClone(item.getFlag(SIS, "aparencia") ?? NAUREN_APARENCIA_PADRAO()));
-  const gravar = async a => { await item.update({ "flags.nauren.aparencia": naurenAparenciaNormalizar(a) }); if (sheet.rendered) sheet.render(); };
+  // 0.105.2: re-desenhar a ficha não pode jogar a rolagem para o topo
+  const gravar = async a => { await item.update({ "flags.nauren.aparencia": naurenAparenciaNormalizar(a) }); if (sheet.rendered) await sheet.render(); };
+  const FMT = { escala: v => `${Number(v).toFixed(1)}× o token`, opacidade: v => `${Math.round(v * 100)}%`, volume: v => `${Math.round(v * 100)}%`, velocidade: v => `${Number(v).toFixed(2)}×`, matiz: v => Number(v) ? `${v}°` : "original", repetir: v => `${v}×`, atraso: v => `${(v / 1000).toFixed(1)} s` };
+  painel.querySelectorAll("input[type=range][data-ap]").forEach(inp => inp.addEventListener("input", () => { const b = painel.querySelector(`[data-ap-ver="${inp.dataset.ap}"]`); if (b) b.textContent = (FMT[inp.dataset.apFmt] ?? (v => v))(inp.value); }));
   painel.querySelectorAll("[data-ap]").forEach(inp => inp.addEventListener("change", async () => {
     const a = ler(), v = inp.type === "checkbox" ? inp.checked : inp.value;
     foundry.utils.setProperty(a, inp.dataset.ap, v); await gravar(a);
@@ -338,7 +498,7 @@ export function naurenAparenciaLigar(sheet) {
   }));
   painel.querySelectorAll("[data-ap-acao]").forEach(bt => bt.addEventListener("click", async ev => {
     ev.preventDefault(); const acao = bt.dataset.apAcao, a = ler();
-    if (acao === "icone") { await item.update({ "system.iconeVisivel": bt.dataset.v }); if (sheet.rendered) sheet.render(); return; }
+    if (acao === "icone") { await item.update({ "system.iconeVisivel": bt.dataset.v }); if (sheet.rendered) await sheet.render(); return; }
     if (acao === "bordaModo") { a.borda.modo = bt.dataset.v; return gravar(a); }
     if (acao === "maisGatilho") { a.gatilhos.push({ tipo: "vidaAbaixo", pct: 50 }); return gravar(a); }
     if (acao === "tirarGatilho") { a.gatilhos.splice(Number(bt.dataset.i), 1); return gravar(a); }
@@ -348,6 +508,11 @@ export function naurenAparenciaLigar(sheet) {
       return;
     }
     if (acao === "montarBorda") return naurenAparenciaMontarBorda(item);
+    if (acao === "testar") {
+      const td = (item.parent?.getActiveTokens?.(false, true) ?? [])[0];
+      if (!td) return ui.notifications?.info("Coloque o personagem no mapa para testar a transição.");
+      return naurenAparenciaTransicao(td, a[bt.dataset.v]);
+    }
   }));
   // prévia: a imagem da aparência com a borda que ela vai ter
   naurenAparenciaPrevia(item).then(url => { const img = painel.querySelector("[data-ap-previa]"); if (img && url) img.src = url; }).catch(() => {});
@@ -357,24 +522,35 @@ function atorParaEditor(item, src) {
   if (item.parent?.documentName === "Actor") return item.parent;
   return { name: item.name, img: src || item.img, uuid: null, isOwner: true, getFlag: () => null, prototypeToken: { texture: { src: src || item.img }, width: 1, height: 1 }, getActiveTokens: () => [] };
 }
+/** Imagem de sempre do personagem no mapa (a de antes de qualquer aparência). */
+function srcDoAtor(actor) {
+  if (!actor) return "";
+  const base = actor.getFlag?.(SIS, "aparenciaBase");
+  return limparSrc(base?.src || actor.getFlag?.(SIS, "borda")?.src || actor.prototypeToken?.texture?.src || actor.img);
+}
 export async function naurenAparenciaMontarBorda(item) {
   const a = naurenAparenciaDe(item) ?? NAUREN_APARENCIA_PADRAO();
-  const src = a.imagem || item.parent?.img || item.img;
+  // 0.105.2: abre já com a imagem nova (se tiver) e com o tamanho da aparência; o pincel pinta sobre ESSA imagem
+  const src = limparSrc(a.imagem || srcDoAtor(item.parent) || item.img);
+  const baseBorda = item.parent?.getFlag?.(SIS, "borda") ?? null;
+  let inicial = null;
+  if (a.borda.dados) inicial = comEnquadre({ ...a.borda.dados, ativa: true }, src, a.borda.dados.enquadre, a.borda.dados.enquadre?.src ?? src);
+  else if (baseBorda?.ativa) inicial = comEnquadre({ ...baseBorda }, src, null, baseBorda.src); // parte da borda de sempre
   const { naurenAbrirMolduraEditor } = await import("./molduras-editor.mjs");
-  const final = await naurenAbrirMolduraEditor(atorParaEditor(item, src), { srcInicial: src, soDevolver: true, cfgInicial: a.borda.dados, titulo: item.name });
+  const final = await naurenAbrirMolduraEditor(atorParaEditor(item, src), { srcInicial: src, soDevolver: true, cfgInicial: inicial, titulo: item.name, tamGrade: Number(a.tamanho) || null });
   if (!final) return null;
   const b = naurenAparenciaNormalizar(foundry.utils.deepClone(item.getFlag(SIS, "aparencia") ?? a));
-  b.borda = { modo: "propria", prontaId: "", dados: naurenProntaDados(final) };
+  const enquadre = { src: limparSrc(final.src || src) }; for (const k of ENQ) if (final[k] !== undefined) enquadre[k] = foundry.utils.deepClone(final[k]);
+  b.borda = { modo: "propria", prontaId: "", dados: { ...naurenProntaDados(final), enquadre } };
+  // a imagem escolhida no editor vira a imagem nova da aparência (se for diferente da de sempre)
+  if (enquadre.src && enquadre.src !== srcDoAtor(item.parent) && !b.imagem) b.imagem = enquadre.src;
   await item.update({ "flags.nauren.aparencia": b });
   return b.borda.dados;
 }
 export async function naurenAparenciaPrevia(item) {
   const a = naurenAparenciaDe(item) ?? NAUREN_APARENCIA_PADRAO();
-  const src = a.imagem || item.parent?.prototypeToken?.texture?.src || item.parent?.img || item.img;
-  const base = item.parent?.getFlag?.(SIS, "borda") ?? null;
-  let cfg = null;
-  if (a.borda.modo === "pronta" || a.borda.modo === "propria") { const dados = a.borda.modo === "pronta" ? naurenProntaPorId(a.borda.prontaId)?.dados : a.borda.dados; if (dados) cfg = await naurenProntaCfgPara(dados, { ...(base ?? {}), src: limparSrc(src) }); }
-  else if (a.borda.modo === "manter" && base?.ativa) cfg = { ...naurenBordaConfig({ flags: { nauren: { borda: base } } }), src: limparSrc(src) };
-  if (!cfg) return limparSrc(src);
+  const src = limparSrc(a.imagem || srcDoAtor(item.parent) || item.img);
+  const cfg = await cfgBordaDe(a.borda, item.parent?.getFlag?.(SIS, "borda") ?? null, src);
+  if (!cfg) return src;
   return naurenBordaPreviaDataUrl(cfg, 160);
 }

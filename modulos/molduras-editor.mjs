@@ -69,7 +69,7 @@ export class NaurenMolduraEditor extends foundry.applications.api.ApplicationV2 
       salvar: function () { this.#salvar(); }
     }
   };
-  constructor({ actor, tokenDoc = null, srcInicial = "", resolver = null, soDevolver = false, cfgInicial = null, titulo = "" } = {}) {
+  constructor({ actor, tokenDoc = null, srcInicial = "", resolver = null, soDevolver = false, cfgInicial = null, titulo = "", tamGrade = null } = {}) {
     // soDevolver (0.105, Aparência): monta a borda e devolve a configuração, sem gravar na ficha nem nos tokens
     super(soDevolver ? { id: "nauren-moldura-editor-aparencia" } : {});
     this.actor = actor; this.tokenDoc = tokenDoc; this.resolver = resolver; this.soDevolver = soDevolver; this.tituloExtra = titulo;
@@ -89,6 +89,7 @@ export class NaurenMolduraEditor extends foundry.applications.api.ApplicationV2 
     this.guia = { ligada: true, opacidade: .3 };
     this.P = 512; this.img = null; this.imgOk = false; this.tex = null; this.folha = null; this.raioArte = .8; this.piscando = null; this.sitTeste = {};
     this.tamGrade = Math.min(Number(tokenDoc?.width ?? actor.prototypeToken?.width) || 1, Number(tokenDoc?.height ?? actor.prototypeToken?.height) || 1);
+    if (Number(tamGrade) > 0) this.tamGrade = Number(tamGrade); // 0.105.2: a borda da aparência no tamanho que ela terá
     this.quadro = document.createElement("canvas"); this.quadro.width = this.quadro.height = this.P;
     naurenBordaFolha().then(async f => { this.folha = f; this.raioArte = await naurenBordaEscalaPara(this.tamGrade); this.#recalcularEscala(); this.#miniaturaFoundry(); this.desenhar(); }).catch(() => {});
     this.#carregarArte(this.estado.src);
@@ -281,7 +282,7 @@ export class NaurenMolduraEditor extends foundry.applications.api.ApplicationV2 
       const opcoes = [`<option value="nenhum" ${!e ? "selected" : ""}>Nenhum</option>`, ...NAUREN_MOLDURA_EFEITOS.map(d => { const bloq = outro && (outro.tipo === d.id || ((d.id === "aura" || d.id === "neon") && (outro.tipo === "aura" || outro.tipo === "neon"))); return `<option value="${d.id}" ${e?.tipo === d.id ? "selected" : ""} ${bloq ? "disabled" : ""}>${d.nome}</option>`; })].join("");
       return `<div class="nm-efeito nt-ch"><div class="nm-linha"><b>Efeito ${k + 1}</b><select class="nt-in nt-ch" data-efeito-tipo="${k}">${opcoes}</select></div>
         ${def ? `<p class="nm-nota"><i class="fas ${def.icone}"></i> ${esc(def.dica)}</p><div class="nm-linha">${e.cores.map((c, i) => `<label class="nm-cor"><input type="color" data-efeito-cor="${k}:${i}" value="${c}"><span>${def.cores > 1 ? `Cor ${i + 1}` : "Cor"}</span></label>`).join("")}</div>
-        ${def.anima === false ? "" : this.#range({ id: `vel-${k}`, rot: "Velocidade" }, 1, 5, 1, e.vel, NAUREN_MOLDURA_VEL[e.vel - 1], "efeito")}${this.#range({ id: `int-${k}`, rot: "Intensidade" }, 10, 100, 5, e.int, `${e.int}%`, "efeito")}
+        ${def.anima === false ? "" : this.#range({ id: `vel-${k}`, rot: "Velocidade" }, 1, 5, 1, e.vel, NAUREN_MOLDURA_VEL[e.vel - 1], "efeito")}${this.#range({ id: `int-${k}`, rot: "Intensidade" }, 10, 100, 5, e.int, `${e.int}%`, "efeito")}${e.tipo === "cintilar" ? this.#range({ id: `dist-${k}`, rot: "Distância da moldura" }, 60, 130, 2, e.dist, `${e.dist}%`, "efeito") + this.#range({ id: `tam-${k}`, rot: "Tamanho das estrelas" }, 40, 160, 5, e.tam, `${e.tam}%`, "efeito") : ""}
         ${def.fora ? `<label class="nm-check" title="O efeito fica atrás da arte: aparece só em volta, sem cobrir a imagem do personagem"><input type="checkbox" data-efeito-fora="${k}" ${e.fora ? "checked" : ""}> Só por fora da imagem</label>` : ""}` : ""}
       </div>`; };
     return this.#sec("efeitos", this.#campo("Girar a moldura", `<div class="nm-linha"><div class="nt-seg2 nt-ch nm-girar"><button type="button" data-girar="nenhum" class="${g.modo === "nenhum" ? "on" : ""}">Parada</button><button type="button" data-girar="tudo" class="${g.modo === "tudo" ? "on" : ""}"><i class="fas fa-rotate"></i> Girando</button></div><div class="nt-seg2 nt-ch nm-sentido" ${g.modo === "nenhum" ? "hidden" : ""}><button type="button" data-sentido="1" class="${g.sentido === 1 ? "on" : ""}" title="Horário"><i class="fas fa-rotate-right"></i></button><button type="button" data-sentido="-1" class="${g.sentido === -1 ? "on" : ""}" title="Anti-horário"><i class="fas fa-rotate-left"></i></button></div></div>${g.modo === "nenhum" ? "" : this.#range({ id: "girarVel", rot: "Velocidade" }, 1, 5, 1, g.vel, NAUREN_MOLDURA_VEL[g.vel - 1], "girar")}`)
@@ -348,7 +349,7 @@ export class NaurenMolduraEditor extends foundry.applications.api.ApplicationV2 
     raiz.querySelectorAll("[data-detalhe-sem]").forEach(cb => cb.addEventListener("change", () => { const k = cb.dataset.detalheSem; this.estado.moldura[k] = cb.checked; const box = cb.closest(".nm-det"); box?.classList.toggle("nm-det-sem", cb.checked); const cor = box?.querySelector("[data-moldura-cor]"); if (cor) cor.disabled = cb.checked; this.#remontarTexturas(); }));
     raiz.querySelectorAll("[data-efeito-tipo]").forEach(sel => sel.addEventListener("change", () => NaurenMolduraEditor.DEFAULT_OPTIONS.actions.efeitoTipo.call(this, null, { dataset: { k: sel.dataset.efeitoTipo, v: sel.value } })));
     raiz.querySelectorAll("[data-efeito-cor]").forEach(inp => inp.addEventListener("input", () => { const [k, i] = inp.dataset.efeitoCor.split(":").map(Number); this.estado.moldura.efeitos[k].cores[i] = inp.value; this.#remontarTexturas(); }));
-    raiz.querySelectorAll("[data-efeito]").forEach(sl => sl.addEventListener("input", () => { const [campo, k] = sl.dataset.efeito.split("-"); const e = this.estado.moldura.efeitos[Number(k)]; if (!e) return; e[campo] = Number(sl.value); this.#ver(sl.dataset.efeito, campo === "vel" ? NAUREN_MOLDURA_VEL[e.vel - 1] : `${e.int}%`); this.desenhar(); }));
+    raiz.querySelectorAll("[data-efeito]").forEach(sl => sl.addEventListener("input", () => { const [campo, k] = sl.dataset.efeito.split("-"); const e = this.estado.moldura.efeitos[Number(k)]; if (!e) return; e[campo] = Number(sl.value); this.#ver(sl.dataset.efeito, campo === "vel" ? NAUREN_MOLDURA_VEL[e.vel - 1] : `${e[campo]}%`); this.desenhar(); }));
     raiz.querySelectorAll("[data-girar]").forEach(b => b.addEventListener("click", () => { this.estado.moldura.girar.modo = b.dataset.girar; this.render(); }));
     raiz.querySelectorAll("[data-sentido]").forEach(b => b.addEventListener("click", () => { this.estado.moldura.girar.sentido = Number(b.dataset.sentido); raiz.querySelectorAll("[data-sentido]").forEach(x => x.classList.toggle("on", x === b)); this.desenhar(); }));
     raiz.querySelector('[data-girar="girarVel"]')?.addEventListener("input", ev => { this.estado.moldura.girar.vel = Number(ev.target.value); this.#ver("girarVel", NAUREN_MOLDURA_VEL[this.estado.moldura.girar.vel - 1]); });
@@ -560,8 +561,8 @@ export class NaurenMolduraEditor extends foundry.applications.api.ApplicationV2 
   }
 }
 /** Abre o editor e devolve a configuração salva (ou null se cancelou). */
-export function naurenAbrirMolduraEditor(actor, { tokenDoc = null, srcInicial = "", soDevolver = false, cfgInicial = null, titulo = "" } = {}) {
+export function naurenAbrirMolduraEditor(actor, { tokenDoc = null, srcInicial = "", soDevolver = false, cfgInicial = null, titulo = "", tamGrade = null } = {}) {
   if (!actor) return Promise.resolve(null);
-  return new Promise(resolver => { const ed = new NaurenMolduraEditor({ actor, tokenDoc, srcInicial, resolver, soDevolver, cfgInicial, titulo }); ed.render(true); });
+  return new Promise(resolver => { const ed = new NaurenMolduraEditor({ actor, tokenDoc, srcInicial, resolver, soDevolver, cfgInicial, titulo, tamGrade }); ed.render(true); });
 }
 export { naurenMolduraEhNauren };

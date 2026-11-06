@@ -6,7 +6,7 @@ import { naurenArmazemInit, naurenArmazemHooks, NaurenArmazemJanela, NaurenArmaz
 import { naurenTreinosInit, naurenTreinarSeguirOExemplo, naurenRecebidosSeguirOExemplo } from "./modulos/treinos.mjs";
 import { NAUREN_MOLDURA_MODELOS, NAUREN_MOLDURA_PALETAS, NAUREN_MOLDURA_EFEITOS, naurenMolduraModelo, naurenMolduraSvg, naurenMolduraMascaraPath, naurenMolduraNormalizar, naurenMolduraConfigPadrao, naurenMolduraEstado, naurenMolduraRaioDoPath, NAUREN_MOLDURA_GRUPOS, naurenMolduraRecorteGira, naurenMolduraMascaraCircular, naurenMolduraDetalhes } from "./modulos/molduras-modelos.mjs";
 import { naurenMoldurasProntasInit, naurenMoldurasProntasHooks, naurenProntasLista, naurenProntaSalvar, naurenProntaApagar, naurenProntaAplicarEmTokens, naurenProntaCfgPara, naurenProntaDados, naurenProntaParaDisposicao, naurenMolduraFavoritas, naurenMolduraFavoritar, naurenMolduraRecentes, naurenMolduraUsada, NAUREN_DISPOSICOES, naurenMoldurasAutomaticas } from "./modulos/molduras-prontas.mjs";
-import { NAUREN_APARENCIA_TIPOS, NAUREN_APARENCIA_PADRAO, naurenAparenciaDe, naurenAparenciaNormalizar, naurenAparenciasAtivas, naurenAparenciaResolver, naurenAparenciaGatilhoBate, naurenAparenciaAtualizar, naurenAparenciaAgendar, naurenAparenciaHooks, naurenAparenciaMigrar, naurenAparenciaHtml, naurenAparenciaLigar, naurenAparenciaMontarBorda, naurenAparenciaPrevia, naurenAparenciaItemValendo } from "./modulos/aparencia.mjs";
+import { NAUREN_APARENCIA_TIPOS, NAUREN_APARENCIA_PADRAO, naurenAparenciaCfgBorda, naurenAparenciaAnimacoes, naurenAparenciaAnimValida, naurenAparenciaDe, naurenAparenciaNormalizar, naurenAparenciasAtivas, naurenAparenciaResolver, naurenAparenciaGatilhoBate, naurenAparenciaAtualizar, naurenAparenciaAgendar, naurenAparenciaHooks, naurenAparenciaMigrar, naurenAparenciaHtml, naurenAparenciaLigar, naurenAparenciaMontarBorda, naurenAparenciaPrevia, naurenAparenciaItemValendo } from "./modulos/aparencia.mjs";
 import { naurenConfiguracoesInit, naurenConfiguracoesRecolher, naurenConfiguracoesRecolhidas, NaurenConfiguracoes, NAUREN_CONFIG_SECOES } from "./modulos/configuracoes.mjs";
 import { naurenMoldurasInit, naurenMoldurasHooks, naurenMolduraEhNauren, naurenMolduraDe, naurenMolduraPrepararPrevia, naurenMolduraDesenharPrevia, naurenMolduraProcessarImagem, naurenMolduraExtensao, naurenMolduraCamadaDe, naurenMolduraTodas, naurenMolduraAnexar, naurenMolduraPiscar, NaurenMolduraCamada, naurenMolduraMascaraCanvas, naurenMolduraTick } from "./modulos/molduras-token.mjs";
 import { NaurenMolduraEditor, naurenAbrirMolduraEditor } from "./modulos/molduras-editor.mjs";
@@ -7635,13 +7635,6 @@ Hooks.once("init", () => {
  * Foundry e não precisa re-registrar listener a cada mensagem nova)
  * ======================================= */
 Hooks.once("ready", () => {
-  // Diagnóstico único: lista os shapes de Region que ESTA build do Foundry
-  // suporta. Se "cone"/"ray"/"line" não aparecerem aqui, o NaurenRegionHelper
-  // vai usar os substitutos configurados em SHAPE_CANDIDATOS - me mande essa
-  // lista do console (F12) pra ajustarmos o mapeamento com precisão.
-  console.log("Nauren RPG | Shapes de Region disponíveis nesta build:",
-    Object.keys(foundry.data.BaseShapeData?.TYPES ?? {}));
-
   // Migração one-shot: personagens/NPCs criados antes de opções da aba
   // Restaura os registros de CONFIG.statusEffects perdidos num
   // recarregamento de página (só existem em memória - ver
