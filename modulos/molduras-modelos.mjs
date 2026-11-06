@@ -397,6 +397,19 @@ function escalaDeTracos(html, esp) {
  * opc: px (tamanho da imagem), vb (meia-largura em unidades, padrão 125), sombra (true), soBranco (silhueta
  * branca, para brilhos/pisca), branco (moldura em metal branco, para o Ciclo de cores tingir), semFiltro.
  */
+/*
+ * Acabamento único de todas as molduras:
+ *  - contorno escuro da SILHUETA (peças cheias e linhas ganham o mesmo contorno; onde as peças se tocam não aparece linha);
+ *  - contorno interno bem leve nas peças cheias (só para separar folhas/grãos que se sobrepõem);
+ *  - sombra curta e suave (linhas finas juntas não viram uma faixa escura).
+ */
+const CONTORNO_INTERNO = "rgba(10,6,14,.22)";
+const ACABAMENTO = id => `<filter id="${id}" x="-15%" y="-15%" width="130%" height="130%" color-interpolation-filters="sRGB">
+  <feMorphology in="SourceAlpha" operator="dilate" radius=".38" result="d"/>
+  <feFlood flood-color="#0a060e" flood-opacity=".62"/><feComposite in2="d" operator="in" result="contorno"/>
+  <feGaussianBlur in="d" stdDeviation=".8" result="bl"/><feOffset in="bl" dy=".9" result="of"/>
+  <feFlood flood-color="#000" flood-opacity=".45"/><feComposite in2="of" operator="in" result="sombra"/>
+  <feMerge><feMergeNode in="sombra"/><feMergeNode in="contorno"/><feMergeNode in="SourceGraphic"/></feMerge></filter>`;
 export function naurenMolduraSvg(cfgIn, opc = {}) {
   const cfg = naurenMolduraNormalizar(cfgIn), m = naurenMolduraModelo(cfg.modelo);
   if (!m) return "";
@@ -407,10 +420,10 @@ export function naurenMolduraSvg(cfgIn, opc = {}) {
   const defs = `<linearGradient id="mt${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${p[0]}"/><stop offset=".28" stop-color="${p[1]}"/><stop offset=".55" stop-color="${p[2]}"/><stop offset=".78" stop-color="${p[4]}"/><stop offset="1" stop-color="${p[3]}"/></linearGradient>
     <linearGradient id="ml${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${p[0]}"/><stop offset=".5" stop-color="${p[1]}"/><stop offset="1" stop-color="${p[2]}"/></linearGradient>
     <radialGradient id="jo${id}" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="${joiaCores[0]}"/><stop offset=".5" stop-color="${joiaCores[1]}"/><stop offset="1" stop-color="${joiaCores[2]}"/></radialGradient>
-    <filter id="sh${id}" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="1.6" stdDeviation="1.4" flood-color="#000" flood-opacity=".7"/></filter>
+    ${ACABAMENTO(`sh${id}`)}
     <filter id="gl${id}" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>`;
   const semSombra = opc.sombra === false || opc.soBranco || opc.semFiltro;
-  const css = `<style>#q${id} .m, #q${id}b .m{fill:url(#mt${id});stroke:${m.neon || semSombra ? "none" : "rgba(10,6,14,.55)"};stroke-width:.45}
+  const css = `<style>#q${id} .m, #q${id}b .m{fill:url(#mt${id});stroke:${m.neon || semSombra ? "none" : CONTORNO_INTERNO};stroke-width:.3}
     #q${id} .lm{fill:none;stroke:url(#ml${id});stroke-linejoin:miter;stroke-linecap:butt}
     #q${id} .e, #q${id}b .e{fill:${esmalte}} #q${id} .le{fill:none;stroke:${esmalte}}
     #q${id} .joia{fill:url(#jo${id})} #q${id} .brilho{fill:#fff;opacity:${opc.soBranco ? 1 : .55}} #q${id} {--esc:${opc.soBranco ? "#fff" : p[3]}}</style>`;
@@ -427,8 +440,8 @@ export function naurenMolduraSvgAtras(cfgIn, opc = {}) {
   const cfg = naurenMolduraNormalizar(cfgIn), m = naurenMolduraModelo(cfg.modelo);
   if (!m?.atras) return "";
   const id = ++uid, vb = opc.vb ?? 125, px = opc.px ?? 256, p = naurenMolduraCoresDe(cfg);
-  const css = `<style>#q${id}b .m{fill:url(#mt${id});stroke:rgba(10,6,14,.55);stroke-width:.45} #q${id}b .e{fill:${cfg.esmalte}}</style>`;
-  const defs = `<linearGradient id="mt${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${p[0]}"/><stop offset=".28" stop-color="${p[1]}"/><stop offset=".55" stop-color="${p[2]}"/><stop offset=".78" stop-color="${p[4]}"/><stop offset="1" stop-color="${p[3]}"/></linearGradient><filter id="sh${id}" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="1.6" stdDeviation="1.4" flood-color="#000" flood-opacity=".7"/></filter>`;
+  const css = `<style>#q${id}b .m{fill:url(#mt${id});stroke:${CONTORNO_INTERNO};stroke-width:.3} #q${id}b .e{fill:${cfg.esmalte}}</style>`;
+  const defs = `<linearGradient id="mt${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${p[0]}"/><stop offset=".28" stop-color="${p[1]}"/><stop offset=".55" stop-color="${p[2]}"/><stop offset=".78" stop-color="${p[4]}"/><stop offset="1" stop-color="${p[3]}"/></linearGradient>${ACABAMENTO(`sh${id}`)}`;
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${-vb} ${-vb} ${2 * vb} ${2 * vb}" width="${px}" height="${px}"><defs>${defs}</defs>${css}<g${cfg.escala !== 1 ? ` transform="scale(${f(cfg.escala)})"` : ""}><g id="q${id}b" filter="url(#sh${id})">${escalaDeTracos(m.atras.call(m, m.forma ?? "circulo", id), cfg.espessura)}</g></g></svg>`;
 }
 export function naurenMolduraTemAtras(cfg) { return !!naurenMolduraModelo(cfg?.modelo)?.atras; }

@@ -556,12 +556,14 @@ function naurenBordaTokensDaFicha(actor) {
  * Grava a borda: na ficha (token padrão e flags) e, se pedido, nos tokens já colocados.
  * "tokenDoc": o token de onde a janela foi aberta (sempre recebe).
  */
-async function naurenBordaAplicar(actor, cfg, { tokenDoc = null, nosTokens = true } = {}) {
+async function naurenBordaAplicar(actor, cfg, { tokenDoc = null, nosTokens = true, soToken = false } = {}) {
   // Cada token recebe a escala do seu tamanho (1×1, 2×2...): a borda ocupa as casas inteiras.
+  // soToken: só aquele token (NPC/monstro não vinculado), sem mexer na ficha de origem.
   const dadosPara = doc => naurenBordaDadosPreparados(cfg, doc);
   const base = actor?.isToken ? actor.token?.baseActor : actor;
   const linhas = [];
-  if (base?.isOwner) {
+  if (soToken) nosTokens = false;
+  if (base?.isOwner && !soToken) {
     const upd = { "flags.nauren.borda": cfg };
     for (const [k, v] of Object.entries(await dadosPara(base.prototypeToken))) upd[`prototypeToken.${k}`] = v;
     await base.update(upd);

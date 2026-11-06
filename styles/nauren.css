@@ -8159,8 +8159,27 @@ input.nt-icone-texto { font-family: "Fira Code", Consolas, monospace; font-size:
 .nauren-kit button.nm-tile { all: unset; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 4px 4px; cursor: pointer; --cc: 7px; --cbg: #1a1426; --cbd: var(--nk-linha2, #4a3d66); min-width: 0; }
 .nauren-kit button.nm-tile:hover { --cbd: color-mix(in srgb, var(--nk-ouro) 60%, #4a3d66); }
 .nauren-kit button.nm-tile.on { --cbg: color-mix(in srgb, var(--nk-ouro) 16%, #1a1426); --cbd: var(--nk-ouro); }
-.nm-tile-img { width: 72px; height: 72px; display: grid; place-items: center; }
-.nm-tile-img svg { display: block; }
+.nm-tile-img { width: 72px; height: 72px; display: grid; place-items: center; position: relative; }
+.nm-tile-img > * { grid-area: 1 / 1; }
+.nm-tile-img svg, .nm-tile-img canvas { display: block; position: relative; z-index: 1; }
+.nm-tile-arte { width: 42px; height: 42px; object-fit: cover; border-radius: 50%; z-index: 0; }
+.nm-tile-anel { width: 46px; height: 46px; border-radius: 50%; background: conic-gradient(var(--c1), var(--c2), var(--c1)); -webkit-mask: radial-gradient(circle, transparent 17px, #000 18px); mask: radial-gradient(circle, transparent 17px, #000 18px); z-index: 1; }
+.nauren-kit button.nm-tile { position: relative; }
+.nm-fav { position: absolute; top: 4px; right: 5px; z-index: 2; font-size: 11px; color: var(--nk-suave); opacity: 0; transition: opacity .12s; cursor: pointer; padding: 2px; }
+.nm-tile:hover .nm-fav, .nm-fav.on { opacity: 1; }
+.nm-fav.on { color: var(--nk-ouro-claro, #ffd98a); }
+.nm-fav:hover { color: var(--nk-texto); }
+.nm-apagar:hover { color: #ff6b6b; }
+.nm-tile-novo .nm-tile-ico { font-size: 22px; opacity: .8; }
+.nm-meus { display: flex; gap: 6px; flex-wrap: wrap; }
+.nauren-kit button.nm-meu { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; font-size: 11.5px; color: var(--nk-suave); cursor: pointer; --cc: 5px; --cbg: #15101d; --cbd: var(--nk-linha2, #4a3d66); }
+.nauren-kit button.nm-meu i { font-size: 10px; }
+.nauren-kit button.nm-meu.on { color: var(--nk-texto); --cbg: color-mix(in srgb, var(--nk-ouro) 14%, #15101d); --cbd: color-mix(in srgb, var(--nk-ouro) 60%, #4a3d66); }
+.nm-vazio { grid-column: 1 / -1; margin: 10px 4px; font-size: 12px; color: var(--nk-suave); text-align: center; }
+.nm-galeria-barra { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--nk-suave); flex-wrap: wrap; }
+.nm-galeria-barra b { color: var(--nk-texto); }
+.nauren-kit .nm-galeria-barra .na-btn { display: inline-flex; align-items: center; gap: 6px; height: 28px; min-height: 0; padding: 0 12px; font-size: 12px; width: auto; flex: 0 1 auto; white-space: nowrap; }
+.nauren-kit .nm-galeria-barra .na-btn i { font-size: 11px; margin: 0; }
 .nm-tile-ico { font-size: 30px; color: var(--nk-ouro); }
 .nm-tile-n { font-size: 11px; color: var(--nk-suave); text-align: center; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 .nm-tile.on .nm-tile-n { color: var(--nk-texto); }
@@ -8223,3 +8242,99 @@ input.nt-icone-texto { font-family: "Fira Code", Consolas, monospace; font-size:
 .application.nauren-kit.nauren-armazem.nauren-moldura:not(.minimized):not(.minimizing):not(.maximizing) { max-width: calc((100vw - 16px) / var(--nauren-escala, 1)) !important; max-height: calc((100vh - 16px) / var(--nauren-escala, 1)) !important; }
 .nauren-kit .nt-rod .nm-check { font-size: 12.5px; color: var(--nk-suave); }
 @media (max-width: 900px) { .nm-corpo { grid-template-columns: 1fr; overflow-y: auto; } .nm-palco { min-height: 260px; max-height: 320px; } }
+
+/* ---------- Configurações do Nauren: painel único (0.104) ---------- */
+.application.nauren-config { min-width: 640px; min-height: 440px; }
+.nauren-config .nc-janela { height: 100%; display: flex; flex-direction: column; }
+.nc-corpo { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 14px; padding: 12px 18px 8px; flex: 1 1 auto; min-height: 0; }
+.nc-nav { display: flex; flex-direction: column; gap: 4px; overflow-y: auto; min-height: 0; padding-right: 2px; }
+.nauren-kit button.nc-nav-b { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 10px; height: 34px; padding: 0 12px; font: 13.5px Signika, sans-serif; color: var(--nk-suave); cursor: pointer; --cc: 6px; --cbg: #15101d; --cbd: transparent; flex: 0 0 auto; }
+.nauren-kit button.nc-nav-b > i:first-child { width: 16px; text-align: center; color: var(--nk-ouro); font-size: 13px; }
+.nauren-kit button.nc-nav-b > span { flex: 1 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nauren-kit button.nc-nav-b:hover { color: var(--nk-texto); --cbd: var(--nk-linha2, #4a3d66); }
+.nauren-kit button.nc-nav-b.on { color: var(--nk-texto); --cbg: color-mix(in srgb, var(--nk-ouro) 13%, #15101d); --cbd: color-mix(in srgb, var(--nk-ouro) 60%, #4a3d66); }
+.nc-ponto { font-size: 6px; color: var(--nk-ouro-claro, #ffd98a); }
+.nc-dir { display: flex; flex-direction: column; gap: 10px; min-width: 0; min-height: 0; }
+.nc-topo { display: flex; align-items: center; gap: 12px; }
+.nc-topo h2 { margin: 0; border: 0; flex: 1 1 auto; font: 600 18px Signika, sans-serif; color: var(--nk-ouro-claro, #ffd98a); letter-spacing: .02em; }
+.nauren-kit .nc-busca { width: 230px; flex: 0 0 auto; }
+.nauren-kit .nc-busca > input[type="text"] { flex: 1 1 auto; min-width: 0; height: 100%; border: 0 !important; background: transparent !important; box-shadow: none !important; color: inherit; padding: 0; outline: 0; font: inherit; }
+.nc-lista, .nc-resultados { flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding-right: 4px; }
+.nc-lista[hidden], .nc-resultados[hidden] { display: none; }
+.nc-linha { display: flex; align-items: center; gap: 14px; padding: 10px 12px; --cc: 7px; --cbg: #15101d; --cbd: var(--nk-linha2, #4a3d66); flex: 0 0 auto; }
+.nc-linha.mudou { --cbd: color-mix(in srgb, var(--nk-ouro) 70%, #4a3d66); --cbg: color-mix(in srgb, var(--nk-ouro) 7%, #15101d); }
+.nc-linha.nc-sub { margin-left: 18px; padding: 7px 12px; }
+.nc-texto { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.nc-nome { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.nc-nome b { font: 600 13.5px Signika, sans-serif; color: var(--nk-texto); }
+.nc-texto small { font-size: 12px; line-height: 1.35; color: var(--nk-suave); }
+.nc-selo { font-size: 10px; letter-spacing: .04em; text-transform: uppercase; padding: 1px 6px; border-radius: 3px; color: #cdbfe6; background: #2a2238; }
+.nc-selo-tela { color: #a8e0ff; background: #1b2b3a; }
+.nc-selo-recarrega { color: #ffd0a0; background: #3a2a1b; }
+.nc-ctrl { flex: 0 0 auto; display: flex; align-items: center; gap: 8px; justify-content: flex-end; min-width: 60px; }
+.nauren-kit .nc-ctrl select.nt-in { width: 220px; height: 30px; appearance: auto; }
+.nauren-kit .nc-ctrl input.nt-in { width: 120px; height: 30px; }
+.nauren-kit .nc-ctrl input.nc-txt { width: 220px; }
+.nc-faixa { display: flex; align-items: center; gap: 8px; width: 220px; }
+.nc-faixa input[type="range"] { flex: 1 1 auto; min-width: 0; accent-color: var(--nk-ouro); }
+.nc-faixa output { min-width: 34px; text-align: right; font: 600 13px Signika, sans-serif; color: var(--nk-texto); }
+.nauren-config input[type="color"] { width: 44px; height: 28px; padding: 0; border: 0; background: none; cursor: pointer; }
+.nc-padrao { opacity: .7; }
+.nc-grupo-t { margin: 10px 2px 2px; font: 600 11px Signika, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--nk-ouro); }
+.nc-aviso { font-size: 12px; color: var(--nk-suave); }
+.nc-aviso i { color: var(--nk-ouro); margin-right: 4px; }
+.nauren-kit .nc-ctrl .na-btn { height: 30px; padding: 0 12px; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; }
+@container (max-width: 700px) { .nc-corpo { grid-template-columns: 1fr; } }
+
+/* ---------- 0.104: janelas antigas no acabamento novo ----------
+ * Criador de Personagem, Criador de Monstros, Barras do token, Recursos do HUD, Bancada de Invenção e Obra Prima:
+ * mesmos campos chanfrados (quadrantes, sem border + clip-path), títulos em Signika dourado e marcações douradas. */
+.application:is(.nauren-criador, .nauren-criador-monstro, .nauren-barras-editor, .nauren-bancada, .nauren-obra-prima) { --nt-b: #1d1628; --nk-linha2: #4a3d66; --nk-ouro: #e0b257; --nk-ouro-claro: #ffd98a; --nk-texto: #ece6f5; --nk-suave: #b3a6c9; font-family: Signika, system-ui, sans-serif; }
+.application:is(.nauren-criador-monstro, .nauren-barras-editor, .nauren-bancada, .nauren-obra-prima) :is(h1:not(.window-title), h2, h3, h4) { font-family: Signika, system-ui, sans-serif !important; font-weight: 600; letter-spacing: .01em; }
+.application:is(.nauren-criador, .nauren-criador-monstro, .nauren-barras-editor, .nauren-bancada, .nauren-obra-prima) :is(input[type="text"], input[type="number"], input[type="search"], input:not([type]), select, textarea):not(.nt-ch):not([hidden]) {
+  --cc: 6px; --cbw: 1px; --ck: calc(var(--cc) * .7071 - var(--cbw) * .4142); --cbg: #120d19; --cbd: var(--nk-linha2);
+  border: var(--cbw) solid transparent !important; border-radius: 0 !important; box-shadow: none !important; outline: 0;
+  background:
+    linear-gradient(135deg, transparent var(--ck), var(--cbg) 0) top left / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(225deg, transparent var(--ck), var(--cbg) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(315deg, transparent var(--ck), var(--cbg) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(45deg, transparent var(--ck), var(--cbg) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(var(--cbd), var(--cbd)) border-box !important;
+  clip-path: polygon(var(--cc) 0, calc(100% - var(--cc)) 0, 100% var(--cc), 100% calc(100% - var(--cc)), calc(100% - var(--cc)) 100%, var(--cc) 100%, 0 calc(100% - var(--cc)), 0 var(--cc));
+  color: var(--nk-texto); font-family: Signika, system-ui, sans-serif;
+}
+.application:is(.nauren-criador, .nauren-criador-monstro, .nauren-barras-editor, .nauren-bancada, .nauren-obra-prima) :is(input[type="text"], input[type="number"], input[type="search"], input:not([type]), select, textarea):not(.nt-ch):focus { --cbd: var(--nk-ouro); }
+.application:is(.nauren-criador, .nauren-criador-monstro, .nauren-barras-editor, .nauren-bancada, .nauren-obra-prima) :is(input[type="text"], input[type="number"], input[type="search"], input:not([type]), select, textarea):disabled { opacity: .6; }
+.application:is(.nauren-criador, .nauren-criador-monstro, .nauren-barras-editor, .nauren-bancada, .nauren-obra-prima) select:not(.nt-ch) { appearance: auto; }
+.application:is(.nauren-criador, .nauren-criador-monstro, .nauren-barras-editor, .nauren-bancada, .nauren-obra-prima) input[type="checkbox"], .application:is(.nauren-criador, .nauren-criador-monstro, .nauren-barras-editor, .nauren-bancada, .nauren-obra-prima) input[type="radio"] { accent-color: var(--nk-ouro); }
+.application:is(.nauren-criador, .nauren-criador-monstro, .nauren-barras-editor, .nauren-bancada, .nauren-obra-prima) input[type="range"] { accent-color: var(--nk-ouro); }
+
+/* 0.104: Bancada de Invenção e Obra Prima com os cantos chanfrados do sistema (antes arredondados) */
+.application.nauren-bancada :is(.nbc-placa, .nbc-placa-icone, .nbc-medidor, .nbc-nota, .nbc-categoria, .nbc-cartao, .nbc-ficha, .nbc-secundario, .nbc-principal),
+.application.nauren-obra-prima :is(.nop-retrato, .nop-stat, .nop-atr, .nop-passiva, .nop-criar) {
+  --cbw: 1px; --ck: calc(var(--cc, 8px) * .7071 - var(--cbw) * .4142);
+  border: var(--cbw) solid transparent !important; border-radius: 0 !important; box-shadow: none !important;
+  background:
+    linear-gradient(135deg, transparent var(--ck), var(--cbg) 0) top left / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(225deg, transparent var(--ck), var(--cbg) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(315deg, transparent var(--ck), var(--cbg) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(45deg, transparent var(--ck), var(--cbg) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(var(--cbd), var(--cbd)) border-box !important;
+  clip-path: polygon(var(--cc, 8px) 0, calc(100% - var(--cc, 8px)) 0, 100% var(--cc, 8px), 100% calc(100% - var(--cc, 8px)), calc(100% - var(--cc, 8px)) 100%, var(--cc, 8px) 100%, 0 calc(100% - var(--cc, 8px)), 0 var(--cc, 8px));
+}
+.application.nauren-bancada .nbc-placa { --cc: 8px; --cbg: var(--n-painel); --cbd: var(--n-borda); }
+.application.nauren-bancada .nbc-placa:hover:not([disabled]) { --cbd: var(--n-ouro); }
+.application.nauren-bancada .nbc-placa.ativa { --cbg: var(--n-painel2); --cbd: var(--n-ouro); padding: 10px; }
+.application.nauren-bancada .nbc-placa-icone { --cc: 6px; --cbg: var(--n-tinta); --cbd: var(--n-borda); }
+.application.nauren-bancada :is(.nbc-medidor, .nbc-ficha) { --cc: 9px; --cbg: var(--n-painel); --cbd: var(--n-borda); }
+.application.nauren-bancada .nbc-nota { --cc: 9px; --cbg: var(--n-painel); --cbd: color-mix(in srgb, var(--n-borda) 70%, transparent); }
+.application.nauren-bancada .nbc-categoria { --cc: 9px; --cbg: var(--n-painel); --cbd: var(--n-borda); }
+.application.nauren-bancada .nbc-cartao { --cc: 7px; --cbg: #1f1a30; --cbd: var(--n-borda); }
+.application.nauren-bancada .nbc-cartao.escolhida { --cbg: var(--n-painel2); --cbd: var(--nbc-cor); }
+.application.nauren-bancada .nbc-secundario { --cc: 7px; --cbg: var(--n-painel); --cbd: var(--n-borda); }
+.application.nauren-bancada .nbc-secundario:hover { --cbd: var(--n-ouro); }
+.application.nauren-bancada .nbc-principal { --cc: 7px; --cbg: var(--n-ouro); --cbd: var(--n-ouro); }
+.application.nauren-obra-prima :is(.nop-stat, .nop-atr, .nop-passiva) { --cc: 7px; --cbg: var(--n-painel); --cbd: var(--n-borda); }
+.application.nauren-obra-prima .nop-atr.mexido { --cbg: var(--n-painel2); --cbd: var(--n-ouro); }
+.application.nauren-obra-prima .nop-retrato { --cc: 9px; --cbg: #161227; --cbd: var(--n-borda); }
+.application.nauren-obra-prima .nop-criar { --cc: 7px; --cbg: var(--n-ouro); --cbd: var(--n-ouro); }

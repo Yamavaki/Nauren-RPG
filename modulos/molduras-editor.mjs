@@ -8,6 +8,7 @@
 import { NAUREN_BORDA_EFEITOS, naurenBordaAplicar, naurenBordaCaixaImagem, naurenBordaCarregarImagem, naurenBordaConfig, naurenBordaDesenharImagem, naurenBordaDesenharPrevia, naurenBordaEscalaPara, naurenBordaFolha, naurenBordaLinkDireto, naurenBordaLinkValido, naurenBordaPedraConfig, naurenBordaPedraNeutra, naurenBordaPintarTraco, naurenTextoLinkBloqueado as naurenBordaTextoLinkBloqueado, naurenBordaTokensDaFicha } from "./borda-token.mjs";
 import { NAUREN_MOLDURA_MODELOS, NAUREN_MOLDURA_GRUPOS, NAUREN_MOLDURA_PALETAS, NAUREN_MOLDURA_EFEITOS, NAUREN_MOLDURA_VEL, naurenMolduraModelo, naurenMolduraSvg, naurenMolduraConfigPadrao, naurenMolduraNormalizar, naurenMolduraDetalhes } from "./molduras-modelos.mjs";
 import { naurenMolduraDesenharPrevia, naurenMolduraPrepararPrevia, naurenMolduraEhNauren, naurenMolduraPiscar, naurenMolduraCamadaDe } from "./molduras-token.mjs";
+import { naurenProntasLista, naurenProntaPorId, naurenProntaDados, naurenProntaSalvar, naurenProntaApagar, naurenProntaAplicarEmTokens, naurenMolduraFavoritas, naurenMolduraFavoritar, naurenMolduraRecentes, naurenMolduraUsada } from "./molduras-prontas.mjs";
 
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[c]));
 const miniaturas = new Map();
@@ -16,7 +17,19 @@ function miniatura(id, px = 72) {
   if (!miniaturas.has(chave)) miniaturas.set(chave, naurenMolduraSvg(naurenMolduraConfigPadrao(id), { px, vb: 125, sombra: false }));
   return miniaturas.get(chave);
 }
+/** Miniatura de uma pronta (com as cores dela). */
+function miniaturaPronta(p, px = 72) {
+  const chave = `pronta|${p.id}|${JSON.stringify(p.dados?.moldura ?? p.dados?.cores ?? "")}|${px}`;
+  if (!miniaturas.has(chave)) {
+    const d = p.dados ?? {};
+    miniaturas.set(chave, d.modelo && d.modelo !== "foundry" && d.modelo !== "imagem" && naurenMolduraModelo(d.modelo)
+      ? naurenMolduraSvg({ ...(d.moldura ?? {}), modelo: d.modelo }, { px, vb: 125, sombra: false })
+      : `<span class="nm-tile-anel" style="--c1:${esc(d.cores?.[0] ?? "#d9b25f")};--c2:${esc(d.cores?.[1] ?? d.cores?.[0] ?? "#d9b25f")}"></span>`);
+  }
+  return miniaturas.get(chave);
+}
 const GRUPOS_GALERIA = NAUREN_MOLDURA_GRUPOS; // a 1ª (Essenciais) começa com o Padrão do Foundry e Minha imagem
+const GRUPOS_MEUS = [["favoritas", "Favoritas", "fa-star"], ["recentes", "Recentes", "fa-clock-rotate-left"], ["prontas", "Prontas do Mestre", "fa-crown"]];
 const PRIMEIRO_GRUPO = GRUPOS_GALERIA[0][0];
 
 export class NaurenMolduraEditor extends foundry.applications.api.ApplicationV2 {
@@ -28,6 +41,11 @@ export class NaurenMolduraEditor extends foundry.applications.api.ApplicationV2 
     actions: {
       trocarModelo: function () { this.galeria = !this.galeria; this.render(); },
       grupo: function (ev, el) { this.grupo = el.dataset.v; this.render(); },
+      favorito: async function (ev, el) { ev?.stopPropagation?.(); await naurenMolduraFavoritar(el.dataset.v); this.render(); },
+      pronta: function (ev, el) { const p = naurenProntaPorId(el.dataset.v); if (!p) return; this.prontaSel = p.id; this.importarDados(p.dados, { manterGaleria: true }); },
+      prontaSalvar: async function () { await this.#salvarComoPronta(); },
+      prontaApagar: async function (ev, el) { ev?.stopPropagation?.(); const p = naurenProntaPorId(el.dataset.v); if (!p) return; const ok = await foundry.applications.api.DialogV2.confirm({ window: { title: "Apagar moldura pronta" }, content: `<p>Apagar a moldura pronta <b>${esc(p.nome)}</b>? Os tokens que já usam continuam como estão.</p>` }); if (!ok) return; await naurenProntaApagar(p.id); if (this.prontaSel === p.id) this.prontaSel = null; this.render(); },
+      prontaAplicar: async function () { await this.#aplicarProntaNosSelecionados(); },
       escolher: function (ev, el) { this.#escolherModelo(el.dataset.v); },
       aba: function (ev, el) { this.aba = el.dataset.v; this.#mostrarAba(); },
       ferramenta: function (ev, el) { this.modo = el.dataset.v; this.#ferramentas(); },
@@ -77,7 +95,7 @@ export class NaurenMolduraEditor extends foundry.applications.api.ApplicationV2 
   }
   get title() { return `Borda do token · ${this.actor.name}`; }
   /** Carrega uma borda exportada (JSON) por cima da atual, sem mexer na imagem do personagem nem no pincel. */
-  importarDados(o) {
+  importarDados(o, { manterGaleria = false } = {}) {
     if (!o || o.tipo !== "bordaToken") throw new Error("não é borda");
     const e = this.estado, modelo = typeof o.modelo === "string" && (o.modelo === "foundry" || o.modelo === "imagem" || naurenMolduraModelo(o.modelo)) ? o.modelo : "foundry";
     e.modelo = modelo;
@@ -89,8 +107,30 @@ export class NaurenMolduraEditor extends foundry.applications.api.ApplicationV2 
     e.pedra = naurenBordaPedraConfig(o.pedra); if (o.recorte === "livre" || o.recorte === "redondo") e.recorte = o.recorte;
     e.moldura = modelo === "foundry" ? null : naurenMolduraNormalizar({ ...(o.moldura ?? {}), modelo });
     if (modelo === "imagem" && !e.moldura.imagem) e.moldura.imagem = { src: "", tolerancia: 30, rotacao: 0, recolorir: false, cor: "#e6bf5c", forca: .8, tamanho: 1 };
-    this.tex = null; this.galeria = false; this.#recalcularEscala(); if (modelo !== "foundry") this.#remontarTexturas(true);
+    this.tex = null; if (!manterGaleria) this.galeria = false; this.#recalcularEscala(); if (modelo !== "foundry") this.#remontarTexturas(true);
     this.render();
+  }
+  /** Mestre: guarda o visual atual como moldura pronta do mundo. */
+  async #salvarComoPronta() {
+    if (!game.user?.isGM) return;
+    const nome = await foundry.applications.api.DialogV2.prompt({
+      window: { title: "Salvar como moldura pronta" },
+      content: `<div class="nauren-kit"><label class="nm-rotulo" for="nm-pronta-nome">Nome</label><input id="nm-pronta-nome" name="nome" type="text" maxlength="40" value="${esc(this.modeloNome)}" autofocus></div>`,
+      ok: { label: "Salvar", callback: (ev, botao) => botao.form?.elements?.nome?.value ?? "" }, rejectClose: false
+    }).catch(() => null);
+    if (!nome) return;
+    const p = await naurenProntaSalvar(nome, naurenProntaDados(this.estado));
+    this.prontaSel = p.id; this.grupo = "prontas";
+    ui.notifications?.info(`Moldura pronta "${p.nome}" salva.`);
+    this.render();
+  }
+  /** Mestre: aplica a pronta escolhida em todos os tokens selecionados no mapa (cada um com a própria arte). */
+  async #aplicarProntaNosSelecionados() {
+    const p = naurenProntaPorId(this.prontaSel); if (!p) return;
+    const docs = (canvas?.tokens?.controlled ?? []).map(t => t.document).filter(Boolean);
+    if (!docs.length) { ui.notifications?.warn("Selecione os tokens no mapa primeiro."); return; }
+    const r = await naurenProntaAplicarEmTokens(p.dados, docs);
+    ui.notifications?.info(`Moldura "${p.nome}" aplicada em ${r.feitos} token(s)${r.falhas ? ` (${r.falhas} sem permissão)` : ""}.`);
   }
   get nauren() { return this.estado.modelo !== "foundry"; }
   get modeloNome() { return this.estado.modelo === "foundry" ? "Padrão do Foundry" : this.estado.modelo === "imagem" ? "Minha imagem" : (naurenMolduraModelo(this.estado.modelo)?.nome ?? this.estado.modelo); }
@@ -148,14 +188,34 @@ export class NaurenMolduraEditor extends foundry.applications.api.ApplicationV2 
     </div>`;
   }
   #htmlGaleria() {
-    const e = this.estado;
-    const tile = (id, nome, inner, dica = nome) => `<button type="button" class="nm-tile nt-ch ${e.modelo === id ? "on" : ""}" data-action="escolher" data-v="${id}" title="${esc(dica)}"><span class="nm-tile-img">${inner}</span><span class="nm-tile-n">${esc(nome)}</span></button>`;
-    let tiles = "";
-    if (this.grupo === PRIMEIRO_GRUPO) tiles = tile("foundry", "Padrão do Foundry", `<canvas class="nm-tile-foundry" width="144" height="144"></canvas>`, "A borda dinâmica do próprio Foundry") + tile("imagem", "Minha imagem", `<i class="fas fa-image nm-tile-ico"></i>`, "Use uma imagem de moldura sua (PNG)");
-    tiles += NAUREN_MOLDURA_MODELOS.filter(m => m.grupo === this.grupo).map(m => tile(m.id, m.nome, miniatura(m.id))).join("");
+    const e = this.estado, favs = naurenMolduraFavoritas();
+    // arte do personagem dentro das miniaturas (fica atrás da moldura)
+    const arte = this.imgOk && e.src ? `<img class="nm-tile-arte" src="${esc(e.src)}" alt="" draggable="false">` : "";
+    const nomeDe = id => id === "foundry" ? "Padrão do Foundry" : id === "imagem" ? "Minha imagem" : (naurenMolduraModelo(id)?.nome ?? id);
+    const interior = id => id === "foundry" ? `${arte}<canvas class="nm-tile-foundry" width="144" height="144"></canvas>` : id === "imagem" ? `<i class="fas fa-image nm-tile-ico"></i>` : `${arte}${miniatura(id)}`;
+    const dicaDe = id => id === "foundry" ? "A borda dinâmica do próprio Foundry" : id === "imagem" ? "Use uma imagem de moldura sua (PNG)" : nomeDe(id);
+    const estrela = id => `<span class="nm-fav ${favs.includes(id) ? "on" : ""}" data-action="favorito" data-v="${id}" title="${favs.includes(id) ? "Tirar das favoritas" : "Guardar nas favoritas"}"><i class="${favs.includes(id) ? "fas" : "far"} fa-star"></i></span>`;
+    const tile = id => `<button type="button" class="nm-tile nt-ch ${e.modelo === id ? "on" : ""}" data-action="escolher" data-v="${id}" title="${esc(dicaDe(id))}">${estrela(id)}<span class="nm-tile-img">${interior(id)}</span><span class="nm-tile-n">${esc(nomeDe(id))}</span></button>`;
+    const existe = id => id === "foundry" || id === "imagem" || !!naurenMolduraModelo(id);
+    let tiles = "", vazio = "", barra = "";
+    if (this.grupo === "favoritas") { const l = favs.filter(existe); tiles = l.map(tile).join(""); if (!l.length) vazio = "Toque na estrela de uma moldura para guardá-la aqui."; }
+    else if (this.grupo === "recentes") { const l = naurenMolduraRecentes().filter(existe); tiles = l.map(tile).join(""); if (!l.length) vazio = "As molduras que você salvar aparecem aqui."; }
+    else if (this.grupo === "prontas") {
+      const gm = !!game.user?.isGM, lista = naurenProntasLista();
+      tiles = lista.map(p => `<button type="button" class="nm-tile nt-ch ${this.prontaSel === p.id ? "on" : ""}" data-action="pronta" data-v="${p.id}" title="${esc(p.nome)}">${gm ? `<span class="nm-fav nm-apagar" data-action="prontaApagar" data-v="${p.id}" title="Apagar esta pronta"><i class="fas fa-xmark"></i></span>` : ""}<span class="nm-tile-img">${arte}${miniaturaPronta(p)}</span><span class="nm-tile-n">${esc(p.nome)}</span></button>`).join("")
+        + (gm ? `<button type="button" class="nm-tile nm-tile-novo nt-ch" data-action="prontaSalvar" title="Guarda as cores, os efeitos e as reações de agora (não guarda a imagem)"><span class="nm-tile-img"><i class="fas fa-plus nm-tile-ico"></i></span><span class="nm-tile-n">Salvar a atual</span></button>` : "");
+      if (!lista.length && !gm) vazio = "O Mestre ainda não salvou molduras prontas.";
+      const sel = naurenProntaPorId(this.prontaSel), n = canvas?.tokens?.controlled?.length ?? 0;
+      if (gm && sel) barra = `<div class="nm-galeria-barra"><span>Escolhida: <b>${esc(sel.nome)}</b></span><button type="button" class="na-btn" data-action="prontaAplicar" ${n ? "" : "disabled"} title="Cada token fica com a própria arte"><i class="fas fa-users"></i> ${n ? `Aplicar nos ${n} token${n > 1 ? "s" : ""} selecionado${n > 1 ? "s" : ""}` : "Selecione tokens no mapa para aplicar"}</button></div>`;
+    }
+    else {
+      if (this.grupo === PRIMEIRO_GRUPO) tiles = tile("foundry") + tile("imagem");
+      tiles += NAUREN_MOLDURA_MODELOS.filter(m => m.grupo === this.grupo).map(m => tile(m.id)).join("");
+    }
     return `<div class="nm-galeria nt-ch">
       <div class="nt-seg2 nt-ch nm-grupos">${GRUPOS_GALERIA.map(([id, rot]) => `<button type="button" data-action="grupo" data-v="${id}" class="${this.grupo === id ? "on" : ""}">${rot}</button>`).join("")}</div>
-      <div class="nm-tiles">${tiles}</div>
+      <div class="nm-meus">${GRUPOS_MEUS.map(([id, rot, ic]) => `<button type="button" class="nm-meu nt-ch ${this.grupo === id ? "on" : ""}" data-action="grupo" data-v="${id}"><i class="fas ${ic}"></i> ${rot}</button>`).join("")}</div>
+      <div class="nm-tiles">${tiles}${vazio ? `<p class="nm-vazio">${vazio}</p>` : ""}</div>${barra}
     </div>`;
   }
   #sec(id, inner) { return `<section class="nm-sec" data-aba="${id}" ${this.aba === id ? "" : "hidden"}>${inner}</section>`; }
@@ -470,6 +530,7 @@ export class NaurenMolduraEditor extends foundry.applications.api.ApplicationV2 
     };
     this.resultado = final;
     await naurenBordaAplicar(this.actor, final, { tokenDoc: this.tokenDoc, nosTokens: this.nosTokens });
+    naurenMolduraUsada(e.modelo).catch(() => {});
     this.acao = "salvo"; this.close();
   }
   async close(options) { const r = await super.close(options); await this.#finalizar(); return r; }
