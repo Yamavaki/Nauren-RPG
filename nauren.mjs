@@ -7644,6 +7644,22 @@ Hooks.once("init", () => {
  * (delegado no document inteiro - funciona independente da versão do
  * Foundry e não precisa re-registrar listener a cada mensagem nova)
  * ======================================= */
+/**
+ * 0.107.1: CSS velho no cache. O Foundry carrega styles/nauren.css sem número de versão; o navegador (e o
+ * CDN do Forge) pode continuar usando o arquivo da versão anterior depois da atualização, e as janelas novas
+ * aparecem sem estilo. O CSS diz a própria versão (--nauren-css-versao); se não bater, carrega de novo.
+ */
+Hooks.once("ready", () => {
+  try {
+    const v = getComputedStyle(document.documentElement).getPropertyValue("--nauren-css-versao").replace(/["']/g, "").trim();
+    const atual = game.system?.version ?? "";
+    if (v === atual) return;
+    const link = document.createElement("link");
+    link.rel = "stylesheet"; link.href = `systems/${game.system.id}/styles/nauren.css?v=${encodeURIComponent(atual)}`;
+    link.addEventListener("load", () => console.log(`Nauren RPG | CSS antigo no cache (${v || "sem versão"}); carreguei o da ${atual}.`));
+    document.head.append(link);
+  } catch (err) { console.warn("Nauren RPG | conferência do CSS", err); }
+});
 Hooks.once("ready", () => {
   // Migração one-shot: personagens/NPCs criados antes de opções da aba
   // Restaura os registros de CONFIG.statusEffects perdidos num
