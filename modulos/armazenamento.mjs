@@ -11,6 +11,7 @@
  * Só APIs do Foundry V14 (foundry.*).
  */
 import { naurenCatalogoDoItem, naurenSeloDoItem } from "./itens-catalogo.mjs";
+import { naurenAbrirEscrito, naurenEhEscrito, naurenEscritoDe } from "./escritos.mjs";
 import { NAUREN_CATEGORIAS_EQUIPAMENTO, NAUREN_QUANTIDADE_MAXIMA, naurenEhMoeda, naurenFormatarNumero, naurenFormatarNumeroCurto, naurenLerNumero, naurenPostarCard } from "../nauren.mjs";
 
 const QUERY = "nauren.armazem";
@@ -100,7 +101,7 @@ function textoCurto(html, max = 110) {
   return t.length > max ? t.slice(0, max - 1).trimEnd() + "…" : t;
 }
 /** Mesma "pilha": mesmo tipo e nome (e mesma categoria, para Equipamento). */
-function mesmaPilha(a, b) { return a && b && a.type === b.type && a.name === b.name && ehPilha(a) && (a.system?.categoria || "consumivel") === (b.system?.categoria || "consumivel"); }
+function mesmaPilha(a, b) { return a && b && a.type === b.type && a.name === b.name && ehPilha(a) && a.system?.categoria !== "escrito" && (a.system?.categoria || "consumivel") === (b.system?.categoria || "consumivel"); } // 0.106: dois escritos de mesmo nome não viram pilha
 
 function moedaDoAtor(ator, nomeMoeda) {
   const nome = String(nomeMoeda || "Florins");
@@ -512,6 +513,7 @@ class NaurenArmazemJanela extends foundry.applications.api.ApplicationV2 {
       qtdMenos: function (ev, el) { return NaurenArmazemJanela.#qtd.call(this, ev, el, -1); },
       qtdMais: function (ev, el) { return NaurenArmazemJanela.#qtd.call(this, ev, el, 1); },
       pegar: NaurenArmazemJanela.#onPegar,
+      lerEscrito: function (ev, el) { const it = this.armazem?.items?.get(el.dataset.id); if (it) naurenAbrirEscrito(it); },
       guardar: NaurenArmazemJanela.#onGuardar,
       comprar: NaurenArmazemJanela.#onComprar,
       vender: NaurenArmazemJanela.#onVender,
@@ -630,6 +632,7 @@ class NaurenArmazemJanela extends foundry.applications.api.ApplicationV2 {
         <div class="na-det-cab">${icone(sel)}<div><b>${ESC(sel.name)}</b><div class="na-chips">${chips(sel)}</div></div></div>
         <p class="na-det-txt">${ESC(textoCurto(sel.system?.descricao, 220)) || "<i>Sem descrição.</i>"}</p>
         ${ehPilha(sel) && q > 1 ? `<div class="na-det-linha"><span class="na-det-qtd">Quantos<small>tem ${fmt(q)}</small></span>${this.#stepper(sel.id, q, n)}</div>` : ""}
+        ${naurenEhEscrito(sel) && (gm || naurenEscritoDe(sel).lerNoBau) ? `<button type="button" class="na-btn na-largo" data-action="lerEscrito" data-id="${sel.id}"><i class="fas fa-book-open-reader"></i> Ler aqui</button>` : ""}
         <button type="button" class="na-btn na-principal na-largo" data-action="pegar" data-id="${sel.id}" ${!podeP || proc || !game.users.activeGM ? "disabled" : ""}>${proc === sel.id ? "Processando…" : !s.podePegar && !gm ? "Este baú não deixa pegar" : `Pegar${ehPilha(sel) && n > 1 ? ` ${fmt(n)}` : ""}`}</button>
       </div>`;
     }

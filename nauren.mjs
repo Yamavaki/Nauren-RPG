@@ -7,6 +7,7 @@ import { naurenTreinosInit, naurenTreinarSeguirOExemplo, naurenRecebidosSeguirOE
 import { NAUREN_MOLDURA_MODELOS, NAUREN_MOLDURA_PALETAS, NAUREN_MOLDURA_EFEITOS, naurenMolduraModelo, naurenMolduraSvg, naurenMolduraMascaraPath, naurenMolduraNormalizar, naurenMolduraConfigPadrao, naurenMolduraEstado, naurenMolduraRaioDoPath, NAUREN_MOLDURA_GRUPOS, naurenMolduraRecorteGira, naurenMolduraMascaraCircular, naurenMolduraDetalhes } from "./modulos/molduras-modelos.mjs";
 import { naurenMoldurasProntasInit, naurenMoldurasProntasHooks, naurenProntasLista, naurenProntaSalvar, naurenProntaApagar, naurenProntaAplicarEmTokens, naurenProntaCfgPara, naurenProntaDados, naurenProntaParaDisposicao, naurenMolduraFavoritas, naurenMolduraFavoritar, naurenMolduraRecentes, naurenMolduraUsada, NAUREN_DISPOSICOES, naurenMoldurasAutomaticas } from "./modulos/molduras-prontas.mjs";
 import { NAUREN_APARENCIA_TIPOS, NAUREN_APARENCIA_PADRAO, naurenAparenciaCfgBorda, naurenAparenciaAnimacoes, naurenAparenciaAnimValida, naurenAparenciaDe, naurenAparenciaNormalizar, naurenAparenciasAtivas, naurenAparenciaResolver, naurenAparenciaGatilhoBate, naurenAparenciaAtualizar, naurenAparenciaAgendar, naurenAparenciaHooks, naurenAparenciaMigrar, naurenAparenciaHtml, naurenAparenciaLigar, naurenAparenciaMontarBorda, naurenAparenciaPrevia, naurenAparenciaItemValendo } from "./modulos/aparencia.mjs";
+import { NAUREN_ESCRITO_FORMATOS, NaurenLeitor, naurenAbrirEscrito, naurenEhEscrito, naurenEscritoDe, naurenEscritoNormalizar, naurenEscritoPodeEscrever, naurenEscritoMostrar, naurenEscritosInit } from "./modulos/escritos.mjs";
 import { naurenConfiguracoesInit, naurenConfiguracoesRecolher, naurenConfiguracoesRecolhidas, NaurenConfiguracoes, NAUREN_CONFIG_SECOES } from "./modulos/configuracoes.mjs";
 import { naurenMoldurasInit, naurenMoldurasHooks, naurenMolduraEhNauren, naurenMolduraDe, naurenMolduraPrepararPrevia, naurenMolduraDesenharPrevia, naurenMolduraProcessarImagem, naurenMolduraExtensao, naurenMolduraCamadaDe, naurenMolduraTodas, naurenMolduraAnexar, naurenMolduraPiscar, NaurenMolduraCamada, naurenMolduraMascaraCanvas, naurenMolduraTick } from "./modulos/molduras-token.mjs";
 import { NaurenMolduraEditor, naurenAbrirMolduraEditor } from "./modulos/molduras-editor.mjs";
@@ -2573,7 +2574,7 @@ class NaurenArmaduraData extends foundry.abstract.TypeDataModel {
 }
 
 /** 0.98.7: categorias do Equipamento (tipo de item "consumivel" por dentro). Só a de Consumível gasta 1 a cada uso. */
-const NAUREN_CATEGORIAS_EQUIPAMENTO = { consumivel: "Consumível", ferramenta: "Ferramenta", acessorio: "Acessório", utensilio: "Utensílio", vestimenta: "Vestimenta", moeda: "Moeda", outro: "Outro" };
+const NAUREN_CATEGORIAS_EQUIPAMENTO = { consumivel: "Consumível", ferramenta: "Ferramenta", acessorio: "Acessório", utensilio: "Utensílio", vestimenta: "Vestimenta", escrito: "Escrito (nota, carta, livro)", moeda: "Moeda", outro: "Outro" };
 /** 0.99: maior quantidade que um item guarda (cabe em qualquer tela com os pontos de milhar). */
 const NAUREN_QUANTIDADE_MAXIMA = 999999999;
 /** Número inteiro por extenso com pontos de milhar: 1250000 → "1.250.000". */
@@ -2607,7 +2608,11 @@ Hooks.on("updateItem", (item, mudancas, opcoes, userId) => {
   } catch (err) { console.warn("Nauren RPG | moeda zerada", err); }
 });
 /** O Equipamento gasta 1 da quantidade a cada uso (e some ao zerar)? Só a categoria Consumível. */
-function naurenEquipamentoGasta(item) { return item?.type === "consumivel" && (item.system?.categoria || "consumivel") === "consumivel"; }
+function naurenEquipamentoGasta(item) {
+  if (item?.type !== "consumivel") return false;
+  const cat = item.system?.categoria || "consumivel";
+  return cat === "consumivel" || (cat === "escrito" && !!item.system?.escrito?.gastaAoUsar); // 0.106: pergaminho de magia some ao usar
+}
 
 /* ---------- 0.99: luz e visão vindas dos itens ---------- */
 /** O item tem luz configurada (ligada e com alcance)? */
@@ -2716,6 +2721,8 @@ class NaurenConsumivelData extends foundry.abstract.TypeDataModel {
       manterAoZerar: new BooleanField({ initial: false }), // fica na ficha mesmo com quantidade 0 (ex.: algo que é reposto)
       // 0.94.1: Frasco montado no Alambique: { efeitos: [...], beneficios: N, colateral: { dado, linhas: [...] }, semColateral }.
       frasco: new ObjectField({ initial: {} }),
+      // 0.106: Escrito (categoria "escrito"): formato, papel, letra, capa, lacre e as páginas (ver modulos/escritos.mjs).
+      escrito: new ObjectField({ initial: {} }),
       efeito: new StringField({ initial: "Cura 1d6 PV" }),
       custoEstamina: new NumberField({ initial: 0, min: 0, integer: true }),
       custoMana: new NumberField({ initial: 0, min: 0, integer: true }),
@@ -7294,6 +7301,7 @@ Hooks.once("init", () => {
   naurenItensScriptsHooks();
   naurenTreinosInit(); // 0.102.4: Seguir o Exemplo (modulos/treinos.mjs)
   naurenAparenciaHooks(); Hooks.once("ready", () => naurenAparenciaMigrar().catch(err => console.warn("Nauren RPG | Migração da Aparência", err))); // 0.105: Aparência (modulos/aparencia.mjs)
+  naurenEscritosInit(); // 0.106: Escritos — notas, cartas, pergaminhos e livros (modulos/escritos.mjs)
   naurenConfiguracoesInit(); // 0.104: painel único "Configurações do Nauren" (modulos/configuracoes.mjs)
   naurenMoldurasInit(); naurenMoldurasHooks(); naurenMoldurasProntasInit(); naurenMoldurasProntasHooks(); // 0.103: molduras de token (modulos/molduras-token.mjs)
   naurenChatInit(); // 0.99.2: chat no estilo do sistema (modulos/chat.mjs)

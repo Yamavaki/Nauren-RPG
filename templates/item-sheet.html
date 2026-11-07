@@ -35,6 +35,7 @@
   {{/if}}
 
   <nav class="nauren-abas-item">
+    {{#if escritoHtml}}<a class="nauren-aba-botao" data-aba="escrito"><i class="fas fa-book-open"></i> Escrito</a>{{/if}}
     <a class="nauren-aba-botao" data-aba="acoes"><i class="fas fa-bolt"></i> Ações</a>
     <a class="nauren-aba-botao" data-aba="geral"><i class="fas fa-sliders"></i> Geral</a>
     <a class="nauren-aba-botao" data-aba="passivas"><i class="fas fa-infinity"></i> Passivas</a>
@@ -4553,6 +4554,7 @@
   </div>
   {{#if condicoesHtml}}<div class="nauren-aba-painel" data-aba="condicoes">{{{condicoesHtml}}}</div>{{/if}}
   {{#if scriptHtml}}<div class="nauren-aba-painel" data-aba="script">{{{scriptHtml}}}</div>{{/if}}
+  {{#if escritoHtml}}<div class="nauren-aba-painel" data-aba="escrito">{{{escritoHtml}}}</div>{{/if}}
   {{#if aparenciaHtml}}<div class="nauren-aba-painel" data-aba="aparencia">{{{aparenciaHtml}}}</div>{{/if}}
   <div class="nauren-aba-painel" data-aba="descricao">
   {{#if isGrupo}}

@@ -1,0 +1,7 @@
+Fontes usadas nos Escritos (notas, cartas, pergaminhos e livros) do Nauren RPG.
+Todas são livres para redistribuir; as licenças estão nesta pasta ou dentro do próprio arquivo da fonte.
+
+- Lora (Lora-Variable.ttf, Lora-Italic-Variable.ttf) — Copyright 2011 The Lora Project Authors, com o nome reservado "Lora".
+  SIL Open Font License 1.1 (https://scripts.sil.org/OFL). O texto da licença está nos próprios arquivos (tabela "name").
+- TeX Gyre Chorus e TeX Gyre Pagella (TexGyre*.otf) — GUST e-foundry. GUST Font License (GUST-FONT-LICENSE.txt).
+- GFS Baskerville (GFSBaskerville.otf) — Greek Font Society. SIL Open Font License 1.1 (GFSBaskerville-LICENSE.txt).

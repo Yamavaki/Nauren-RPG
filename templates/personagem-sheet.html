@@ -855,6 +855,7 @@ Clique para abrir">
                 <a class="qty-plus" data-action="qtyPlus" title="+1"><i class="fas fa-plus"></i></a>
               </div>
               {{/if}}
+              {{#if item.ehEscrito}}<a class="item-use ns-usar ns-ler" data-action="itemLer" title="Ler"><i class="fas fa-book-open-reader"></i><span>Ler</span></a>{{/if}}
               {{#if item.mostrarUsar}}<a class="item-use ns-usar" data-action="itemUse" title="{{#if item.gastaAoUsar}}Usar (consome 1 unidade){{else}}Usar{{/if}}"><i class="fas fa-dice-d20"></i><span>Usar</span></a>{{/if}}
               <div class="item-controls">
                 {{#if item.temLuz}}<a data-action="itemLuz" class="item-luz {{#if item.luzAcesa}}acesa{{/if}}" title="{{#if item.luzAcesa}}Apagar a luz{{else}}Acender a luz{{/if}}"><i class="fas fa-fire-flame-curved"></i></a>{{/if}}

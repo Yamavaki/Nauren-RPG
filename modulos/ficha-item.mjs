@@ -7,6 +7,7 @@ import { NaurenActorSheet } from "./ficha-ator.mjs";
 import { NAUREN_CONDICOES_TIPOS, NaurenTiersEditor, naurenCondicoesEmbutidas, naurenContextoCatalogo, naurenDadosParaEmbutir, naurenEditarCondicaoEmbutida, naurenGravarCondicoesEmbutidas, naurenHtmlAbaCondicoes, naurenLigarFichaItemExtras, naurenSeloDoItem, naurenTorreDoCatalogo } from "./itens-catalogo.mjs";
 import { naurenLigarSeletorIcones } from "./seletor-icones.mjs";
 import { NAUREN_APARENCIA_TIPOS, naurenAparenciaHtml, naurenAparenciaLigar } from "./aparencia.mjs";
+import { naurenEhEscrito, naurenEscritoAbaHtml, naurenEscritoLigarAba } from "./escritos.mjs";
 import { naurenProntasLista } from "./molduras-prontas.mjs";
 import { NAUREN_SCRIPT_TIPOS, naurenHtmlAbaScript, naurenHtmlBotoesScript, naurenLigarBotoesScript, naurenLigarFichaScripts, naurenScriptAprovado, naurenScriptsDoItem } from "./itens-scripts.mjs";
 /* =======================================
@@ -903,6 +904,7 @@ class NaurenItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       }
       context.botoesScriptHtml = naurenHtmlBotoesScript(item);
       // 0.105: aba Aparência (imagem/tamanho/borda no mapa enquanto o item valer)
+      if (naurenEhEscrito(item)) context.escritoHtml = naurenEscritoAbaHtml(item); // 0.106: Escritos
       if (NAUREN_APARENCIA_TIPOS.has(item.type) && !ehModelo) { context.aparenciaHtml = naurenAparenciaHtml(item, naurenProntasLista()); context.aparenciaAtiva = !!item.getFlag("nauren", "aparencia")?.ativa; }
       context.torreOpcoes = { tiers: NAUREN_TORRE_TIERS, raridades: NAUREN_TORRE_RARIDADES, lojas: NAUREN_TORRE_LOJAS, pigmentos: NAUREN_TORRE_PIGMENTOS };
       context.podeEditarTorre = game.user.isGM;
@@ -1531,7 +1533,7 @@ class NaurenItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
         paineis.forEach(pn => pn.classList.toggle("ativa", pn.dataset.aba === aba));
         requestAnimationFrame(() => naurenAjustarListasLargas(this.element));
       };
-      const inicial = [this._abaItem, context.temAcoes ? "acoes" : null, "geral", "passivas", "descricao", "avancado"].find(a => a && visiveis.has(a)) ?? "geral";
+      const inicial = [this._abaItem, context.escritoHtml ? "escrito" : null, context.temAcoes ? "acoes" : null, "geral", "passivas", "descricao", "avancado"].find(a => a && visiveis.has(a)) ?? "geral";
       mostrar(inicial);
       botoes.forEach(b => b.addEventListener("click", ev => { ev.preventDefault(); mostrar(b.dataset.aba); }));
     }
@@ -1548,6 +1550,7 @@ class NaurenItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     super._onRender(context, options);
     // 0.102: aba Condições, seletor de Condição, aba Script e botões de script.
     try { naurenAparenciaLigar(this); } catch (err) { console.warn("Nauren RPG | Aparência na ficha", err); }
+    try { naurenEscritoLigarAba(this); } catch (err) { console.warn("Nauren RPG | Escrito na ficha", err); }
     // 0.105.2: guarda a rolagem entre renders (qualquer item.update re-desenha a ficha e ela voltava para o topo)
     this._naurenRolagem ??= {};
     for (const sel of [".nauren-sheet", ".window-content"]) {

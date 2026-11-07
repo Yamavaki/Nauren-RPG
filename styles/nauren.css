@@ -8440,3 +8440,263 @@ h4.ap-rot { margin: 0; padding: 0; border: 0; line-height: 1.2; }
 .ap-tchecks { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px 18px; }
 @container (max-width: 620px) { .ap-colunas, .ap-tcards { grid-template-columns: 1fr; } .ap-dir { flex-direction: row; flex-wrap: wrap; align-items: center; } }
 @container (max-width: 440px) { .ap-linha2 { grid-template-columns: 1fr; } }
+
+/* =====================================================================
+   0.106 — Escritos: leitor de notas, cartas, pergaminhos, livros e diários
+   ===================================================================== */
+@font-face { font-family: "Nauren Livro"; src: url("../assets/fontes/Lora-Variable.ttf") format("truetype"); font-weight: 400 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "Nauren Livro"; src: url("../assets/fontes/Lora-Italic-Variable.ttf") format("truetype"); font-weight: 400 700; font-style: italic; font-display: swap; }
+@font-face { font-family: "Nauren Caligrafia"; src: url("../assets/fontes/TexGyreChorus.otf") format("opentype"); font-display: swap; }
+@font-face { font-family: "Nauren Classica"; src: url("../assets/fontes/TexGyrePagella-Regular.otf") format("opentype"); font-display: swap; }
+@font-face { font-family: "Nauren Classica"; src: url("../assets/fontes/TexGyrePagella-Italic.otf") format("opentype"); font-style: italic; font-display: swap; }
+@font-face { font-family: "Nauren Classica"; src: url("../assets/fontes/TexGyrePagella-Bold.otf") format("opentype"); font-weight: 700; font-display: swap; }
+@font-face { font-family: "Nauren Antiga"; src: url("../assets/fontes/GFSBaskerville.otf") format("opentype"); font-display: swap; }
+
+/* ---------- papéis (valem na folha do leitor, no editor e na miniatura) ---------- */
+.nl-papel-envelhecido { --nl-p1: #ead9b4; --nl-p2: #d9c08e; --nl-mancha: rgba(120, 82, 34, .13); --nl-borda-p: rgba(92, 60, 24, .55); }
+.nl-papel-pergaminho { --nl-p1: #efe0b9; --nl-p2: #d8bd85; --nl-mancha: rgba(140, 96, 40, .10); --nl-borda-p: rgba(110, 72, 30, .5); }
+.nl-papel-creme { --nl-p1: #f6eedb; --nl-p2: #eadcbc; --nl-mancha: rgba(120, 90, 40, .05); --nl-borda-p: rgba(120, 90, 50, .28); }
+.nl-papel-branco { --nl-p1: #fdfcf8; --nl-p2: #efece4; --nl-mancha: rgba(0, 0, 0, 0); --nl-borda-p: rgba(0, 0, 0, .15); }
+.nl-papel-noturno { --nl-p1: #26202e; --nl-p2: #17131c; --nl-mancha: rgba(255, 220, 160, .04); --nl-borda-p: rgba(214, 178, 94, .35); }
+.nl-papel-arcano { --nl-p1: #1d2a48; --nl-p2: #111a30; --nl-mancha: rgba(120, 180, 255, .08); --nl-borda-p: rgba(140, 190, 255, .45); }
+:is(.nl-folha, .nl-ed-folha, .nl-mini-folha) {
+  background:
+    radial-gradient(ellipse at 18% 22%, var(--nl-mancha) 0 9%, transparent 22%),
+    radial-gradient(ellipse at 82% 70%, var(--nl-mancha) 0 7%, transparent 20%),
+    radial-gradient(ellipse at 60% 12%, var(--nl-mancha) 0 4%, transparent 12%),
+    radial-gradient(ellipse at center, var(--nl-p1) 55%, var(--nl-p2) 100%);
+  color: var(--nl-tinta);
+}
+.nl-papel-arcano :is(.nl-folha, .nl-ed-folha), .nl-papel-arcano.nl-ed-folha { box-shadow: inset 0 0 0 1px rgba(140, 190, 255, .35), inset 0 0 28px rgba(110, 170, 255, .22) !important; }
+
+/* ---------- janela ---------- */
+.nauren-leitor .window-content { padding: 0; background: radial-gradient(ellipse at 50% 30%, #3a2a1e 0%, #241913 55%, #170f0b 100%); overflow: hidden; }
+.nl-raiz { display: flex; flex-direction: column; height: 100%; min-height: 0; color: #efe4cf; font-family: Signika, sans-serif; }
+.nl-barra { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 12px; background: rgba(10, 6, 4, .45); border-bottom: 1px solid rgba(214, 178, 94, .18); flex: 0 0 auto; }
+.nl-barra-esq, .nl-barra-dir { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.nl-barra-tit { font: 600 14px Signika, sans-serif; color: #e9d3a0; display: flex; align-items: center; gap: 8px; }
+.nl-raiz .nl-in { height: 28px; padding: 0 8px; background: rgba(0, 0, 0, .35); color: #f0e6d2; border: 1px solid rgba(214, 178, 94, .3); border-radius: 0; font: 13px Signika, sans-serif; box-sizing: border-box; }
+.nl-raiz select.nl-in { appearance: auto; }
+.nl-sumario { max-width: 260px; }
+.nl-raiz button.nl-ic { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 1px; min-width: 28px; height: 28px; padding: 0 6px; color: #d9c7a4; cursor: pointer; font-size: 12px; }
+.nl-raiz button.nl-ic:hover { color: #ffe3a3; background: rgba(214, 178, 94, .12); }
+.nl-raiz button.nl-ic i { font-size: 8px; }
+.nl-raiz button.nl-ic span { font: 700 12px "Nauren Classica", Georgia, serif; }
+.nl-raiz button.nl-ic.nl-ic-grande span { font-size: 16px; }
+.nl-raiz button.nl-btn, .nl-aba button.nl-btn { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; gap: 7px; height: 30px; padding: 0 12px; cursor: pointer;
+  font: 600 13px Signika, sans-serif; color: #f1e5cc; --cc: 6px; --cbg: #2b2019; --cbd: rgba(214, 178, 94, .45); }
+.nl-raiz button.nl-btn i, .nl-aba button.nl-btn i { color: #e0b257; font-size: 12px; }
+.nl-raiz button.nl-btn:hover, .nl-aba button.nl-btn:hover { --cbg: #3a2b1f; --cbd: #e0b257; color: #fff3d6; }
+.nl-raiz button.nl-btn.nl-btn-p, .nl-aba button.nl-btn.nl-btn-p { --cbg: #5a3f1c; --cbd: #e0b257; color: #fff3d6; }
+.nl-raiz button.nl-btn.nl-btn-p:hover, .nl-aba button.nl-btn.nl-btn-p:hover { --cbg: #6e4d22; }
+.nl-raiz button.nl-btn.nl-btn-magia { --cbg: #2a2242; --cbd: #9d86e6; }
+.nl-raiz button.nl-btn.nl-btn-magia i { color: #c9b6ff; }
+
+/* ---------- palco e navegação ---------- */
+.nl-palco { flex: 1 1 auto; min-height: 0; display: flex; align-items: center; justify-content: center; padding: 18px 22px; outline: none; overflow: hidden; }
+.nl-nav { flex: 0 0 auto; display: flex; align-items: center; justify-content: center; gap: 14px; padding: 8px 12px 10px; background: rgba(10, 6, 4, .45); border-top: 1px solid rgba(214, 178, 94, .18); flex-wrap: wrap; }
+.nl-raiz button.nl-seta { all: unset; box-sizing: border-box; width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; cursor: pointer; color: #e8d3a2; border: 1px solid rgba(214, 178, 94, .45); background: rgba(0, 0, 0, .3); }
+.nl-raiz button.nl-seta:hover:not([disabled]) { background: rgba(214, 178, 94, .18); color: #fff3d6; }
+.nl-raiz button.nl-seta[disabled] { opacity: .3; cursor: default; }
+.nl-nav-txt { min-width: 150px; text-align: center; font: 600 13px "Nauren Classica", Georgia, serif; color: #e8d6ae; letter-spacing: .02em; }
+.nl-acoes { display: flex; gap: 6px; flex-wrap: wrap; margin-left: 8px; }
+
+/* ---------- a folha ---------- */
+.nl-folha { position: relative; display: flex; flex-direction: column; box-sizing: border-box; min-height: 0; box-shadow: 0 10px 28px rgba(0, 0, 0, .55), inset 0 0 0 1px var(--nl-borda-p), inset 0 0 34px rgba(80, 50, 20, .18); }
+.nl-folha-tit { margin: 0 0 .5em; padding: 0 0 .35em; border: 0; border-bottom: 1px solid color-mix(in srgb, var(--nl-tinta) 25%, transparent); font-family: var(--nl-fonte); font-size: calc(var(--nl-tam) * 1.45); font-weight: 600; line-height: 1.15; color: var(--nl-tinta); text-align: center; }
+.nl-folha-corpo { flex: 1 1 auto; min-height: 0; overflow-y: auto; font-family: var(--nl-fonte); font-size: var(--nl-tam); line-height: 1.6; color: var(--nl-tinta); scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--nl-tinta) 35%, transparent) transparent; padding-right: 4px; }
+.nl-folha-corpo :is(p, li) { margin: 0 0 .7em; }
+.nl-folha-corpo :is(h1, h2, h3, h4) { font-family: var(--nl-fonte); color: var(--nl-tinta); border: 0; margin: .6em 0 .35em; line-height: 1.2; }
+.nl-folha-corpo h1 { font-size: 1.6em; text-align: center; } .nl-folha-corpo h2 { font-size: 1.35em; } .nl-folha-corpo h3 { font-size: 1.15em; }
+.nl-folha-corpo blockquote { margin: .6em 1em; padding: .1em .9em; border-left: 3px solid color-mix(in srgb, var(--nl-tinta) 35%, transparent); font-style: italic; }
+.nl-folha-corpo hr { border: 0; height: 1px; margin: 1em 15%; background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--nl-tinta) 45%, transparent), transparent); }
+.nl-folha-corpo img { max-width: 100%; height: auto; border: 0; }
+.nl-folha-corpo a.content-link, .nl-folha-corpo a.inline-roll { color: inherit; background: color-mix(in srgb, var(--nl-tinta) 10%, transparent); border: 1px solid color-mix(in srgb, var(--nl-tinta) 30%, transparent); }
+.nl-folha-corpo section.secret { padding: .4em .7em; margin: .6em 0; border: 1px dashed #a8452f; background: rgba(168, 69, 47, .08); }
+.nl-folha-corpo section.secret::before { content: "Segredo — só o Mestre vê"; display: block; font: 700 10px Signika, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: #a8452f; margin-bottom: .3em; }
+.nl-capitular > p:first-child::first-letter { float: left; font-size: 3.1em; line-height: .85; padding: .06em .08em 0 0; color: var(--nl-detalhe, #8c5a20); font-family: "Nauren Classica", var(--nl-fonte); }
+.nl-vazio { opacity: .45; text-align: center; font-style: italic; margin-top: 2em; }
+.nl-folha-num { flex: 0 0 auto; text-align: center; padding-top: .4em; font: 12px "Nauren Classica", Georgia, serif; color: color-mix(in srgb, var(--nl-tinta) 60%, transparent); }
+.nl-fig { margin: 0; display: flex; flex-direction: column; align-items: center; gap: .5em; height: 100%; justify-content: center; }
+.nl-fig img { max-width: 100%; max-height: calc(100% - 2.5em); object-fit: contain; border: 0; box-shadow: 0 2px 10px rgba(0, 0, 0, .3); }
+.nl-fig figcaption { font-style: italic; text-align: center; font-size: .92em; }
+
+/* nota e carta: uma folha solta */
+.nl-solta { position: relative; display: flex; flex-direction: column; align-items: center; height: 100%; width: 100%; max-width: 540px; }
+.nl-solta > .nl-folha { flex: 1 1 auto; width: 100%; padding: 30px 34px 20px; }
+.nl-fmt-nota .nl-solta > .nl-folha { transform: rotate(-.6deg); clip-path: polygon(0 0, 100% 0, 100% 97%, 96% 100%, 90% 98.6%, 82% 100%, 74% 98.8%, 65% 100%, 57% 98.6%, 48% 100%, 40% 98.8%, 31% 100%, 22% 98.6%, 13% 100%, 5% 98.8%, 0 100%); }
+.nl-fmt-carta .nl-solta > .nl-folha { padding: 36px 40px 24px; }
+/* pergaminho: rolo com varetas */
+.nl-fmt-pergaminho .nl-solta { max-width: 500px; padding: 14px 0; }
+.nl-fmt-pergaminho .nl-solta > .nl-folha { width: 92%; padding: 26px 34px 18px; border-radius: 2px; }
+.nl-vareta { position: absolute; left: 0; right: 0; height: 22px; border-radius: 11px; z-index: 2;
+  background: linear-gradient(180deg, #7a4f2a 0%, #b07a46 30%, #6b4122 70%, #3e2512 100%); box-shadow: 0 4px 10px rgba(0, 0, 0, .55); }
+.nl-vareta::before, .nl-vareta::after { content: ""; position: absolute; top: -5px; width: 20px; height: 32px; border-radius: 8px; background: radial-gradient(ellipse at 40% 35%, #e6c27a, #8a6326 60%, #4d3511); box-shadow: 0 2px 6px rgba(0, 0, 0, .5); }
+.nl-vareta::before { left: -8px; } .nl-vareta::after { right: -8px; }
+.nl-vareta-c { top: 0; } .nl-vareta-b { bottom: 0; }
+
+/* livro e diário: capa (fechado) e páginas lado a lado (aberto) */
+.nl-livro { height: 100%; width: 100%; max-width: 920px; display: flex; }
+.nl-livro-capa { flex: 1 1 auto; display: flex; padding: 12px; border-radius: 6px; box-shadow: 0 14px 34px rgba(0, 0, 0, .6);
+  background: radial-gradient(ellipse at 30% 20%, color-mix(in srgb, var(--nl-capa) 80%, #fff) 0%, var(--nl-capa) 40%, color-mix(in srgb, var(--nl-capa) 65%, #000) 100%); }
+.nl-livro-paginas { position: relative; flex: 1 1 auto; display: grid; grid-template-columns: 1fr 1fr; min-height: 0; }
+.nl-livro-paginas > .nl-folha { padding: 30px 32px 16px; box-shadow: inset 0 0 0 1px var(--nl-borda-p), inset 0 0 30px rgba(80, 50, 20, .15); }
+.nl-livro-paginas > .nl-folha:nth-child(1) { border-radius: 3px 0 0 3px; box-shadow: inset -26px 0 30px -18px rgba(60, 35, 10, .45), inset 0 0 0 1px var(--nl-borda-p); }
+.nl-livro-paginas > .nl-folha:nth-child(2) { border-radius: 0 3px 3px 0; box-shadow: inset 26px 0 30px -18px rgba(60, 35, 10, .45), inset 0 0 0 1px var(--nl-borda-p); }
+.nl-folha-vazia { opacity: .85; }
+.nl-livro-fechado { height: 100%; display: flex; align-items: center; justify-content: center; }
+.nl-raiz button.nl-capa { all: unset; position: relative; box-sizing: border-box; cursor: pointer; height: min(100%, 560px); aspect-ratio: 3 / 4; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 40px 34px; text-align: center; border-radius: 4px 10px 10px 4px;
+  background: linear-gradient(90deg, rgba(0, 0, 0, .45) 0, rgba(0, 0, 0, .1) 4%, transparent 7%), radial-gradient(ellipse at 35% 25%, color-mix(in srgb, var(--nl-capa) 75%, #fff) 0%, var(--nl-capa) 45%, color-mix(in srgb, var(--nl-capa) 60%, #000) 100%);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, .65), inset 0 0 0 1px rgba(0, 0, 0, .4); transition: transform .2s ease; }
+.nl-raiz button.nl-capa:hover { transform: translateY(-3px) rotate(-.4deg); }
+.nl-capa-moldura { position: absolute; inset: 18px 16px 18px 26px; border: 2px solid var(--nl-detalhe); box-shadow: inset 0 0 0 4px transparent, inset 0 0 0 5px color-mix(in srgb, var(--nl-detalhe) 60%, transparent); pointer-events: none; }
+.nl-capa-canto { position: absolute; width: 16px; height: 16px; background: var(--nl-detalhe); transform: rotate(45deg); box-shadow: 0 0 0 3px color-mix(in srgb, var(--nl-capa) 70%, #000); }
+.nl-capa-canto.c1 { top: 10px; left: 18px; } .nl-capa-canto.c2 { top: 10px; right: 8px; } .nl-capa-canto.c3 { bottom: 10px; left: 18px; } .nl-capa-canto.c4 { bottom: 10px; right: 8px; }
+.nl-capa-tit { position: relative; z-index: 1; font: 700 30px/1.15 "Nauren Classica", Georgia, serif; color: var(--nl-detalhe); text-shadow: 0 2px 2px rgba(0, 0, 0, .55), 0 0 1px rgba(0, 0, 0, .8); letter-spacing: .02em; max-width: 90%; }
+.nl-capa-sub { position: relative; z-index: 1; font: italic 15px "Nauren Classica", Georgia, serif; color: color-mix(in srgb, var(--nl-detalhe) 80%, #fff); opacity: .9; }
+.nl-capa-orn { position: relative; z-index: 1; color: var(--nl-detalhe); font-size: 18px; opacity: .85; }
+.nl-capa-orn::before, .nl-capa-orn::after { content: ""; display: inline-block; width: 52px; height: 1px; margin: 0 10px; vertical-align: middle; background: var(--nl-detalhe); opacity: .7; }
+.nl-capa-abrir { position: absolute; bottom: 34px; left: 0; right: 0; font: 600 12px Signika, sans-serif; letter-spacing: .1em; text-transform: uppercase; color: var(--nl-detalhe); opacity: .0; transition: opacity .2s; }
+.nl-raiz button.nl-capa:hover .nl-capa-abrir { opacity: .9; }
+.nl-fita { position: absolute; top: -6px; right: 22%; width: 14px; height: 70px; background: linear-gradient(90deg, #7d1717, #b52a2a 50%, #7d1717); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 85%, 0 100%); z-index: 3; box-shadow: 0 2px 4px rgba(0, 0, 0, .4); }
+.nl-fita-aberta { top: -12px; left: calc(50% - 7px); right: auto; height: 90px; }
+
+/* carta lacrada */
+.nl-envelope { display: flex; flex-direction: column; align-items: center; gap: 14px; width: 100%; }
+.nl-env-corpo { position: relative; width: min(100%, 470px); aspect-ratio: 16 / 10; border-radius: 4px; overflow: hidden;
+  background: linear-gradient(160deg, #efe3c5, #d6c095); box-shadow: 0 14px 32px rgba(0, 0, 0, .6), inset 0 0 0 1px rgba(110, 80, 40, .4); display: flex; align-items: flex-end; justify-content: center; }
+.nl-env-aba { position: absolute; inset: 0 0 auto 0; height: 58%; background: linear-gradient(180deg, #e6d6b1, #cdb383); clip-path: polygon(0 0, 100% 0, 50% 100%); box-shadow: 0 2px 0 rgba(0, 0, 0, .1); filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .25)); }
+.nl-env-nome { position: relative; margin-bottom: 6%; max-width: 86%; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font: 20px/1.3 "Nauren Caligrafia", Georgia, serif; color: #3b2814; }
+.nl-raiz button.nl-selo { all: unset; position: absolute; left: calc(50% - 34px); top: calc(58% - 40px); width: 68px; height: 68px; border-radius: 50%; display: grid; place-items: center; cursor: pointer; z-index: 2;
+  background: radial-gradient(circle at 38% 32%, color-mix(in srgb, var(--nl-lacre) 60%, #fff) 0%, var(--nl-lacre) 38%, color-mix(in srgb, var(--nl-lacre) 55%, #000) 100%);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, .5), inset 0 0 0 5px color-mix(in srgb, var(--nl-lacre) 75%, #000), inset 0 0 0 7px color-mix(in srgb, var(--nl-lacre) 70%, #fff); transition: transform .15s; }
+.nl-raiz button.nl-selo span { font: 700 24px "Nauren Classica", Georgia, serif; color: color-mix(in srgb, var(--nl-lacre) 45%, #000); text-shadow: 0 1px 0 color-mix(in srgb, var(--nl-lacre) 60%, #fff); }
+.nl-raiz button.nl-selo:hover { transform: scale(1.07) rotate(-4deg); }
+.nl-env-dica { color: #d8c49c; }
+
+/* virar a página */
+@keyframes nl-vira-dir { from { opacity: 0; transform: translateX(18px); } to { opacity: 1; transform: none; } }
+@keyframes nl-vira-esq { from { opacity: 0; transform: translateX(-18px); } to { opacity: 1; transform: none; } }
+.nl-vira-dir { animation: nl-vira-dir .28s ease-out; } .nl-vira-esq { animation: nl-vira-esq .28s ease-out; }
+
+/* ---------- modo escrever ---------- */
+.nl-edicao { flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: 270px minmax(0, 1fr); }
+.nl-ed-lado { min-height: 0; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px; background: rgba(10, 6, 4, .35); border-right: 1px solid rgba(214, 178, 94, .18); scrollbar-width: thin; }
+.nl-ed-sec { display: flex; flex-direction: column; gap: 8px; }
+.nl-ed-sec.nl-soltar { outline: 2px dashed #e0b257; outline-offset: 4px; }
+.nl-rot { font: 700 11px Signika, sans-serif; letter-spacing: .1em; text-transform: uppercase; color: #cfa96a; }
+.nl-ed-lista { display: flex; flex-direction: column; gap: 4px; }
+.nl-ed-item { display: flex; align-items: center; gap: 4px; padding: 2px 4px 2px 2px; border: 1px solid transparent; }
+.nl-ed-item.on { background: rgba(214, 178, 94, .14); border-color: rgba(214, 178, 94, .45); }
+.nl-raiz button.nl-ed-nome { all: unset; flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 7px; height: 28px; padding: 0 6px; cursor: pointer; color: #eadfc8; font-size: 13px; }
+.nl-ed-n { flex: 0 0 18px; text-align: right; font: 12px "Nauren Classica", Georgia, serif; color: #bfa77a; }
+.nl-ed-nome > i { font-size: 11px; color: #cfa96a; flex: 0 0 auto; }
+.nl-ed-t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nl-ed-nome small { color: #9c8b6c; font-size: 10.5px; flex: 0 0 auto; }
+.nl-ed-bts { display: flex; gap: 1px; opacity: .55; }
+.nl-ed-item:hover .nl-ed-bts, .nl-ed-item.on .nl-ed-bts { opacity: 1; }
+.nl-raiz button.nl-mini-bt { all: unset; width: 20px; height: 22px; display: grid; place-items: center; cursor: pointer; color: #cdbb94; font-size: 10px; }
+.nl-raiz button.nl-mini-bt:hover:not([disabled]) { color: #fff3d6; background: rgba(214, 178, 94, .15); }
+.nl-raiz button.nl-mini-bt.nl-mini-x:hover:not([disabled]) { color: #ff9a8a; }
+.nl-raiz button.nl-mini-bt[disabled] { opacity: .25; cursor: default; }
+.nl-ed-novas { display: flex; gap: 6px; }
+.nl-ed-novas .nl-btn { flex: 1 1 0; justify-content: center; }
+.nl-dica { margin: 0; font-size: 11.5px; line-height: 1.45; color: #b9a684; }
+.nl-dica i { margin-right: 4px; color: #cfa96a; }
+.nl-ed-estilo summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: 6px; }
+.nl-ed-estilo summary::before { content: "\f054"; font: 900 9px "Font Awesome 6 Pro", "Font Awesome 6 Free"; color: #cfa96a; transition: transform .15s; }
+.nl-ed-estilo[open] summary::before { transform: rotate(90deg); }
+.nl-ed-pagina { min-height: 0; display: flex; flex-direction: column; gap: 10px; padding: 14px 16px 12px; }
+.nl-ed-cab { display: flex; align-items: center; gap: 10px; }
+.nl-raiz .nl-in.nl-ed-titulo { flex: 1 1 auto; height: 34px; font: 600 16px var(--nl-fonte); }
+.nl-ed-salvo { font-size: 11.5px; color: #8fcf9e; white-space: nowrap; }
+.nl-ed-salvo.pendente { color: #ffcf7a; }
+.nl-ed-folha { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; padding: 4px; box-shadow: inset 0 0 0 1px var(--nl-borda-p), 0 8px 22px rgba(0, 0, 0, .45); }
+.nl-ed-folha prose-mirror.nl-pm, .nl-ed-folha .nl-pm { flex: 1 1 auto; min-height: 0; height: 100%; display: flex; flex-direction: column; font-family: var(--nl-fonte); font-size: var(--nl-tam); color: var(--nl-tinta); background: transparent; border: 0; }
+.nl-ed-folha prose-mirror .editor-content { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 14px 22px; color: var(--nl-tinta); line-height: 1.6; }
+.nl-ed-folha prose-mirror .editor-menu { background: rgba(30, 20, 14, .85); border-bottom: 1px solid rgba(214, 178, 94, .3); color: #efe4cf; }
+.nauren-leitor .nl-ed-folha textarea.nl-pm-simples { padding: 14px 22px; resize: none; line-height: 1.6; outline: none; background: transparent !important; color: var(--nl-tinta) !important; box-shadow: none !important; }
+.nl-ed-img { display: flex; flex-direction: column; gap: 10px; padding: 14px; height: 100%; box-sizing: border-box; }
+.nl-ed-img > img { flex: 1 1 auto; min-height: 0; max-width: 100%; object-fit: contain; border: 0; }
+.nl-ed-img-vazia { flex: 1 1 auto; display: grid; place-items: center; color: color-mix(in srgb, var(--nl-tinta) 35%, transparent); font-size: 48px; border: 2px dashed color-mix(in srgb, var(--nl-tinta) 25%, transparent); }
+.nl-ed-img-bts { display: flex; gap: 8px; }
+.nl-ed-img-bts .nl-in { flex: 1 1 auto; }
+.nl-ed-img .nl-in { color: var(--nl-tinta); background: rgba(255, 255, 255, .35); border-color: color-mix(in srgb, var(--nl-tinta) 30%, transparent); }
+
+/* ---------- estilo (ficha e leitor) ---------- */
+.nl-estilo { display: flex; flex-direction: column; gap: 12px; }
+.nl-campo { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.nl-fmts { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.nl-estilo-compacto .nl-fmts { grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); }
+:is(.nl-raiz, .nl-aba) button.nl-fmt { all: unset; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px; cursor: pointer; text-align: center; font: 600 11.5px Signika, sans-serif; color: #d8c8a6; --cbg: #1c140f; --cbd: rgba(214, 178, 94, .3); }
+:is(.nl-raiz, .nl-aba) button.nl-fmt i { font-size: 17px; color: #cfa96a; }
+:is(.nl-raiz, .nl-aba) button.nl-fmt:hover { --cbd: rgba(224, 178, 87, .7); color: #fff1d0; }
+:is(.nl-raiz, .nl-aba) button.nl-fmt.on { --cbg: #4a3418; --cbd: #e0b257; color: #fff3d6; }
+:is(.nl-raiz, .nl-aba) button.nl-fmt.on i { color: #ffd98a; }
+.nl-grade2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.nl-estilo-compacto .nl-grade2 { grid-template-columns: 1fr; }
+.nl-linha-cores { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.nl-cor { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #d8c8a6; cursor: pointer; }
+.nl-cor input[type=color] { width: 30px; height: 24px; padding: 0; border: 1px solid rgba(214, 178, 94, .4); background: none; cursor: pointer; }
+.nl-faixa { flex: 1 1 140px; display: flex; flex-direction: column; gap: 3px; font-size: 12px; color: #c9b893; }
+.nl-faixa > span { display: flex; justify-content: space-between; } .nl-faixa b { color: #f1e5cc; font-weight: 600; }
+.nl-faixa input[type=range] { width: 100%; margin: 0; accent-color: #e0b257; }
+.nl-sub { display: flex; flex-direction: column; gap: 7px; padding-top: 10px; border-top: 1px solid rgba(214, 178, 94, .16); }
+.nl-check { display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: #e3d5b8; cursor: pointer; line-height: 1.3; }
+.nl-check input { margin: 0; accent-color: #e0b257; }
+.nl-in-curto { width: 52px; text-align: center; }
+.nl-seg { display: flex; }
+:is(.nl-raiz, .nl-aba) .nl-seg button { all: unset; flex: 1 1 0; text-align: center; padding: 6px 8px; font-size: 12px; cursor: pointer; color: #cdbb94; border: 1px solid rgba(214, 178, 94, .3); background: rgba(0, 0, 0, .25); }
+:is(.nl-raiz, .nl-aba) .nl-seg button + button { border-left: 0; }
+:is(.nl-raiz, .nl-aba) .nl-seg button.on { background: #4a3418; color: #fff3d6; border-color: #e0b257; }
+
+/* ---------- aba "Escrito" da ficha do item ---------- */
+.nl-aba { display: flex; flex-direction: column; gap: 16px; padding: 4px 2px; color: #ece6f5; }
+.nl-aba .nl-in { height: 30px; padding: 0 8px; box-sizing: border-box; }
+.nl-aba-topo { display: grid; grid-template-columns: 118px minmax(0, 1fr); gap: 16px; align-items: center; }
+.nl-aba-tit { font: 600 15px Signika, sans-serif; color: #f1e5cc; display: flex; align-items: center; gap: 8px; }
+.nl-aba-tit i { color: #e0b257; } .nl-aba-tit small { color: #b3a6c9; font-weight: 400; }
+.nl-aba-info { display: flex; flex-direction: column; gap: 8px; }
+.nl-aba .nl-dica { color: #b3a6c9; }
+.nl-aba-bts { display: flex; gap: 8px; flex-wrap: wrap; }
+.nl-mini { width: 118px; height: 150px; display: flex; align-items: center; justify-content: center; }
+.nl-mini-folha { position: relative; width: 96px; height: 128px; padding: 12px 10px; box-sizing: border-box; display: flex; flex-direction: column; gap: 7px; transform: rotate(-3deg); box-shadow: 0 6px 14px rgba(0, 0, 0, .5), inset 0 0 0 1px var(--nl-borda-p); }
+.nl-mini-folha b { font: 600 10px/1.2 var(--nl-fonte); color: var(--nl-tinta); text-align: center; overflow: hidden; max-height: 2.4em; }
+.nl-mini-folha span { height: 2px; background: color-mix(in srgb, var(--nl-tinta) 35%, transparent); }
+.nl-mini-folha span:nth-of-type(2) { width: 80%; } .nl-mini-folha span:nth-of-type(3) { width: 60%; }
+.nl-mini-lacre { position: absolute; bottom: 14px; right: 12px; width: 22px; height: 22px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--nl-lacre) 60%, #fff), var(--nl-lacre) 45%, color-mix(in srgb, var(--nl-lacre) 55%, #000)); }
+.nl-fmt-pergaminho .nl-mini-folha { border-radius: 2px; box-shadow: 0 -6px 0 -2px #8a5a30, 0 6px 0 -2px #8a5a30, 0 8px 14px rgba(0, 0, 0, .5); transform: none; }
+.nl-mini-capa { width: 96px; height: 132px; border-radius: 3px 7px 7px 3px; display: flex; align-items: center; justify-content: center; padding: 10px; box-sizing: border-box; text-align: center;
+  background: linear-gradient(90deg, rgba(0, 0, 0, .4) 0, transparent 9%), radial-gradient(ellipse at 35% 25%, color-mix(in srgb, var(--nl-capa) 75%, #fff), var(--nl-capa) 45%, color-mix(in srgb, var(--nl-capa) 60%, #000)); box-shadow: 0 8px 16px rgba(0, 0, 0, .55), inset 0 0 0 5px color-mix(in srgb, var(--nl-capa) 80%, #000), inset 0 0 0 6px var(--nl-detalhe); }
+.nl-mini-capa b { font: 700 12px/1.2 "Nauren Classica", Georgia, serif; color: var(--nl-detalhe); }
+
+/* ---------- card no chat ---------- */
+.nl-chat { display: flex; align-items: center; gap: 10px; }
+.nl-chat > i { font-size: 22px; color: #b8862e; }
+.nl-chat > div { flex: 1 1 auto; display: flex; flex-direction: column; }
+.nl-chat small { opacity: .75; }
+.nl-chat .nl-chat-ler { flex: 0 0 auto; width: auto; height: 28px; padding: 0 10px; display: inline-flex; align-items: center; gap: 6px; }
+
+/* ---------- inventário: botão Ler ---------- */
+.ns-ler i { color: #e0b257; }
+
+/* ---------- janela estreita ---------- */
+@media (max-width: 760px) { .nl-livro-paginas { grid-template-columns: 1fr; } .nl-livro-paginas > .nl-folha:nth-child(2) { display: none; } }
+.nauren-leitor:not(.nl-janela-livro) .nl-edicao { grid-template-columns: 250px minmax(0, 1fr); }
+/* chanfro dos botões dos Escritos: borda = camada sólida por baixo dos 4 quadrantes opacos + clip-path (regra dos cantos) */
+:is(.nl-raiz, .nl-aba) :is(button.nl-btn, button.nl-fmt) {
+  --cbw: 1px; --ck: calc(var(--cc, 6px) * .7071 - var(--cbw) * .4142);
+  border: var(--cbw) solid transparent !important; border-radius: 0 !important; box-shadow: none !important;
+  background:
+    linear-gradient(135deg, transparent var(--ck), var(--cbg) 0) top left / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(225deg, transparent var(--ck), var(--cbg) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(315deg, transparent var(--ck), var(--cbg) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(45deg, transparent var(--ck), var(--cbg) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box,
+    linear-gradient(var(--cbd), var(--cbd)) border-box !important;
+  clip-path: polygon(var(--cc, 6px) 0, calc(100% - var(--cc, 6px)) 0, 100% var(--cc, 6px), 100% calc(100% - var(--cc, 6px)), calc(100% - var(--cc, 6px)) 100%, var(--cc, 6px) 100%, 0 calc(100% - var(--cc, 6px)), 0 var(--cc, 6px));
+}
+:is(.nl-raiz, .nl-aba) button.nl-fmt { --cc: 6px; }
+.nauren-armazem button.na-btn[data-action="lerEscrito"] { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 8px; }
+.nauren-armazem button.na-btn[data-action="lerEscrito"] i { color: var(--nk-ouro, #e0b257); }
+.application.nauren-kit.nc2 .nl-ed-folha > textarea.nl-pm-simples { background: transparent !important; border: 0 !important; clip-path: none !important; box-shadow: none !important; color: var(--nl-tinta) !important; font-family: var(--nl-fonte); font-size: var(--nl-tam); }
+.application.nauren-kit.nc2 .nl-ed-folha prose-mirror { background: transparent !important; border: 0 !important; clip-path: none !important; }
