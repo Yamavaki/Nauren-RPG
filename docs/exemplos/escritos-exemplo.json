@@ -1,0 +1,49 @@
+[
+  {
+    "nome": "Aviso na Porta da Oficina",
+    "formato": "nota",
+    "papel": "envelhecido",
+    "letra": "caligrafia",
+    "paginas": [
+      { "texto": "Fechado por ordem do Conselho das Cores.\n\n**Quem entrar** responde ao Capitão da Guarda.\n\n-> — C." }
+    ]
+  },
+  {
+    "nome": "Carta do Mestre Relojoeiro",
+    "formato": "carta",
+    "letra": "caligrafia",
+    "lacre": { "ativo": true, "cor": "#2c4a7a", "simbolo": "R" },
+    "paginas": [
+      { "texto": "Caro aprendiz,\n\nA engrenagem que você me trouxe não é deste mundo. Os dentes giram para o *lado errado* quando ninguém está olhando.\n\nNão mostre a ninguém.\n\n[segredo]\n(Mestre: a engrenagem é uma peça do Relógio do Véu. Quem a carregar ganha 1 Estresse por dia.)\n[/segredo]\n\n-> Com pressa,\n-> *Mestre Oren*" }
+    ]
+  },
+  {
+    "nome": "Pergaminho: Escudo de Mana",
+    "formato": "pergaminho",
+    "papel": "arcano",
+    "letra": "antiga",
+    "someAoUsar": true,
+    "paginas": [
+      { "titulo": "Escudo de Mana", "texto": "*Lumen, murus, silentium.*\n\nLeia em voz alta para envolver um aliado numa película de luz azul.\n\n---\n\nO pergaminho se apaga depois de lido." }
+    ]
+  },
+  {
+    "nome": "Bestiário de Bolso",
+    "formato": "livro",
+    "papel": "creme",
+    "letra": "livro",
+    "capa": { "titulo": "Bestiário de Bolso", "subtitulo": "edição revisada", "cor": "#3d4a22", "detalhe": "#d8c27a" },
+    "paginas": [
+      { "titulo": "Sobre este livro", "texto": "Anotações de campo de três gerações de caçadores.\n\nUse com cuidado: algumas criaturas mudaram desde a última edição." },
+      { "titulo": "Lobo de Cinza", "texto": "# Lobo de Cinza\n\n- Caça em matilhas de 3 a 6.\n- Foge de luz colorida forte.\n- O uivo deixa os animais da região em pânico.\n\n> Se ouvir o uivo, não corra." },
+      { "titulo": "Esboço", "imagem": "icons/creatures/mammals/wolf-howl-moon-gray.webp", "legenda": "Lobo de Cinza, desenho de memória." }
+    ]
+  },
+  {
+    "nome": "Caderno de Campo",
+    "formato": "diario",
+    "quemEscreve": "dono",
+    "capa": { "titulo": "Caderno de Campo", "cor": "#4a2f1d", "detalhe": "#c9a46a" },
+    "paginas": [ { "titulo": "Dia 1", "texto": "" }, { "texto": "" }, { "texto": "" } ]
+  }
+]

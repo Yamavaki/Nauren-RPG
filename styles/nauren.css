@@ -8700,3 +8700,17 @@ h4.ap-rot { margin: 0; padding: 0; border: 0; line-height: 1.2; }
 .nauren-armazem button.na-btn[data-action="lerEscrito"] i { color: var(--nk-ouro, #e0b257); }
 .application.nauren-kit.nc2 .nl-ed-folha > textarea.nl-pm-simples { background: transparent !important; border: 0 !important; clip-path: none !important; box-shadow: none !important; color: var(--nl-tinta) !important; font-family: var(--nl-fonte); font-size: var(--nl-tam); }
 .application.nauren-kit.nc2 .nl-ed-folha prose-mirror { background: transparent !important; border: 0 !important; clip-path: none !important; }
+/* 0.106.1: importar/exportar escritos em JSON */
+.nl-aba-json { gap: 14px; }
+.nauren-rpg.sheet.item .nauren-sheet .nl-aba button.nl-link, .nl-aba button.nl-link { all: unset; background: none !important; border: 0 !important; clip-path: none !important; box-shadow: none !important; padding: 2px 0; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #c9b6e6; }
+.nl-aba button.nl-link i { color: #e0b257; font-size: 11px; }
+.nauren-rpg.sheet.item .nauren-sheet .nl-aba button.nl-link:hover, .nl-aba button.nl-link:hover { color: #fff3d6; text-decoration: underline; }
+.nl-imp { display: flex; flex-direction: column; gap: 10px; }
+.nl-imp .nl-dica { color: var(--nk-suave, #b3a6c9); font-size: 12px; line-height: 1.45; margin: 0; }
+.nl-imp .nl-dica p { margin: 0 0 6px; }
+.nl-imp code { font-size: 11px; padding: 0 3px; background: rgba(0, 0, 0, .3); color: #f1e5cc; }
+.nl-imp-arq { display: flex; align-items: center; gap: 10px; }
+.nl-imp textarea[data-imp-txt] { width: 100%; min-height: 240px; font: 12px/1.45 "Courier New", monospace; resize: vertical; box-sizing: border-box; }
+.nl-imp-erro { margin: 0; color: #ff9a8a; font-size: 12px; }
+.nl-imp-ajuda summary { cursor: pointer; font-size: 12px; color: var(--nk-ouro, #e0b257); }
+.nauren-btn-escritos { margin-top: 4px; }

@@ -184,6 +184,10 @@ export function naurenEscritoAbaHtml(item) {
           ${pode ? `<button type="button" class="nl-btn nt-ch" data-escrito="escrever"><i class="fas fa-feather-pointed"></i> Escrever as páginas</button>` : ""}
           ${game.user?.isGM ? `<button type="button" class="nl-btn nt-ch" data-escrito="mostrar" title="Abre o escrito na tela de todos os jogadores"><i class="fas fa-eye"></i> Mostrar aos jogadores</button>` : ""}
         </div>
+        <div class="nl-aba-bts nl-aba-json">
+          ${pode ? `<button type="button" class="nl-link" data-escrito="importar" title="Troca o texto e a aparência por um JSON"><i class="fas fa-file-import"></i> Importar JSON</button>` : ""}
+          <button type="button" class="nl-link" data-escrito="exportar" title="Baixa o escrito como JSON (para editar fora e importar de novo)"><i class="fas fa-file-export"></i> Exportar JSON</button>
+        </div>
       </div>
     </div>
     ${pode ? naurenEscritoEstiloHtml(e) : ""}
@@ -197,6 +201,8 @@ export function naurenEscritoLigarAba(sheet) {
     if (a === "ler") naurenAbrirEscrito(item);
     else if (a === "escrever") naurenAbrirEscrito(item, { editar: true });
     else if (a === "mostrar") naurenEscritoMostrar(item);
+    else if (a === "importar") naurenEscritosJanelaImportar({ item });
+    else if (a === "exportar") naurenEscritoExportar(item);
   }));
   naurenEscritoLigarEstilo(raiz, item, () => { if (sheet.rendered) sheet.render(); });
 }
@@ -511,6 +517,17 @@ export function naurenEscritosInit() {
     ap.render();
   });
   Hooks.on("deleteItem", item => { abertos.get(item.uuid)?.close(); });
+  // botão na aba Itens: importar vários escritos de um JSON
+  Hooks.on("renderItemDirectory", (app, html) => {
+    if (!game.user?.isGM) return;
+    const el = html instanceof HTMLElement ? html : html?.[0];
+    if (!el || el.querySelector(".nauren-btn-escritos")) return;
+    const btn = document.createElement("button");
+    btn.type = "button"; btn.className = "nauren-btn-escritos";
+    btn.innerHTML = '<i class="fas fa-scroll"></i> Importar escritos (JSON)';
+    btn.addEventListener("click", () => naurenEscritosJanelaImportar());
+    (el.querySelector(".directory-footer") ?? el.querySelector(".directory-header") ?? el).append(btn);
+  });
   // "Mostrar aos jogadores": abre para todos (menos para quem mostrou)
   Hooks.on("createChatMessage", msg => {
     const uuid = msg.getFlag?.(SIS, "escritoMostrar"); if (!uuid || msg.author?.id === game.user?.id) return;
@@ -519,4 +536,167 @@ export function naurenEscritosInit() {
   Hooks.on("renderChatMessageHTML", (msg, html) => {
     html.querySelectorAll?.(".nl-chat-ler").forEach(b => b.addEventListener("click", ev => { ev.preventDefault(); naurenAbrirEscrito(b.dataset.uuid); }));
   });
+}
+
+/* ------------------------------ JSON: importar e exportar ------------------------------ */
+/**
+ * 0.106.1: formato simples para escrever escritos fora do Foundry (num editor de texto ou numa planilha):
+ * {
+ *   "nome": "Bilhete Amassado", "imagem": "icons/...webp", "descricao": "texto curto da ficha",
+ *   "formato": "nota|carta|pergaminho|livro|diario", "papel": "...", "letra": "...", "tinta": "#2b1d10", "tamanhoLetra": 100,
+ *   "capa": { "titulo": "", "subtitulo": "", "cor": "#5b2a1d", "detalhe": "#d6b25e" },
+ *   "lacre": { "ativo": true, "cor": "#8c1c1c", "simbolo": "V" },
+ *   "quemEscreve": "mestre|dono", "lerNoBau": true, "someAoUsar": false, "pasta": "Escritos",
+ *   "paginas": [ { "titulo": "…", "texto": "…" }, { "titulo": "…", "imagem": "caminho", "legenda": "…" } ]
+ * }
+ * Também aceita uma lista de escritos ([ {...}, {...} ]) ou { "escritos": [ ... ] }.
+ * O texto pode ser HTML ou texto comum: linha em branco = parágrafo novo; **negrito**, *itálico*,
+ * "# Título" e "- item de lista" viram a formatação certa. Um bloco entre "[segredo]" e "[/segredo]" só o Mestre vê.
+ */
+const ICONE_DO_FORMATO = {
+  nota: "icons/sundries/scrolls/scroll-writing-tan.webp", carta: "icons/sundries/documents/document-sealed-beige-red.webp",
+  pergaminho: "icons/sundries/scrolls/scroll-bound-black-tan.webp", livro: "icons/sundries/books/book-worn-brown.webp",
+  diario: "icons/sundries/books/book-embossed-bound-brown.webp"
+};
+const LETRA_POR_NOME = { caligrafia: "caligrafia", livro: "livro", classica: "classica", "clássica": "classica", antiga: "antiga", letreiro: "titulo", titulo: "titulo", simples: "simples" };
+const sem = s => String(s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
+/** Texto comum → HTML (se já for HTML, fica como está). */
+export function naurenEscritoTextoParaHtml(t) {
+  t = String(t ?? "");
+  if (Array.isArray(t)) t = t.join("\n");
+  if (/<\/?(p|h[1-6]|ul|ol|li|section|div|br|em|strong|blockquote|img|hr)\b/i.test(t)) return t;
+  const inline = s => esc(s).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>").replace(/(^|[^*])\*(?!\s)(.+?)\*/g, "$1<em>$2</em>").replace(/@UUID\[([^\]]+)\](\{[^}]*\})?/g, m => m.replace(/&quot;/g, "\""));
+  const blocos = t.replace(/\r/g, "").split(/\n\s*\n/);
+  const out = [];
+  let segredo = null;
+  const empurrar = h => (segredo ? segredo.push(h) : out.push(h));
+  for (let b of blocos) {
+    b = b.trim(); if (!b) continue;
+    if (/^\[segredo\]/i.test(b)) { segredo = []; b = b.replace(/^\[segredo\]\s*/i, ""); }
+    let fecha = false;
+    if (/\[\/segredo\]\s*$/i.test(b)) { fecha = true; b = b.replace(/\s*\[\/segredo\]\s*$/i, ""); }
+    if (b) {
+      const linhas = b.split("\n");
+      if (linhas.every(l => /^\s*[-•*]\s+/.test(l))) empurrar(`<ul>${linhas.map(l => `<li>${inline(l.replace(/^\s*[-•*]\s+/, ""))}</li>`).join("")}</ul>`);
+      else if (linhas.every(l => /^\s*\d+[.)]\s+/.test(l))) empurrar(`<ol>${linhas.map(l => `<li>${inline(l.replace(/^\s*\d+[.)]\s+/, ""))}</li>`).join("")}</ol>`);
+      else if (/^#{1,3}\s/.test(b)) { const n = b.match(/^#+/)[0].length; empurrar(`<h${n}>${inline(b.replace(/^#+\s*/, ""))}</h${n}>`); }
+      else if (/^>\s?/.test(b)) empurrar(`<blockquote><p>${linhas.map(l => inline(l.replace(/^>\s?/, ""))).join("<br>")}</p></blockquote>`);
+      else if (/^(-{3,}|\*{3,})$/.test(b)) empurrar("<hr>");
+      else if (/^->\s?/.test(b)) empurrar(`<p style="text-align: right">${linhas.map(l => inline(l.replace(/^->\s?/, ""))).join("<br>")}</p>`);
+      else empurrar(`<p>${linhas.map(inline).join("<br>")}</p>`);
+    }
+    if (fecha && segredo) { out.push(`<section class="secret">${segredo.join("")}</section>`); segredo = null; }
+  }
+  if (segredo) out.push(`<section class="secret">${segredo.join("")}</section>`);
+  return out.join("");
+}
+/** Um escrito no formato simples → dados de Item (Equipamento com categoria "escrito"). */
+export function naurenEscritoDoJson(o) {
+  if (!o || typeof o !== "object") throw new Error("escrito vazio");
+  const formato = NAUREN_ESCRITO_FORMATOS[sem(o.formato)] ? sem(o.formato) : sem(o.formato) === "diário" ? "diario" : "nota";
+  const sug = SUGESTAO_DO_FORMATO[formato] ?? {};
+  const papel = NAUREN_ESCRITO_PAPEIS[sem(o.papel)] ? sem(o.papel) : sug.papel;
+  const fonte = LETRA_POR_NOME[sem(o.letra ?? o.fonte)] ?? sug.fonte;
+  const pags = (Array.isArray(o.paginas) ? o.paginas : o.texto !== undefined ? [{ texto: o.texto }] : []).map(p => {
+    if (typeof p === "string") return pagina({ texto: naurenEscritoTextoParaHtml(p) });
+    const img = p.imagem ?? p.src;
+    return img ? pagina({ nome: p.titulo ?? p.nome ?? "", tipo: "imagem", src: String(img), legenda: p.legenda ?? "" })
+      : pagina({ nome: p.titulo ?? p.nome ?? "", texto: naurenEscritoTextoParaHtml(p.texto ?? p.html ?? "") });
+  });
+  const escrito = naurenEscritoNormalizar({
+    formato, papel, fonte, tinta: o.tinta ?? "", tamanho: o.tamanhoLetra ?? o.tamanho ?? 100,
+    capa: { titulo: o.capa?.titulo ?? "", subtitulo: o.capa?.subtitulo ?? "", cor: o.capa?.cor, detalhe: o.capa?.detalhe },
+    lacre: { ativo: o.lacre?.ativo ?? (formato === "carta" && o.lacre !== false), cor: o.lacre?.cor, simbolo: o.lacre?.simbolo ?? "", rompido: false },
+    quemEscreve: sem(o.quemEscreve) === "dono" ? "dono" : (o.quemEscreve ? "mestre" : (sug.quemEscreve ?? "mestre")),
+    lerNoBau: o.lerNoBau !== false, gastaAoUsar: !!(o.someAoUsar ?? o.gastaAoUsar), paginas: pags
+  });
+  const nome = String(o.nome ?? o.name ?? "").trim() || (escrito.paginas[0]?.nome || NAUREN_ESCRITO_FORMATOS[formato].rot);
+  const sys = { categoria: "escrito", quantidade: Math.max(1, Number(o.quantidade) || 1), quantidadeMax: 1, efeito: "", equipado: false, escrito,
+    descricao: o.descricao ? naurenEscritoTextoParaHtml(o.descricao) : "" };
+  if (Number(o.preco) > 0) sys.preco = Number(o.preco);
+  if (Array.isArray(o.acoes)) sys.acoes = o.acoes; // avançado: Ações no formato do sistema (ex.: copiadas de um item exportado)
+  return { name: nome, type: "consumivel", img: o.icone || ICONE_DO_FORMATO[formato], system: sys, _pasta: o.pasta ?? null };
+}
+/** Lê o texto (JSON) e devolve a lista de escritos. Aceita também o JSON exportado de um Item do Foundry. */
+export function naurenEscritosLerJson(texto) {
+  let dados = JSON.parse(String(texto ?? "").replace(/^﻿/, ""));
+  if (dados && !Array.isArray(dados) && Array.isArray(dados.escritos)) dados = dados.escritos;
+  const lista = Array.isArray(dados) ? dados : [dados];
+  return lista.map((o, i) => {
+    if (o?.type === "consumivel" && o?.system) return { ...o, system: { ...o.system, categoria: "escrito", escrito: naurenEscritoNormalizar(o.system.escrito) }, _pasta: null }; // exportado do Foundry
+    try { return naurenEscritoDoJson(o); } catch (err) { throw new Error(`escrito ${i + 1}: ${err.message}`); }
+  });
+}
+/** Cria os escritos no mundo (pasta opcional), num ator ou num compêndio. */
+export async function naurenEscritosImportar(texto, { ator = null, pasta = "Escritos" } = {}) {
+  const lista = naurenEscritosLerJson(texto);
+  if (!lista.length) return [];
+  if (ator) return ator.createEmbeddedDocuments("Item", lista.map(({ _pasta, ...d }) => d));
+  const pastas = new Map();
+  const pastaDe = async nome => {
+    if (!nome) return null;
+    if (pastas.has(nome)) return pastas.get(nome);
+    let f = game.folders?.find?.(x => x.type === "Item" && x.name === nome);
+    if (!f && game.user?.isGM) { try { f = await Folder.create({ name: nome, type: "Item" }); } catch (err) { f = null; } }
+    pastas.set(nome, f ?? null); return f ?? null;
+  };
+  const dados = [];
+  for (const { _pasta, ...d } of lista) { const f = await pastaDe(_pasta ?? pasta); if (f?.id) d.folder = f.id; dados.push(d); }
+  return Item.createDocuments(dados);
+}
+/** O escrito no formato simples (para guardar, editar fora e importar de novo). */
+export function naurenEscritoParaJson(item) {
+  const e = naurenEscritoDe(item); if (!e) return null;
+  const letra = Object.entries(LETRA_POR_NOME).find(([, v]) => v === e.fonte)?.[0] ?? e.fonte;
+  const o = { nome: item.name, icone: item.img, formato: e.formato, papel: e.papel, letra, tinta: e.tinta || undefined, tamanhoLetra: e.tamanho !== 100 ? e.tamanho : undefined,
+    quemEscreve: e.quemEscreve, lerNoBau: e.lerNoBau, someAoUsar: e.gastaAoUsar || undefined, descricao: item.system.descricao || undefined };
+  if (ehLivro(e)) o.capa = { ...e.capa };
+  if (e.formato === "carta") o.lacre = { ativo: e.lacre.ativo, cor: e.lacre.cor, simbolo: e.lacre.simbolo };
+  o.paginas = e.paginas.map(p => p.tipo === "imagem" ? { titulo: p.nome || undefined, imagem: p.src, legenda: p.legenda || undefined } : { titulo: p.nome || undefined, texto: p.texto });
+  if ((item.system.acoes ?? []).length) o.acoes = foundry.utils.deepClone(item.system.acoes);
+  return JSON.parse(JSON.stringify(o));
+}
+export function naurenEscritoExportar(item) {
+  const o = naurenEscritoParaJson(item); if (!o) return;
+  const nome = `${String(item.name).replace(/[^\p{L}\p{N} _-]+/gu, "").trim().replace(/\s+/g, "-") || "escrito"}.json`;
+  foundry.utils.saveDataToFile(JSON.stringify(o, null, 2), "application/json", nome);
+}
+
+/** Janela "Importar escritos": colar o JSON ou escolher o arquivo. */
+export async function naurenEscritosJanelaImportar({ item = null, ator = null } = {}) {
+  const exemplo = JSON.stringify({ nome: "Aviso na Porta", formato: "nota", papel: "envelhecido", letra: "caligrafia",
+    paginas: [{ texto: "Fechado por ordem do Conselho.\n\n**Quem entrar** responde ao Capitão da Guarda.\n\n-> — C." }] }, null, 2);
+  const conteudo = `<div class="nl-imp">
+    <p class="nl-dica">${item ? `Substitui o texto e a aparência de <b>${esc(item.name)}</b> pelo do JSON.` : ator ? `Os escritos entram no inventário de <b>${esc(ator.name)}</b>.` : "Os escritos são criados na aba Itens, na pasta <b>Escritos</b> (ou na pasta que o JSON disser)."} Um arquivo pode ter um escrito ou uma lista deles.</p>
+    <div class="nl-imp-arq"><input type="file" accept=".json,application/json" data-imp-arq><span class="nl-dica">ou cole abaixo</span></div>
+    <textarea data-imp-txt rows="14" spellcheck="false" placeholder='${esc(exemplo)}'></textarea>
+    <p class="nl-imp-erro" data-imp-erro hidden></p>
+    <details class="nl-imp-ajuda"><summary>Como escrever o JSON</summary><div class="nl-dica">
+      <p><b>formato</b>: nota, carta, pergaminho, livro ou diario · <b>papel</b>: envelhecido, pergaminho, creme, branco, noturno ou arcano · <b>letra</b>: caligrafia, livro, classica, antiga, letreiro ou simples.</p>
+      <p>Cada página: <code>{ "titulo": "…", "texto": "…" }</code> ou <code>{ "titulo": "…", "imagem": "caminho", "legenda": "…" }</code>.</p>
+      <p>No <b>texto</b>: linha em branco = parágrafo novo · <code>**negrito**</code> · <code>*itálico*</code> · <code># Título</code> · <code>- item</code> · <code>&gt; citação</code> · <code>-&gt; alinhado à direita</code> · <code>---</code> linha · <code>[segredo] … [/segredo]</code> só o Mestre vê. HTML também vale.</p>
+      <p>Opcionais: <code>capa</code> { titulo, subtitulo, cor, detalhe } · <code>lacre</code> { ativo, cor, simbolo } · <code>quemEscreve</code> ("mestre" ou "dono") · <code>lerNoBau</code> · <code>someAoUsar</code> · <code>icone</code> · <code>descricao</code> · <code>pasta</code> · <code>preco</code>.</p>
+    </div></details>
+  </div>`;
+  let resultado = null;
+  await foundry.applications.api.DialogV2.wait({
+    window: { title: item ? `Importar JSON · ${item.name}` : "Importar escritos (JSON)", icon: "fas fa-file-import" }, classes: ["nauren-kit", "nauren-escritos-imp"], position: { width: 620 },
+    content: conteudo, rejectClose: false,
+    buttons: [{ action: "importar", label: "Importar", icon: "fas fa-file-import", default: true, callback: async (ev, bt, dlg) => {
+      const raiz = dlg.element ?? dlg; const txt = raiz.querySelector("[data-imp-txt]").value; const erro = raiz.querySelector("[data-imp-erro]");
+      try {
+        if (item) {
+          const [d] = naurenEscritosLerJson(txt);
+          await item.update({ name: d.name || item.name, "system.escrito": d.system.escrito, ...(d.system.descricao ? { "system.descricao": d.system.descricao } : {}), ...(d.img && d.img !== ICONE_DO_FORMATO[d.system.escrito.formato] ? { img: d.img } : {}) });
+          resultado = [item];
+        } else resultado = await naurenEscritosImportar(txt, { ator });
+      } catch (err) { erro.hidden = false; erro.textContent = `Não consegui ler o JSON: ${err.message}`; throw err; }
+    } }, { action: "cancelar", label: "Cancelar" }],
+    render: (ev, dlg) => {
+      const raiz = dlg?.element ?? document;
+      raiz.querySelector("[data-imp-arq]")?.addEventListener("change", async e2 => { const f = e2.target.files?.[0]; if (f) raiz.querySelector("[data-imp-txt]").value = await f.text(); });
+    }
+  }).catch(() => null);
+  if (resultado?.length) ui.notifications?.info(item ? `${item.name}: texto importado.` : `${resultado.length} ${resultado.length === 1 ? "escrito importado" : "escritos importados"}.`);
+  return resultado;
 }
