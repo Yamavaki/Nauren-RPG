@@ -8714,3 +8714,52 @@ h4.ap-rot { margin: 0; padding: 0; border: 0; line-height: 1.2; }
 .nl-imp-erro { margin: 0; color: #ff9a8a; font-size: 12px; }
 .nl-imp-ajuda summary { cursor: pointer; font-size: 12px; color: var(--nk-ouro, #e0b257); }
 .nauren-btn-escritos { margin-top: 4px; }
+
+/* =====================================================================
+   0.107 — Importar em massa
+   ===================================================================== */
+.nauren-imp-massa .window-content { padding: 0; }
+.im-raiz { display: flex; flex-direction: column; height: 100%; min-height: 0; color: var(--nk-texto, #ece6f5); font: 13px Signika, sans-serif; }
+.im-entrada { display: flex; flex-direction: column; gap: 8px; padding: 14px 16px 10px; flex: 0 0 auto; }
+.im-arq { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.im-dica { margin: 0; font-size: 12px; line-height: 1.45; color: var(--nk-suave, #b3a6c9); }
+.im-dica code, .im-raiz code { font-size: 11px; padding: 0 4px; background: rgba(0, 0, 0, .3); color: #f1e5cc; }
+.nauren-imp-massa textarea[data-imp-txt] { width: 100%; height: 150px; box-sizing: border-box; resize: vertical; font: 12px/1.45 "Courier New", monospace; }
+.im-bts { display: flex; gap: 8px; }
+.nauren-imp-massa :is(button.im-btn, label.im-btn) { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; gap: 7px; height: 30px; padding: 0 12px; cursor: pointer; font: 600 13px Signika, sans-serif; color: #f1e5cc;
+  --cc: 6px; --cbw: 1px; --ck: calc(var(--cc) * .7071 - var(--cbw) * .4142); --cbg: #241c33; --cbd: rgba(214, 178, 94, .45);
+  border: var(--cbw) solid transparent !important;
+  background: linear-gradient(135deg, transparent var(--ck), var(--cbg) 0) top left / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box, linear-gradient(225deg, transparent var(--ck), var(--cbg) 0) top right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box, linear-gradient(315deg, transparent var(--ck), var(--cbg) 0) bottom right / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box, linear-gradient(45deg, transparent var(--ck), var(--cbg) 0) bottom left / calc(50% + 2px) calc(50% + 2px) no-repeat padding-box, linear-gradient(var(--cbd), var(--cbd)) border-box !important;
+  clip-path: polygon(var(--cc) 0, calc(100% - var(--cc)) 0, 100% var(--cc), 100% calc(100% - var(--cc)), calc(100% - var(--cc)) 100%, var(--cc) 100%, 0 calc(100% - var(--cc)), 0 var(--cc)); }
+.nauren-imp-massa :is(button.im-btn, label.im-btn) i { color: #e0b257; font-size: 12px; }
+.nauren-imp-massa :is(button.im-btn, label.im-btn):hover:not([disabled]) { --cbd: #e0b257; --cbg: #30253f; }
+.nauren-imp-massa button.im-btn.im-p { --cbg: #5a3f1c; --cbd: #e0b257; color: #fff3d6; }
+.nauren-imp-massa button.im-btn[disabled] { opacity: .45; cursor: default; }
+.im-erro { margin: 0; color: #ff9a8a; font-size: 12.5px; }
+.im-ajuda { padding: 4px 16px; display: flex; flex-direction: column; gap: 8px; }
+.im-previa { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 8px; padding: 10px 16px 0; border-top: 1px solid var(--nk-linha, rgba(214, 178, 94, .18)); }
+.im-tit { font-size: 13.5px; color: #e9dcc0; }
+.im-ruim { color: #ff9a8a; }
+.im-erros { margin: 0; padding-left: 18px; font-size: 12px; color: #ffb3a6; max-height: 70px; overflow-y: auto; }
+.im-lista { flex: 1 1 auto; min-height: 60px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; padding-right: 4px; scrollbar-width: thin; }
+.im-linha { display: grid; grid-template-columns: 36px minmax(0, 1fr) 24px; gap: 10px; align-items: center; padding: 5px 8px; background: rgba(0, 0, 0, .22); border: 1px solid rgba(214, 178, 94, .12); }
+.im-linha.im-aviso { border-color: rgba(255, 190, 90, .45); }
+.im-linha > img { width: 36px; height: 36px; object-fit: cover; border: 0; border-radius: 3px; background: rgba(0, 0, 0, .3); }
+.im-l-txt { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.im-l-txt b { font-weight: 600; color: #f3ead6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.im-l-txt small { font-size: 11.5px; color: var(--nk-suave, #b3a6c9); }
+.im-borda { font-size: 11.5px; color: #9fd6c0; } .im-borda i { font-size: 10px; margin-right: 3px; }
+.im-av { font-size: 11.5px; color: #ffcf7a; }
+.nauren-imp-massa button.im-x { all: unset; width: 24px; height: 24px; display: grid; place-items: center; cursor: pointer; color: #b3a6c9; }
+.nauren-imp-massa button.im-x:hover { color: #ff9a8a; }
+.im-dests { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; padding: 4px 0 10px; }
+.im-dest { display: flex; flex-direction: column; gap: 7px; padding: 10px 12px; --cc: 7px; --cbg: #1a1424; --cbd: rgba(214, 178, 94, .3); }
+.im-dest-cab { display: flex; align-items: center; gap: 8px; } .im-dest-cab i { color: #e0b257; } .im-dest-cab b { flex: 1 1 auto; font-weight: 600; }
+.im-dest-cab span { min-width: 24px; text-align: center; padding: 1px 6px; font-size: 12px; font-weight: 700; color: #1a1424; background: #e0b257; border-radius: 9px; }
+.im-dest-op { display: flex; gap: 8px; flex-wrap: wrap; }
+.im-dest-op .im-sel { flex: 1 1 160px; height: 30px; } .im-dest-op .im-in { flex: 1 1 160px; height: 30px; }
+.im-check { display: flex; align-items: center; gap: 7px; font-size: 12px; color: #d9cfe6; cursor: pointer; } .im-check input { margin: 0; accent-color: #e0b257; }
+.im-rodape { flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 16px 12px; border-top: 1px solid var(--nk-linha, rgba(214, 178, 94, .18)); background: rgba(0, 0, 0, .2); }
+.im-prog { font-size: 12px; color: var(--nk-suave, #b3a6c9); }
+.im-ok { font-size: 12.5px; color: #8fd9a8; } .im-ok i { margin-right: 4px; }
+.nauren-btn-imp-massa { margin-top: 4px; }

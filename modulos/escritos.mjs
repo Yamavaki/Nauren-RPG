@@ -517,17 +517,7 @@ export function naurenEscritosInit() {
     ap.render();
   });
   Hooks.on("deleteItem", item => { abertos.get(item.uuid)?.close(); });
-  // botão na aba Itens: importar vários escritos de um JSON
-  Hooks.on("renderItemDirectory", (app, html) => {
-    if (!game.user?.isGM) return;
-    const el = html instanceof HTMLElement ? html : html?.[0];
-    if (!el || el.querySelector(".nauren-btn-escritos")) return;
-    const btn = document.createElement("button");
-    btn.type = "button"; btn.className = "nauren-btn-escritos";
-    btn.innerHTML = '<i class="fas fa-scroll"></i> Importar escritos (JSON)';
-    btn.addEventListener("click", () => naurenEscritosJanelaImportar());
-    (el.querySelector(".directory-footer") ?? el.querySelector(".directory-header") ?? el).append(btn);
-  });
+  // (0.107: o botão da aba Itens virou "Importar em massa", que também aceita Escritos — importar-massa.mjs)
   // "Mostrar aos jogadores": abre para todos (menos para quem mostrou)
   Hooks.on("createChatMessage", msg => {
     const uuid = msg.getFlag?.(SIS, "escritoMostrar"); if (!uuid || msg.author?.id === game.user?.id) return;

@@ -1,0 +1,66 @@
+{
+  "pasta": "Floresta Cinzenta",
+  "documentos": [
+    {
+      "name": "Lobo de Cinza",
+      "type": "npc",
+      "img": "icons/creatures/mammals/wolf-howl-moon-gray.webp",
+      "pasta": "Lacaios",
+      "system": {
+        "nivel": 3
+      },
+      "items": [],
+      "borda": {
+        "modelo": "dente-de-serra",
+        "paleta": "obsidiana",
+        "efeitos": []
+      }
+    },
+    {
+      "name": "Alfa da Matilha",
+      "type": "npc",
+      "img": "icons/creatures/mammals/wolf-shadow-black.webp",
+      "pasta": "Chefes",
+      "system": {
+        "nivel": 6
+      },
+      "items": [],
+      "borda": {
+        "modelo": "espinhos",
+        "paleta": "obsidiana",
+        "esmalte": "#2a0f12",
+        "efeitos": [
+          {
+            "tipo": "aura",
+            "cores": [
+              "#c03048"
+            ],
+            "vel": 2,
+            "int": 55
+          },
+          {
+            "tipo": "pulso",
+            "cores": [
+              "#ff4060"
+            ],
+            "vel": 4,
+            "int": 50
+          }
+        ],
+        "girar": {
+          "modo": "tudo",
+          "vel": 1
+        }
+      }
+    },
+    {
+      "nome": "Recado do Druida",
+      "formato": "nota",
+      "paginas": [
+        {
+          "texto": "Não cacem os lobos cinzentos."
+        }
+      ]
+    }
+  ]
+}

@@ -26,6 +26,8 @@ Você vai criar uma criatura para o Nauren RPG. Siga este arquivo à risca: a Pa
 **Origem:** [criatura original — ou — conversão fiel da ficha do Códex anexa]
 **Nível:** [N, ou faixa "N a M"] · **Função:** [Atacante / Defensor / Suporte] · **Categoria:** [1 a 4] · **Chefe:** [sim/não]
 **Pigmentos:** [2 a 5 cores, ou "escolha pelo tema"]
+**Borda do token:** [automática pelas cores e pela personalidade — ou — Pronta "Nome" — ou — sem borda]
+**Quantas:** [1 — ou — várias (lote para "Importar em massa"): liste as criaturas]
 **Saída:** [A / B / C, ou mais de uma]
 
 Trabalhe nesta ordem:
@@ -225,6 +227,8 @@ As três Funções saem diferentes de verdade. Os pontos são distribuídos pelo
 ### Saída A — JSON do Foundry
 
 Siga o `guia-criacao-ia.md` em 3 etapas separadas.
+
+**Borda e lote (0.107):** todo Ator leva o campo `"borda"` montado pela seção 17 do guia: a cor vem dos Pigmentos, o modelo da personalidade e o efeito do temperamento. Se o pedido disser uma Pronta, use o nome dela; se disser "sem borda", não ponha o campo. Com mais de uma criatura, entregue **um lote só** (`{ "pasta": "…", "documentos": [ … ] }`, guia 17.1), com `"pasta"` em cada ficha para separar Lacaios, Chefes, etc. O Mestre importa pelo botão **Importar em massa**.
 
 **Etapa 1 — o Ator (`type: "npc"`)** com todos os itens embutidos:
 - Atributos da Parte 1; `system.nivel`, `system.categoriaMonstro`; `prototypeToken` com `width`/`height` da Categoria quando > 1.

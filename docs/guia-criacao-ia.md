@@ -23,7 +23,8 @@ Um prompt funcional tem 3 partes:
    Foundry, incluindo os itens (Habilidades/Armas/Condições) embutidos".
 
 A IA deve devolver **um único bloco JSON**, pronto pra salvar como `.json` e
-importar. Não peça pra ela "explicar" as mecânicas antes — peça o JSON
+importar. Para **várias fichas de uma vez** (e a borda do token já montada),
+veja a **seção 17**: a resposta inteira vai no botão **Importar em massa**. Não peça pra ela "explicar" as mecânicas antes — peça o JSON
 direto, e você audita depois (a seção 8 tem um checklist rápido).
 
 ---
@@ -2424,3 +2425,160 @@ Só visual, opcional, e o padrão já resolve: deixe `"auto"`.
 - Quem reage (Bloquear, Esquivar, Contra-Atacar) a um ataque já usa a Prioridade daquele ataque ali.
 - Escudos contam no limite de equipamentos de Ataque do personagem (`pesoOfensivo` 1/2/3).
 
+
+---
+
+## 17. Borda do token e importação em massa (0.107)
+
+### 17.1 Várias fichas num arquivo só (lote)
+
+No Foundry, o Mestre usa o botão **Importar em massa** (abas Atores e Itens). Ele aceita:
+- uma ficha (o JSON de Ator ou de Item deste guia);
+- uma lista: `[ {ficha}, {ficha}, ... ]`;
+- um **lote**: `{ "pasta": "Floresta Cinzenta", "documentos": [ {ficha}, {ficha}, ... ] }`.
+
+Pode misturar NPCs, personagens, baús, itens de qualquer tipo e Escritos (o formato simples de notas, cartas e livros, com `formato` e `paginas`).
+
+Campos extras que só o importador lê (ficam fora da ficha):
+- **`"pasta": "Nome"`**, no lote ou em cada ficha: subpasta onde ela entra (o Mestre escolhe a pasta principal ao importar). Use para agrupar: `"Chefes"`, `"Lacaios"`, `"Tesouro"`.
+- **`"borda": { ... }`**, só em atores: a borda do token (17.2). A ficha já sai com a moldura no token padrão.
+
+Quando o pedido for mais de uma criatura, entregue **um lote só**, num único bloco ```json. O Mestre pode colar a resposta inteira: o importador ignora o texto em volta.
+
+### 17.2 O campo `borda`
+
+Duas formas:
+- **Uma Pronta do Mestre**, pelo nome: `"borda": "Inimigo padrão"` (só use se o Mestre disser o nome).
+- **Montada:**
+
+```json
+"borda": {
+  "modelo": "espinhos",
+  "paleta": "obsidiana",
+  "cores": ["#7a1f2b"],
+  "esmalte": "#1a0a10",
+  "joia": "#ff3355",
+  "semEsmalte": false,
+  "semJoia": false,
+  "espessura": 1,
+  "mascara": "normal",
+  "girar": { "modo": "nenhum", "vel": 2, "sentido": 1 },
+  "efeitos": [
+    { "tipo": "pulso", "cores": ["#ff4060"], "vel": 2, "int": 60 }
+  ]
+}
+```
+
+| Campo | O que é | Valores |
+|---|---|---|
+| `modelo` | o desenho da moldura | um id da tabela 17.3, ou `"foundry"` (o anel simples do Foundry) |
+| `paleta` | o metal | `ouro`, `ourolinha` (ouro claro), `prata`, `branco`, `bronze`, `cobre`, `obsidiana`, `esmeralda`, `rubi`, `arcano`, `neon`, ou `"livre"` (aí valem as `cores`) |
+| `cores` | com `paleta: "livre"`: 1 ou 2 cores do metal | `"#rrggbb"` |
+| `esmalte` | o fundo entre as linhas (modelos com esmalte) | `"#rrggbb"`; `"semEsmalte": true` deixa transparente |
+| `joia` | a cor das gemas (modelos com gema) | `"#rrggbb"`; `"semJoia": true` deixa transparente |
+| `espessura` | grossura das linhas | 0.5 a 2 (1 = normal) |
+| `mascara` | `"expandida"` deixa a arte ir até o contorno de fora (só em alguns modelos) | `"normal"` ou `"expandida"` |
+| `girar` | a moldura gira devagar | `modo`: `"nenhum"` ou `"tudo"`; `vel`: 1 (bem lento) a 5; `sentido`: 1 ou -1 |
+| `efeitos` | até **2** efeitos (Aura e Neon não vão juntos) | ver 17.4 |
+
+Com `"modelo": "foundry"`, os campos são outros:
+- `cores`: 1 a 5 cores do anel (com 2 ou mais, vira gradiente);
+- `corFundo`: `"#rrggbb"`;
+- `efeitos`: lista de nomes, entre `"pulso"`, `"gradiente"`, `"onda"` e `"corSobre"`.
+
+Não escreva `vb`, `ext`, `raio`, `src` nem `prototypeToken.texture.src` com `?nauren-borda=`: o sistema mede e monta isso sozinho. A imagem do token vem de `img` / `prototypeToken.texture.src`.
+
+### 17.3 Modelos
+
+| Grupo | Modelos (id — nome) |
+|---|---|
+| Essenciais | `aro-liso` Aro Liso (esmalte) · `aro-duplo` Aro Duplo · `contas` Contas (esmalte) · `corda` Corda (esmalte) · `serrilha` Serrilha · `octogono` Octógono · `losango` Losango (esmalte) · `hexagono` Hexágono |
+| Geométricas | `picos-cardeais` Picos Cardeais · `triangulos-encaixados` Triângulos Encaixados (esmalte) · `dente-de-serra` Dente de Serra · `estrela-entrelacada` Estrela Entrelaçada · `grega` Grega (esmalte) · `triangulos` Triângulos · `estrela-octogonal` Estrela Octogonal (esmalte) · `segmentos` Segmentos · `prisma` Prisma (esmalte) · `zigurate` Zigurate (esmalte) · `engrenagem` Engrenagem (esmalte) |
+| Elegantes | `deco-placas` Déco Placas · `deco-entalhe` Déco Entalhe · `deco-partido` Déco Partido · `deco-coroa` Déco Coroa · `deco-colchetes` Déco Colchetes · `bussola-deco` Bússola Déco (esmalte) · `leque` Leque (esmalte) · `relicario` Relicário (esmalte) · `portal-deco` Portal Déco (esmalte) · `selo-real` Selo Real (esmalte, gema) |
+| Natureza | `estrela-foliada` Estrela Foliada (esmalte) · `trigo` Trigo · `sol-de-petalas` Sol de Pétalas (esmalte) · `louros` Louros (esmalte, gema) · `flor-de-lis` Flor-de-lis (esmalte) · `coroa-solar` Coroa Solar (esmalte) · `espinhos` Espinhos (esmalte) |
+| Arcanas | `estrela-de-lancas` Estrela de Lanças (esmalte) · `mandala` Mandala (esmalte) · `portal-arcano` Portal Arcano (esmalte) · `neon-estelar` Neon Estelar (esmalte) |
+
+### 17.4 Efeitos
+
+| `tipo` | O que faz | `cores` |
+|---|---|---|
+| `aura` | brilho em volta, por fora | 1 |
+| `pulso` | a moldura acende e apaga | 1 |
+| `brilho` | um reflexo passa pelo metal | 1 |
+| `ciclo` | a cor da moldura vai mudando | 3 |
+| `cintilar` | estrelinhas em volta (`dist` 60–130 e `tam` 40–160, em %) | 1 |
+| `respirar` | a moldura cresce e diminui de leve | 0 |
+| `arco` | arco-íris passando | 0 |
+| `neon` | contorno de luz por fora | 1 |
+
+Campos de cada efeito: `vel` (1 a 5), `int` (10 a 100, a intensidade) e `fora: true` (só para os que admitem: o efeito aparece só do lado de fora da moldura).
+
+### 17.5 Como escolher a borda pela criatura
+
+Escolha a borda pela **personalidade e pelas cores** da criatura, nesta ordem:
+
+1. **Cores = Pigmentos.** Use a cor do Pigmento principal nos efeitos e no esmalte, e escolha a paleta mais próxima:
+   - vermelho → `rubi` ou `cobre`;
+   - verde → `esmeralda`;
+   - azul ou ciano → `neon` ou `prata`;
+   - roxo → `arcano`;
+   - preto ou sombra → `obsidiana`;
+   - dourado ou nobre → `ouro`;
+   - simples ou rústico → `bronze`.
+   
+   Para uma cor exata, use `"paleta": "livre"` com `cores`.
+2. **Personalidade → modelo:**
+
+   | Personalidade | Modelos |
+   |---|---|
+   | Selvagem, predador | `espinhos`, `dente-de-serra`, `picos-cardeais` |
+   | Nobre, régio | `selo-real`, `deco-coroa`, `louros`, `coroa-solar` |
+   | Arcano, místico | `mandala`, `portal-arcano`, `estrela-de-lancas`, `neon-estelar` |
+   | Mecânico, steampunk | `engrenagem`, `segmentos`, `hexagono`, `zigurate` |
+   | Natureza, druídico | `estrela-foliada`, `trigo`, `sol-de-petalas`, `flor-de-lis` |
+   | Elegante, urbano | os `deco-*`, `bussola-deco`, `leque`, `relicario` |
+   | Simples, lacaio | `aro-liso`, `aro-duplo`, `contas`, `corda` |
+   | Antigo, ritual | `grega`, `estrela-entrelacada`, `prisma` |
+
+3. **Temperamento → efeito:**
+
+   | Temperamento | Efeitos |
+   |---|---|
+   | Agressivo, raivoso | `pulso` rápido (`vel` 4) ou `aura` vermelha |
+   | Calmo, sábio | `respirar` lento ou `brilho` |
+   | Mágico, instável | `ciclo` ou `cintilar` |
+   | Etéreo, fantasma | `neon` com `fora: true` e `semEsmalte: true` |
+   | Caótico, colorido | `arco` |
+   | Chefe | 2 efeitos (por exemplo `aura` + `brilho`) e `girar` lento |
+
+4. **Lacaios e bandos:** borda simples (`aro-liso` ou `"foundry"`) e sem efeitos, para não poluir o mapa com 10 tokens piscando.
+5. **Mesma família, mesma borda:** criaturas do mesmo grupo usam o mesmo modelo e a mesma paleta. O chefe pode ganhar a versão com efeitos.
+
+### 17.6 Exemplo de lote
+
+```json
+{
+  "pasta": "Floresta Cinzenta",
+  "documentos": [
+    {
+      "name": "Lobo de Cinza", "type": "npc", "img": "icons/creatures/mammals/wolf-howl-moon-gray.webp",
+      "pasta": "Lacaios",
+      "system": { "nivel": 3 },
+      "items": [ ],
+      "borda": { "modelo": "dente-de-serra", "paleta": "obsidiana", "efeitos": [] }
+    },
+    {
+      "name": "Alfa da Matilha", "type": "npc", "img": "icons/creatures/mammals/wolf-shadow-black.webp",
+      "pasta": "Chefes",
+      "system": { "nivel": 6 },
+      "items": [ ],
+      "borda": { "modelo": "espinhos", "paleta": "obsidiana", "esmalte": "#2a0f12",
+        "efeitos": [ { "tipo": "aura", "cores": ["#c03048"], "vel": 2, "int": 55 }, { "tipo": "pulso", "cores": ["#ff4060"], "vel": 4, "int": 50 } ],
+        "girar": { "modo": "tudo", "vel": 1 } }
+    },
+    { "nome": "Recado do Druida", "formato": "nota", "paginas": [ { "texto": "Não cacem os lobos cinzentos." } ] }
+  ]
+}
+```
+
+(Em `items` vão as Habilidades, armas, Pigmentos, etc. completos, como no resto deste guia; aqui estão vazios só para encurtar.)
