@@ -315,7 +315,7 @@ Hooks.on("updateActor", async (actor, changes, options, userId) => {
   if (!game.user.isGM) return;
   if (!changes.prototypeToken) return;
 
-  const CAMPOS_DE_INSTANCIA = ["x", "y", "rotation", "elevation", "hidden", "sort", "_id", "actorId"];
+  const CAMPOS_DE_INSTANCIA = ["x", "y", "rotation", "elevation", "level", "levels", "hidden", "sort", "_id", "actorId"]; // "level": andar do token (V14)
   const atualizacao = foundry.utils.deepClone(changes.prototypeToken);
   for (const campo of CAMPOS_DE_INSTANCIA) delete atualizacao[campo];
   if (!Object.keys(atualizacao).length) return;
