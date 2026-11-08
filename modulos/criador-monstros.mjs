@@ -361,6 +361,11 @@ const NAUREN_CM_EXTRAS = {
 
 const NAUREN_CM_CHEFE = { vida: 1.5, def: 1, estresse: 0, estamina: 1 };
 
+// 0.108 (rebalanceamento): piso de Vida por Categoria. Os golpes dos jogadores já começam fortes (Arma Pesada 1d10 + 4,
+// Ataque Pesado 2d10 + 8) e a Vitalidade dos monstros de nível baixo é ~4: um Cat 1 de nível 2 tinha 16 de Vida e caía
+// com um golpe. O piso conta muito no nível baixo e quase nada no alto. Bando de lacaios fica sem o piso.
+const NAUREN_CM_VIDA_PISO = 25;
+
 // Peculiaridades do Codex: [nome, descrição curta, valor padrão (0 = sem número), ícone, como é aplicada]
 // [nome, efeito, valor padrão, ícone, onde entra, Condição aplicada no acerto (seed) - lida também pela migração dos monstros]
 const NAUREN_CM_PECS = [
@@ -535,9 +540,9 @@ class NaurenCriadorMonstro extends foundry.applications.api.HandlebarsApplicatio
     const tPdm = tPdaBase + (s.func === "Suporte" ? 1 : 0);
     const pdm = Math.min(pdmSemPig, tPdm) + (pdmBruto - pdmSemPig);
     const cat = monstro ? s.cat : 1;
-    // Vida (0.87): Vitalidade × Categoria × (Nível + 2) [× 1,5 Chefe]. O "+2" deixa os monstros de nível baixo
-    // parrudos (antes um monstro de nível 1 caía com um golpe) e quase não muda os de nível alto.
-    const vidaFormula = Math.floor(vit * cat * (s.nivel + 2) * ch.vida);
+    // Vida (0.108): Categoria × (Vitalidade × (Nível + 2) + 25) [× 1,5 Chefe]. Bando: sem o piso (Vit × Cat × (Nv + 2)).
+    const piso = s.bando >= 2 ? 0 : NAUREN_CM_VIDA_PISO;
+    const vidaFormula = Math.floor(cat * (vit * (s.nivel + 2) + piso) * ch.vida);
     const vidaCalc = vidaFormula + s.bVida + pg.vida, mana = esp + pg.mana;
     const estCalc = a.estamina + ch.estamina, pda = Math.min(pdaSemPig, tPda) + (pdaBruto - pdaSemPig);
     const defCalc = Math.min(10 + vb + s.bDef, tDef) + pg.defesa + ex.def + ch.def;
@@ -556,7 +561,7 @@ class NaurenCriadorMonstro extends foundry.applications.api.HandlebarsApplicatio
       tetos: { est: !!ef.perdidos.estamina, pda: pdaSemPig > tPda, pdm: pdmSemPig > tPdm, def: 10 + vb + s.bDef > tDef, valores: [ef.estMax, tPda, tDef], perdidos: ef.perdidos },
       pdaSemPig, pdmSemPig,
       nHab: NAUREN_CM_N_HAB(s.nivel) + (s.chefe ? 1 : 0), nPec: NAUREN_CM_N_PEC(s.nivel),
-      tok: s.tokAuto ? cat : s.tok, escala: naurenEscalaPorCategoria(cat)
+      tok: s.tokAuto ? cat : s.tok, escala: naurenEscalaPorCategoria(cat, s.bando >= 2 ? 0 : s.nivel), piso
     };
   }
 
@@ -696,7 +701,7 @@ class NaurenCriadorMonstro extends foundry.applications.api.HandlebarsApplicatio
     this.ref("rVB").textContent = "Valor Base " + d.vb;
     this.ref("caixaCategoria").classList.toggle("apagada", !monstro);
     const [tEst, tPda, tDef] = d.tetos.valores;
-    const rec = [["Vida", d.vida, d.vida !== d.vidaCalc ? "ajustada" : `${d.vit}×${d.cat}×${s.nivel + 2}${s.chefe ? "×1,5" : ""}`, false, d.vida !== d.vidaCalc], ["Mana", d.mana, "", false, false],
+    const rec = [["Vida", d.vida, d.vida !== d.vidaCalc ? "ajustada" : `${d.cat}×(${d.vit}×${s.nivel + 2}${d.piso ? "+" + d.piso : ""})${s.chefe ? "×1,5" : ""}`, false, d.vida !== d.vidaCalc], ["Mana", d.mana, "", false, false],
       ["Estamina", d.est, d.est !== d.estCalc ? "ajustada" : (d.tetos.est ? "teto " + tEst : s.chefe ? `+${d.ch.estamina} Chefe` : ""), d.tetos.est && d.est === d.estCalc, d.est !== d.estCalc],
       ["Pod. Ataque", d.pda, d.tetos.pda ? "teto " + tPda : "", d.tetos.pda, false], ["Pod. Magia", d.pdm, "", false, false],
       ["Estresse máx.", d.stress, d.stress !== d.stressCalc ? "ajustado" : "", false, d.stress !== d.stressCalc]];
@@ -752,7 +757,7 @@ class NaurenCriadorMonstro extends foundry.applications.api.HandlebarsApplicatio
       ["Espírito", `Int ${a.inteligencia} + Des ${a.destino} = ${d.espBase}${mais(d.pg.espirito)}`, d.esp],
       ["Pod. Ataque", `⌊(${maiorFA} ${Math.max(a.forca, a.agilidade)} + Est ${a.estamina}) ÷ 2⌋ = ${d.pdaBase}${d.tetos.pda ? ` <em class="teto">teto ${d.tPda}</em>` : ""}${d.pda - Math.min(d.pdaSemPig, d.tPda) ? mais(d.pda - Math.min(d.pdaSemPig, d.tPda)) : ""}`, d.pda],
       ["Pod. Magia", `⌊(Int ${a.inteligencia} + Est ${a.estamina}) ÷ 2⌋ = ${d.pdmBase}${d.tetos.pdm ? ` <em class="teto">teto ${d.tPdm}</em>` : ""}${d.pdm - Math.min(d.pdmSemPig, d.tPdm) ? mais(d.pdm - Math.min(d.pdmSemPig, d.tPdm)) : ""}`, d.pdm],
-      ["Vida", `Vit ${d.vit} × Cat ${d.cat} × (Nv ${s.nivel} + 2)${s.chefe ? " × 1,5 Chefe" : ""}${s.bVida ? ` + ${s.bVida} extra` : ""}${mais(d.pg.vida)}`, d.vidaCalc],
+      ["Vida", `Cat ${d.cat} × (Vit ${d.vit} × (Nv ${s.nivel} + 2)${d.piso ? ` + ${d.piso}` : ""})${s.chefe ? " × 1,5 Chefe" : ""}${s.bVida ? ` + ${s.bVida} extra` : ""}${mais(d.pg.vida)}`, d.vidaCalc],
       ["Defesa", `10 + VB ${d.vb} (teto ${d.tetos.valores[2]})${mais(d.pg.defesa)}${d.ex.def ? ` + ${d.ex.def} ${s.func}` : ""}${d.ch.def ? " + 1 Chefe" : ""}${s.bDef ? ` + ${s.bDef} extra` : ""}`, d.defCalc],
       ["Estresse", `2 + Cat ${d.cat} (tabela do Codex)${s.bEst ? ` + ${s.bEst} extra` : ""}${mais(d.pg.estresse)}`, d.stressCalc],
       ["Deslocamento", s.bMov === null ? `6 (padrão)${mais(d.pg.movimento)}` : `${s.bMov} (à mão)${mais(d.pg.movimento)}`, d.movCalc],
@@ -899,7 +904,7 @@ class NaurenCriadorMonstro extends foundry.applications.api.HandlebarsApplicatio
     if (monstro) itens.push({
       name: `Categoria ${d.cat}`, type: "habilidade", img: "icons/weapons/axes/axe-battle-simple-black.webp",
       system: { ativo: true, efeitosVinculados: [{ ativo: true, modificadores: [{ campo: "estresse", valor: String(estresseItem) }] }],
-        descricao: `<p><b>Categoria ${d.cat}</b> (Codex Bestiariun, seção 4.9 do guia). Dado de dano ${d.escala.danoCat}, +${d.escala.estCat} de Estamina por ataque. Vida = Vitalidade × ${d.cat} × (nível + 2)${s.chefe ? " × 1,5 (Chefe)" : ""} - fórmula na aba Opções. Estresse Máximo ${d.stressBase} (2 + Categoria, tabela do Codex): +${estresseItem} aqui, somado ao 2 padrão.</p>` }
+        descricao: `<p><b>Categoria ${d.cat}</b> (Codex Bestiariun, seção 4.9 do guia). Dado de dano ${d.escala.danoCat} (cresce 1 dado a cada 5 níveis a partir do 6), +${d.escala.estCat} de Estamina por ataque. Vida = ${d.cat} × (Vitalidade × (nível + 2)${d.piso ? ` + ${d.piso}` : ""})${s.chefe ? " × 1,5 (Chefe)" : ""} - fórmula na aba Opções. Estresse Máximo ${d.stressBase} (2 + Categoria, tabela do Codex): +${estresseItem} aqui, somado ao 2 padrão.</p>` }
     });
     itens.push({ name: "Dar Prioridade", type: "habilidade", img: "icons/magic/fire/flame-burning-hand-white.webp",
       system: { acoes: [{ nome: "Dar Prioridade", custoEstamina: 1, alcance: "9m", modoAlvo: "selecionado", modoAlvoTravado: true, usaDarPrioridade: true }],
@@ -982,7 +987,9 @@ class NaurenCriadorMonstro extends foundry.applications.api.HandlebarsApplicatio
       nivel: s.nivel, nivelBase: s.nivel, categoriaMonstro: d.cat,
       atributos: Object.fromEntries(NAUREN_CM_ATR.map(k => [k, { value: d.ef.a[k] }])), // com bônus de Função e tetos
       calculoVida: "customizado",
-      vidaFormula: `@vitalidade${monstro ? " * @categoria" : ""} * (@nivel + 2)${s.chefe ? " * 1.5" : ""}${s.bando >= 2 ? ` / ${s.bando}` : ""}`,
+      vidaFormula: s.bando >= 2
+        ? `@vitalidade${monstro ? " * @categoria" : ""} * (@nivel + 2)${s.chefe ? " * 1.5" : ""} / ${s.bando}`
+        : `${monstro ? "@categoria * " : ""}(@vitalidade * (@nivel + 2) + ${NAUREN_CM_VIDA_PISO})${s.chefe ? " * 1.5" : ""}`,
       defesa: d.def - d.pg.defesa, movimento: d.mov - d.pg.movimento, // os Pigmentos entram como itens e somam de novo na ficha
       notas: `<p><b>Criado com o Criador de Monstros</b> · ${monstro ? "Monstro" : "NPC"}, nível ${s.nivel}, ${s.func}${monstro ? `, Categoria ${d.cat}` : ""}${s.chefe ? ", Chefe" : ""}. Valor Base ${d.vb}.</p>`
     };

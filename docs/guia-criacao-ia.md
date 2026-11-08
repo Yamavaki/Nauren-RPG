@@ -915,10 +915,10 @@ pode ser Categoria 3 mesmo em nível baixo).
 
 ```
 Vida Máxima = Vitalidade × Multiplicador da Categoria × Nível   (fórmula do Códex original)
-Vida Máxima = Vitalidade × Categoria × (Nível + 2)            (criatura ORIGINAL, Criador 0.87; Chefe × 1,5)
+Vida Máxima = Categoria × (Vitalidade × (Nível + 2) + 25)     (criatura ORIGINAL, Criador 0.108; Chefe × 1,5)
 ```
 
-Criatura original: `calculoVida: "customizado"`, `vidaFormula: "@vitalidade * @categoria * (@nivel + 2)"`. O "+2" deixa os monstros de nível baixo resistentes sem mudar muito os de nível alto.
+Criatura original: `calculoVida: "customizado"`, `vidaFormula: "@categoria * (@vitalidade * (@nivel + 2) + 25)"` (Chefe: `... * 1.5`; NPC comum sem `@categoria * `). O piso de 25 por Categoria (0.108) deixa os monstros de nível baixo aguentarem alguns golpes dos jogadores sem mudar muito os de nível alto. Bando de lacaios fica sem o piso: `"@vitalidade * @categoria * (@nivel + 2) / N"`.
 
 Exemplo: Vitalidade 5, Categoria 2, Nível 10 → Vida Máxima = 5 × 2 × 10
 = 100 **(⚠️ não esqueça o × Nível — ele NÃO some quando se usa
@@ -1681,7 +1681,7 @@ sistema calcula, em qualquer fórmula de Ação, Gatilho, Condição ou Efeito:
 |---|---|---|
 | `@vb` | Valor Base pelo nível | 1-5: 3 · 6-10: 4 · 11-15: 5 · 16-18: 6 · 19-20: 10 · 21-23: 11 · 24-26: 12 · 27-29: 13 · 30: 14 |
 | `@categoria` | Categoria da ficha | 1 a 4 |
-| `@danoCat` | dado de dano da Categoria (**é um dado**: só em dano/cura) | 1d6 / 2d8 / 3d10 / 4d12 |
+| `@danoCat` | dado de dano da Categoria (**é um dado**: só em dano/cura). Cresce +1 dado a cada 5 níveis a partir do 6 (6-10 +1, 11-15 +2, 16-20 +3, 21-25 +4, 26-30 +5); o `@meioCat` ganha metade disso. Bando fica no dado base | 1d6 / 2d8 / 3d10 / 4d12 (nível 1-5) |
 | `@meioCat` | metade do dado, arredondando para cima | 1d6 / 1d8 / 2d10 / 2d12 |
 | `@estCat` | Estamina extra por ataque | +0 / +1 / +2 / +3 |
 
@@ -1786,7 +1786,7 @@ Estudo completo em `nauren-estudo-balanceamento-0.87.0.md`. Regras que o Criador
 - **Pesos por Função** (não mais 2:1 igual): Atacante Agi 3 · Est 2,5 · For 2 · Int 1 · Des 1; Defensor For 3 · Est 3 · Agi 1,5 · Int 1 · Des 1; Suporte Int 3 · Est 2,5 · Des 2 · For 1,5 · Agi 1.
 - **Bônus de Função que passa do teto**: +1 (nível 1-5), +2 (6-15), +3 (16-20), +4 (21-30) em Agilidade (Atacante), Força e Estamina (Defensor), Inteligência e Destino (Suporte).
 - **Extras**: Atacante +1 no teto de Poder de Ataque; Defensor +1 Defesa; Suporte +1 no teto de Poder de Magia (teto de PdM = teto de PdA).
-- **Vida = Vitalidade × Categoria × (Nível + 2)** (`calculoVida: "customizado"`, `vidaFormula: "@vitalidade * @categoria * (@nivel + 2)"`); NPC comum sem `@categoria`.
+- **Vida = Categoria × (Vitalidade × (Nível + 2) + 25)** (`calculoVida: "customizado"`, `vidaFormula: "@categoria * (@vitalidade * (@nivel + 2) + 25)"`); NPC comum sem `@categoria * `; Bando sem o `+ 25` (ver seção do Bando).
 - **Chefe**: Vida ×1,5 (na fórmula), +1 Defesa, Estamina de Combate + (1 + Estamina extra da Categoria) = 1 ataque a mais por rodada, +1 Habilidade.
 - **Estresse máximo** (0.87.1): a tabela do documento de criação, 3 / 4 / 5 / 6 pela Categoria (2 + Categoria), sem extra de Função nem de Chefe. NPC comum: 3.
 - **Deslocamento**: fixo em 6 (decisão de mesa, diferente do "3 + Valor Base" do documento); o Mestre digita outro valor no Criador se quiser.

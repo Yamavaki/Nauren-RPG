@@ -85,32 +85,32 @@ As três Funções saem diferentes de verdade. Os pontos são distribuídos pelo
 
 **Referência pronta** (Categoria 1, sem Pigmento e sem Chefe; atributos já com o bônus de Função). Use para conferir a sua conta:
 
-| Nível | Função | Pontos | Atributos For/Agi/Est/Int/Des | PdA | PdM | Vit | Esp | Defesa | Vida (Cat. 1) |
+| Nível | Função | Pontos | Atributos For/Agi/Est/Int/Des | PdA | PdM | Vit | Esp | Defesa | Vida (Cat. 1) = Vit × (Nv+2) + 25 |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | Atacante | 16 | 4/5/4/3/1 | 4 | 3 | 4 | 4 | 13 | 12 |
-| 1 | Defensor | 16 | 5/4/5/3/1 | 5 | 4 | 5 | 4 | 14 | 15 |
-| 1 | Suporte | 16 | 3/1/4/5/5 | 3 | 4 | 3 | 10 | 13 | 9 |
-| 5 | Atacante | 20 | 4/8/5/3/1 | 6 | 4 | 4 | 4 | 13 | 28 |
-| 5 | Defensor | 20 | 8/4/6/3/1 | 6 | 4 | 7 | 4 | 14 | 49 |
-| 5 | Suporte | 20 | 3/1/5/8/5 | 4 | 6 | 4 | 13 | 13 | 28 |
-| 10 | Atacante | 30 | 6/12/9/3/2 | 9 | 6 | 7 | 5 | 14 | 84 |
-| 10 | Defensor | 30 | 14/4/11/3/2 | 8 | 7 | 12 | 5 | 15 | 144 |
-| 10 | Suporte | 30 | 4/2/7/13/8 | 5 | 9 | 5 | 21 | 14 | 60 |
-| 15 | Atacante | 40 | 8/16/10/4/4 | 11 | 7 | 9 | 8 | 15 | 153 |
-| 15 | Defensor | 40 | 17/6/14/4/3 | 10 | 9 | 15 | 7 | 16 | 255 |
-| 15 | Suporte | 40 | 5/3/10/16/10 | 7 | 11 | 7 | 26 | 15 | 119 |
-| 20 | Atacante | 70 | 14/21/16/9/8 | 14 | 12 | 15 | 17 | 20 | 330 |
-| 20 | Defensor | 70 | 24/11/19/8/9 | 13 | 13 | 21 | 17 | 21 | 462 |
-| 20 | Suporte | 70 | 10/9/14/22/19 | 12 | 14 | 12 | 41 | 20 | 264 |
-| 30 | Atacante | 100 | 15/25/18/10/9 | 16 | 14 | 16 | 19 | 20 | 512 |
-| 30 | Defensor | 100 | 27/13/22/9/10 | 15 | 15 | 24 | 19 | 21 | 768 |
-| 30 | Suporte | 100 | 12/10/16/26/22 | 14 | 16 | 14 | 48 | 20 | 448 |
+| 1 | Atacante | 16 | 4/5/4/3/1 | 4 | 3 | 4 | 4 | 13 | 37 |
+| 1 | Defensor | 16 | 5/4/5/3/1 | 5 | 4 | 5 | 4 | 14 | 40 |
+| 1 | Suporte | 16 | 3/1/4/5/5 | 3 | 4 | 3 | 10 | 13 | 34 |
+| 5 | Atacante | 20 | 4/8/5/3/1 | 6 | 4 | 4 | 4 | 13 | 53 |
+| 5 | Defensor | 20 | 8/4/6/3/1 | 6 | 4 | 7 | 4 | 14 | 74 |
+| 5 | Suporte | 20 | 3/1/5/8/5 | 4 | 6 | 4 | 13 | 13 | 53 |
+| 10 | Atacante | 30 | 6/12/9/3/2 | 9 | 6 | 7 | 5 | 14 | 109 |
+| 10 | Defensor | 30 | 14/4/11/3/2 | 8 | 7 | 12 | 5 | 15 | 169 |
+| 10 | Suporte | 30 | 4/2/7/13/8 | 5 | 9 | 5 | 21 | 14 | 85 |
+| 15 | Atacante | 40 | 8/16/10/4/4 | 11 | 7 | 9 | 8 | 15 | 178 |
+| 15 | Defensor | 40 | 17/6/14/4/3 | 10 | 9 | 15 | 7 | 16 | 280 |
+| 15 | Suporte | 40 | 5/3/10/16/10 | 7 | 11 | 7 | 26 | 15 | 144 |
+| 20 | Atacante | 70 | 14/21/16/9/8 | 14 | 12 | 15 | 17 | 20 | 355 |
+| 20 | Defensor | 70 | 24/11/19/8/9 | 13 | 13 | 21 | 17 | 21 | 487 |
+| 20 | Suporte | 70 | 10/9/14/22/19 | 12 | 14 | 12 | 41 | 20 | 289 |
+| 30 | Atacante | 100 | 15/25/18/10/9 | 16 | 14 | 16 | 19 | 20 | 537 |
+| 30 | Defensor | 100 | 27/13/22/9/10 | 15 | 15 | 24 | 19 | 21 | 793 |
+| 30 | Suporte | 100 | 12/10/16/26/22 | 14 | 16 | 14 | 48 | 20 | 473 |
 
 ### 1.4 Categoria
 
 | Categoria | 1 | 2 | 3 | 4 |
 |---|---|---|---|---|
-| Dado de dano do golpe principal (`@danoCat`) | 1d6 | 2d8 | 3d10 | 4d12 |
+| Dado de dano do golpe principal (`@danoCat`, nível 1-5; +1 dado a cada 5 níveis a partir do 6) | 1d6 | 2d8 | 3d10 | 4d12 |
 | Metade, para áreas e golpes com efeito forte (`@meioCat`) | 1d6 | 1d8 | 2d10 | 2d12 |
 | Estamina extra por ataque (`@estCat`) | +0 | +1 | +2 | +3 |
 | Multiplicador de Vida | ×1 | ×2 | ×3 | ×4 |
@@ -119,7 +119,7 @@ As três Funções saem diferentes de verdade. Os pontos são distribuídos pelo
 
 ### 1.5 Recursos e números finais
 
-- **Vida** = Vitalidade × Categoria × (Nível + 2), arredondada para baixo. Chefe: × 1,5. NPC comum (não monstro): sem a Categoria. No Foundry: `calculoVida: "customizado"`, `vidaFormula: "@vitalidade * @categoria * (@nivel + 2)"` (Chefe: `... * 1.5`).
+- **Vida** = Categoria × (Vitalidade × (Nível + 2) + 25), arredondada para baixo. Chefe: × 1,5. NPC comum (não monstro): sem a Categoria. No Foundry: `calculoVida: "customizado"`, `vidaFormula: "@categoria * (@vitalidade * (@nivel + 2) + 25)"` (Chefe: `... * 1.5`). Bando de lacaios: sem o `+ 25`, `"@vitalidade * @categoria * (@nivel + 2) / N"`.
 - **Defesa** = 10 + Valor Base, cortada no teto da faixa; depois soma Pigmento, +1 Defensor e +1 Chefe.
 - **Estamina de Combate** = atributo Estamina. Chefe: + (1 + Estamina extra da Categoria), ou seja, 1 ataque a mais por rodada.
 - **Estresse Máximo** = 2 + Categoria (NPC comum: 3). Sem extra de Função nem de Chefe.
@@ -342,8 +342,8 @@ BALANCEAMENTO (resumo da Parte 1 do prompt-criacao-criatura.md)
 Valor Base pelo nível: 1-5: 3 · 6-10: 4 · 11-15: 5 · 16-18: 6 · 19-20: 10 · 21-23: 11 · 24-26: 12 · 27-29: 13 · 30: 14. Pontos de atributo = Valor Base × 5 + Nível. Limite por atributo = Valor Base + Nível.
 Tetos por faixa (Estamina / Pda / Defesa): 1-5: 7/6/13 · 6-10: 9/8/14 · 11-15: 12/10/15 · 16-18: 14/12/16 · 19-20: 16/13/20 · 21-25: 17/14/20 · 26-30: 18/15/20.
 "Função: Atacante lidera Agilidade, Defensor lidera Força e Estamina, Suporte lidera Inteligência e Destino. Os pesos, os tetos de cada atributo por Função e o bônus de Função estão na Parte 1.3 do prompt, com uma tabela pronta por nível para conferir. Atacante +1 no teto de Pda; Defensor +1 Defesa; Suporte +1 no teto de Pdm. Os Pigmentos somam por cima de qualquer teto."
-"Pontos de vida = Vitalidade × Categoria × (Nível + 2), no nível mínimo da faixa (Chefe × 1,5). Defesa = 10 + Valor Base até o teto da faixa. Movimento = 6 m (só muda se a criatura for claramente rápida, voadora ou aquática). Estresse Máx = 2 + Categoria."
-Categoria 1 / 2 / 3 / 4: dado de dano 1d6 / 2d8 / 3d10 / 4d12; Estamina extra por ataque +0 / +1 / +2 / +3 (já somada no custo escrito da ação); Vida ×1 / ×2 / ×3 / ×4.
+"Pontos de vida = Categoria × (Vitalidade × (Nível + 2) + 25), no nível mínimo da faixa (Chefe × 1,5). Defesa = 10 + Valor Base até o teto da faixa. Movimento = 6 m (só muda se a criatura for claramente rápida, voadora ou aquática). Estresse Máx = 2 + Categoria."
+Categoria 1 / 2 / 3 / 4: dado de dano 1d6 / 2d8 / 3d10 / 4d12 (nível 1-5; +1 dado a cada 5 níveis a partir do 6); Estamina extra por ataque +0 / +1 / +2 / +3 (já somada no custo escrito da ação); Vida ×1 / ×2 / ×3 / ×4.
 "Habilidades por nível (Chefe +1): 4 (1-5), 5 (6-10), 6 (11-15), 7 (16-20), 8 (21-25), 9 (26-30). Peculiaridades com valor: 1 / 2 / 3 / 3 / 4 / 4. Pigmentos: 2 ou mais, sempre."
 "Conversão de uma ficha do Códex: os números do livro valem como estão (a Exemplo Capélia é uma conversão e usa os números do livro, não a fórmula acima)."
 ESTRUTURA DA ABA MODELO

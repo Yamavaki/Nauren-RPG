@@ -4201,7 +4201,7 @@ const NAUREN_REFERENCIA_FORMULAS = [
       { token: "@custoManaDaAcao", desc: "O custo de Mana desta MESMA Ação (campo \"Custo de Mana\") - só funciona no campo \"Valor do Escudo\" (\"Concede Escudo\" ligado nesta Ação), ex: \"Escudo de Mana\" usa \"@custoManaDaAcao*2\". Útil pra Ações com custo variável, editado pelo jogador antes de usar." },
       { token: "@categoria", desc: "Categoria do monstro (1 a 4) - o campo \"Categoria\" do cabeçalho da ficha de NPC (ou o item \"Categoria N\" em fichas antigas). Funciona em qualquer fórmula." },
       { token: "@vb", desc: "Valor Base da criatura pelo nível (1-5: 3, 6-10: 4, 11-15: 5, 16-18: 6, 19-20: 10, 21-23: 12, 24-26: 15, 27-29: 18, 30: 22) - a escala do criador de monstros. Ex.: Envenenador = \"@vb-1\"." },
-      { token: "@danoCat", desc: "Dado de dano da Categoria (1d6 / 2d8 / 3d10 / 4d12) - é um DADO, use só em fórmulas de dano/cura (ex.: \"@danoCat+@poderAtaque\"); num modificador vira 0." },
+      { token: "@danoCat", desc: "Dado de dano da Categoria (1d6 / 2d8 / 3d10 / 4d12; +1 dado a cada 5 níveis a partir do 6) - é um DADO, use só em fórmulas de dano/cura (ex.: \"@danoCat+@poderAtaque\"); num modificador vira 0." },
       { token: "@meioCat", desc: "Metade do dado da Categoria, arredondando para cima (1d6 / 1d8 / 2d10 / 2d12) - para efeitos secundários, dano em área ou sopros." },
       { token: "@estCat", desc: "Estamina extra por ataque da Categoria (+0 / +1 / +2 / +3). Ex.: custo \"1+@estCat\"." },
       { token: "@armaduraCompleta", desc: "1 (verdadeiro) ou 0 (falso) - se você está com Armadura de corpo + Capa + Bota, todas EQUIPADAS ao mesmo tempo (\"Armadura Completa\", Cap. VII do manual). Sempre disponível, não precisa de nenhum toggle ligado." },
@@ -4967,10 +4967,18 @@ function naurenValorBasePorNivel(nivel) {
   if (n <= 23) return 11; if (n <= 26) return 12; if (n <= 29) return 13;
   return 14;
 }
-/** Dado de dano, metade do dado (arredondando para cima) e Estamina extra por ataque, pela Categoria. */
-function naurenEscalaPorCategoria(categoria) {
+/**
+ * Dado de dano, metade do dado (arredondando para cima) e Estamina extra por ataque, pela Categoria.
+ * 0.108 (rebalanceamento): o dado cresce com o nível da criatura — +1 dado a cada 5 níveis a partir do 6
+ * (6-10: +1, 11-15: +2, 16-20: +3, 21-25: +4, 26-30: +5); o meio dado ganha a metade disso (para cima).
+ * Nos níveis 1-5 nada muda. Sem nível (0), devolve o dado base.
+ */
+function naurenEscalaPorCategoria(categoria, nivel = 0) {
   const c = Math.max(1, Math.min(4, Number(categoria) || 1));
-  return { categoria: c, danoCat: ["1d6", "2d8", "3d10", "4d12"][c - 1], meioCat: ["1d6", "1d8", "2d10", "2d12"][c - 1], estCat: c - 1 };
+  const n = Math.max(0, Number(nivel) || 0);
+  const extra = n >= 6 ? Math.floor((n - 1) / 5) : 0, extraMeio = Math.ceil(extra / 2);
+  const faces = [6, 8, 10, 12][c - 1], base = c, baseMeio = [1, 1, 2, 2][c - 1];
+  return { categoria: c, danoCat: `${base + extra}d${faces}`, meioCat: `${baseMeio + extraMeio}d${faces}`, estCat: c - 1, dadosExtraNivel: extra };
 }
 /** Categoria final da criatura: campo da ficha, ou o item "Categoria N" quando o campo ficou no padrão. */
 function naurenCategoriaDoAtor(actor) {
@@ -7108,7 +7116,8 @@ class NaurenActor extends Actor {
     sys.categoriaBonus = (total.categoria ?? 0) + (totalPigmento.categoria ?? 0);
     sys.categoriaTotal = Math.max(1, Math.min(4, naurenCategoriaDoAtor(this) + sys.categoriaBonus));
     sys.valorBase = naurenValorBasePorNivel(sys.nivel || 1);
-    sys.escalaMonstro = naurenEscalaPorCategoria(sys.categoriaTotal);
+    // 0.108: o dado da Categoria cresce com o nível (só NPC; Bando de lacaios fica no dado base, já estava equilibrado).
+    sys.escalaMonstro = naurenEscalaPorCategoria(sys.categoriaTotal, this.type === "npc" && !this.flags?.nauren?.bando?.ativo ? sys.nivel : 0);
 
     // Deltas para exibição auditável ("10 +2 = 12") - combina temporário
     // (Opções/Efeitos/Armadura/Estresse) e Pigmento no mesmo "+X = Y",
@@ -7417,6 +7426,7 @@ Hooks.once("init", () => {
   game.settings.register("nauren", "migracaoMisticoRevisaoV2", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoLadinoRevisaoV1", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoAtaqueAgilidadeV1", { scope: "world", config: false, type: Boolean, default: false });
+  game.settings.register("nauren", "migracaoVidaInimigosV1", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoRevisaoClasses0921", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoRevisaoMago0924", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoEscudoDeMana0925", { scope: "world", config: false, type: Boolean, default: false });
@@ -7672,6 +7682,48 @@ async function naurenMigrarAtaqueAgilidade() {
   if (n) console.log(`Nauren RPG | ${n} armas passaram a atacar com o Poder de Ataque.`);
 }
 Hooks.once("ready", () => { naurenMigrarAtaqueAgilidade().catch(err => console.warn("Nauren RPG | migração ataque/agilidade", err)); });
+
+/**
+ * 0.108 (rebalanceamento): a Vida das criaturas do Criador de Monstros e da IA ganha o piso por Categoria.
+ * Troca SÓ a fórmula gerada (exatamente "@vitalidade [* @categoria] * (@nivel + 2) [* 1.5]") pela nova
+ * "[@categoria * ](@vitalidade * (@nivel + 2) + 25) [* 1.5]". Bando ("/ N"), Bestiário e fórmulas feitas à mão
+ * ficam como estão. Quem estava com a Vida cheia continua cheio (ator e tokens não vinculados).
+ */
+function naurenFormulaVidaNova(f) {
+  const m = /^\s*@vitalidade(\s*\*\s*@categoria)?\s*\*\s*\(\s*@nivel\s*\+\s*2\s*\)(\s*\*\s*1\.5)?\s*$/.exec(String(f ?? ""));
+  if (!m) return null;
+  return `${m[1] ? "@categoria * " : ""}(@vitalidade * (@nivel + 2) + 25)${m[2] ? " * 1.5" : ""}`;
+}
+async function naurenMigrarVidaInimigos() {
+  if (!game.user?.isGM || game.settings.get("nauren", "migracaoVidaInimigosV1")) return;
+  const cheio = a => { const v = a?.system?.vida; return !!v && Number(v.value) >= Number(v.max) && Number(v.max) > 0; };
+  let n = 0;
+  for (const a of game.actors.filter(x => x.type === "npc")) {
+    if (a.system.calculoVida !== "customizado") continue;
+    const nova = naurenFormulaVidaNova(a._source.system?.vidaFormula);
+    if (!nova) continue;
+    // Tokens não vinculados que usam a fórmula do ator (sem fórmula própria): guarda quem estava cheio.
+    const tokens = [];
+    for (const cena of game.scenes ?? []) for (const td of cena.tokens ?? []) {
+      if (td.actorLink || td.actorId !== a.id || !td.actor) continue;
+      if (td.delta?._source?.system?.vidaFormula !== undefined) continue;
+      tokens.push({ td, cheio: cheio(td.actor) });
+    }
+    const estavaCheio = cheio(a);
+    try {
+      await a.update({ "system.vidaFormula": nova });
+      if (estavaCheio) await a.update({ "system.vida.value": a.system.vida.max });
+      for (const t of tokens) if (t.cheio && t.td.actor) await t.td.actor.update({ "system.vida.value": t.td.actor.system.vida.max });
+      n++;
+    } catch (err) { console.warn("Nauren RPG | migração da Vida dos inimigos", a.name, err); }
+  }
+  await game.settings.set("nauren", "migracaoVidaInimigosV1", true);
+  if (n) {
+    console.log(`Nauren RPG | Vida rebalanceada em ${n} criaturas.`);
+    ui.notifications?.info(`Nauren RPG 0.108: a Vida de ${n} criatura(s) do Criador de Monstros foi rebalanceada (piso de Vida por Categoria).`);
+  }
+}
+Hooks.once("ready", () => { naurenMigrarVidaInimigos().catch(err => console.warn("Nauren RPG | migração da Vida dos inimigos", err)); });
 
 /**
  * 0.107.1: CSS velho no cache. O Foundry carrega styles/nauren.css sem número de versão; o navegador (e o
@@ -8228,5 +8280,5 @@ __naurenIniciar_inventor();
 __naurenIniciar_condicao_hud_token();
 
 
-export { naurenConsertarReferenciasImport, naurenAvisarImportacao, naurenMigrarAtaqueAgilidade };
+export { naurenConsertarReferenciasImport, naurenAvisarImportacao, naurenMigrarAtaqueAgilidade, naurenMigrarVidaInimigos, naurenFormulaVidaNova };
 export { ARMADURA_TIPOS, ARMA_TIPOS, ATRIBUTOS_BASE_OPCOES, ATRIBUTOS_BONUS, CALCULO_DADOS_DESTINO_OPCOES, CALCULO_ESTAMINA_COMBATE_OPCOES, CALCULO_MANA_OPCOES, CALCULO_VIDA_OPCOES, HABILIDADE_CATEGORIAS, MODOS_ROLAGEM, NAUREN_ARRAYS_ADICIONAVEIS, NAUREN_ATRIBUTOS_CLASSE_LIVRO, NAUREN_ATRIBUTOS_CLASSE_LIVRO_0_101_0, NAUREN_CAMPOS_ACIMA_AUTOMATICOS, NAUREN_CAMPOS_ACIMA_GERAIS, NAUREN_CAMPOS_ANALISE_CRIATIVA, NAUREN_CAMPOS_ESTADO_ACAO, NAUREN_CAMPOS_ESTADO_ITEM, NAUREN_CAMPOS_MODIFICADOR_OPCOES, NAUREN_CAPACIDADES, NAUREN_CAPACIDADE_POR_NOME, NAUREN_CATEGORIAS_EQUIPAMENTO, NAUREN_CM_PECS, NAUREN_CORES_PINTURA, NAUREN_CRIADOR_PERFIS_CLASSE, NAUREN_EQUIPAMENTO_CLASSE_LIVRO, NAUREN_EQUIP_CATEGORIAS, NAUREN_FASE_MODIFICADOR, NAUREN_LOGICA_CONDICOES_OPCOES, NAUREN_MODOS_DURACAO, NAUREN_MODOS_MODIFICADOR_EXTERNO_OPCOES, NAUREN_MOMENTOS_PERIODICOS, NAUREN_NOMES_ATRIBUTO_CURTO, NAUREN_PAGAR_CUSTO_OPCOES, NAUREN_PAGAR_RECURSO_OPCOES, NAUREN_PODEROSA_EFEITOS, NAUREN_PRIORIDADE_DISPOSICAO, NAUREN_PRIORIDADE_INDICADORES, NAUREN_PRIORIDADE_INDICADORES_ACAO, NAUREN_PRIORIDADE_QUEM_RECEBE, NAUREN_QUANTIDADE_MAXIMA, NAUREN_QUERY_APLICAR_CONDICAO, NAUREN_QUERY_APLICAR_CONDICAO_ECO, NAUREN_QUERY_AREA_AO_CRIAR, NAUREN_QUERY_BESTA_INICIAL, NAUREN_QUERY_CRIAR_ITEM, NAUREN_QUERY_DANO_COLISAO, NAUREN_QUERY_DISPARAR_EVENTO, NAUREN_QUERY_DOMAR, NAUREN_QUERY_ITEM_MESTRE, NAUREN_QUERY_MANIPULAR, NAUREN_QUERY_REACAO_PRE_ATAQUE, NAUREN_REACAO_RESISTIR_OPCOES, NAUREN_REFERENCIA_FORMULAS, NAUREN_ROTULO_FASE_MODIFICADOR, NAUREN_TOKENS_CONTEXTO, NaurenActor, NaurenActorData, NaurenActorSheet, NaurenAlvoHelper, NaurenBarrasEditor, NaurenConcessaoHelper, NaurenCondicaoData, NaurenCriadorMonstro, NaurenEfeitoData, NaurenGrupoHelper, NaurenHabilidadeData, NaurenHudCombate, NaurenHudRecursosEditor, NaurenItemSheet, NaurenMagiaData, NaurenPeculiaridadeData, NaurenProgressaoHelper, NaurenSubclasseData, NaurenSubclasseHelper, NaurenToken, RECURSOS_ALVO, TEMPLATE_FORMATOS, USOS_RESET_LABEL, USOS_RESET_POR_COMBATE, calcularVidaBase, campoAcao, campoCondicaoAplicada, campoCuraBloco, campoDanoBloco, campoGatilho, campoModificador, campoModificadorExterno, campoRecursoDeclarado, naurenAbrirBorda, naurenAbrirConstrucaoPorAcao, naurenAbrirEnquadramento, naurenAcaoEhCura, naurenAcaoEhGolpe, naurenAcaoSemCustoEstaminaMana, naurenAgindoForaDoTurno, naurenAjustarListasLargas, naurenAjusteCriticoDoGrupo, naurenAjusteCustoManaMagia, naurenAlcanceEmMetros, naurenAliadosAte, naurenAlvoDaRecarga, naurenAlvosSaoVelhos, naurenAncoraDuracaoAtual, naurenAnotarModsRecebidosNoCard, naurenAnotarNoRegistro, naurenApagarItensSeExistirem, naurenAplicarAcalanto, naurenAplicarCuraManual, naurenAplicarDanoManual, naurenAplicarEfeitoSimples, naurenAplicarEfeitosPeriodicos, naurenAplicarPalavraComEscolha, naurenArmarPoderosa, naurenAtacouNoTurnoAtual, naurenAtaqueBasicoNaReacao, naurenAtorDoCard, naurenAtorTemRecurso, naurenAtoresDoTurno, naurenAtributosRecomendadosPreenchido, naurenAtualizarCondicaoPresenca, naurenAtualizarItemViaMestre, naurenAtualizarLuzVisaoDosTokens, naurenAvaliarExpressaoSimples, naurenAvancarDuracoesCondicoes, naurenAvisarEstrelaDoArcoIris, naurenAvisarSeLinkBloqueado, naurenBandoCfg, naurenBandoChave, naurenBandoMembros, naurenBandoNoAlcance, naurenBeneficiosDoEstado, naurenBonusAcimaContra, naurenBonusDanoPeriodico, naurenBordaPreviaDataUrl, naurenBordaPreviaDoAtor, naurenBotoesDeFormula, naurenBotoesDirecaoGrimorio, naurenBreakdownSimples, naurenBuscarMascotesDe, naurenCalcularEmpurrao, naurenCardMovimento, naurenCasasLivresEmVolta, naurenCategoriaDaArma, naurenCategoriaDoAtor, naurenCategoriaEquipamento, naurenCelulasNaArea, naurenChaveEscopoRelogio, naurenChaveFlagSegura, naurenChecarCondicaoAoAtingirMax, naurenClamparRecursosAoMaximo, naurenClassificarCampoAcao, naurenCombatenteEhDoAtor, naurenCompensacoesContraOrigem, naurenConcederPrioridadePeloCard, naurenConcederRecurso, naurenConcederRecursoAoAtacante, naurenCondicaoDoSistemaPorNome, naurenCondicaoNegativa, naurenCondicoesAtivas, naurenCondicoesLigadasA, naurenCongelarNoNivel, naurenConsumirUsoDaHabilidade, naurenContarAliadosProximos, naurenContextoInvencoes, naurenCriarFrascoEspecial, naurenCriarInvocacoes, naurenCriarItemNoAtor, naurenCriarObraPrima, naurenCronometroNoDialog, naurenDefinirCaminhoProfundo, naurenDepoisDoMovimento, naurenDescricaoParaChat, naurenDeslocarToken, naurenDiferencaDesfazer, naurenDispararEventoNoDono, naurenDisposicaoDoAtor, naurenEfeitoComSubst, naurenEhCondicaoModelo, naurenEhGolpeEspiritual, naurenEhItem, naurenEhMoeda, naurenEmpurrarToken, naurenEquipRecomendadoPreenchido, naurenEquipamentoGasta, naurenEquipamentoRecomendado, naurenEscalaPorCategoria, naurenEscolherCorDaPintura, naurenEscolherEfeitoPoderosa, naurenEscolherFrasco, naurenEscolherPeculiaridade, naurenEscolherPontoNoMapa, naurenEstiloDoCard, naurenEstiloEnquadramento, naurenEstresseDosAliados, naurenEstudoNoAlvo, naurenExecutarRecarga, naurenFaceD20, naurenFixarTipoAlcanceSemeado, naurenFontesDeModificadores, naurenFormatarNumero, naurenFormatarNumeroCurto, naurenFormulaComTokensDoAtor, naurenFormulaParaTexto, naurenFotoCenaDesfazer, naurenFotografarModsRecebidos, naurenFrascoParaPacote, naurenGastarRecursoSimples, naurenGrimorio, naurenGruposExclusivosConhecidos, naurenGuardarD20Roubado, naurenHandleQueryAreaAoCriar, naurenHandleQueryBestaInicial, naurenHandleQueryDanoColisao, naurenHandleQueryDomar, naurenHandleQueryItemMestre, naurenHandleQueryManipular, naurenHandleQueryReacaoPreAtaque, naurenHud, naurenHudAlvos, naurenHudAnimacoesLigadas, naurenIdentificadorTurnoAtual, naurenInterpretarModificador, naurenInterpretarModificadorComDado, naurenItemCorrespondeAoAlvo, naurenItemEhDoProjeto, naurenItemTemLuz, naurenItemValeAgora, naurenItensDoProjetoPorNome, naurenJanelaMovimento, naurenLerNumero, naurenLimiteOfensivoBase, naurenLimiteVagaDefesa, naurenLimparMeusAlvos, naurenLuzVisaoDoAtor, naurenMaisDadosPoderosa, naurenMapearStrings, naurenMarcarAlvosAgora, naurenMedirDistanciaBordas, naurenMelhorDistribuicao, naurenMestreDaMesa, naurenMetrosEmpurrao, naurenModificacoesRecebidas, naurenModoDuracaoCondicao, naurenModoMovimento, naurenModsAcima, naurenMomentoEfeitoPeriodico, naurenMontarDescricao, naurenMontarSelecaoPrioridade, naurenMostrarNomesDosCamposUuid, naurenMovSemPrioridadeUsado, naurenMoverGrimorio, naurenMoverSemMovimento, naurenMoverTokenPara, naurenMoverTokenViaMestre, naurenMovimentoEmCombate, naurenMovimentoSaldo, naurenMudancaMexeLuzVisao, naurenMudancasTokenLuzVisao, naurenMunicoesCompativeis, naurenNivelDeOrigemNaClasse, naurenNomeDeToken, naurenNomeDoRecurso, naurenNomeNormalizado, naurenNomeParaUuid, naurenNomeRecurso, naurenNotificarGanhoPerda, naurenOferecerAcovardar, naurenOferecerDestino, naurenOpcoesDeCampoParaModificadorExterno, naurenOperarEntidade, naurenOperarEstudo, naurenOperarRecursoViaMestre, naurenOperarRegistroPrioridade, naurenOrdemListaMagias, naurenPerfisSugestaoClasse, naurenPersistirDetalhesAbertos, naurenPersonagensEmCena, naurenPesoOfensivo, naurenPesoOfensivoEquipado, naurenPintarJanela, naurenPontoDentroDaRegiao, naurenPostarCard, naurenPostarDescricaoNoChat, naurenPreencherRecursosNoMaximo, naurenPreparacaoUsadas, naurenPrepararModificador, naurenPresosPorArmadilha, naurenPrioridadesGeradas, naurenPrioridadesNoTurno, naurenProcessarEmanacoes, naurenProcessarFrascoNoAlvo, naurenProcessarGatilhos, naurenProcessarTemplatesPersistentes, naurenRaizDaEvolucao, naurenReacoesPagasDano, naurenReacoesPagasDefesa, naurenReaplicarUpgradesDeSubclasse, naurenRecarregarUsos, naurenReconciliarTodosOsItens, naurenReconjurarPendente, naurenRecuperarRecursoManual, naurenRecursoDoAtor, naurenRecursoEstaTravado, naurenRecursosCustomConhecidos, naurenRegistrarAtaqueNoTurno, naurenRegistrarUsoTorre, naurenRegistroParaExport, naurenRegistroParaFicha, naurenRegraVagasDefesa, naurenRegrasExtras, naurenReordenarGrimorio, naurenResetarCompendios, naurenResolverPorNivel, naurenResolverPorRank, naurenResolverPrioridade, naurenResolverSelf, naurenResolverSelfEmObjeto, naurenResolverTokenFormula, naurenRestaurarArmasDaLoja, naurenResumoDaAcao, naurenResumoEquipamentoClasse, naurenResumoModificador, naurenResumoPrioridadeAcao, naurenRolagemAuditada, naurenRollToBreakdownText, naurenRotuloToken, naurenSincronizarCriativasDoLadino, naurenSincronizarGrimorio, naurenSincronizarRecursosCustom, naurenSomarEfeitoPermanente, naurenSubstituirTokensDeContexto, naurenTemEstado, naurenTempoReacao, naurenTextoFrascoEspecial, naurenTextoHistoricoDestino, naurenTextoModificador, naurenTextoRolagem, naurenTimeoutReacaoMs, naurenTipoAlcanceAdivinhado, naurenTipoAlcanceDaAcao, naurenTiposEstudoDoAtor, naurenTokenElegivelPorDisposicao, naurenTokensDeslocando, naurenTransferirRecursoDoAlvo, naurenTravaDaAcao, naurenTravaPrioridade, naurenUltimoAtacante, naurenUmaVezMarcar, naurenUmaVezRecusa, naurenUsarAcalanto, naurenUsoDisponivel, naurenUsosExtrasPara, naurenUsosPassivaMax, naurenUsuarioResponsavel, naurenUuidEhEsteToken, naurenUuidPorSeed, naurenVagaDefesa, naurenValorBasePorNivel, naurenValorEstudo, resumoCondicao, resumoCor, resumoEfeito };
