@@ -1,5 +1,5 @@
 /* Versão deste arquivo: o sistema confere no "ready" e, se o navegador/Forge tiver guardado um CSS antigo, carrega o novo. */
-:root { --nauren-css-versao: "0.108.3"; }
+:root { --nauren-css-versao: "0.109.0"; }
 /* 
 ===================================================
 1. FUNDO E FONTES GERAIS
@@ -8771,3 +8771,96 @@ h4.ap-rot { margin: 0; padding: 0; border: 0; line-height: 1.2; }
 #nauren-hud-combate span.nauren-hud-retrato > img { display: block; width: 100%; height: 100%; object-fit: cover; border: 0; border-radius: 0; pointer-events: none; }
 .nauren-roll-card.nc2 > header .nc-retrato { display: block; overflow: hidden; }
 .nauren-roll-card.nc2 > header .nc-retrato > .nrc-icon { width: 100%; height: 100%; flex: none; box-shadow: none; border-radius: 0; }
+
+/* =====================================================================
+ * 0.109 — Organizador das listas (modulos/organizador.mjs)
+ * Seleção, filtros rápidos e ações em lote na barra lateral e nos compêndios.
+ * ===================================================================== */
+.nauren-org-bt.nauren-org-ligado { color: #1b1424 !important; background: #d9b25f !important; border-radius: 3px; }
+.nauren-org-bt { position: relative; }
+.nauren-org-bt[data-nauren-org-n]:not([data-nauren-org-n=""])::after {
+  content: attr(data-nauren-org-n); position: absolute; top: -4px; right: -5px; min-width: 13px; height: 13px; padding: 0 3px;
+  border-radius: 7px; background: #1b1424; color: #d9b25f; font: 700 9px/13px var(--font-primary, sans-serif); text-align: center; }
+.nauren-org-chips { display: flex; flex-wrap: wrap; gap: 4px; padding: 2px 0 6px; }
+.nauren-org-chips[hidden], .nauren-org-info[hidden] { display: none !important; }
+.nauren-org-chip { flex: none !important; width: auto !important; height: auto !important; min-height: 0 !important; line-height: 1.3 !important;
+  padding: 2px 9px !important; margin: 0 !important; border-radius: 99px !important; border: 1px solid #5a5560 !important; background: transparent !important;
+  color: #d9d2e0 !important; font-size: 12px !important; font-weight: 500 !important; cursor: pointer; box-shadow: none !important; }
+.nauren-org-chip span { opacity: .7; margin-left: 4px; font-variant-numeric: tabular-nums; }
+.nauren-org-chip[aria-pressed="true"] { background: #d9b25f !important; border-color: #d9b25f !important; color: #1b1424 !important; }
+.nauren-org-chip:hover { border-color: #d9b25f !important; }
+.nauren-org-chip-limpar { border-style: dashed !important; color: #b9b2c2 !important; }
+.nauren-org-info { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 0 2px 6px; font-size: 12px; color: #b9b2c2; }
+.nauren-org-info button { flex: none !important; width: auto !important; height: auto !important; min-height: 0 !important; padding: 0 !important; margin: 0 !important;
+  border: 0 !important; background: none !important; box-shadow: none !important; color: #d9b25f !important; font-size: 12px !important; font-weight: 600 !important; cursor: pointer; }
+
+/* caixinhas: só aparecem no modo Selecionar (ou com algo marcado) */
+.nauren-org-caixa { display: none; flex: none; width: 17px; height: 17px; margin: 0 10px 0 auto; border: 1.5px solid #8d8696; border-radius: 3px; align-self: center;
+  place-items: center; cursor: pointer; box-sizing: border-box; }
+.folder-header > .nauren-org-caixa { margin: 0 6px 0 0; border-color: #ffffffb0; }
+.nauren-org-modo .nauren-org-caixa { display: grid; }
+.nauren-org-sel > .nauren-org-caixa, .nauren-org-sel-pasta > .folder-header > .nauren-org-caixa { background: #d9b25f; border-color: #d9b25f; }
+.nauren-org-sel > .nauren-org-caixa::after, .nauren-org-sel-pasta > .folder-header > .nauren-org-caixa::after {
+  content: ""; width: 8px; height: 4px; border: 2px solid #1b1424; border-top: 0; border-right: 0; transform: rotate(-45deg) translate(1px, -1px); }
+li.directory-item.nauren-org-sel { background: color-mix(in srgb, #7b4fb0 34%, transparent) !important; box-shadow: inset 3px 0 0 #d9b25f; }
+li.directory-item.folder.nauren-org-sel-pasta > .folder-header { box-shadow: inset 0 0 0 2px #d9b25f; }
+.nauren-org-dentro { display: none !important; flex: none !important; width: 22px !important; height: 22px !important; min-height: 0 !important; padding: 0 !important;
+  margin: 0 2px !important; border: 0 !important; background: none !important; box-shadow: none !important; color: #ffffffcc !important; font-size: 12px !important; }
+.nauren-org-modo .nauren-org-dentro { display: inline-grid !important; place-items: center; }
+.nauren-org-dentro:hover { color: #d9b25f !important; }
+
+/* barra de ações */
+.nauren-org-barra { flex: none; display: grid; gap: 6px; padding: 8px 8px 6px; border-top: 1px solid #d9b25f; background: #211b2b; }
+.nauren-org-conta { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #eee; }
+.nauren-org-conta b { color: #d9b25f; font-variant-numeric: tabular-nums; }
+.nauren-org-conta small { color: #b9b2c2; }
+.nauren-org-conta button { flex: none !important; width: auto !important; height: auto !important; min-height: 0 !important; padding: 0 !important;
+  border: 0 !important; background: none !important; box-shadow: none !important; color: #b9b2c2 !important; font-size: 12px !important; }
+.nauren-org-botoes { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 5px; }
+.nauren-org-botoes button { margin: 0; white-space: nowrap; font-size: 12.5px; }
+.nauren-org-botoes button i { margin-right: 3px; }
+.nauren-org-botoes button[data-nauren-org="mais"] { width: 34px; }
+.nauren-org-botoes button.nauren-org-perigo:hover { border-color: #e0626b; color: #ffc9cd; }
+
+/* menu próprio (botão direito com vários marcados, Mover, ⋯) */
+.nauren-org-menu { position: fixed; z-index: 1000; min-width: 230px; max-height: 70vh; overflow-y: auto; padding: 4px 0; border: 1px solid #5a5560;
+  border-radius: 5px; background: #24202b; box-shadow: 0 8px 24px #000a; color: #eee; }
+.nauren-org-menu button { display: flex; align-items: center; gap: 9px; width: 100%; padding: 5px 12px; margin: 0; border: 0; border-radius: 0;
+  background: none; box-shadow: none; color: #eee; font-size: 13.5px; text-align: left; white-space: pre; line-height: 1.5; }
+.nauren-org-menu button i { width: 16px; text-align: center; color: #d9b25f; }
+.nauren-org-menu button:hover:not([disabled]), .nauren-org-menu button:focus-visible { background: #3a3346; outline: none; }
+.nauren-org-menu button[disabled] { opacity: .45; }
+.nauren-org-menu button.nauren-org-perigo i, .nauren-org-menu button.nauren-org-perigo:hover { color: #ff9aa2; }
+.nauren-org-menu hr { margin: 4px 0; border: 0; border-top: 1px solid #3a3346; }
+.nauren-org-rot { padding: 4px 12px 2px; font-size: 10.5px; letter-spacing: .07em; text-transform: uppercase; color: #9b95a2; }
+
+/* aviso com Desfazer */
+.nauren-org-aviso { position: fixed; z-index: 1001; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 12px;
+  border: 1px solid #d9b25f; border-radius: 5px; background: #2f2640; color: #eee; font-size: 13px; box-shadow: 0 6px 18px #0009; }
+.nauren-org-aviso button { flex: none; width: auto; margin: 0; padding: 2px 6px; border: 0; background: none; box-shadow: none; color: #d9b25f; font-weight: 700; }
+
+/* janelas (excluir, renomear, permissões, lixeira) */
+.nauren-org-form { display: grid; gap: 10px; }
+.nauren-org-form label { display: grid; gap: 4px; font-size: 13px; }
+.nauren-org-grade2 { grid-template-columns: 1fr 1fr; }
+.nauren-org-linha { grid-column: 1 / -1; display: flex !important; align-items: center; gap: 6px; }
+.nauren-org-nomes, .nauren-org-previa { margin: 0; padding-left: 18px; font-size: 13px; display: grid; gap: 2px; }
+.nauren-org-previa { display: block; padding: 6px 8px 6px 22px; background: #0000002a; border-radius: 4px; }
+.nauren-org-previa s { opacity: .6; }
+.nauren-org-opcoes { display: grid; gap: 6px; margin: 0; padding: 8px 10px; border: 1px solid #5a5560; border-radius: 5px; }
+.nauren-org-opcoes label { display: flex; gap: 8px; align-items: flex-start; }
+.nauren-org-nota { margin: 0; font-size: 12px; opacity: .8; }
+.nauren-org-lix { display: grid; gap: 12px; padding: 4px 2px; }
+.nauren-org-lote { border: 1px solid #5a5560; border-radius: 5px; overflow: hidden; }
+.nauren-org-lote > header { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 6px 10px; background: #5a3d78; color: #fff; font-size: 13px; }
+.nauren-org-lote > header button { flex: none; width: auto; margin: 0; padding: 2px 8px; font-size: 12px; }
+.nauren-org-lote ul { margin: 0; padding: 0; list-style: none; }
+.nauren-org-lote li { display: flex; align-items: center; gap: 8px; padding: 4px 8px; border-top: 1px solid #ffffff14; }
+.nauren-org-lote li img { width: 32px; height: 32px; flex: none; object-fit: cover; border: 0; }
+.nauren-org-lote li span { flex: 1; min-width: 0; display: grid; font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; }
+.nauren-org-lote li small { font-size: 11px; opacity: .7; }
+.nauren-org-lote li button { flex: none; width: 28px; height: 26px; margin: 0; padding: 0; }
+.nauren-org-lix footer { display: flex; justify-content: flex-end; }
+.nauren-org-lix footer button { width: auto; flex: none; }
+.nauren-org-vazio { text-align: center; padding: 40px 10px; opacity: .7; font-size: 14px; }
+.nauren-org-vazio i { font-size: 32px; margin-bottom: 8px; }

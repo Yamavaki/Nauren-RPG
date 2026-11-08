@@ -43,6 +43,7 @@ import { NAUREN_ESBOCOS, NAUREN_ICONES_FORMULA, NAUREN_ROTULO_CURTO_MOD, NAUREN_
 import { NAUREN_VAGAS_DEFESA, NAUREN_VAGAS_DEFESA_ROTULO, __naurenIniciar_equipamento_regras, naurenContaNoLimiteOfensivo, naurenLimiteOfensivoBase, naurenLimiteVagaDefesa, naurenPesoOfensivo, naurenPesoOfensivoEquipado, naurenReacaoPagaDisponivel, naurenReacaoPagaMarcarUso, naurenReacaoPagaUsosNoTurno, naurenReacoesPagasDano, naurenReacoesPagasDefesa, naurenReacoesPagasDoAtor, naurenRegraVagasDefesa, naurenTabelaPesosOfensivos, naurenVagaDefesa } from "./modulos/equipamento-regras.mjs";
 import { NAUREN_BOTAS_COLATERAL, NAUREN_BOTAS_CONSTRUCAO, NAUREN_FRASCOS_CONSTRUCAO, NAUREN_FRASCO_COLATERAL, NAUREN_INVENTOR_CONSTRUCAO, NAUREN_OBRA_PRIMA_ATRIBUTOS, NAUREN_ROTULO_RECURSO_FRASCO, NaurenAlambique, NaurenObraPrima, __naurenIniciar_inventor, naurenAbrirLoja, naurenAplicarEfeitoSimples, naurenCamadasFrasco, naurenContextoInvencoes, naurenCoresDoFrasco, naurenCriarFrascoEspecial, naurenCriarObraPrima, naurenEfeitoComSubst, naurenEscolherFrasco, naurenEscolherPeculiaridade, naurenFrascoModsDe, naurenFrascoNumero, naurenFrascoPagar, naurenFrascoParaPacote, naurenFrascoPodePagar, naurenFrascoRolar, naurenFrascoTextoCusto, naurenFrascosDoAtor, naurenMediaCores, naurenObraPrimaDe, naurenProcessarFrascoNoAlvo, naurenResumoFrasco, naurenSemearClasseInventor, naurenSemearInventorAvancado, naurenSemearInventorFrascosFerramentas, naurenSemearInventorSubclasses, naurenTextoEfeitoFrasco, naurenTextoFrascoEspecial, naurenUmaVezMarcar, naurenUmaVezRecusa } from "./modulos/inventor.mjs";
 import { NAUREN_STATUS_CORE_PARA_CONDICAO, __naurenIniciar_condicao_hud_token } from "./modulos/condicao-hud-token.mjs";
+import { naurenOrganizadorInit } from "./modulos/organizador.mjs";
 const { HTMLField, SchemaField, NumberField, StringField, BooleanField, ArrayField, ObjectField } = foundry.data.fields;
 
 /* =======================================
@@ -7323,6 +7324,7 @@ Hooks.once("init", () => {
   naurenTreinosInit(); // 0.102.4: Seguir o Exemplo (modulos/treinos.mjs)
   naurenAparenciaHooks(); Hooks.once("ready", () => naurenAparenciaMigrar().catch(err => console.warn("Nauren RPG | Migração da Aparência", err))); // 0.105: Aparência (modulos/aparencia.mjs)
   naurenImportarMassaInit(); // 0.107: importar várias fichas de um JSON (modulos/importar-massa.mjs)
+  naurenOrganizadorInit(); // 0.109: seleção, filtros e ações em lote nas listas (modulos/organizador.mjs)
   naurenEscritosInit(); // 0.106: Escritos — notas, cartas, pergaminhos e livros (modulos/escritos.mjs)
   naurenConfiguracoesInit(); // 0.104: painel único "Configurações do Nauren" (modulos/configuracoes.mjs)
   naurenMoldurasInit(); naurenMoldurasHooks(); naurenMoldurasProntasInit(); naurenMoldurasProntasHooks(); // 0.103: molduras de token (modulos/molduras-token.mjs)
