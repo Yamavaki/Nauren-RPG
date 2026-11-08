@@ -49,6 +49,6 @@ o Ctrl+clique fica com ele. Testado num simulador de navegador com a marcação 
   (a dica mostra todos); "Todos" quando a permissão padrão é Dono; "★ personagem" quando a ficha é o personagem principal dele.
 - Em todas as listas com dono (Atores, Itens, Diário, Tabelas, Cartas, Playlists; em Macros, o autor). Cenas e compêndios não.
 - Quem vê: o Mestre (tudo) e o próprio dono (só nas dele).
-- Filtros: uma etiqueta por jogador ("Ana 3"); o jogador vê só a "Meus".
+- Filtros (0.109.2): uma etiqueta só, "Jogador ▾", abre a lista dos jogadores que têm algo ali (online primeiro, com a contagem e busca quando passa de 6); escolhido vira "Ana ✕" (clicar tira). O jogador vê só a "Meus".
 - A busca da lista também acha pelo nome do jogador dono (Mestre: de qualquer um; jogador: o próprio).
 - Atualiza sozinho ao mudar permissão, personagem principal, cor/nome do jogador e quando ele entra/sai.

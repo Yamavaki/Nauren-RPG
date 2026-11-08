@@ -205,11 +205,25 @@ function montar(app, el) {
     chips.hidden = !e.verFiltros;
     if (e.verFiltros) {
       const lista = [...fonte.values()];
-      chips.innerHTML = defs.map(([k, rot, f]) => {
+      // 0.109.2: os jogadores não viram uma etiqueta cada (com muita gente fica gigante): uma etiqueta "Jogador ▾" abre a
+      // lista com busca; escolhido, vira "Ana ✕". O jogador (não Mestre) continua com a etiqueta "Meus".
+      const umPorJogador = ehGM();
+      const html = [];
+      let pos = 0;
+      for (const [k, rot, f] of defs) {
+        if (umPorJogador && k.startsWith("u:")) continue;
         const n = lista.filter(d => { try { return f(d, ctx); } catch (err) { return false; } }).length;
-        if (!n && !e.filtros.has(k)) return ""; // etiqueta sem nada para mostrar fica escondida
-        return `<button type="button" class="nauren-org-chip" data-nauren-org-filtro="${esc(k)}" aria-pressed="${e.filtros.has(k)}">${esc(rot)}<span>${n}</span></button>`;
-      }).join("") + (e.filtros.size ? `<button type="button" class="nauren-org-chip nauren-org-chip-limpar" data-nauren-org="limpar-filtros">Limpar filtros</button>` : "");
+        if (!n && !e.filtros.has(k)) continue; // etiqueta sem nada para mostrar fica escondida
+        html.push(`<button type="button" class="nauren-org-chip" data-nauren-org-filtro="${esc(k)}" aria-pressed="${e.filtros.has(k)}">${esc(rot)}<span>${n}</span></button>`);
+        if (k === "jog") pos = html.length;
+      }
+      if (umPorJogador && defs.some(d => d[0].startsWith("u:"))) {
+        const ativo = defs.find(d => d[0].startsWith("u:") && e.filtros.has(d[0]));
+        html.splice(pos, 0, ativo
+          ? `<button type="button" class="nauren-org-chip" aria-pressed="true" data-nauren-org="jogador" data-tooltip="Tirar o filtro do jogador"><i class="fa-solid fa-user" inert></i> ${esc(ativo[1])} <i class="fa-solid fa-xmark" inert></i></button>`
+          : `<button type="button" class="nauren-org-chip nauren-org-chip-menu" data-nauren-org="jogador" data-tooltip="Mostrar só o que é de um jogador"><i class="fa-solid fa-user" inert></i> Jogador <i class="fa-solid fa-caret-down" inert></i></button>`);
+      }
+      chips.innerHTML = html.join("") + (e.filtros.size ? `<button type="button" class="nauren-org-chip nauren-org-chip-limpar" data-nauren-org="limpar-filtros">Limpar filtros</button>` : "");
     } else chips.innerHTML = "";
   }
 
@@ -400,6 +414,11 @@ async function acaoBotao(app, root, k, bt, ev) {
     case "sel-visiveis": entradasVisiveis(root).forEach(li => e.sel.add(li.dataset.entryId)); return redesenhar(app);
     case "limpar": e.sel.clear(); e.pastas.clear(); return redesenhar(app);
     case "lixeira": return NaurenLixeira.abrir();
+    case "jogador": {
+      const ativo = [...e.filtros].find(k => k.startsWith("u:"));
+      if (ativo) { e.filtros.delete(ativo); return app.render(); }
+      const r = bt.getBoundingClientRect(); return abrirMenuJogadores(app, r.left, r.bottom + 4);
+    }
     case "mover": { const r = bt.getBoundingClientRect(); return abrirMenu(app, r.left, r.top, "mover"); }
     case "duplicar": return duplicar(app);
     case "excluir": return excluir(app);
@@ -473,6 +492,35 @@ function abrirMenu(app, x, y, tipo) {
   MENU = m; m.querySelector("button:not([disabled])")?.focus();
 }
 let MENU_POS = { x: 0, y: 0 };
+
+/** Lista de jogadores (com quantos itens cada um tem), com busca; escolher liga o filtro daquele jogador. */
+function abrirMenuJogadores(app, x, y) {
+  fecharMenu();
+  const e = est(app), lista = fonteDe(app);
+  const jog = game.users.filter(u => !u.isGM).map(u => ({ u, n: lista.filter(d => { const i = donosDe(d, app.documentName); return !!i && !i.todos && i.users.some(x => x.id === u.id); }).length }))
+    .filter(j => j.n > 0).sort((a, b) => (b.u.active - a.u.active) || b.n - a.n || a.u.name.localeCompare(b.u.name));
+  const m = document.createElement("nav"); m.className = "nauren-org-menu nauren-org-menu-jog"; m.setAttribute("role", "menu");
+  if (!jog.length) m.innerHTML = `<div class="nauren-org-rot">Nenhum jogador é dono de algo aqui</div>`;
+  else {
+    m.innerHTML = `${jog.length > 6 ? `<input type="search" class="nauren-org-busca-jog" placeholder="Procurar jogador…" aria-label="Procurar jogador">` : ""}
+      <div class="nauren-org-rot">Mostrar só o que é de</div>
+      ${jog.map(({ u, n }) => `<button type="button" role="menuitem" data-u="${u.id}" data-nome="${esc(u.name.toLowerCase())}"><i class="nauren-org-bolinha${u.active ? "" : " nauren-org-off"}" style="background:${esc(corDe(u))}"></i><span>${esc(u.name)}</span><small>${n}</small></button>`).join("")}`;
+    m.addEventListener("click", ev => {
+      const b = ev.target.closest("button[data-u]"); if (!b) return;
+      for (const k of [...e.filtros]) if (k.startsWith("u:")) e.filtros.delete(k);
+      e.filtros.add(`u:${b.dataset.u}`); fecharMenu(); redesenhar(app);
+    });
+    m.querySelector(".nauren-org-busca-jog")?.addEventListener("input", ev => {
+      const q = ev.target.value.trim().toLowerCase();
+      m.querySelectorAll("button[data-u]").forEach(b => { b.hidden = !!q && !b.dataset.nome.includes(q); });
+    });
+  }
+  document.body.append(m);
+  const w = m.offsetWidth, h = m.offsetHeight;
+  m.style.left = `${Math.max(6, Math.min(x, window.innerWidth - w - 6))}px`;
+  m.style.top = `${y + h > window.innerHeight - 6 ? Math.max(6, window.innerHeight - h - 6) : y}px`;
+  MENU = m; (m.querySelector(".nauren-org-busca-jog") ?? m.querySelector("button"))?.focus();
+}
 
 function arvorePastas(app) {
   const todas = [...pastasDe(app)];
