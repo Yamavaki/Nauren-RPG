@@ -43,3 +43,12 @@ Hook `renderDocumentDirectory` (todas as listas e o Compendium), cliques/arrasta
 seleção está em jogo; senão o Foundry segue normal), `createDocuments/updateDocuments/deleteDocuments` em lote,
 `Folder.deleteDocuments(ids, { deleteSubfolders, deleteContents })`. Se o módulo "Multiple Document Selection" estiver ligado,
 o Ctrl+clique fica com ele. Testado num simulador de navegador com a marcação dos templates do Foundry (29 checagens).
+
+## 0.109.1 — Dono na lista
+- Embaixo do nome: "● Ana" na cor do jogador dono (bolinha acesa = online, apagada = desligado); "Ana +1" com mais de um dono
+  (a dica mostra todos); "Todos" quando a permissão padrão é Dono; "★ personagem" quando a ficha é o personagem principal dele.
+- Em todas as listas com dono (Atores, Itens, Diário, Tabelas, Cartas, Playlists; em Macros, o autor). Cenas e compêndios não.
+- Quem vê: o Mestre (tudo) e o próprio dono (só nas dele).
+- Filtros: uma etiqueta por jogador ("Ana 3"); o jogador vê só a "Meus".
+- A busca da lista também acha pelo nome do jogador dono (Mestre: de qualquer um; jogador: o próprio).
+- Atualiza sozinho ao mudar permissão, personagem principal, cor/nome do jogador e quando ele entra/sai.

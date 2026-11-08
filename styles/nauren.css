@@ -1,5 +1,5 @@
 /* Versão deste arquivo: o sistema confere no "ready" e, se o navegador/Forge tiver guardado um CSS antigo, carrega o novo. */
-:root { --nauren-css-versao: "0.109.0"; }
+:root { --nauren-css-versao: "0.109.1"; }
 /* 
 ===================================================
 1. FUNDO E FONTES GERAIS
@@ -8864,3 +8864,12 @@ li.directory-item.folder.nauren-org-sel-pasta > .folder-header { box-shadow: ins
 .nauren-org-lix footer button { width: auto; flex: none; }
 .nauren-org-vazio { text-align: center; padding: 40px 10px; opacity: .7; font-size: 14px; }
 .nauren-org-vazio i { font-size: 32px; margin-bottom: 8px; }
+
+/* 0.109.1 — dono embaixo do nome (Organizador) */
+li.directory-item.nauren-org-tem-dono > .entry-name { display: flex; flex-direction: column; justify-content: center; min-width: 0; line-height: 1.15; }
+li.directory-item.nauren-org-tem-dono > .entry-name > .nauren-org-nome { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nauren-org-dono { display: flex; align-items: center; gap: 5px; min-width: 0; margin-top: 2px; font-size: 11.5px; font-weight: 500; white-space: nowrap; overflow: hidden; }
+.nauren-org-dono > span { overflow: hidden; text-overflow: ellipsis; }
+.nauren-org-bolinha { flex: none; width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 0 1px #0006; }
+.nauren-org-bolinha.nauren-org-off { opacity: .4; }
+.nauren-org-estrela { flex: none; color: #d9b25f; font-size: 10.5px; }

@@ -52,7 +52,8 @@ const plural = (n, s, p) => `${n} ${n === 1 ? s : p}`;
 const semImg = d => !d?.img || /mystery-man|icons\/svg\/|\/default-icons?\//i.test(d.img);
 const TIPOS_ITEM = { arma: "Armas", armadura: "Armaduras", consumivel: "Consumíveis", habilidade: "Habilidades", magia: "Magias", efeito: "Efeitos", cor: "Pigmentos", condicao: "Condições", grupo: "Grupos", classe: "Classes", subclasse: "Subclasses", peculiaridade: "Peculiaridades" };
 function filtrosDe(app) {
-  const comuns = [
+  const porJogador = filtrosPorJogador(app);
+  const comuns = [...porJogador,
     ["sempasta", "Sem pasta", d => !d.folder],
     ["rep", "Nomes repetidos", (d, c) => c.rep.has(d.name)]
   ];
@@ -92,6 +93,76 @@ function contextoFiltro(app) {
   const rep = new Set([...nomes].filter(([, n]) => n > 1).map(([k]) => k));
   const naCena = new Set(app.documentName === "Actor" && !ehPack(app) ? (canvas?.scene?.tokens ?? []).map(t => t.actorId).filter(Boolean) : []);
   return { rep, naCena };
+}
+
+/* ============================== dono na lista (0.109.1) ============================== */
+// Mostra, embaixo do nome, o jogador dono (cor dele, bolinha acesa se está online, ★ se é o personagem principal).
+// Quem vê: o Mestre (tudo) e o próprio dono (as dele). Cenas e compêndios não têm dono. Macros: o autor.
+const SEM_DONO = new Set(["Scene"]);
+const corDe = u => { const c = u?.color; return (typeof c === "string" ? c : (c?.css ?? c?.toString?.())) || "#9b95a2"; };
+function donosDe(d, docName) {
+  if (!d) return null;
+  if (docName === "Macro") {
+    const a = d.author; const u = typeof a === "string" ? game.users.get(a) : a;
+    return u && !u.isGM ? { users: [u], todos: false, autor: true } : null;
+  }
+  if (typeof d.testUserPermission !== "function") return null;
+  const users = game.users.filter(u => !u.isGM && d.testUserPermission(u, "OWNER"));
+  if (!users.length) return null;
+  const todos = Number(d.ownership?.default ?? 0) >= (CONST.DOCUMENT_OWNERSHIP_LEVELS?.OWNER ?? 3);
+  // o jogador cujo personagem principal é esta ficha vem primeiro
+  if (docName === "Actor") users.sort((a, b) => (b.character?.id === d.id) - (a.character?.id === d.id));
+  return { users, todos };
+}
+const podeVerDono = info => !!info && (ehGM() || info.users.some(u => u.id === game.user?.id));
+const donoLigado = app => !ehPack(app) && !SEM_DONO.has(app.documentName);
+function filtrosPorJogador(app) {
+  if (!donoLigado(app)) return [];
+  const jog = ehGM() ? game.users.filter(u => !u.isGM) : [game.user];
+  return jog.map(u => [`u:${u.id}`, ehGM() ? u.name : "Meus", d => { const i = donosDe(d, app.documentName); return !!i && !i.todos && i.users.some(x => x.id === u.id); }]);
+}
+function marcarDonos(app, root, fonte) {
+  const ligado = donoLigado(app);
+  for (const li of root.querySelectorAll(".directory-list li.directory-item[data-entry-id]")) {
+    li.querySelector(".nauren-org-dono")?.remove();
+    const d = ligado ? fonte.get(li.dataset.entryId) : null;
+    const info = d ? donosDe(d, app.documentName) : null;
+    if (!podeVerDono(info)) { li.classList.remove("nauren-org-tem-dono"); continue; }
+    const a = li.querySelector(".entry-name"); if (!a) continue;
+    if (!a.querySelector(":scope > .nauren-org-nome")) { const n = document.createElement("span"); n.className = "nauren-org-nome"; n.append(...a.childNodes); a.append(n); }
+    const prim = info.users[0];
+    const principal = app.documentName === "Actor" && prim.character?.id === d.id;
+    const quem = info.todos ? "Todos" : info.users.length > 1 ? `${prim.name} +${info.users.length - 1}` : prim.name;
+    const cor = info.todos ? "#9b95a2" : corDe(prim);
+    const sp = document.createElement("span"); sp.className = "nauren-org-dono";
+    sp.dataset.tooltip = info.autor ? `Autor: ${prim.name}` : `Dono: ${info.users.map(u => `${u.name}${u.active ? " (online)" : ""}`).join(", ")}${info.todos ? " — todos os jogadores" : ""}`;
+    sp.innerHTML = `<i class="nauren-org-bolinha${!info.todos && !prim.active ? " nauren-org-off" : ""}" style="background:${esc(cor)}"></i><span style="color:${esc(cor)}">${esc(quem)}</span>${principal ? `<span class="nauren-org-estrela">★ personagem</span>` : ""}`;
+    a.append(sp);
+    li.classList.add("nauren-org-tem-dono");
+  }
+}
+/** A busca do Foundry também acha pelo nome do jogador dono (depois que ela filtrou pelo nome do item). */
+function buscarPorDono(app, root, termo) {
+  const q = String(termo ?? "").trim().toLowerCase();
+  if (!q || !donoLigado(app)) return;
+  const fonte = new Map(fonteDe(app).map(d => [d._id ?? d.id, d]));
+  for (const li of root.querySelectorAll(".directory-list li.directory-item[data-entry-id]")) {
+    if (li.style.display !== "none" || li.hidden) continue;
+    const info = donosDe(fonte.get(li.dataset.entryId), app.documentName);
+    if (!podeVerDono(info)) continue;
+    const nomes = (ehGM() ? info.users : info.users.filter(u => u.id === game.user.id)).map(u => u.name.toLowerCase());
+    if (info.todos) nomes.push("todos");
+    if (!nomes.some(n => n.includes(q))) continue;
+    li.style.display = "";
+    for (let p = li.parentElement?.closest("li.directory-item.folder"); p; p = p.parentElement?.closest("li.directory-item.folder")) { p.style.display = "flex"; p.classList.add("expanded"); }
+  }
+}
+function atualizarListasAbertas() {
+  const vistos = new Set();
+  for (const app of [ui.actors, ui.items, ui.journal, ui.tables, ui.cards, ui.playlists, ui.macros]) {
+    if (!app?.documentName || !app.rendered || vistos.has(app)) continue;
+    vistos.add(app); redesenhar(app);
+  }
 }
 
 /* ============================== montar na lista ============================== */
@@ -159,6 +230,7 @@ function montar(app, el) {
     }
   }
   root.classList.toggle("nauren-org-modo", gm && (e.modo || total(e) > 0));
+  marcarDonos(app, root, fonte);
 
   aplicarFiltros(app, root, e, defs, ctx, fonte);
 
@@ -271,6 +343,13 @@ function ligarEventos(app, root) {
     }
     e.ancora = id; // clique simples: o Foundry abre a ficha
   }, true);
+
+  root.addEventListener("input", ev => {
+    if (!ev.target.matches?.('search input[type="search"], input[name="search"]')) return;
+    clearTimeout(root._naurenOrgBusca);
+    const valor = ev.target.value;
+    root._naurenOrgBusca = setTimeout(() => buscarPorDono(A(), root, valor), 320); // depois do filtro do Foundry
+  });
 
   root.addEventListener("contextmenu", ev => {
     if (!ehGM()) return;
@@ -917,4 +996,7 @@ export function naurenOrganizadorInit() {
     }
   });
   Hooks.once("ready", () => { lixeiraLimparVelhos(); });
+  // dono na lista: troca de personagem principal, cor, nome do jogador ou entrou/saiu
+  Hooks.on("updateUser", (u, mudou) => { if (["character", "color", "name", "role"].some(k => k in (mudou ?? {}))) atualizarListasAbertas(); });
+  Hooks.on("userConnected", () => atualizarListasAbertas());
 }
