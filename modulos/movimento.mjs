@@ -2,6 +2,7 @@
 import { NAUREN_QUERY_ITEM_MESTRE, naurenEhCondicaoModelo, naurenEhItem, naurenMontarSelecaoPrioridade, naurenNomeDeToken, naurenTemEstado } from "./entidades-campo.mjs";
 import { naurenInterpretarModificador, naurenMedirDistanciaBordas, naurenPostarCard } from "../nauren.mjs";
 import { naurenMovimentoSemPrioridade } from "./monstros-regras.mjs";
+import { naurenAndarParaRegiao, naurenTokensDoAndar } from "./andares.mjs";
 import { NAUREN_KIT_JANELA } from "./janelas-kit.mjs";
 import { naurenConsumirUsoDaHabilidade, naurenUsoDisponivel } from "./prioridades.mjs";
 import { naurenPontoDentroDaRegiao } from "./icone-condicao-token.mjs";
@@ -76,6 +77,7 @@ async function naurenDesenharTracoAquarela(tokenDoc, origem, destino, caminho = 
     shapes,
     flags: { nauren: { tracoAquarela: { criadorUuid: actor.uuid, disposicao: tokenDoc.disposition } } }
   };
+  naurenAndarParaRegiao(dados, tokenDoc); // andares (V14): no andar de quem andou
   const criar = async d => {
     if (game.user.isGM) return canvas.scene.createEmbeddedDocuments("Region", [d]);
     const gm = game.users.activeGM;
@@ -106,7 +108,7 @@ async function naurenDepoisDoMovimento(tokenDoc, origem, destino, caminho = null
   let ligado = true; try { ligado = game.settings.get("nauren", "prioridadeAoAproximar"); } catch (err) { /* padrão */ }
   if (!ligado) return;
   const naPosicao = pos => ({ document: { x: pos.x, y: pos.y, width: tokenDoc.width, height: tokenDoc.height } });
-  const novos = canvas.tokens.placeables.filter(t => t.document !== tokenDoc && t.actor && t.document.disposition !== tokenDoc.disposition && t.document.disposition !== 0
+  const novos = naurenTokensDoAndar(tokenDoc).filter(t => t.document !== tokenDoc && t.actor && t.document.disposition !== tokenDoc.disposition && t.document.disposition !== 0
     && (t.actor.system?.vida?.value ?? 1) > 0).filter(t => {
       const lado = dMetros + 0.01; // adjacente = 1 quadrado de borda a borda
       return naurenMedirDistanciaBordas(naPosicao(destino), t) <= lado && naurenMedirDistanciaBordas(naPosicao(origem), t) > lado;
@@ -133,7 +135,7 @@ async function naurenDepoisDoMovimento(tokenDoc, origem, destino, caminho = null
 /** O destino fica mais perto de algum inimigo do que a origem? (Impulso) */
 function naurenMovimentoEmDirecaoAInimigo(tokenDoc, origem, destino) {
   const disp = tokenDoc.disposition;
-  const inimigos = canvas.tokens.placeables.filter(t => t.document !== tokenDoc && t.actor && t.document.disposition !== disp && t.document.disposition !== 0);
+  const inimigos = naurenTokensDoAndar(tokenDoc).filter(t => t.document !== tokenDoc && t.actor && t.document.disposition !== disp && t.document.disposition !== 0);
   const d = (a, b) => canvas.grid.measurePath([a, b])?.distance ?? Infinity;
   return inimigos.some(t => d(destino, t.document) < d(origem, t.document));
 }

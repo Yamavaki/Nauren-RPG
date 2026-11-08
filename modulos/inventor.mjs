@@ -1,5 +1,6 @@
 /* Nauren RPG — Classe Inventor, subclasses, Frascos e Obra Prima. Separado do nauren.mjs na 0.104 (tools/dividir.mjs). */
 import { naurenMontarDescricao } from "./prioridades.mjs";
+import { naurenAndarParaToken, naurenMesmoAndar } from "./andares.mjs";
 import { naurenCaminhoImagemSubclasse, naurenGarantirEfeitoDeSubclasse, naurenGarantirHabilidadeDeClasse, naurenGarantirHabilidadeDeSubclasse, naurenGarantirItemNoPack, naurenObterOuCriarPacks } from "./compendios.mjs";
 import { NAUREN_ESBOCOS, NAUREN_ROTULO_CURTO_MOD, NaurenBancada, naurenChaveConstrucao, naurenConstrucaoDe, naurenFormulaCriavel, naurenItensDoProjeto, naurenMelhoriasDoProjeto, naurenRecursoDoAtor, naurenResumoItemProjeto } from "./inventor-bancada.mjs";
 import { NAUREN_QUERY_ITEM_MESTRE, naurenCondicaoNegativa, naurenEhCondicaoModelo, naurenEhItem, naurenNomeBate, naurenNomeNormalizado, naurenOperarRecursoViaMestre, naurenResolverSelf, naurenSomarEfeitoPermanente, naurenUsosExtrasPara } from "./entidades-campo.mjs";
@@ -740,6 +741,7 @@ async function naurenAplicarEfeitoSimples(actor, ef, ctx = {}) {
       const atingidos = [];
       for (const t of canvas.tokens.placeables) {
         if (!t.actor || ((t === eu || t.actor === actor) && ef.excluirEu !== false)) continue;
+        if (!naurenMesmoAndar(t, eu)) continue; // área não atravessa o piso
         const m = t === eu ? 0 : naurenMedirDistanciaBordas(eu, t);
         if (m > raio + 0.01) continue;
         const nova = Math.max(0, (t.actor.system.vida?.value ?? 0) - v);
@@ -1142,7 +1144,7 @@ async function naurenCriarObraPrima(dados) {
   await ator.update({ "system.vida.value": ator.system.vida?.max ?? 1, "system.estaminaCombate.value": ator.system.estaminaCombate?.max ?? 1 }).catch(() => {});
   const td = (await ator.getTokenDocument({ disposition: origemTok.disposition, x: casas[0].x, y: casas[0].y })).toObject();
   delete td._id;
-  await cena.createEmbeddedDocuments("Token", [{ ...td, x: casas[0].x, y: casas[0].y, hidden: false, flags: { ...(td.flags ?? {}), nauren: { ...(td.flags?.nauren ?? {}), surgir: true } } }]);
+  await cena.createEmbeddedDocuments("Token", [naurenAndarParaToken({ ...td, x: casas[0].x, y: casas[0].y, hidden: false, flags: { ...(td.flags ?? {}), nauren: { ...(td.flags?.nauren ?? {}), surgir: true } } }, origemTok)]);
   const nomesAtr = { forca: "For", agilidade: "Agi", estamina: "Est", inteligencia: "Int", destino: "Des" };
   await naurenPostarCard({ ator: inventor, titulo: dados.fonte || "Obra Prima", icone: dados.img, fonte: `Obra Prima de ${inventor.name}`, linhas: [
     { label: "Ganhou vida", value: ator.name, breakdown: `nível ${dados.nivel} · Categoria ${dados.categoria} · Defesa ${dados.defesa} · Movimento ${dados.movimento} m` },

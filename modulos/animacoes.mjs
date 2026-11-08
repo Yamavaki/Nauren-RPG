@@ -1,6 +1,7 @@
 /* Nauren RPG — Animações (Automated Animations, Sequencer Motion, cor do token, som sincronizado).
  * Separado do nauren.mjs na 0.94.22. Usa estas funções do arquivo principal: naurenAcaoEhCura, naurenAcaoEhGolpe, naurenAlcanceEmMetros, naurenBandoMembros, naurenEhCondicaoModelo, naurenMedirDistanciaBordas, naurenResolverPorRank, naurenTipoAlcanceAdivinhado, naurenTipoAlcanceDaAcao. */
 import { naurenAcaoEhCura, naurenAcaoEhGolpe, naurenAlcanceEmMetros, naurenBandoMembros, naurenEhCondicaoModelo, naurenMedirDistanciaBordas, naurenResolverPorRank, naurenTipoAlcanceAdivinhado, naurenTipoAlcanceDaAcao } from "../nauren.mjs";
+import { naurenElevacaoDoPiso } from "./andares.mjs";
 /* =====================================================================
    ANIMAÇÕES (Automated Animations + Sequencer + JB2A) - opcional
    O Nauren avisa o módulo quando uma Ação é usada e espelha Condições em
@@ -149,7 +150,11 @@ function naurenTocarNaRegiao(regiao, arquivo) {
     if (f.radius !== undefined && f.type !== "cone") { cx = f.x; cy = f.y; tam = f.radius * 2; }
     else if (f.width !== undefined && f.height !== undefined && f.type === "rectangle") { cx = f.x + f.width / 2; cy = f.y + f.height / 2; tam = Math.max(f.width, f.height); }
     else { const b = regiao.object?.bounds; if (!b) return false; cx = b.x + b.width / 2; cy = b.y + b.height / 2; tam = Math.max(b.width, b.height); }
-    new Sequence().effect().file(arquivo).atLocation({ x: cx, y: cy }).size({ width: tam, height: tam }).belowTokens(true).play();
+    const ef = new Sequence().effect().file(arquivo).atLocation({ x: cx, y: cy }).size({ width: tam, height: tam }).belowTokens(true);
+    // Andares (V14): sem token, o efeito nasce na altura 0 e ficaria debaixo do piso de cima; põe no piso do andar da área.
+    const piso = naurenElevacaoDoPiso(regiao);
+    if (piso !== null && typeof ef.elevation === "function") { try { ef.elevation(piso, { absolute: true }); } catch (err) { /* Sequencer antigo */ } }
+    ef.play();
     return true;
   } catch (err) { console.warn("Nauren RPG | animação na área persistente", err); return false; }
 }

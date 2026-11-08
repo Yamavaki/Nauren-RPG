@@ -1,6 +1,7 @@
 /* Nauren RPG — Ficha do Ator (NaurenActorSheet). Separado do nauren.mjs na 0.94.22. */
 import { NAUREN_ATRIBUTOS_CLASSE_LIVRO, naurenPerfisSugestaoClasse, naurenMelhorDistribuicao, naurenFormatarNumero, naurenLerNumero, naurenItemValeAgora, ARMA_TIPOS, ATRIBUTOS_BONUS, CALCULO_DADOS_DESTINO_OPCOES, CALCULO_ESTAMINA_COMBATE_OPCOES, CALCULO_MANA_OPCOES, CALCULO_VIDA_OPCOES, MODOS_ROLAGEM, NAUREN_ARRAYS_ADICIONAVEIS, NAUREN_CAMPOS_ACIMA_AUTOMATICOS, NAUREN_CAMPOS_ACIMA_GERAIS, NAUREN_CAMPOS_ANALISE_CRIATIVA, NAUREN_CAMPOS_ESTADO_ACAO, NAUREN_CAMPOS_ESTADO_ITEM, NAUREN_CAMPOS_MODIFICADOR_OPCOES, NAUREN_FASE_MODIFICADOR, NAUREN_NOMES_ATRIBUTO_CURTO, NAUREN_PODEROSA_EFEITOS, NAUREN_QUERY_APLICAR_CONDICAO, NAUREN_QUERY_APLICAR_CONDICAO_ECO, NAUREN_QUERY_AREA_AO_CRIAR, NAUREN_QUERY_BESTA_INICIAL, NAUREN_QUERY_CRIAR_ITEM, NAUREN_QUERY_DANO_COLISAO, NAUREN_QUERY_DOMAR, NAUREN_QUERY_ITEM_MESTRE, NAUREN_QUERY_MANIPULAR, NAUREN_QUERY_REACAO_PRE_ATAQUE, NAUREN_REACAO_RESISTIR_OPCOES, NAUREN_REFERENCIA_FORMULAS, NAUREN_ROTULO_FASE_MODIFICADOR, NaurenActor, NaurenActorData, NaurenBarrasEditor, NaurenConcessaoHelper, NaurenCondicaoData, NaurenCriadorMonstro, NaurenEfeitoData, NaurenGrupoHelper, NaurenHabilidadeData, NaurenHudCombate, NaurenHudRecursosEditor, NaurenItemSheet, NaurenMagiaData, NaurenProgressaoHelper, NaurenSubclasseHelper, RECURSOS_ALVO, USOS_RESET_LABEL, USOS_RESET_POR_COMBATE, campoAcao, campoCondicaoAplicada, campoDanoBloco, campoGatilho, campoModificador, campoModificadorExterno, naurenAbrirBorda, naurenAbrirConstrucaoPorAcao, naurenAbrirEnquadramento, naurenAcaoEhCura, naurenAcaoEhGolpe, naurenAcaoSemCustoEstaminaMana, naurenAgindoForaDoTurno, naurenAjusteCriticoDoGrupo, naurenAjusteCustoManaMagia, naurenAlcanceEmMetros, naurenAliadosAte, naurenAlvoDaRecarga, naurenAlvosSaoVelhos, naurenAncoraDuracaoAtual, naurenAnotarModsRecebidosNoCard, naurenAnotarNoRegistro, naurenApagarItensSeExistirem, naurenAplicarAcalanto, naurenAplicarDanoManual, naurenAplicarEfeitoSimples, naurenAplicarEfeitosPeriodicos, naurenAplicarPalavraComEscolha, naurenArmarPoderosa, naurenAtacouNoTurnoAtual, naurenAtualizarCondicaoPresenca, naurenAtualizarItemViaMestre, naurenAvaliarExpressaoSimples, naurenAvisarEstrelaDoArcoIris, naurenAvisarSeLinkBloqueado, naurenBandoCfg, naurenBandoChave, naurenBandoMembros, naurenBandoNoAlcance, naurenBeneficiosDoEstado, naurenBonusAcimaContra, naurenBordaPreviaDataUrl, naurenBordaPreviaDoAtor, naurenBotoesDeFormula, naurenBotoesDirecaoGrimorio, naurenBreakdownSimples, naurenBuscarMascotesDe, naurenCalcularEmpurrao, naurenCategoriaDaArma, naurenCategoriaDoAtor, naurenCategoriaEquipamento, naurenCelulasNaArea, naurenChaveEscopoRelogio, naurenChaveFlagSegura, naurenChecarCondicaoAoAtingirMax, naurenClamparRecursosAoMaximo, naurenCombatenteEhDoAtor, naurenCompensacoesContraOrigem, naurenConcederPrioridadePeloCard, naurenConcederRecurso, naurenConcederRecursoAoAtacante, naurenCondicaoNegativa, naurenCondicoesAtivas, naurenCondicoesLigadasA, naurenCongelarNoNivel, naurenConsumirUsoDaHabilidade, naurenContarAliadosProximos, naurenContextoInvencoes, naurenCriarFrascoEspecial, naurenCriarInvocacoes, naurenCriarItemNoAtor, naurenCronometroNoDialog, naurenDescricaoParaChat, naurenDeslocarToken, naurenDiferencaDesfazer, naurenDispararEventoNoDono, naurenDisposicaoDoAtor, naurenEfeitoComSubst, naurenEhCondicaoModelo, naurenEhGolpeEspiritual, naurenEhItem, naurenEquipamentoGasta, NAUREN_CATEGORIAS_EQUIPAMENTO, naurenEmpurrarToken, naurenEquipamentoRecomendado, naurenEscalaPorCategoria, naurenEscolherCorDaPintura, naurenEscolherEfeitoPoderosa, naurenEscolherFrasco, naurenEscolherPeculiaridade, naurenEscolherPontoNoMapa, naurenEstiloEnquadramento, naurenEstresseDosAliados, naurenEstudoNoAlvo, naurenExecutarRecarga, naurenFaceD20, naurenFontesDeModificadores, naurenFormulaComTokensDoAtor, naurenFormulaParaTexto, naurenFotoCenaDesfazer, naurenFotografarModsRecebidos, naurenFrascoParaPacote, naurenGastarRecursoSimples, naurenGrimorio, naurenGuardarD20Roubado, naurenHandleQueryAreaAoCriar, naurenHandleQueryBestaInicial, naurenHandleQueryDanoColisao, naurenHandleQueryDomar, naurenHandleQueryItemMestre, naurenHandleQueryManipular, naurenHandleQueryReacaoPreAtaque, naurenHudAlvos, naurenIdentificadorTurnoAtual, naurenInterpretarModificador, naurenInterpretarModificadorComDado, naurenItemCorrespondeAoAlvo, naurenItemEhDoProjeto, naurenItensDoProjetoPorNome, naurenLimiteOfensivoBase, naurenLimiteVagaDefesa, naurenLimparMeusAlvos, naurenMaisDadosPoderosa, naurenMapearStrings, naurenMarcarAlvosAgora, naurenMedirDistanciaBordas, naurenMestreDaMesa, naurenMetrosEmpurrao, naurenModsAcima, naurenMontarDescricao, naurenMontarSelecaoPrioridade, naurenMoverGrimorio, naurenMoverTokenPara, naurenMoverTokenViaMestre, naurenMovimentoSaldo, naurenMunicoesCompativeis, naurenNivelDeOrigemNaClasse, naurenNomeDeToken, naurenNomeDoRecurso, naurenNomeNormalizado, naurenNomeParaUuid, naurenNomeRecurso, naurenNotificarGanhoPerda, naurenOferecerAcovardar, naurenOferecerDestino, naurenOperarEntidade, naurenOperarEstudo, naurenOperarRecursoViaMestre, naurenOperarRegistroPrioridade, naurenOrdemListaMagias, naurenPersonagensEmCena, naurenPesoOfensivo, naurenPesoOfensivoEquipado, naurenPontoDentroDaRegiao, naurenPostarCard, naurenPostarDescricaoNoChat, naurenPreparacaoUsadas, naurenPrepararModificador, naurenPresosPorArmadilha, naurenPrioridadesGeradas, naurenProcessarEmanacoes, naurenProcessarFrascoNoAlvo, naurenProcessarGatilhos, naurenProcessarTemplatesPersistentes, naurenRaizDaEvolucao, naurenReacoesPagasDano, naurenReacoesPagasDefesa, naurenReaplicarUpgradesDeSubclasse, naurenRecarregarUsos, naurenReconciliarTodosOsItens, naurenReconjurarPendente, naurenRecursoDoAtor, naurenRecursoEstaTravado, naurenRegistrarAtaqueNoTurno, naurenRegistrarUsoTorre, naurenRegistroParaExport, naurenRegistroParaFicha, naurenRegraVagasDefesa, naurenRegrasExtras, naurenReordenarGrimorio, naurenResolverPorNivel, naurenResolverPorRank, naurenResolverPrioridade, naurenResolverSelf, naurenResolverSelfEmObjeto, naurenResolverTokenFormula, naurenResumoDaAcao, naurenResumoEquipamentoClasse, naurenRolagemAuditada, naurenRollToBreakdownText, naurenRotuloToken, naurenSincronizarCriativasDoLadino, naurenSincronizarGrimorio, naurenSincronizarRecursosCustom, naurenSomarEfeitoPermanente, naurenSubstituirTokensDeContexto, naurenTemEstado, naurenTempoReacao, naurenTextoFrascoEspecial, naurenTextoHistoricoDestino, naurenTextoModificador, naurenTextoRolagem, naurenTimeoutReacaoMs, naurenTipoAlcanceAdivinhado, naurenTipoAlcanceDaAcao, naurenTiposEstudoDoAtor, naurenTokenElegivelPorDisposicao, naurenTransferirRecursoDoAlvo, naurenTravaDaAcao, naurenUltimoAtacante, naurenUmaVezMarcar, naurenUmaVezRecusa, naurenUsoDisponivel, naurenUsosExtrasPara, naurenUsosPassivaMax, naurenUuidEhEsteToken, naurenUuidPorSeed, naurenVagaDefesa, naurenValorEstudo, resumoCondicao, resumoCor, resumoEfeito } from "../nauren.mjs";
 import { naurenAbrirEscrito, naurenEhEscrito } from "./escritos.mjs";
+import { naurenAndarParaRegiao, naurenColideParede, naurenMesmoAndar, naurenTokensDoAndar } from "./andares.mjs";
 import { naurenSeloDoItem } from "./itens-catalogo.mjs";
 import { naurenScriptsAntesDaAcao } from "./itens-scripts.mjs";
 import { naurenTreinarSeguirOExemplo } from "./treinos.mjs";
@@ -535,9 +536,8 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
       if (motivoFica) { this.#movimentosAtual.push({ label: `Movimento — ${nomeTok}`, value: "não moveu", breakdown: motivoFica }); continue; }
       const validar = c => {
         if (acao.moverTeleporte) return "";
-        const backend = CONFIG.Canvas.polygonBackends?.move;
-        try { if (backend?.testCollision?.(tok.center, c, { type: "move", mode: "any" })) return "há uma parede no caminho."; } catch (err) { /* sem checagem */ }
-        const ocupado = canvas.tokens.placeables.some(t => t !== tok && !t.document.hidden && Math.hypot(t.center.x - c.x, t.center.y - c.y) < canvas.grid.size * 0.5);
+        try { if (naurenColideParede(tok.center, c, tok)) return "há uma parede no caminho."; } catch (err) { /* sem checagem */ }
+        const ocupado = naurenTokensDoAndar(tok).some(t => t !== tok && !t.document.hidden && Math.hypot(t.center.x - c.x, t.center.y - c.y) < canvas.grid.size * 0.5);
         return ocupado ? "a casa está ocupada." : "";
       };
       const escolha = await naurenEscolherPontoNoMapa({
@@ -4364,6 +4364,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     const usadosNoTurno = this.actor.getFlag("nauren", "bonusAreaUsadoNoTurno") || {};
     for (const t of canvas.tokens.placeables) {
       if (!t.actor) continue;
+      if (!naurenMesmoAndar(t, meuToken)) continue; // emanação não atravessa o piso
       for (const item of t.actor.items) {
         if (item.type !== "habilidade" || !item.system.ativo || !item.system.usaEmanacao || !item.system.concedeBonusTesteArea) continue;
         // Só para o dono e os aliados dele (Presença: "você e aliados"):
@@ -4499,6 +4500,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     for (const t of canvas.tokens.placeables) {
       if (t === tokenControlado || !t.actor) continue;
       if (t.document.disposition !== tokenControlado.document.disposition) continue;
+      if (!naurenMesmoAndar(t, tokenControlado)) continue;
       let distancia;
       try {
         distancia = naurenMedirDistanciaBordas(tokenControlado, t);
@@ -4526,6 +4528,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     for (const t of canvas.tokens.placeables) {
       if (!t.actor) continue;
       if (t === meuToken && !incluiDono) continue;
+      if (!naurenMesmoAndar(t, meuToken)) continue;
       const mesmaDisposicao = t.document.disposition === meuToken.document.disposition;
       if (disposicaoFiltro === "aliados" && !mesmaDisposicao) continue;
       if (disposicaoFiltro === "inimigos" && mesmaDisposicao) continue;
@@ -9838,8 +9841,8 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
       if (tokM && metade > 0) {
         const esc = await naurenEscolherPontoNoMapa({ nome: "Mímica de Libélula", largura: tokM.document.width, altura: tokM.document.height, origem: tokM.center, alcanceMetros: metade,
           validar: c => {
-            try { if (CONFIG.Canvas.polygonBackends?.move?.testCollision?.(tokM.center, c, { type: "move", mode: "any" })) return "há uma parede no caminho."; } catch (err) { /* sem checagem */ }
-            return canvas.tokens.placeables.some(t => t !== tokM && Math.hypot(t.center.x - c.x, t.center.y - c.y) < canvas.grid.size * 0.5) ? "a casa está ocupada." : "";
+            try { if (naurenColideParede(tokM.center, c, tokM)) return "há uma parede no caminho."; } catch (err) { /* sem checagem */ }
+            return naurenTokensDoAndar(tokM).some(t => t !== tokM && Math.hypot(t.center.x - c.x, t.center.y - c.y) < canvas.grid.size * 0.5) ? "a casa está ocupada." : "";
           },
           textoAjuda: `Mímica de Libélula: mover até ${metade}m (gasta 1 Estamina). Esc: não mover.` });
         if (esc) {
@@ -9913,6 +9916,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
         const curados = [];
         for (const t of canvas.tokens.placeables) {
           if (!t.actor || t === meuTokenCura || t.document.disposition !== meuTokenCura.document.disposition) continue;
+          if (!naurenMesmoAndar(t, meuTokenCura)) continue;
           if (raio && naurenMedirDistanciaBordas(meuTokenCura, t) > raio) continue;
           const antes = t.actor.system.vida?.value ?? 0;
           const depois = Math.min(t.actor.system.vida?.max ?? antes, antes + Math.max(0, rollCura.total));
@@ -10037,7 +10041,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
             const raioCfg = parseFloat(String(it.system.reacaoNovoAlvoRaio ?? "1").replace(",", "."));
             const raio = Number.isFinite(raioCfg) && raioCfg > 0 ? raioCfg : 1;
             const centro = tipo === "escudoVivo" ? alvo : meuToken;
-            opcoesAlvo = canvas.tokens.placeables.filter(o => o.actor && o !== alvo && o !== meuToken && !o.document.hidden && (o.actor.system?.vida?.value ?? 1) > 0
+            opcoesAlvo = naurenTokensDoAndar(centro ?? alvo).filter(o => o.actor && o !== alvo && o !== meuToken && !o.document.hidden && (o.actor.system?.vida?.value ?? 1) > 0
               && (tipo !== "escudoVivo" || o.document.disposition === dispAlvo)
               && (!centro || naurenMedirDistanciaBordas(o, centro) <= raio + 0.01))
               .map(o => ({ uuid: o.document.uuid, nome: naurenNomeDeToken(o) }));
@@ -10875,7 +10879,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
       if (tinhaCadeia && r.acertou && tokenDoc.object) {
         const raioC = Number(acao.cadeiaRaio) || 1;
         const meuTokC = this.actor.getActiveTokens?.(true)?.[0];
-        const vizinhos = canvas.tokens.placeables.filter(t => t.actor && t !== tokenDoc.object && t !== meuTokC
+        const vizinhos = naurenTokensDoAndar(tokenDoc).filter(t => t.actor && t !== tokenDoc.object && t !== meuTokC
           && naurenMedirDistanciaBordas(tokenDoc.object, t) <= raioC);
         for (const v of vizinhos) {
           const rV = await NaurenAlvoHelper.aplicarEmAlvo(v.document, { ...pacoteParaEsteAlvo, houveAtaque: false, ataqueTotal: null, condicoes: [], gastosRecurso: [], roubarRecurso: null, morteInstantanea: null });
@@ -12677,6 +12681,8 @@ class NaurenRegionHelper {
         highlightMode: "coverage", displayMeasurements: true
       };
       if (acao.templateTipo === "emanacao" && token) opcoes.attachToToken = token.document.id;
+      // Andares (V14): a área fica no andar de quem usou (emanação) ou no andar que se está vendo (área colocada).
+      naurenAndarParaRegiao(opcoes, acao.templateTipo === "emanacao" ? token : null);
       try {
         region = await canvas.regions.placeRegion(opcoes);
       } catch (errCor) {
@@ -12978,6 +12984,7 @@ class NaurenRegionHelper {
         // "Covered Grid Spaces" + "Display Measurements" ativado.
         highlightMode: "coverage", displayMeasurements: true
       };
+      naurenAndarParaRegiao(opcoes, tokenDoc); // andares (V14): no andar do dono
 
       let regiao;
       try {

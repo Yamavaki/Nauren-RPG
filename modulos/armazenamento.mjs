@@ -11,6 +11,7 @@
  * Só APIs do Foundry V14 (foundry.*).
  */
 import { naurenCatalogoDoItem, naurenSeloDoItem } from "./itens-catalogo.mjs";
+import { naurenAndarParaRegiao } from "./andares.mjs";
 import { naurenAbrirEscrito, naurenEhEscrito, naurenEscritoDe } from "./escritos.mjs";
 import { NAUREN_CATEGORIAS_EQUIPAMENTO, NAUREN_QUANTIDADE_MAXIMA, naurenEhMoeda, naurenFormatarNumero, naurenFormatarNumeroCurto, naurenLerNumero, naurenPostarCard } from "../nauren.mjs";
 
@@ -1093,14 +1094,14 @@ function naurenArmazemColocarNoMapa(armazem, ficha = null) {
     try { const p = canvas.grid.getTopLeftPoint?.(pos); if (p) tl = p; } catch (err) { /* segue com a conta simples */ }
     const n = pontosDaCena(canvas.scene).filter(x => x.comportamento.system.armazem === armazem.uuid).length;
     try {
-      await canvas.scene.createEmbeddedDocuments("Region", [{
+      await canvas.scene.createEmbeddedDocuments("Region", [naurenAndarParaRegiao({
         name: n ? `${armazem.name} (${n + 1})` : armazem.name,
         color: "#e0b257",
         visibility: CONST.REGION_VISIBILITY?.LAYER ?? 0,
         shapes: [{ type: "rectangle", x: Math.round(tl.x), y: Math.round(tl.y), width: g, height: g }],
         behaviors: [{ type: "armazenamento", name: armazem.name, system: { armazem: armazem.uuid } }],
         flags: { nauren: { armazem: armazem.uuid } }
-      }]);
+      })]); // andares (V14): no andar que se está vendo
       ui.notifications.info(`"${armazem.name}" colocado no mapa.`);
     } catch (err) { console.error("Nauren RPG | colocar no mapa", err); ui.notifications.error(`Não deu para criar a Região: ${err.message}`); }
     ficha?.render?.();

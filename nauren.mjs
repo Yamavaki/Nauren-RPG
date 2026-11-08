@@ -1,4 +1,5 @@
 import { NAUREN_HAB_MONSTROS, NAUREN_HAB_MONSTROS_VERSAO } from "./data/habilidades-monstros.mjs";
+import { naurenMesmoAndar } from "./modulos/andares.mjs";
 import { NAUREN_KIT_JANELA, naurenKitJanela, naurenKitSistema } from "./modulos/janelas-kit.mjs";
 import { naurenArteInit, naurenNomeVisivel, naurenNomeOculto, naurenMostrarArteATodos, naurenArteMostrar, naurenArtePosicao, naurenArteAnalisar, naurenArteImagem } from "./modulos/arte-hover.mjs";
 import { naurenChatInit, naurenChatPintarBalao, naurenChatBalao } from "./modulos/chat.mjs";
@@ -4460,6 +4461,15 @@ function naurenMedirDistanciaBordas(a, b) {
   let vao;
   try { vao = canvas.grid.measurePath([{ x: 0, y: 0 }, { x: dx, y: dy }])?.distance; } catch (err) { vao = undefined; }
   if (!Number.isFinite(vao)) vao = Math.max(dx / (canvas.grid.sizeX || canvas.grid.size), dy / (canvas.grid.sizeY || canvas.grid.size)) * canvas.grid.distance;
+  // 0.108.2 — andares/altura: soma a diferença de altura (elevação, em metros) entre os dois, como a régua 3D do
+  // Foundry (mesma regra de diagonal da cena). Ponto sem altura (centro de área) conta como na mesma altura.
+  const ea = Number((a.document ?? a)?.elevation), eb = Number((b.document ?? b)?.elevation);
+  const dz = Number.isFinite(ea) && Number.isFinite(eb) ? Math.abs(ea - eb) : 0;
+  if (dz > 0) {
+    let v3;
+    try { v3 = canvas.grid.measurePath([{ x: 0, y: 0, elevation: 0 }, { x: dx, y: dy, elevation: dz }])?.distance; } catch (err) { v3 = undefined; }
+    vao = Number.isFinite(v3) && v3 > vao ? v3 : Math.max(vao, Math.hypot(vao, dz));
+  }
   // +1 quadrado: tokens lado a lado estão a 1m (alcance corpo a corpo, como sempre foi calibrado).
   return Math.round((vao + canvas.grid.distance) * 100) / 100;
 }
@@ -4947,6 +4957,7 @@ function naurenContarAliadosProximos(actor, raioMetros) {
   for (const t of canvas.tokens.placeables) {
     if (t === meuToken || !t.actor) continue;
     if (t.document.disposition !== meuToken.document.disposition) continue;
+    if (!naurenMesmoAndar(t, meuToken)) continue; // andares (V14)
     let distancia;
     try {
       distancia = naurenMedirDistanciaBordas(meuToken, t);

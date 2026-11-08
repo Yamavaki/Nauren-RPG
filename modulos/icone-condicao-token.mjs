@@ -1,6 +1,7 @@
 /* Nauren RPG — Ícone da Condição no token. Separado do nauren.mjs na 0.94.31. */
 import { NAUREN_CM_PECS, NAUREN_QUERY_APLICAR_CONDICAO, NAUREN_QUERY_DISPARAR_EVENTO, NAUREN_QUERY_ITEM_MESTRE, NaurenActorData, NaurenConcessaoHelper, NaurenCondicaoData, NaurenCriadorMonstro, NaurenEfeitoData, NaurenHabilidadeData, NaurenPeculiaridadeData, NaurenProgressaoHelper, NaurenSubclasseData, calcularVidaBase, campoAcao, campoGatilho, campoRecursoDeclarado, naurenAtaqueBasicoNaReacao, naurenAvaliarExpressaoSimples, naurenBotoesDirecaoGrimorio, naurenCondicaoNegativa, naurenContarAliadosProximos, naurenDescricaoParaChat, naurenDeslocarToken, naurenDisposicaoDoAtor, naurenEhCondicaoModelo, naurenEhItem, naurenEscolherCorDaPintura, naurenEscolherPontoNoMapa, naurenFormulaComTokensDoAtor, naurenFormulaParaTexto, naurenGrimorio, naurenInterpretarModificador, naurenInterpretarModificadorComDado, naurenItemCorrespondeAoAlvo, naurenMedirDistanciaBordas, naurenModsAcima, naurenMontarDescricao, naurenMoverGrimorio, naurenMoverTokenPara, naurenNomeDeToken, naurenNomeDoRecurso, naurenOperarRecursoViaMestre, naurenOperarRegistroPrioridade, naurenPostarCard, naurenRecarregarUsos, naurenRecursoDoAtor, naurenResolverPorNivel, naurenResolverPorRank, naurenResolverSelfEmObjeto, naurenResolverTokenFormula, naurenRollToBreakdownText, naurenRotuloToken, naurenTemEstado, naurenTextoRolagem, naurenUsosExtrasPara, naurenUsuarioResponsavel, naurenUuidPorSeed } from "../nauren.mjs";
 import { naurenScriptsNoEvento } from "./itens-scripts.mjs";
+import { naurenAndarParaRegiao, naurenAndarParaToken, naurenColideParede, naurenMesmoAndar, naurenNoAndarDaRegiao, naurenTokensDoAndar } from "./andares.mjs";
 import { NAUREN_GATILHO_EVENTO_OPCOES, RECURSOS_ALVO, naurenChaveEscopoRelogio, naurenNotificarGanhoPerda } from "./ficha-item.mjs";
 import { NAUREN_HAB_MONSTROS_VERSAO } from "../data/habilidades-monstros.mjs";
 import { NAUREN_MASCOTES_INICIAIS, NAUREN_PACKS_DEFINICAO, NAUREN_VERSAO_SEED_MASCOTES, naurenFundoPersonalizado, naurenGarantirAtorNoPack, naurenGatilhoDanoDeArea, naurenReconciliarMascote, naurenUuidsMascotes } from "./compendios.mjs";
@@ -1858,9 +1859,7 @@ function naurenCalcularEmpurrao(tokenDocAlvo, origemPonto, metros, direcao = "af
   };
   const cruzaParede = (de, para) => {
     try {
-      const backend = CONFIG.Canvas.polygonBackends?.move;
-      if (backend?.testCollision) return !!backend.testCollision(de, para, { type: "move", mode: "any" });
-      return !!tokenDocAlvo.object.checkCollision(para, { origin: de, type: "move", mode: "any" });
+      return naurenColideParede(de, para, tokenDocAlvo); // andar e altura do empurrado
     } catch (err) {
       console.warn("Nauren RPG | Falha ao checar parede no empurrão.", err);
       return false;
@@ -1868,7 +1867,7 @@ function naurenCalcularEmpurrao(tokenDocAlvo, origemPonto, metros, direcao = "af
   };
   const tamanho = tokenDocAlvo.getSize();
   const raioAlvo = Math.min(tamanho.width, tamanho.height) / 2;
-  const outrosTokens = canvas.tokens.placeables.filter(t => t.document.id !== tokenDocAlvo.id && !t.document.hidden);
+  const outrosTokens = naurenTokensDoAndar(tokenDocAlvo).filter(t => t.document.id !== tokenDocAlvo.id && !t.document.hidden);
   const tokenOcupando = ponto => outrosTokens.find(t => {
     const tam = t.document.getSize();
     const raioOutro = Math.min(tam.width, tam.height) / 2;
@@ -2498,8 +2497,8 @@ async function naurenProcessarGatilhosInterno(tipoEvento, atorEvento, contexto =
           if (!tok || !metros) continue;
           const escolha = await naurenEscolherPontoNoMapa({ nome: item.name, largura: tok.document.width, altura: tok.document.height, origem: tok.center, alcanceMetros: metros,
             validar: c => {
-              try { if (CONFIG.Canvas.polygonBackends?.move?.testCollision?.(tok.center, c, { type: "move", mode: "any" })) return "há uma parede no caminho."; } catch (err) { /* sem checagem */ }
-              return canvas.tokens.placeables.some(t => t !== tok && Math.hypot(t.center.x - c.x, t.center.y - c.y) < canvas.grid.size * 0.5) ? "a casa está ocupada." : "";
+              try { if (naurenColideParede(tok.center, c, tok)) return "há uma parede no caminho."; } catch (err) { /* sem checagem */ }
+              return naurenTokensDoAndar(tok).some(t => t !== tok && Math.hypot(t.center.x - c.x, t.center.y - c.y) < canvas.grid.size * 0.5) ? "a casa está ocupada." : "";
             },
             textoAjuda: `${item.name}: clique para onde você se move (até ${metros}m). Esc: não mover.` });
           if (escolha) { await naurenMoverTokenPara(tok.document, escolha); concedeuAlgo = true; linhasCard.push({ label: "Moveu", value: `até ${metros}m` }); }
@@ -2818,6 +2817,7 @@ async function naurenAurasDeEstaminaSobreMim(alvoActor) {
   for (const tokFonte of canvas.tokens.placeables) {
     const fonte = tokFonte.actor;
     if (!fonte || tokFonte === tokAlvo) continue;
+    if (!naurenMesmoAndar(tokFonte, tokAlvo)) continue; // aura não atravessa o piso
     for (const item of fonte.items) {
       if ((item.type !== "habilidade" && item.type !== "efeito") || !item.system.ativo || !item.system.usaEmanacao) continue;
       if (item.system.emanacaoEvento !== "inicioRodada" || item.system.emanacaoEfeito !== "estamina") continue;
@@ -2863,6 +2863,7 @@ async function naurenProcessarEmanacoesSobre(atorAlvo) {
   if (!meuTok) return;
   for (const t of canvas.tokens.placeables) {
     if (!t.actor || t === meuTok || t.actor === atorAlvo) continue;
+    if (!naurenMesmoAndar(t, meuTok)) continue; // emanação não atravessa o piso
     for (const item of t.actor.items) {
       if (!["habilidade", "efeito"].includes(item.type) || !item.system.ativo || !item.system.usaEmanacao || item.system.emanacaoEvento !== "inicioTurnoNaArea") continue;
       const disp = item.system.emanacaoDisposicao || "inimigos";
@@ -2923,6 +2924,7 @@ async function naurenProcessarEmanacoes(tipoEvento, atorFonte) {
     for (const t of canvas.tokens.placeables) {
       if (!t.actor) continue;
       if (t === tokenFonte && !incluiDono) continue;
+      if (!naurenMesmoAndar(t, tokenFonte)) continue; // emanação não atravessa o piso
       const mesmaDisposicao = t.document.disposition === tokenFonte.document.disposition;
       if (disposicaoFiltro === "aliados" && !mesmaDisposicao) continue;
       if (disposicaoFiltro === "inimigos" && mesmaDisposicao) continue;
@@ -3146,6 +3148,8 @@ function naurenCelulasCobertas(regiao) {
  * Sem a lista do Foundry, um quadrado é coberto quando o CENTRO dele está dentro da forma.
  */
 function naurenCelulasNaArea(ponto, shapes, tokenDoc = null, regiao = null) {
+  // Andares (V14): token de outro andar (ou fora da faixa de altura da Região) não está na área.
+  if (!naurenNoAndarDaRegiao(tokenDoc, regiao)) return false;
   const gs = canvas.grid?.size ?? 100;
   const w = Math.max(1, Math.round(Number(tokenDoc?.width ?? 1))), h = Math.max(1, Math.round(Number(tokenDoc?.height ?? 1)));
   const x0 = ponto.x - (w * gs) / 2, y0 = ponto.y - (h * gs) / 2;

@@ -1,5 +1,6 @@
 /* Nauren RPG — Entidades de campo. Separado do nauren.mjs na 0.94.31. */
 import * as NK from "./janelas-kit.mjs";
+import { naurenAndarParaRegiao, naurenAndarParaToken, naurenColideParede, naurenMesmoAndar, naurenTokensDoAndar } from "./andares.mjs";
 import { ARMA_TIPOS, ATRIBUTOS_BONUS, NAUREN_CAMPOS_MODIFICADOR_OPCOES, NAUREN_REFERENCIA_FORMULAS, NAUREN_TOKENS_CONTEXTO, naurenAvaliarExpressaoSimples, naurenCasasLivresEmVolta, naurenCondicoesAtivas, naurenConsumirUsoDaHabilidade, naurenCriarInvocacoes, naurenCriarObraPrima, naurenDisposicaoDoAtor, naurenFormulaParaTexto, naurenMedirDistanciaBordas, naurenMontarDescricao, naurenPostarCard, naurenPrioridadesNoTurno, naurenResolverPorNivel, naurenResolverTokenFormula, naurenTextoRolagem, naurenTravaPrioridade, naurenUsoDisponivel } from "../nauren.mjs";
 import { NAUREN_MASCOTES_INICIAIS, NAUREN_PACKS_DEFINICAO, naurenAliadosDoGrupo } from "./compendios.mjs";
 import { NAUREN_MOTION_ALVO_OPCOES, NAUREN_MOTION_USUARIO_OPCOES } from "./animacoes.mjs";
@@ -1130,7 +1131,7 @@ function naurenAliadosAte(actor, metros) {
   const meu = actor?.getActiveTokens?.(true)?.[0];
   if (!meu || !canvas?.tokens) return 0;
   return canvas.tokens.placeables.filter(t => t !== meu && t.actor && t.actor !== actor && t.document.disposition === meu.document.disposition
-    && naurenMedirDistanciaBordas(meu, t) <= metros).length;
+    && naurenMesmoAndar(meu, t) && naurenMedirDistanciaBordas(meu, t) <= metros).length;
 }
 
 /* ---- Derrotado a 0 de Vida ---- */
@@ -1636,7 +1637,7 @@ async function naurenHandleQueryBestaInicial({ cacadorUuid, seedId }) {
   if (tok?.parent) {
     const td = (await novo.getTokenDocument({ disposition: tok.disposition })).toObject(); delete td._id;
     const [casa] = naurenCasasLivresEmVolta(tok.parent, tok, td.width ?? 1, td.height ?? 1, 1, 2);
-    if (casa) { await tok.parent.createEmbeddedDocuments("Token", [{ ...td, x: casa.x, y: casa.y, hidden: false, flags: { ...(td.flags ?? {}), nauren: { ...(td.flags?.nauren ?? {}), surgir: true } } }]); linhas.push({ label: "No mapa", value: `ao lado de ${cacador.name}` }); }
+    if (casa) { await tok.parent.createEmbeddedDocuments("Token", [naurenAndarParaToken({ ...td, x: casa.x, y: casa.y, hidden: false, flags: { ...(td.flags ?? {}), nauren: { ...(td.flags?.nauren ?? {}), surgir: true } } }, tok)]); linhas.push({ label: "No mapa", value: `ao lado de ${cacador.name}` }); }
   }
   return { linhas };
 }
@@ -1691,17 +1692,13 @@ function naurenCasaLivreAoLado(quem, destino, metros) {
   const largQ = Math.max(1, Math.round(tamQ.width / casa)), altQ = Math.max(1, Math.round(tamQ.height / casa));
   const largD = Math.max(1, Math.round(tamD.width / casa)), altD = Math.max(1, Math.round(tamD.height / casa));
   const x0 = destino.document.x, y0 = destino.document.y;
-  const outros = canvas.tokens.placeables.filter(t => t !== quem && t.document.id !== quem.document.id && !t.document.hidden);
+  const outros = naurenTokensDoAndar(quem).filter(t => t !== quem && t.document.id !== quem.document.id && !t.document.hidden);
   const sobrepoe = (x, y) => outros.some(t => {
     const s = t.document.getSize();
     return x < t.document.x + s.width - 1 && x + tamQ.width - 1 > t.document.x && y < t.document.y + s.height - 1 && y + tamQ.height - 1 > t.document.y;
   });
   const cruzaParede = (de, para) => {
-    try {
-      const backend = CONFIG.Canvas.polygonBackends?.move;
-      if (backend?.testCollision) return !!backend.testCollision(de, para, { type: "move", mode: "any" });
-      return !!quem.checkCollision?.(para, { origin: de, type: "move", mode: "any" });
-    } catch (err) { return false; }
+    try { return naurenColideParede(de, para, quem); } catch (err) { return false; }
   };
   let melhor = null;
   for (let cx = -largQ; cx <= largD; cx++) {
@@ -1736,6 +1733,7 @@ async function naurenHandleQueryManipular({ ladraoUuid, aliadoTokenUuid }) {
   for (const t of canvas.tokens.placeables) {
     const a = t.actor;
     if (!a || t.document.disposition === tokLadino.document.disposition || !naurenEstudoNoAlvo(a, ladino)) continue;
+    if (!naurenMesmoAndar(t, tokLadino)) continue;
     const dist = naurenMedirDistanciaBordas(tokLadino, t);
     if (dist > 9) continue;
     const estamina = a.system.estaminaCombate?.value ?? 0;
@@ -2832,13 +2830,13 @@ async function naurenHandleQueryEntidade({ operacao, estado: estadoNovo, actorUu
     // Canto superior esquerdo alinhado ao grid, com o centro na posição.
     const x = Math.round((estado.posicao.x - larguraCasas * casa / 2) / casa) * casa;
     const y = Math.round((estado.posicao.y - alturaCasas * casa / 2) / casa) * casa;
-    const [tokenDoc] = await cena.createEmbeddedDocuments("Token", [{
+    const [tokenDoc] = await cena.createEmbeddedDocuments("Token", [naurenAndarParaToken({
       actorId: actor.id, actorLink: true, name: naurenNomeTokenEntidade(estado), texture: { src: estado.imagem },
       x, y, width: larguraCasas, height: alturaCasas, disposition: estado.donoDisposicao,
       displayName: CONST.TOKEN_DISPLAY_MODES.ALWAYS,
       displayBars: estado.vidaMax ? CONST.TOKEN_DISPLAY_MODES.ALWAYS : CONST.TOKEN_DISPLAY_MODES.NONE,
       bar1: { attribute: "vida" }
-    }]);
+    }, estado.andar ? { level: estado.andar, elevation: estado.elevacao } : null)]);
     let paredesIds = [];
     if (estado.bloqueia) {
       const paredes = await cena.createEmbeddedDocuments("Wall", naurenDadosParedesEntidade(x, y, larguraCasas * casa, alturaCasas * casa));
@@ -2894,6 +2892,7 @@ async function naurenHandleQueryEntidade({ operacao, estado: estadoNovo, actorUu
         const curados = [];
         for (const t of canvas?.tokens?.placeables ?? []) {
           if (!t.actor || t.actor === actor || t.document.disposition !== estado.donoDisposicao) continue;
+          if (tok && !naurenMesmoAndar(t, tok)) continue;
           if (estado.esgotarRaio && centro) {
             const d = canvas.grid.measurePath([centro, t.center])?.distance ?? Infinity;
             if (d > estado.esgotarRaio) continue;
@@ -2918,6 +2917,11 @@ async function naurenHandleQueryEntidade({ operacao, estado: estadoNovo, actorUu
 async function naurenOperarEntidade(operacao, dados = {}) {
   const gm = game.users.activeGM;
   if (!gm) { ui.notifications.warn("A entidade de campo precisa do Mestre conectado."); return; }
+  // Andares (V14): a entidade nasce no andar que quem a colocou está vendo (o Mestre pode estar vendo outro).
+  if (operacao === "criar" && dados.estado && !dados.estado.andar && canvas?.level?.id) {
+    const meu = canvas.tokens?.controlled?.[0];
+    dados = { ...dados, estado: { ...dados.estado, andar: canvas.level.id, elevacao: meu && naurenMesmoAndar(meu, { document: { level: canvas.level.id } }) ? meu.document.elevation : undefined } };
+  }
   const resposta = gm.id === game.user.id
     ? await naurenHandleQueryEntidade({ operacao, ...dados })
     : await gm.query(NAUREN_QUERY_ENTIDADE, { operacao, ...dados }, { timeout: 20000 }).catch(() => null);

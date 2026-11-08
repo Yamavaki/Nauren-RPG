@@ -1,6 +1,7 @@
 /* Nauren RPG — Regras do Criador de Monstros (travas, invocar, movimento sem Prioridade). Separado do nauren.mjs na 0.104 (tools/dividir.mjs). */
 import { naurenAcaoEhGolpe, naurenApagarItensSeExistirem, naurenEhCondicaoModelo, naurenEhItem, naurenNomeDeToken } from "./entidades-campo.mjs";
 import { naurenInterpretarModificador, naurenMedirDistanciaBordas, naurenPostarCard } from "../nauren.mjs";
+import { naurenAndarParaToken, naurenMesmoAndar } from "./andares.mjs";
 import { NaurenAlvoHelper, NaurenRegionHelper } from "./ficha-ator.mjs";
 import { naurenAplicarEfeitoTemplatePersistente, naurenAtualizarCondicaoPresenca, naurenCelulasNaArea, naurenColetarGatilhosTemplatePersistenteExternos, naurenPontoDentroDaRegiao, naurenTokenElegivelPorDisposicao } from "./icone-condicao-token.mjs";
 import { naurenOperarRegistroPrioridade } from "./prioridades.mjs";
@@ -53,7 +54,7 @@ const NAUREN_PASTA_INVOCACOES = "Nauren — Invocações";
 /** Casas livres (canto superior esquerdo, px) em anéis em volta do token, até "raioCasas". */
 function naurenCasasLivresEmVolta(cena, tokenDoc, larguraCasas, alturaCasas, quantidade, raioCasas) {
   const g = cena.grid.size;
-  const ocupados = cena.tokens.filter(t => !t.hidden).map(t => ({ x1: t.x, y1: t.y, x2: t.x + t.width * g, y2: t.y + t.height * g }));
+  const ocupados = cena.tokens.filter(t => !t.hidden && naurenMesmoAndar(t, tokenDoc)).map(t => ({ x1: t.x, y1: t.y, x2: t.x + t.width * g, y2: t.y + t.height * g }));
   const livres = [];
   const cabe = (x, y) => {
     if (x < 0 || y < 0 || x + larguraCasas * g > cena.dimensions.width || y + alturaCasas * g > cena.dimensions.height) return false;
@@ -115,8 +116,8 @@ async function naurenCriarInvocacoes(dados) {
   const qtd = Math.max(1, Math.min(20, dados.quantidade || 1));
   const casas = naurenCasasLivresEmVolta(cena, origemTok, modelo.width ?? 1, modelo.height ?? 1, qtd, dados.raioCasas || 2);
   if (!casas.length) return { ok: false, motivo: "sem espaço livre em volta" };
-  const criar = casas.map(c => ({ ...foundry.utils.deepClone(modelo), x: c.x, y: c.y, disposition: origemTok.disposition, hidden: false,
-    flags: { ...(modelo.flags ?? {}), nauren: { ...(modelo.flags?.nauren ?? {}), invocadoPor: origemTok.uuid, surgir: true } } }));
+  const criar = casas.map(c => naurenAndarParaToken({ ...foundry.utils.deepClone(modelo), x: c.x, y: c.y, disposition: origemTok.disposition, hidden: false,
+    flags: { ...(modelo.flags ?? {}), nauren: { ...(modelo.flags?.nauren ?? {}), invocadoPor: origemTok.uuid, surgir: true } } }, origemTok));
   const novos = [];
   for (const c of criar) { const [n] = await cena.createEmbeddedDocuments("Token", [c]); if (n) novos.push(n); } // um por vez: o nome numerado ("Lacaio 2", "3") sai certo
   // Cisão: a Vida atual é dividida (original fica com a metade de cima).
