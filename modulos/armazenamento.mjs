@@ -11,7 +11,7 @@
  * Só APIs do Foundry V14 (foundry.*).
  */
 import { naurenCatalogoDoItem, naurenSeloDoItem } from "./itens-catalogo.mjs";
-import { naurenAndarParaRegiao } from "./andares.mjs";
+import { naurenAndarParaRegiao, naurenCenaTemAndares } from "./andares.mjs";
 import { naurenAbrirEscrito, naurenEhEscrito, naurenEscritoDe } from "./escritos.mjs";
 import { NAUREN_CATEGORIAS_EQUIPAMENTO, NAUREN_QUANTIDADE_MAXIMA, naurenEhMoeda, naurenFormatarNumero, naurenFormatarNumeroCurto, naurenLerNumero, naurenPostarCard } from "../nauren.mjs";
 
@@ -1175,10 +1175,29 @@ async function desenharIcones() {
     atualizarVisibilidade();
   } catch (err) { console.warn("Nauren RPG | ícones de armazenamento", err); }
 }
+/** 0.109.3: a Região do armazenamento está no andar que se está vendo? (sem andares marcados = todos os andares) */
+function noAndarVisto(regiao) {
+  try {
+    if (!naurenCenaTemAndares(regiao?.parent)) return true;
+    const lv = regiao?.levels;
+    const lista = (lv instanceof Set ? [...lv] : Array.isArray(lv) ? lv : (lv && typeof lv[Symbol.iterator] === "function" ? [...lv] : [])).map(x => x?.id ?? x);
+    if (!lista.length) return true;
+    const vendo = canvas.level?.id;
+    return !vendo || lista.includes(vendo);
+  } catch (err) { return true; }
+}
+let andarVisto = null;
+function vigiarAndar() {
+  const id = canvas?.level?.id ?? null;
+  if (id === andarVisto) return;
+  andarVisto = id;
+  atualizarVisibilidade();
+}
 function atualizarVisibilidade() {
   if (!camada) return;
   for (const ic of camada.children ?? []) {
     const p = ic.naurenPonto; if (!p) continue;
+    if (!noAndarVisto(p.regiao)) { ic.visible = false; continue; }
     if (game.user.isGM || !p.soNaVisao) { ic.visible = true; continue; }
     let ve = true;
     try { ve = canvas.visibility?.testVisibility?.({ x: p.cx, y: p.cy }, { tolerance: 8 }) ?? true; } catch (err) { ve = true; }
@@ -1223,6 +1242,8 @@ function naurenArmazemHooks() {
   for (const h of ["createRegion", "updateRegion", "deleteRegion", "createRegionBehavior", "updateRegionBehavior", "deleteRegionBehavior"]) Hooks.on(h, () => redesenharIcones());
   Hooks.on("updateActor", a => { if (a.type === "armazenamento" && camada) redesenharIcones(); });
   Hooks.on("sightRefresh", () => atualizarVisibilidade());
+  // 0.109.3: trocar o andar visto esconde/mostra os ícones (confere a cada quadro, só age quando o andar muda).
+  Hooks.on("canvasReady", () => { andarVisto = null; try { canvas.app.ticker.remove(vigiarAndar); canvas.app.ticker.add(vigiarAndar); } catch (err) { /* sem ticker */ } });
   // 0.101.4: tamanho padrão do ícone no mapa: 0,4 quadrado (os que estavam no padrão antigo, 0,8 ou 0,6, passam para 0,4).
   Hooks.once("ready", async () => {
     try {
