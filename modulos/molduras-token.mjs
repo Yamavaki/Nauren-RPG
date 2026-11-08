@@ -319,10 +319,10 @@ export class NaurenMolduraCamada {
     const PSM = foundry.canvas.primary.PrimarySpriteMesh, nomeTok = token.objectId ?? `Token.${token.id}`;
     const mesh = new PSM({ name: `${nomeTok}.moldura`, object: token, texture: texturaDe(tex.moldura, `${chaveBase}|moldura`) });
     mesh.anchor.set(.5, .5); mesh.eventMode = "none";
-    this.mesh = mesh;
-    if (tex.atras) { const a = new PSM({ name: `${nomeTok}.moldura.atras`, object: token, texture: texturaDe(tex.atras, `${chaveBase}|atras`) }); a.anchor.set(.5, .5); a.eventMode = "none"; this.atras = a; }
+    this.mesh = mesh; this.guardarAndar(mesh);
+    if (tex.atras) { const a = new PSM({ name: `${nomeTok}.moldura.atras`, object: token, texture: texturaDe(tex.atras, `${chaveBase}|atras`) }); a.anchor.set(.5, .5); a.eventMode = "none"; this.atras = a; this.guardarAndar(a); }
     // camada de trás para os efeitos "só por fora" (aura/cintilar atrás da arte do token): textura vazia do mesmo tamanho
-    const fundo = new PSM({ name: `${nomeTok}.moldura.fundo`, object: token, texture: texturaDe(vazio(px), `vazio|${px}`) }); fundo.anchor.set(.5, .5); fundo.eventMode = "none"; this.fundo = fundo;
+    const fundo = new PSM({ name: `${nomeTok}.moldura.fundo`, object: token, texture: texturaDe(vazio(px), `vazio|${px}`) }); fundo.anchor.set(.5, .5); fundo.eventMode = "none"; this.fundo = fundo; this.guardarAndar(fundo);
     // efeitos (filhos da malha: herdam posição, escala e rotação)
     const sil = texturaDe(tex.silhueta, `${chaveBase}|sil`);
     const novo = (textura, blend = "add", pai = mesh) => { const s = new PIXI.Sprite(textura); s.anchor.set(.5); s.blendMode = PIXI.BLEND_MODES[blend.toUpperCase()] ?? PIXI.BLEND_MODES.ADD; s.visible = false; pai.addChild(s); return s; };
@@ -357,7 +357,7 @@ export class NaurenMolduraCamada {
     const PSM = foundry.canvas.primary.PrimarySpriteMesh;
     const f = new PSM({ name: `${token.objectId ?? `Token.${token.id}`}.moldura.frente`, object: token, texture: tex });
     f.anchor.set(.5, .5); f.eventMode = "none";
-    this.frente = f; this.frenteTex = tex;
+    this.frente = f; this.frenteTex = tex; this.guardarAndar(f);
     const prim = canvas.primary, j = prim.children.indexOf(this.mesh);
     if (j >= 0) prim.addChildAt(f, j + 1); else prim.addChild(f);
     prim.sortDirty = true;
@@ -417,10 +417,26 @@ export class NaurenMolduraCamada {
   montarVazio() {
     const token = this.token; if (!token || token.destroyed || this.vazio || typeof token.addChild !== "function") return;
     const v = new PIXI.Container(); v.eventMode = "none"; v.updateTransform = () => {};
-    v.render = renderer => { for (const s of [this.atras, this.mesh, this.frente]) { try { if (s && !s.destroyed && s._renderVoid) s._renderVoid(renderer); } catch (err) { /* segue */ } } };
+    v.render = renderer => { if (!this.arteDesenhada()) return; for (const s of [this.atras, this.mesh, this.frente]) { try { if (s && !s.destroyed && s._renderVoid) s._renderVoid(renderer); } catch (err) { /* segue */ } } };
     const i = token.voidMesh && token.children ? token.children.indexOf(token.voidMesh) : -1;
     if (i >= 0) token.addChildAt(v, i + 1); else token.addChild(v);
     this.vazio = v;
+  }
+  /**
+   * 0.108.1 — andares (Levels do V14). Token de outro andar: o Foundry decide, a cada quadro, se a arte aparece
+   * (pelo buraco do piso, pela escada…) ou não. Em vez de esconder a moldura de vez, ela segue a arte: só é desenhada
+   * no quadro em que a arte do token também foi. No andar que se está vendo, nada muda.
+   */
+  arteDesenhada() {
+    if (!this.outroAndar) return true;
+    const tm = this.token?.mesh;
+    return !!tm && !tm.destroyed && quadroAtual - (tm._naurenDesenhou ?? -9) <= 1;
+  }
+  guardarAndar(s) {
+    if (!s || s._naurenGuarda) return;
+    const camada = this, orig = s.render;
+    s.render = function (renderer) { if (!camada.arteDesenhada()) return; return orig.call(this, renderer); };
+    s._naurenGuarda = true;
   }
   /** Copia posição, tamanho, ordem e visibilidade da malha do token (chamado no refreshToken). */
   sincronizar() {
@@ -430,12 +446,11 @@ export class NaurenMolduraCamada {
     const casa = canvas.dimensions?.size ?? 100, tam = Math.min(Number(doc.width) || 1, Number(doc.height) || 1);
     const lado = casa * tam * (2 * this.tex.vb) / 200;
     const est = this.estado?.escala ?? 1;
-    // 0.107.2: token de outro andar (Levels do V14) — o Foundry deixa a arte debaixo do piso de cima ou a corta; a moldura
-    // é maior que a arte e "vazava" por fora do piso. Fora do andar que se está vendo, a moldura e os efeitos somem.
+    // Token de outro andar (Levels do V14): a moldura e os efeitos só são desenhados quando a arte é (ver arteDesenhada).
     const vendo = canvas.level?.id, andar = doc.level?.id ?? doc.level;
-    const outroAndar = !!(vendo && andar && andar !== vendo);
-    const vis = tm.visible && !outroAndar;
-    this.outroAndar = outroAndar;
+    this.outroAndar = !!(vendo && andar && andar !== vendo);
+    espiarArte(tm);
+    const vis = tm.visible;
     for (const s of [this.mesh, this.atras, this.fundo]) {
       if (!s) continue;
       s.position.set(tm.position.x, tm.position.y);
@@ -541,8 +556,20 @@ export function naurenMolduraPiscar(token, cor) { const c = token && camadas.get
 export function naurenMolduraInvalidar(token) { (token && camadas.get(token))?.invalidarSituacao(); }
 export function naurenMolduraTodas() { return [...camadas.values()]; }
 let tickerLigado = false;
+// Contador de quadros (sobe antes do desenho, prioridade alta) e o "espião" que marca o quadro em que a arte do token
+// foi desenhada de verdade (passou por visível, renderizável, recorte e corte de andar do Foundry).
+let quadroAtual = 0;
+function contarQuadro() { quadroAtual++; }
+function espiarArte(tm) {
+  if (!tm || tm._naurenEspiao || typeof tm._render !== "function") return;
+  const orig = tm._render;
+  tm._render = function (renderer) { this._naurenDesenhou = quadroAtual; return orig.call(this, renderer); };
+  tm._naurenEspiao = true;
+}
 function ligarTicker() {
   if (tickerLigado || !canvas?.app?.ticker) return;
+  canvas.app.ticker.remove(contarQuadro); canvas.app.ticker.remove(naurenMolduraTick);
+  canvas.app.ticker.add(contarQuadro, null, PIXI.UPDATE_PRIORITY?.HIGH ?? 25);
   canvas.app.ticker.add(naurenMolduraTick); tickerLigado = true;
 }
 let ultimoTick = 0;
