@@ -430,13 +430,22 @@ export class NaurenMolduraCamada {
     const casa = canvas.dimensions?.size ?? 100, tam = Math.min(Number(doc.width) || 1, Number(doc.height) || 1);
     const lado = casa * tam * (2 * this.tex.vb) / 200;
     const est = this.estado?.escala ?? 1;
+    // 0.107.2: token de outro andar (Levels do V14) — o Foundry deixa a arte debaixo do piso de cima ou a corta; a moldura
+    // é maior que a arte e "vazava" por fora do piso. Fora do andar que se está vendo, a moldura e os efeitos somem.
+    const vendo = canvas.level?.id, andar = doc.level?.id ?? doc.level;
+    const outroAndar = !!(vendo && andar && andar !== vendo);
+    const vis = tm.visible && !outroAndar;
+    this.outroAndar = outroAndar;
     for (const s of [this.mesh, this.atras, this.fundo]) {
       if (!s) continue;
       s.position.set(tm.position.x, tm.position.y);
       s.width = s.height = lado * est;
       s.elevation = tm.elevation; s.sort = tm.sort; s.sortLayer = tm.sortLayer; s.zIndex = tm.zIndex;
-      s.alpha = tm.alpha; s.hidden = tm.hidden; s.visible = tm.visible; s.renderable = tm.renderable;
+      s.alpha = tm.alpha; s.hidden = tm.hidden; s.visible = vis; s.renderable = tm.renderable;
       s.occludedAlpha = tm.occludedAlpha; s.unoccludedAlpha = tm.unoccludedAlpha; s.hoverFade = tm.hoverFade;
+      if (tm.occlusionMode !== undefined) s.occlusionMode = tm.occlusionMode;
+      if (tm._occludedBySameElevationSurfaces !== undefined) s._occludedBySameElevationSurfaces = tm._occludedBySameElevationSurfaces;
+      if (tm.occluded !== undefined) s.occluded = tm.occluded;
       s.rotation = this.estado?.rotacao ?? 0;
     }
     const f = this.frente;
@@ -446,7 +455,7 @@ export class NaurenMolduraCamada {
       if (tm.scale.x < 0) f.scale.x = -Math.abs(f.scale.x); if (tm.scale.y < 0) f.scale.y = -Math.abs(f.scale.y);
       f.rotation = tm.rotation;
       f.elevation = tm.elevation; f.sort = tm.sort; f.sortLayer = tm.sortLayer; f.zIndex = tm.zIndex;
-      f.alpha = tm.alpha; f.hidden = tm.hidden; f.visible = tm.visible && this.mesh?.visible !== false; f.renderable = tm.renderable;
+      f.alpha = tm.alpha; f.hidden = tm.hidden; f.visible = vis && this.mesh?.visible !== false; f.renderable = tm.renderable;
       f.occludedAlpha = tm.occludedAlpha; f.unoccludedAlpha = tm.unoccludedAlpha; f.hoverFade = tm.hoverFade;
     }
     this.lado = lado;

@@ -9,7 +9,7 @@
  * - balão em cima do token (ChatBubbles): chanfrado nas cores do personagem.
  * Opção do mundo "Chat no estilo Nauren" liga e desliga tudo.
  */
-import { naurenAtorDoCard, naurenEstiloDoCard } from "../nauren.mjs";
+import { naurenAtorDoCard, naurenEstiloDoCard, naurenEstiloEnquadramento } from "../nauren.mjs";
 
 const SELETOR_CARD = ".nauren-roll-card, .nauren-aviso-chat, .nauren-deflexao-card";
 const AGRUPAR_MS = 5 * 60 * 1000;
@@ -341,3 +341,23 @@ Hooks.on("renderChatMessageHTML", (message, html) => { try { aplicar(message, ht
 Hooks.once("ready", () => { try { if (ligado()) document.body.classList.add("ncc-chat"); observarBaloes(); instalarBalaoProprio(); } catch (err) { console.warn("Nauren RPG | balões", err); } });
 
 export { regruparChat as naurenChatRegrupar, naurenChatInit, pintarBalao as naurenChatPintarBalao, naurenBalao as naurenChatBalao };
+
+/**
+ * 0.107.2: quando o cabeçalho do card mostra o próprio personagem (a imagem do token ou o retrato), usa o
+ * retrato da ficha com o recorte da ficha, sempre dentro da caixa (antes a arte do token podia sair dela).
+ * Ícones de item, magia, etc. ficam como estão.
+ */
+function retratoDoCard(message, html) {
+  const img = html?.querySelector?.(".nauren-roll-card > header .nrc-icon"); if (!img) return;
+  const ator = naurenAtorDoCard(message); if (!ator?.img || /mystery-man|icons\/svg\//.test(ator.img)) return;
+  const limpo = v => String(v ?? "").replace(/[?&]nauren-borda=[^&]*/, "").replace(/^\//, "");
+  const src = limpo(img.getAttribute("src"));
+  const doAtor = new Set([ator.img, ator.prototypeToken?.texture?.src, ator.getFlag?.("nauren", "borda")?.src, ator.getFlag?.("nauren", "aparenciaBase")?.src,
+    ...(ator.getActiveTokens?.(false, true) ?? []).map(t => t.texture?.src)].filter(Boolean).map(limpo));
+  if (!doAtor.has(src)) return;
+  img.src = ator.img;
+  const estilo = naurenEstiloEnquadramento(ator, ator.img);
+  if (estilo) img.setAttribute("style", estilo);
+  if (!img.parentElement?.classList.contains("nc-retrato")) { const cx = document.createElement("span"); cx.className = "nc-retrato"; img.replaceWith(cx); cx.append(img); }
+}
+Hooks.on("renderChatMessageHTML", (message, html) => { try { retratoDoCard(message, html); } catch (err) { /* card sem cabeçalho */ } });

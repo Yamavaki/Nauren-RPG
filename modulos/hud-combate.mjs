@@ -1,5 +1,5 @@
 /* Nauren RPG — HUD de Combate. Separado do nauren.mjs na 0.104 (tools/dividir.mjs). */
-import { NAUREN_CATEGORIAS_EQUIPAMENTO, naurenEstiloDoCard, naurenItemTemLuz, naurenItemValeAgora, naurenResolverPorNivel, naurenResolverTokenFormula } from "../nauren.mjs";
+import { NAUREN_CATEGORIAS_EQUIPAMENTO, naurenEstiloDoCard, naurenEstiloEnquadramento, naurenItemTemLuz, naurenItemValeAgora, naurenResolverPorNivel, naurenResolverTokenFormula } from "../nauren.mjs";
 import { naurenHudAnimacoesLigadas, naurenHudBarrasDoToken, naurenHudLerRecurso, naurenHudRecursosDoAtor, naurenTrocarHtmlMantendoRolagem } from "./barras-token.mjs";
 import { NaurenHudRecursosEditor, naurenHudCombateRecursos } from "./hud-recursos.mjs";
 import { naurenRegistroPrioridades } from "./prioridades.mjs";
@@ -138,7 +138,7 @@ function naurenHudHtml(c) {
     <div class="nauren-hud-dica" hidden></div>
     <section class="nauren-hud-painel nauren-hud-esquerda">
       <div class="nauren-hud-cabecalho">
-        <img class="nauren-hud-retrato ${c.retratoAnim}" src="${e(c.retrato)}" alt="" data-action="abrirFicha" title="${e(c.classeCompleta || "")} · abrir a ficha">
+        <span class="nauren-hud-retrato ${c.retratoAnim}" data-action="abrirFicha" title="${e(c.classeCompleta || "")} · abrir a ficha"><img src="${e(c.retrato)}" alt="" style="${e(c.retratoEstilo || "")}"></span>
         <div class="nauren-hud-identidade">
           <div class="nauren-hud-nome-linha"><span class="nauren-hud-nome">${e(c.nome)}</span><span class="nauren-hud-classe">${e(c.classe)}</span></div>
           ${barras}
@@ -256,9 +256,12 @@ class NaurenHudCombate extends foundry.applications.api.ApplicationV2 {
     if (!actor) return { recolhido: true, nome: "", retrato: "" };
     const recolhido = game.settings.get("nauren", "hudCombateRecolhido");
     const classe = actor.items.find(i => i.type === "classe");
-    const retrato = token?.document?.texture?.src || actor.img;
+    // 0.107.2: o retrato do HUD é o da ficha, com o recorte (enquadramento) da ficha; sem retrato próprio, a imagem do token
+    const semRetrato = !actor.img || /mystery-man|icons\/svg\//.test(actor.img);
+    const retrato = semRetrato ? (String(token?.document?.texture?.src ?? "").replace(/[?&]nauren-borda=[^&]*/, "") || actor.img) : actor.img;
+    const retratoEstilo = semRetrato ? "" : naurenEstiloEnquadramento(actor, actor.img);
     const nomeClasse = classe ? classe.name : (actor.type === "npc" ? "NPC" : "");
-    const c = { recolhido, nome: actor.name, retrato, classe: `Nv ${sys.nivel ?? 1}`, classeCompleta: `${nomeClasse}${nomeClasse ? " · " : ""}nível ${sys.nivel ?? 1}` };
+    const c = { recolhido, nome: actor.name, retrato, retratoEstilo, classe: `Nv ${sys.nivel ?? 1}`, classeCompleta: `${nomeClasse}${nomeClasse ? " · " : ""}nível ${sys.nivel ?? 1}` };
     { const est = naurenEstiloDoCard(actor); c.coresEstilo = est.estilo; c.coresEscuro = est.escuro; c.monstro = actor.type === "npc"; }
     if (recolhido) return c;
 

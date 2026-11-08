@@ -1,5 +1,5 @@
 /* Versão deste arquivo: o sistema confere no "ready" e, se o navegador/Forge tiver guardado um CSS antigo, carrega o novo. */
-:root { --nauren-css-versao: "0.107.1"; }
+:root { --nauren-css-versao: "0.107.2"; }
 /* 
 ===================================================
 1. FUNDO E FONTES GERAIS
@@ -8765,3 +8765,9 @@ h4.ap-rot { margin: 0; padding: 0; border: 0; line-height: 1.2; }
 .im-prog { font-size: 12px; color: var(--nk-suave, #b3a6c9); }
 .im-ok { font-size: 12.5px; color: #8fd9a8; } .im-ok i { margin-right: 4px; }
 .nauren-btn-imp-massa { margin-top: 4px; }
+
+/* 0.107.2: retrato do HUD e dos cards com o recorte da ficha (a imagem fica dentro da caixa) */
+#nauren-hud-combate span.nauren-hud-retrato { display: block; overflow: hidden; box-sizing: border-box; }
+#nauren-hud-combate span.nauren-hud-retrato > img { display: block; width: 100%; height: 100%; object-fit: cover; border: 0; border-radius: 0; pointer-events: none; }
+.nauren-roll-card.nc2 > header .nc-retrato { display: block; overflow: hidden; }
+.nauren-roll-card.nc2 > header .nc-retrato > .nrc-icon { width: 100%; height: 100%; flex: none; box-shadow: none; border-radius: 0; }

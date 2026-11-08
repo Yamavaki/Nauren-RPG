@@ -372,9 +372,9 @@ async function naurenSemearArmaduras(pack) {
  * priorizando economia de itens em vez de duplicar por variação de golpe.
  * "Ataque Pesado" sempre soma +1 Estamina ao custo padrão da arma, rola
  * 1 dado extra e dobra a contribuição do Poder de Ataque no dano (regra
- * exata do manual). Armas de Alcance/Distância usam "atributoAtaque:
- * agilidade" por padrão de bom senso (arcos/lanças pedem precisão, não
- * força bruta) - o jogador pode trocar na ficha se preferir Força.
+ * exata do manual). Todas as armas atacam com o Poder de Ataque (0.107.2; antes as de
+ * distância usavam a Agilidade, o que não é regra do livro: o Poder de Ataque já pega o maior entre
+ * Força e Agilidade).
  */
 async function naurenSemearArmas(pack) {
   const definicoes = [
@@ -419,7 +419,7 @@ async function naurenSemearArmas(pack) {
       alvejado: nomeArma !== "Arma de Fogo", // 0.94.11: flecha/virote crava no alvo (Cap. V, Alvejado: "projéteis cravados no corpo")
       descricao: nomeArma === "Arma de Fogo" ? "<p>Permite causar dano sem se expor a perigos, mas sofre com obstáculos no caminho.</p>"
         : "<p>Permite causar dano sem se expor a perigos, mas sofre com obstáculos no caminho. Ao acertar, a flecha fica cravada: o alvo recebe 1 acúmulo de Alvejado.</p>",
-      atributoAtaque: "agilidade"
+      atributoAtaque: "poderAtaque" // 0.107.2: o livro usa o Poder de Ataque (que já pega o maior entre Força e Agilidade)
     })),
     {
       seedId: "arma-catalisador-gariart", img: "icons/weapons/wands/wand-carved-pink.webp", categoria: "Catalisador", name: "Catalisador (Gariart)", dado: "1d4", custoBasico: 1,
@@ -2821,12 +2821,12 @@ async function naurenSemearArmasDisparoCarregado(pack) {
       descricao: "<p>Arma antiga, mantida só para fichas que já a tinham. <b>Não é mais necessária:</b> use qualquer arma à distância com a Habilidade <b>Disparo Carregado</b>, que pede a arma na hora. O <b>Rastro do Vendaval</b> (Subclasse Batedor) agora modifica a própria Habilidade Disparo Carregado.</p>",
       acoes: [
         {
-          nome: "Ataque Básico", custoEstamina: 1, alcance: "9m", ehAtaque: true, atributoAtaque: "agilidade",
+          nome: "Ataque Básico", custoEstamina: 1, alcance: "9m", ehAtaque: true, atributoAtaque: "poderAtaque",
           modoAlvo: "selecionado", modoAlvoTravado: true,
           danos: [{ formula: "1d6+@poderAtaque", aplicarNoAlvo: true }]
         },
         {
-          nome: "Ataque Pesado", custoEstamina: 2, alcance: "9m", ehAtaque: true, atributoAtaque: "agilidade",
+          nome: "Ataque Pesado", custoEstamina: 2, alcance: "9m", ehAtaque: true, atributoAtaque: "poderAtaque",
           modoAlvo: "selecionado", modoAlvoTravado: true,
           danos: [{ formula: "2d8+2*@poderAtaque", aplicarNoAlvo: true }],
           // "usaEmpurrar" começa DESLIGADO - "Rastro do Vendaval"
@@ -2897,7 +2897,7 @@ async function naurenSemearArmasModeloSubclasse(pack, packCondicoes) {
     system: {
       descricao: "<p><b>Arma-modelo do Ladino (Ardiloso) — Técnica Suja.</b> Variante de Arma Leve que já aplica Sangramento em cada acerto.</p><p><b>Usa outra arma leve?</b> Copie pra ela: em Condições Aplicadas do Ataque Básico, adicione \"Sangramento\" com \"Só se acertar\" ligado.</p><p><b>Também tem Lâmina Corrupta?</b> Use a arma-modelo \"Arma Leve (Técnica Suja + Lâmina Corrupta)\" em vez desta - lá o dado já vem fixado no valor máximo.</p>",
       acoes: [{
-        nome: "Ataque Básico", custoEstamina: 1, alcance: "1m", ehAtaque: true, atributoAtaque: "agilidade",
+        nome: "Ataque Básico", custoEstamina: 1, alcance: "1m", ehAtaque: true, atributoAtaque: "poderAtaque",
         modoAlvo: "selecionado", modoAlvoTravado: true,
         danos: [{ formula: "1d4+@poderAtaque", aplicarNoAlvo: true }],
         condicoesAplicadas: [{ uuid: uuidSangramento, acumulos: 1, ativo: true, soSeAcertar: true, perguntarParaEvitar: false }]
@@ -2909,7 +2909,7 @@ async function naurenSemearArmasModeloSubclasse(pack, packCondicoes) {
     system: {
       descricao: "<p><b>Arma-modelo do Ladino (Ardiloso) — Técnica Suja + Lâmina Corrupta.</b> Aplica Sangramento em cada acerto E já vem com o dado de dano FIXADO no valor máximo (1d4 vira 4 fixo), que é exatamente o que \"causam dano máximo\" significa - sem precisar rolar e trocar o resultado à mão.</p><p><b>Usa outra arma leve?</b> Copie pra ela: troque a fórmula de dano do dado pelo valor máximo dele (1d4→4, 1d6→6) e adicione \"Sangramento\" em Condições Aplicadas com \"Só se acertar\".</p>",
       acoes: [{
-        nome: "Ataque Básico (dano máximo)", custoEstamina: 1, alcance: "1m", ehAtaque: true, atributoAtaque: "agilidade",
+        nome: "Ataque Básico (dano máximo)", custoEstamina: 1, alcance: "1m", ehAtaque: true, atributoAtaque: "poderAtaque",
         modoAlvo: "selecionado", modoAlvoTravado: true,
         danos: [{ formula: "4+@poderAtaque", aplicarNoAlvo: true }],
         condicoesAplicadas: [{ uuid: uuidSangramento, acumulos: 1, ativo: true, soSeAcertar: true, perguntarParaEvitar: false }]
@@ -2924,7 +2924,7 @@ async function naurenSemearArmasModeloSubclasse(pack, packCondicoes) {
     system: {
       descricao: "<p><b>Arma-modelo do Ladino (Oportunista) — Marcar o Alvo.</b> Já vem com \"Verificar Condição no Alvo\" apontando pra \"Estudado\" e a fórmula de dano escalando sozinha: +1d6 por acúmulo que o alvo tiver (ou seja, por informação que você adquiriu com Análise Paciente).</p><p><b>Usa outra arma?</b> Copie pra ela: ligue \"Verificar Condição no Alvo\" → \"Estudado\" e acrescente <b>+(@alvoAcumulos)d6</b> na fórmula de dano (troque o d6 pelo dado da sua arma).</p>",
       acoes: [{
-        nome: "Ataque Básico (escala com Estudado)", custoEstamina: 1, alcance: "1m", ehAtaque: true, atributoAtaque: "agilidade",
+        nome: "Ataque Básico (escala com Estudado)", custoEstamina: 1, alcance: "1m", ehAtaque: true, atributoAtaque: "poderAtaque",
         modoAlvo: "selecionado", modoAlvoTravado: true,
         usaCondicaoAlvo: true, condicaoAlvoUuid: uuidEstudado,
         danos: [{ formula: "1d6+@poderAtaque+(@alvoAcumulos)d6", aplicarNoAlvo: true }]
@@ -7558,7 +7558,7 @@ async function naurenSemearSubclasseCacadorBatedor(pack, packHabilidades, packCo
     name: "Ataque Múltiplo", type: "habilidade", img: "icons/skills/ranged/person-archery-bow-attack-orange.webp",
     system: {
       acoes: [{
-        nome: "Ataque Múltiplo", usaArmaEscolhida: true, armaEscolhidaTipos: ["Distância"], armaEscolhidaQualAtaque: "basico", usaArmaEscolhidaSomaCusto: true, usaArmaEscolhidaHerdarAlcance: true, categoria: "Subclasse", custoEstamina: 2, alcance: "9m", ehAtaque: true, atributoAtaque: "agilidade",
+        nome: "Ataque Múltiplo", usaArmaEscolhida: true, armaEscolhidaTipos: ["Distância"], armaEscolhidaQualAtaque: "basico", usaArmaEscolhidaSomaCusto: true, usaArmaEscolhidaHerdarAlcance: true, categoria: "Subclasse", custoEstamina: 2, alcance: "9m", ehAtaque: true, atributoAtaque: "poderAtaque",
         modoAlvo: "selecionado", modoAlvoTravado: true, numeroAlvos: 3,
         danos: []
       }],
@@ -7576,7 +7576,7 @@ async function naurenSemearSubclasseCacadorBatedor(pack, packHabilidades, packCo
     name: "Disparo Quimérico", type: "habilidade", img: "icons/weapons/ammunition/arrow-broadhead.webp",
     system: {
       acoes: [{
-        nome: "Disparo Quimérico", categoria: "Subclasse", custoEstamina: 2, alcance: "9m", ehAtaque: true, atributoAtaque: "agilidade",
+        nome: "Disparo Quimérico", categoria: "Subclasse", custoEstamina: 2, alcance: "9m", ehAtaque: true, atributoAtaque: "poderAtaque",
         modoAlvo: "selecionado", modoAlvoTravado: true,
         usaCondicaoAlvo: true, condicaoAlvoUuid: uuidAlvejado,
         usaArmaEscolhida: true, armaEscolhidaTipos: ["Distância"], armaEscolhidaQualAtaque: "basico", usaArmaEscolhidaHerdarAlcance: true, armaEscolhidaDadoExtraFormula: "@alvoAcumulos", armaEscolhidaSomarDanoProprio: true,
