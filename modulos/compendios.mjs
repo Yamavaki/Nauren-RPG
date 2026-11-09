@@ -3049,10 +3049,8 @@ async function naurenSemearHabilidadesCacador(pack, packCondicoes, packEfeitos) 
         nome: "Armadilha de Caça", custoEstamina: 1, alcance: "1m",
         usaTemplate: true, templateTipo: "circle", templateTamanho: 1, modoAlvo: "nenhum",
         usaTemplatePersistente: true, templatePersistenteDuracaoRodadas: "0", templatePersistenteAoEntrar: true, templatePersistenteIgnorarConjurador: true,
-        // "todos" (não "inimigos") - é uma armadilha física no chão,
-        // não algo que reconhece quem é aliado/inimigo do Caçador;
-        // qualquer um que entrar/se mover nela é afetado.
-        templatePersistenteDisposicao: "todos", templatePersistenteEfeito: "dano", templatePersistenteQuantidade: "1d6",
+        // 0.109.6 (pedido do Mestre): só inimigos disparam a armadilha - aliados passam por cima sem dano nem Preso.
+        templatePersistenteDisposicao: "inimigos", templatePersistenteEfeito: "dano", templatePersistenteQuantidade: "1d6",
         templatePersistenteCondicaoUuid: uuidPreso, templatePersistenteCondicaoAcumulos: "1",
         // Remover ao Ativar (ver campoAcao) - a armadilha "estoura" e
         // desaparece do mapa na primeira vez que QUALQUER UM pisar
@@ -3066,7 +3064,7 @@ async function naurenSemearHabilidadesCacador(pack, packCondicoes, packEfeitos) 
         // mais antiga automaticamente - já automatizado.
         templatePersistenteLimiteSimultaneas: "@rank"
       }],
-      descricao: naurenMontarDescricao({ regra: "Cria uma armadilha num espaço desocupado (raio 1m). Quem entrar ou se mover na área sofre 1d6 de dano e fica Preso. Armadilhas ativas ao mesmo tempo: 1 (rank 1), +1 nos níveis 7, 10 e 13.", automatico: "área no mapa a até 1m; quem já estava dentro ao montar só ativa se se mover nela; ao ativar (dano + Preso), a área some, mas a armadilha continua ativa enquanto o alvo estiver Preso e ocupa uma vaga do limite. Montar além do limite apaga a armadilha ainda não disparada mais antiga; se todas as vagas estão com alguém Preso, não dá para montar outra (aviso, sem gastar nada).", manual: "desarmar uma armadilha não disparada: apague a área no mapa." })
+      descricao: naurenMontarDescricao({ regra: "Cria uma armadilha num espaço desocupado (raio 1m). Inimigos que entrarem ou se moverem na área sofrem 1d6 de dano e ficam Presos (aliados passam sem disparar). Armadilhas ativas ao mesmo tempo: 1 (rank 1), +1 nos níveis 7, 10 e 13.", automatico: "área no mapa a até 1m; quem já estava dentro ao montar só ativa se se mover nela; ao ativar (dano + Preso), a área some, mas a armadilha continua ativa enquanto o alvo estiver Preso e ocupa uma vaga do limite. Montar além do limite apaga a armadilha ainda não disparada mais antiga; se todas as vagas estão com alguém Preso, não dá para montar outra (aviso, sem gastar nada).", manual: "desarmar uma armadilha não disparada: apague a área no mapa." })
     }
   });
 

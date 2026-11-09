@@ -7440,6 +7440,7 @@ Hooks.once("init", () => {
   game.settings.register("nauren", "migracaoLadinoRevisaoV1", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoAtaqueAgilidadeV1", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoVidaInimigosV1", { scope: "world", config: false, type: Boolean, default: false });
+  game.settings.register("nauren", "migracaoArmadilhaInimigosV1", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoRevisaoClasses0921", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoRevisaoMago0924", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoEscudoDeMana0925", { scope: "world", config: false, type: Boolean, default: false });
@@ -7737,6 +7738,39 @@ async function naurenMigrarVidaInimigos() {
   }
 }
 Hooks.once("ready", () => { naurenMigrarVidaInimigos().catch(err => console.warn("Nauren RPG | migração da Vida dos inimigos", err)); });
+
+/**
+ * 0.109.6: a Armadilha de Caça (Caçador) passa a afetar só inimigos. Troca "todos" por "inimigos" nas cópias
+ * da Habilidade que já estão nas fichas (atores e tokens não vinculados) e nas armadilhas já montadas nos mapas.
+ * O compêndio se atualiza sozinho (seed).
+ */
+async function naurenMigrarArmadilhaSoInimigos() {
+  if (!game.user?.isGM || game.settings.get("nauren", "migracaoArmadilhaInimigosV1")) return;
+  let n = 0;
+  const arrumarAtor = async ator => {
+    for (const it of ator?.items ?? []) {
+      if (it.type !== "habilidade" || it.name !== "Armadilha de Caça") continue;
+      const acoes = foundry.utils.deepClone(it._source.system?.acoes ?? []);
+      let mudou = false;
+      for (const ac of acoes) if (ac.usaTemplatePersistente && ac.templatePersistenteDisposicao === "todos") { ac.templatePersistenteDisposicao = "inimigos"; mudou = true; }
+      if (mudou) { try { await it.update({ "system.acoes": acoes }); n++; } catch (err) { console.warn("Nauren RPG | migração da Armadilha", ator.name, err); } }
+    }
+  };
+  for (const a of game.actors ?? []) await arrumarAtor(a);
+  for (const cena of game.scenes ?? []) {
+    for (const td of cena.tokens ?? []) if (!td.actorLink && td.actor) await arrumarAtor(td.actor);
+    for (const r of cena.regions ?? []) {
+      const tp = r.getFlag?.("nauren", "templatePersistente");
+      if (!tp || tp.disposicao !== "todos") continue;
+      const origem = tp.origemItemUuid ? await fromUuid(tp.origemItemUuid).catch(() => null) : null;
+      if (origem?.name !== "Armadilha de Caça") continue;
+      try { await r.setFlag("nauren", "templatePersistente", { ...tp, disposicao: "inimigos" }); n++; } catch (err) { console.warn("Nauren RPG | migração da Armadilha (mapa)", err); }
+    }
+  }
+  await game.settings.set("nauren", "migracaoArmadilhaInimigosV1", true);
+  if (n) ui.notifications?.info(`Nauren RPG 0.109.6: a Armadilha de Caça agora só afeta inimigos (${n} ajuste(s) em fichas e mapas).`);
+}
+Hooks.once("ready", () => { naurenMigrarArmadilhaSoInimigos().catch(err => console.warn("Nauren RPG | migração da Armadilha", err)); });
 
 /**
  * 0.107.1: CSS velho no cache. O Foundry carrega styles/nauren.css sem número de versão; o navegador (e o
