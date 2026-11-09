@@ -213,7 +213,7 @@ export async function naurenEscritoMostrar(item) {
   const e = naurenEscritoDe(item), f = NAUREN_ESCRITO_FORMATOS[e.formato];
   await ChatMessage.create({
     speaker: { alias: "Mestre" },
-    content: `<div class="nl-chat"><i class="fas ${f.ic}"></i><div><b>${esc(item.name)}</b><small>${f.rot} mostrado pelo Mestre</small></div><button type="button" class="nl-chat-ler" data-uuid="${esc(item.uuid)}"><i class="fas fa-book-open-reader"></i> Ler</button></div>`,
+    content: `<div class="nl-chat nl-chat-${e.formato}"><span class="nl-chat-ic"><i class="fas ${f.ic}"></i></span><div class="nl-chat-txt"><b>${esc(item.name)}</b><small>${f.rot} ${["nota", "carta"].includes(e.formato) ? "mostrada" : "mostrado"} pelo Mestre</small></div><button type="button" class="nl-chat-ler" data-uuid="${esc(item.uuid)}"><i class="fas fa-book-open-reader"></i> Ler</button></div>`,
     flags: { [SIS]: { escritoMostrar: item.uuid } }
   });
 }
@@ -524,6 +524,12 @@ export function naurenEscritosInit() {
     naurenAbrirEscrito(uuid);
   });
   Hooks.on("renderChatMessageHTML", (msg, html) => {
+    // 0.109.4: cards antigos — concordância ("Nota mostrada") e o ícone na moldura nova.
+    html.querySelectorAll?.(".nl-chat").forEach(c => {
+      const sm = c.querySelector("small"); if (sm) sm.textContent = sm.textContent.replace(/^(Nota|Carta) mostrado/, "$1 mostrada");
+      const i = c.querySelector(":scope > i"); if (i) { const sp = document.createElement("span"); sp.className = "nl-chat-ic"; i.replaceWith(sp); sp.append(i); }
+      c.querySelector(":scope > div:not(.nl-chat-txt)")?.classList.add("nl-chat-txt");
+    });
     html.querySelectorAll?.(".nl-chat-ler").forEach(b => b.addEventListener("click", ev => { ev.preventDefault(); naurenAbrirEscrito(b.dataset.uuid); }));
   });
 }
