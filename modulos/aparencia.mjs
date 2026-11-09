@@ -407,7 +407,7 @@ function linhaGatilho(g, i) {
   const tipos = NAUREN_APARENCIA_GATILHOS.map(d => `<option value="${d.id}" ${d.id === g.tipo ? "selected" : ""}>${d.rotulo}</option>`).join("");
   let extra = "";
   if (def.campos?.includes("pct")) extra += `<input type="number" class="ap-num" data-ap-g="${i}" data-c="pct" min="1" max="99" value="${g.pct}"><span class="ap-u">%</span>`;
-  if (def.campos?.includes("nome")) extra += `<input type="text" class="ap-txt" data-ap-g="${i}" data-c="nome" value="${esc(g.nome)}" placeholder="nome da Condição">`;
+  if (def.campos?.includes("nome")) extra += `<input type="text" class="ap-txt" data-ap-g="${i}" data-c="nome" value="${esc(g.nome)}" placeholder="nome ou arraste a Condição" title="Digite o nome ou arraste uma Condição para cá">`;
   if (def.campos?.includes("acumulos")) extra += `<span class="ap-u">com</span><input type="number" class="ap-num" data-ap-g="${i}" data-c="acumulos" min="1" value="${g.acumulos}"><span class="ap-u">acúmulo(s)+</span>`;
   if (def.campos?.includes("recurso")) extra += `<select data-ap-g="${i}" data-c="recurso">${NAUREN_APARENCIA_RECURSOS.map(([k, r]) => `<option value="${k}" ${g.recurso === k ? "selected" : ""}>${r}</option>`).join("")}${NAUREN_APARENCIA_RECURSOS.some(([k]) => k === g.recurso) ? "" : `<option value="${esc(g.recurso)}" selected>${esc(g.recurso)}</option>`}</select><select data-ap-g="${i}" data-c="op"><option value="ge" ${g.op === "ge" ? "selected" : ""}>≥</option><option value="le" ${g.op === "le" ? "selected" : ""}>≤</option></select><input type="number" class="ap-num" data-ap-g="${i}" data-c="valor" value="${g.valor}">`;
   return `<div class="ap-gat nt-ch" data-i="${i}"><select data-ap-g="${i}" data-c="tipo">${tipos}</select>${extra}<button type="button" class="ap-x" data-ap-acao="tirarGatilho" data-i="${i}" title="Tirar"><i class="fas fa-xmark"></i></button></div>`;
@@ -503,6 +503,20 @@ export function naurenAparenciaLigar(sheet) {
     const a = ler(), g = a.gatilhos[Number(inp.dataset.apG)]; if (!g) return;
     g[inp.dataset.c] = inp.value; await gravar(a);
   }));
+  // 0.109.5: arrastar uma Condição (compêndio, diretório ou ficha) para o campo do nome preenche sozinho.
+  painel.querySelectorAll('input[data-ap-g][data-c="nome"]').forEach(inp => {
+    inp.addEventListener("dragover", ev => { ev.preventDefault(); inp.classList.add("ap-alvo"); });
+    inp.addEventListener("dragleave", () => inp.classList.remove("ap-alvo"));
+    inp.addEventListener("drop", async ev => {
+      ev.preventDefault(); ev.stopPropagation(); inp.classList.remove("ap-alvo");
+      let d = null; try { d = JSON.parse(ev.dataTransfer?.getData("text/plain") ?? ""); } catch (err) { d = null; }
+      if (d?.type !== "Item" || !d.uuid) return;
+      const doc = await fromUuid(d.uuid).catch(() => null); if (!doc) return;
+      if (doc.type !== "condicao") ui.notifications.info(`"${doc.name}" não é uma Condição; usei o nome mesmo assim.`);
+      const a = ler(), g = a.gatilhos[Number(inp.dataset.apG)]; if (!g) return;
+      g.nome = doc.name; await gravar(a);
+    });
+  });
   painel.querySelectorAll("[data-ap-acao]").forEach(bt => bt.addEventListener("click", async ev => {
     ev.preventDefault(); const acao = bt.dataset.apAcao, a = ler();
     if (acao === "icone") { await item.update({ "system.iconeVisivel": bt.dataset.v }); if (sheet.rendered) await sheet.render(); return; }

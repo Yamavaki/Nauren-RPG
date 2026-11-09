@@ -818,10 +818,24 @@ class NaurenArmazemSheet extends foundry.applications.sheets.ActorSheetV2 {
       const it = this.actor.items.get(inp.dataset.id); if (!it) return;
       const k = inp.dataset.cfg;
       let v;
+      if (k === "quantidade") { const q = Math.min(NAUREN_QUANTIDADE_MAXIMA ?? Infinity, Math.max(0, Math.floor(naurenLerNumero(inp.value) || 0))); await it.update({ "system.quantidade": q }); return; } // 0.109.5: editar a quantidade no baú
       if (k === "estoque") { const t = String(inp.value).trim(); v = t === "" || t === "∞" || /^sem|^inf/i.test(t) ? -1 : naurenLerNumero(t); }
       else v = naurenLerNumero(inp.value);
       await it.update({ [`flags.nauren.armazem.${k}`]: v });
     }));
+    // 0.109.5: arrastar a chave (qualquer item) para "Abre com o item" grava o nome dela.
+    el.querySelectorAll(".na-chave-in").forEach(inp => {
+      inp.addEventListener("dragover", ev => { ev.preventDefault(); ev.stopPropagation(); inp.classList.add("na-alvo"); });
+      inp.addEventListener("dragleave", () => inp.classList.remove("na-alvo"));
+      inp.addEventListener("drop", async ev => {
+        ev.preventDefault(); ev.stopPropagation(); inp.classList.remove("na-alvo");
+        let d = null; try { d = JSON.parse(ev.dataTransfer?.getData("text/plain") ?? ""); } catch (err) { d = null; }
+        if (d?.type !== "Item" || !d.uuid) return ui.notifications.warn("Arraste um item (a chave).");
+        const it = await fromUuid(d.uuid).catch(() => null); if (!it) return;
+        await this.actor.update({ "system.chave": it.name });
+        ui.notifications.info(`Agora abre com "${it.name}".`);
+      });
+    });
     // Itens arrastados de compêndio, diretório ou ficha.
     const zona = el.querySelector(".na-solta");
     if (zona) {
@@ -871,7 +885,7 @@ class NaurenArmazemSheet extends foundry.applications.sheets.ActorSheetV2 {
       const qtdCol = loja
         ? `<label class="na-campo-moeda"><i>ƒ</i><input type="text" inputmode="numeric" data-cfg="preco" data-id="${it.id}" value="${fmt(c.preco)}" title="Preço base (o ajuste da loja é aplicado por cima)"></label>
            <input type="text" class="na-estoque" data-cfg="estoque" data-id="${it.id}" value="${c.estoque < 0 ? "∞" : fmt(c.estoque)}" title="Estoque (vazio ou ∞ = sem fim)">`
-        : `<span class="na-tem">${ehPilha(it) ? `×${fmt(qtdDe(it))}` : ""}</span>`;
+        : (ehPilha(it) ? `<label class="na-qtd-bau" title="Quantidade no baú (digite e aperte Enter)"><i>×</i><input type="text" inputmode="numeric" class="na-estoque" data-cfg="quantidade" data-id="${it.id}" value="${fmt(qtdDe(it))}"></label>` : `<span class="na-tem"></span>`);
       return `<div class="na-linha ${c.oculto ? "oculto" : ""}">
         <a class="na-linha-ic" data-action="abrirItem" data-id="${it.id}" title="Abrir o item">${icone(it)}</a>
         <div class="na-linha-nome"><b>${ESC(it.name)}</b><div class="na-chips">${chips(it)}</div></div>
@@ -926,7 +940,7 @@ class NaurenArmazemSheet extends foundry.applications.sheets.ActorSheetV2 {
       </section>
       <section class="na-caixa"><h3>Tranca e distância</h3>
         ${op("Trancado", "", sw("system.trancado", s.trancado))}
-        ${op("Abre com o item", "nome exato · vazio = só o Mestre abre", `<input type="text" name="system.chave" value="${ESC(s.chave)}" placeholder="ex.: Chave de Ferro">`, "na-op-largo")}
+        ${op("Abre com o item", "nome exato ou arraste o item · vazio = só o Mestre abre", `<input type="text" name="system.chave" class="na-chave-in" value="${ESC(s.chave)}" placeholder="ex.: Chave de Ferro (ou arraste aqui)" title="Digite o nome ou arraste o item (a chave) para cá">`, "na-op-largo")}
         ${op("Gasta a chave ao abrir", "", sw("system.gastaChave", s.gastaChave))}
         ${op("Exigir distância", "desligado: abre de qualquer lugar", sw("system.exigirDistancia", s.exigirDistancia))}
         ${op("Distância máxima", "de um token do jogador até o ponto", num("system.distancia", s.distancia, `min="0" step="0.5" ${s.exigirDistancia ? "" : "disabled"}`, "m"), s.exigirDistancia ? "" : "na-op-off")}

@@ -4305,6 +4305,14 @@ async function naurenSemearEquipamentos(pack) {
         animation: { type: "torch", speed: 5, intensity: 5, reverse: false } } }
     }
   });
+  // 0.109.5: modelo de chave para baús trancados (Armazenamento → Configurar → "Abre com o item": arraste a chave).
+  await naurenGarantirItemNoPack(pack, "equip-chave-de-ferro", {
+    name: "Chave de Ferro", type: "consumivel", img: "icons/sundries/misc/key-flat-steel.webp",
+    system: {
+      categoria: "utensilio", quantidade: 1, quantidadeMax: 1, efeito: "", equipado: false,
+      descricao: "<p>Uma chave de ferro comum. <b>Modelo:</b> arraste para o mundo, troque o nome (ex.: \"Chave da Cripta\") e a imagem.</p><p>Para trancar um Armazenamento com ela: na ficha do armazenamento, aba <b>Configurar</b>, ligue <b>Trancado</b> e arraste esta chave para <b>Abre com o item</b>. Quem tiver um item com o mesmo nome abre o baú (e, se \"Gasta a chave ao abrir\" estiver ligado, perde a chave).</p>"
+    }
+  });
   await naurenGarantirItemNoPack(pack, "equip-florins", {
     name: "Florins", type: "consumivel", img: "icons/commodities/currency/coins-plain-stack-gold-yellow.webp",
     system: {
