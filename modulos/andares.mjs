@@ -156,10 +156,23 @@ if (globalThis.Hooks) {
 /** 0.109.13: algum andar de cima (textura do andar ou tile acima do token) cobre o centro do token neste ponto? */
 export function naurenPisoCobre(tm, token) {
   try {
-    const c = token.center ?? { x: tm.position.x, y: tm.position.y }, el = Number(tm.elevation ?? token.document?.elevation ?? 0);
-    const cobre = m => m && !m.destroyed && m.visible !== false && m.renderable !== false && Number(m.elevation ?? 0) > el && typeof m.containsCanvasPoint === "function" && m.containsCanvasPoint(c, 0.5);
-    for (const lt of canvas.primary?.levelTextures ?? []) if (cobre(lt)) return true;
-    for (const t of canvas.tiles?.placeables ?? []) if (t.mesh && !t.document?.hidden && cobre(t.mesh)) return true;
+    const c = token.center ?? { x: tm.position.x, y: tm.position.y };
+    // 0.109.16: compara pelos PISOS dos andares (Scene#levels), não pela elevação da malha - o V14 pode desenhar o
+    // token de outro andar com outra elevação, e aí o próprio piso dele "cobria" o token (sumia até pelo buraco).
+    const baseDe = id => { const b = Number(naurenNivelDoc(id)?.elevation?.bottom); return Number.isFinite(b) ? b : null; };
+    const baseTok = baseDe(token.document?.level?.id ?? token.document?.level) ?? Number(token.document?.elevation ?? 0);
+    const baseVendo = baseDe(globalThis.canvas?.level?.id) ?? Infinity;
+    const acima = e => Number.isFinite(e) && e > baseTok + 0.001 && e <= baseVendo + 0.001;
+    const opaco = m => m && !m.destroyed && m.visible !== false && m.renderable !== false && typeof m.containsCanvasPoint === "function" && m.containsCanvasPoint(c, 0.5);
+    for (const lt of canvas.primary?.levelTextures ?? []) {
+      const e = baseDe(lt.object?.id ?? lt.level?.id ?? lt.levelId) ?? Number(lt.elevation);
+      if (acima(e) && opaco(lt)) return true;
+    }
+    for (const t of canvas.tiles?.placeables ?? []) {
+      if (!t.mesh || t.document?.hidden) continue;
+      const e = baseDe(t.document?.level?.id ?? t.document?.level) ?? Number(t.document?.elevation);
+      if (acima(e) && opaco(t.mesh)) return true;
+    }
   } catch (err) { /* sem andares */ }
   return false;
 }
@@ -237,3 +250,13 @@ Hooks.on("canvasReady", () => {
 Hooks.on("canvasReady", () => {
   try { canvas.app.ticker.remove(naurenEfeitosNoAndar); canvas.app.ticker.add(naurenEfeitosNoAndar, null, PIXI.UPDATE_PRIORITY.LOW); } catch (err) { /* sem ticker */ }
 });
+
+/** 0.109.16: diagnóstico no console (F12): naurenDiagnosticoAndar() com um token selecionado. */
+globalThis.naurenDiagnosticoAndar = function (tok = canvas.tokens.controlled[0] ?? canvas.tokens.hover) {
+  if (!tok) return console.log("Selecione ou passe o mouse num token.");
+  const c = tok.center, nv = canvas.level;
+  console.log("Vendo:", nv?.name, nv?.id, "piso", nv?.elevation?.bottom);
+  console.log("Token:", tok.name, "andar", tok.document.level?.id ?? tok.document.level, "elev doc", tok.document.elevation, "elev malha", tok.mesh?.elevation);
+  (canvas.primary?.levelTextures ?? []).forEach((lt, i) => console.log("levelTexture", i, { nome: lt.name, elev: lt.elevation, objeto: lt.object?.id, visivel: lt.visible, cobre: lt.containsCanvasPoint?.(c, 0.5) }));
+  console.log("Coberto (Nauren):", naurenPisoCobre(tok.mesh, tok));
+};
