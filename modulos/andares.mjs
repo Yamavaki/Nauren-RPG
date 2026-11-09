@@ -200,6 +200,40 @@ function naurenEfeitosNoAndar() {
     } catch (err) { /* efeito sem token */ }
   }
 }
+/**
+ * 0.109.15: token de outro andar coberto pelo piso de cima (a imagem do andar tem partes transparentes): a arte some
+ * pelo recorte do Foundry, mas a parte de interface do token (Condições, barras, borda, elevação, nome) e o passar o
+ * mouse continuavam. Coberto = esconde a interface e não responde ao mouse; pelo buraco do piso volta ao normal.
+ */
+function naurenInterfaceTokensNoAndar() {
+  if (!globalThis.canvas?.ready || !canvas.tokens) return;
+  const vendo = canvas.level?.id;
+  const temAndares = naurenCenaTemAndares(canvas.scene);
+  for (const tok of canvas.tokens.placeables) {
+    try {
+      const andar = tok.document?.level?.id ?? tok.document?.level;
+      let coberto = false;
+      if (temAndares && vendo && andar && andar !== vendo && !tok.controlled) {
+        const tm = tok.mesh; naurenEspiarArteToken(tm);
+        coberto = !tm || tm.destroyed || (naurenQuadroAndar - (tm._naurenAndarQuadro ?? -9) > 2) || naurenPisoCobre(tm, tok);
+      }
+      if (coberto && !tok._naurenCobertoAndar) {
+        tok._naurenCobertoAndar = { renderable: tok.renderable, eventMode: tok.eventMode };
+        tok.renderable = false; tok.eventMode = "none";
+        if (tok.hover) { try { tok._onHoverOut?.(new PointerEvent("pointerleave")); } catch (err) { /* sem hover */ } }
+      } else if (coberto) {
+        if (tok.renderable) tok.renderable = false; // o Foundry pode religar num refresh
+        if (tok.eventMode !== "none") tok.eventMode = "none";
+      } else if (!coberto && tok._naurenCobertoAndar) {
+        const o = tok._naurenCobertoAndar; tok._naurenCobertoAndar = null;
+        tok.renderable = o.renderable ?? true; tok.eventMode = o.eventMode ?? "static";
+      }
+    } catch (err) { /* token sendo apagado */ }
+  }
+}
+Hooks.on("canvasReady", () => {
+  try { canvas.app.ticker.remove(naurenInterfaceTokensNoAndar); canvas.app.ticker.add(naurenInterfaceTokensNoAndar, null, PIXI.UPDATE_PRIORITY.LOW); } catch (err) { /* sem ticker */ }
+});
 Hooks.on("canvasReady", () => {
   try { canvas.app.ticker.remove(naurenEfeitosNoAndar); canvas.app.ticker.add(naurenEfeitosNoAndar, null, PIXI.UPDATE_PRIORITY.LOW); } catch (err) { /* sem ticker */ }
 });
