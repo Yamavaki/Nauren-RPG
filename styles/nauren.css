@@ -1,5 +1,5 @@
 /* Versão deste arquivo: o sistema confere no "ready" e, se o navegador/Forge tiver guardado um CSS antigo, carrega o novo. */
-:root { --nauren-css-versao: "0.109.8"; }
+:root { --nauren-css-versao: "0.109.9"; }
 /* 
 ===================================================
 1. FUNDO E FONTES GERAIS
@@ -8512,7 +8512,7 @@ h4.ap-rot { margin: 0; padding: 0; border: 0; line-height: 1.2; }
 /* ---------- a folha ---------- */
 .nl-folha { position: relative; display: flex; flex-direction: column; box-sizing: border-box; min-height: 0; box-shadow: 0 10px 28px rgba(0, 0, 0, .55), inset 0 0 0 1px var(--nl-borda-p), inset 0 0 34px rgba(80, 50, 20, .18); }
 .nl-folha-tit { margin: 0 0 .5em; padding: 0 0 .35em; border: 0; border-bottom: 1px solid color-mix(in srgb, var(--nl-tinta) 25%, transparent); font-family: var(--nl-fonte); font-size: calc(var(--nl-tam) * 1.45); font-weight: 600; line-height: 1.15; color: var(--nl-tinta); text-align: center; }
-.nl-folha-corpo { flex: 1 1 auto; min-height: 0; overflow-y: auto; font-family: var(--nl-fonte); font-size: var(--nl-tam); line-height: 1.6; color: var(--nl-tinta); scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--nl-tinta) 35%, transparent) transparent; padding-right: 4px; }
+.nl-folha-corpo { flex: 1 1 auto; min-height: 0; overflow-y: auto; font-family: var(--nl-fonte); font-size: var(--nl-tam); line-height: 1.6; color: var(--nl-tinta); scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--nl-tinta) 35%, transparent) transparent; padding-right: 12px; } /* 0.109.9: a letra cursiva não encosta na barra de rolagem */
 .nl-folha-corpo :is(p, li) { margin: 0 0 .7em; }
 .nl-folha-corpo :is(h1, h2, h3, h4) { font-family: var(--nl-fonte); color: var(--nl-tinta); border: 0; margin: .6em 0 .35em; line-height: 1.2; }
 .nl-folha-corpo h1 { font-size: 1.6em; text-align: center; } .nl-folha-corpo h2 { font-size: 1.35em; } .nl-folha-corpo h3 { font-size: 1.15em; }
@@ -8530,12 +8530,12 @@ h4.ap-rot { margin: 0; padding: 0; border: 0; line-height: 1.2; }
 .nl-fig figcaption { font-style: italic; text-align: center; font-size: .92em; }
 
 /* nota e carta: uma folha solta */
-.nl-solta { position: relative; display: flex; flex-direction: column; align-items: center; height: 100%; width: 100%; max-width: 540px; }
+.nl-solta { position: relative; display: flex; flex-direction: column; align-items: center; height: 100%; width: 100%; max-width: none; } /* 0.109.9: a folha cresce junto com a janela */
 .nl-solta > .nl-folha { flex: 1 1 auto; width: 100%; padding: 30px 34px 20px; }
 .nl-fmt-nota .nl-solta > .nl-folha { transform: rotate(-.6deg); clip-path: polygon(0 0, 100% 0, 100% 97%, 96% 100%, 90% 98.6%, 82% 100%, 74% 98.8%, 65% 100%, 57% 98.6%, 48% 100%, 40% 98.8%, 31% 100%, 22% 98.6%, 13% 100%, 5% 98.8%, 0 100%); }
 .nl-fmt-carta .nl-solta > .nl-folha { padding: 36px 40px 24px; }
 /* pergaminho: rolo com varetas */
-.nl-fmt-pergaminho .nl-solta { max-width: 500px; padding: 14px 0; }
+.nl-fmt-pergaminho .nl-solta { max-width: none; padding: 14px 0; }
 .nl-fmt-pergaminho .nl-solta > .nl-folha { width: 92%; padding: 26px 34px 18px; border-radius: 2px; }
 .nl-vareta { position: absolute; left: 0; right: 0; height: 22px; border-radius: 11px; z-index: 2;
   background: linear-gradient(180deg, #7a4f2a 0%, #b07a46 30%, #6b4122 70%, #3e2512 100%); box-shadow: 0 4px 10px rgba(0, 0, 0, .55); }
@@ -8544,7 +8544,7 @@ h4.ap-rot { margin: 0; padding: 0; border: 0; line-height: 1.2; }
 .nl-vareta-c { top: 0; } .nl-vareta-b { bottom: 0; }
 
 /* livro e diário: capa (fechado) e páginas lado a lado (aberto) */
-.nl-livro { height: 100%; width: 100%; max-width: 920px; display: flex; }
+.nl-livro { height: 100%; width: 100%; max-width: none; display: flex; }
 .nl-livro-capa { flex: 1 1 auto; display: flex; padding: 12px; border-radius: 6px; box-shadow: 0 14px 34px rgba(0, 0, 0, .6);
   background: radial-gradient(ellipse at 30% 20%, color-mix(in srgb, var(--nl-capa) 80%, #fff) 0%, var(--nl-capa) 40%, color-mix(in srgb, var(--nl-capa) 65%, #000) 100%); }
 .nl-livro-paginas { position: relative; flex: 1 1 auto; display: grid; grid-template-columns: 1fr 1fr; min-height: 0; }

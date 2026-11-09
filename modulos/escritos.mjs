@@ -222,6 +222,8 @@ export async function naurenEscritoMostrar(item) {
 const TAM_CHAVE = "nauren.leitor.tamanho";
 function tamLocal() { try { return Number(localStorage.getItem(TAM_CHAVE)) || 100; } catch (err) { return 100; } }
 function guardarTam(v) { try { localStorage.setItem(TAM_CHAVE, String(v)); } catch (err) { /* sem armazenamento */ } }
+function tamJanelaLocal(formato) { try { const o = JSON.parse(localStorage.getItem(`nauren.leitor.janela.${formato}`) ?? "null"); return o && o.width > 200 && o.height > 200 ? o : null; } catch (err) { return null; } }
+function guardarTamJanela(formato, pos) { try { localStorage.setItem(`nauren.leitor.janela.${formato}`, JSON.stringify({ width: Math.round(pos.width), height: Math.round(pos.height) })); } catch (err) { /* sem armazenamento */ } }
 
 export class NaurenLeitor extends foundry.applications.api.ApplicationV2 {
   static DEFAULT_OPTIONS = {
@@ -251,7 +253,11 @@ export class NaurenLeitor extends foundry.applications.api.ApplicationV2 {
   constructor({ item, ...op } = {}) {
     const e0 = naurenEscritoDe(item), f0 = NAUREN_ESCRITO_FORMATOS[e0.formato];
     const largura = ehLivro(e0) ? 980 : e0.formato === "pergaminho" ? 600 : 580;
-    super({ ...op, id: `nauren-leitor-${item.id}-${(item.parent?.id ?? "w")}`, window: { title: item.name, icon: `fas ${f0.ic}`, resizable: true }, position: { width: largura, height: ehLivro(e0) ? 720 : 760 } });
+    // 0.109.9: lembra o tamanho que cada pessoa deixou a janela (por formato: nota, carta, livro...).
+    const salvo = tamJanelaLocal(e0.formato);
+    const w = salvo ? Math.min(salvo.width, window.innerWidth - 20) : largura, h = salvo ? Math.min(salvo.height, window.innerHeight - 20) : (ehLivro(e0) ? 720 : 760);
+    super({ ...op, id: `nauren-leitor-${item.id}-${(item.parent?.id ?? "w")}`, window: { title: item.name, icon: `fas ${f0.ic}`, resizable: true }, position: { width: w, height: h } });
+    this._naurenFormatoJanela = e0.formato;
     this.item = item;
     this.pag = ehLivro(e0) ? -1 : 0;   // livro começa na capa
     this.edPag = 0;
@@ -259,6 +265,11 @@ export class NaurenLeitor extends foundry.applications.api.ApplicationV2 {
     this.tam = tamLocal();
     this.animar = "";
     this.lacreAberto = false;          // carta lacrada aberta só nesta tela (quem não é dono)
+  }
+  /** 0.109.9: guarda o tamanho ao redimensionar (não no modo de edição, que alarga a janela sozinho). */
+  _onPosition(position) {
+    super._onPosition?.(position);
+    if (!this.editando && this._naurenFormatoJanela && position?.width && position?.height) guardarTamJanela(this._naurenFormatoJanela, position);
   }
   get title() { return this.item?.name ?? "Escrito"; }
   get e() { return naurenEscritoDe(this.item); }
