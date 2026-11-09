@@ -4123,10 +4123,15 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     const alvoToken = Array.from(game.user.targets)[0];
     const alvoActor = alvoToken?.actor;
     if (!alvoActor) return 0;
-    const item = alvoActor.items.find(i =>
+    let item = alvoActor.items.find(i =>
       i.type === "condicao" && i.system.ativo &&
       (i.getFlag("core", "sourceId") === condicaoUuid || i.getFlag("nauren", "cadeiaRaizUuid") === condicaoUuid)
     );
+    // 0.109.7: mesma Condição vinda de outra cópia da ficha (token não vinculado x ficha do ator): confere pelo nome.
+    if (!item) {
+      let nome = ""; try { nome = naurenNomeNormalizado(fromUuidSync(condicaoUuid)?.name ?? ""); } catch (err) { nome = ""; }
+      if (nome) item = alvoActor.items.find(i => i.type === "condicao" && i.system.ativo && !i.getFlag("nauren", "modelo") && naurenNomeNormalizado(i.name) === nome);
+    }
     if (!item) return 0;
     return item.system.acumulativel ? (item.system.acumulos ?? 1) : 1;
   }

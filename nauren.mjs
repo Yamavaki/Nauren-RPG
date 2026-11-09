@@ -7770,6 +7770,37 @@ async function naurenMigrarArmadilhaSoInimigos() {
   await game.settings.set("nauren", "migracaoArmadilhaInimigosV1", true);
   if (n) ui.notifications?.info(`Nauren RPG 0.109.6: a Armadilha de Caça agora só afeta inimigos (${n} ajuste(s) em fichas e mapas).`);
 }
+/**
+ * 0.109.7: o Mestre arrasta uma Condição (da ficha de um monstro, do compêndio ou da aba Itens) para cima de um
+ * token: aplica 1 acúmulo nele, como se uma Ação tivesse aplicado (soma acúmulos, modelo da ficha vira Condição ativa,
+ * efeitos periódicos e imunidades valem). Segurar Shift pergunta quantos acúmulos.
+ */
+Hooks.on("dropCanvasData", (cnv, data) => {
+  if (data?.type !== "Item" || !data.uuid || !game.user?.isGM) return;
+  let origem = null; try { origem = fromUuidSync(data.uuid); } catch (err) { origem = null; }
+  if (origem && origem.type !== "condicao") return;
+  const ponto = { x: Number(data.x), y: Number(data.y) };
+  const tokens = (cnv?.tokens?.placeables ?? []).filter(t => t.visible && t.actor && t.bounds?.contains?.(ponto.x, ponto.y));
+  if (!tokens.length) return;
+  const alvo = tokens.sort((a, b) => (b.document.sort ?? 0) - (a.document.sort ?? 0) || (b.zIndex ?? 0) - (a.zIndex ?? 0))[0];
+  const shift = !!globalThis.event?.shiftKey || game.keyboard?.isModifierActive?.("Shift");
+  (async () => {
+    const doc = await fromUuid(data.uuid).catch(() => null);
+    if (!doc || doc.type !== "condicao") return;
+    let acumulos = 1;
+    if (shift && doc.system.acumulativel) {
+      const v = await foundry.applications.api.DialogV2.prompt({ window: { title: doc.name }, content: `<p>Quantos acúmulos de <b>${doc.name}</b> em <b>${alvo.name}</b>?</p><input type="number" name="n" value="1" min="1" autofocus>`,
+        ok: { label: "Aplicar", callback: (ev, btn) => Number(btn.form.elements.n.value) || 1 }, rejectClose: false }).catch(() => null);
+      if (!v) return;
+      acumulos = Math.max(1, Math.floor(v));
+    }
+    const dono = doc.parent?.documentName === "Actor" ? doc.parent : null;
+    const conj = dono ? (dono.isToken ? dono.token?.uuid : (dono.getActiveTokens?.(false, true)?.[0]?.uuid ?? dono.uuid)) ?? "" : "";
+    const r = await NaurenAlvoHelper.aplicarCondicao(alvo.actor, doc.uuid, acumulos, null, 0, 0, "", "1", "", conj);
+    if (r) ui.notifications.info(`${doc.name}${doc.system.acumulativel ? ` (+${acumulos})` : ""} aplicada em ${alvo.name}.`);
+  })().catch(err => { console.error("Nauren RPG | arrastar Condição para o token", err); ui.notifications.error(`Não deu para aplicar: ${err.message}`); });
+  return false;
+});
 Hooks.once("ready", () => { naurenMigrarArmadilhaSoInimigos().catch(err => console.warn("Nauren RPG | migração da Armadilha", err)); });
 
 /**
