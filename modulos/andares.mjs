@@ -145,9 +145,11 @@ if (globalThis.Hooks) {
     const ups = [];
     for (const r of doc.parent?.regions ?? []) {
       const presa = r.attachment?.token?.id ?? r.attachment?.token;
-      if (presa !== doc.id) continue;
+      // 0.109.17: a Emanação do Nauren acompanha o token por um hook próprio (flag "emanacaoOrigem"), não pelo attachment.
+      const daEmanacao = r.flags?.nauren?.emanacaoOrigem?.tokenId;
+      if (presa !== doc.id && daEmanacao !== doc.id) continue;
       const ls = listaDe(r.levels);
-      if (ls.length === 1 && ls[0] !== novo) ups.push({ _id: r.id, levels: [novo] });
+      if (ls.length <= 1 && ls[0] !== novo) ups.push({ _id: r.id, levels: [novo] });
     }
     if (ups.length) doc.parent.updateEmbeddedDocuments("Region", ups).catch(err => console.warn("Nauren RPG | área no andar novo", err));
   });
