@@ -7442,6 +7442,7 @@ Hooks.once("init", () => {
   game.settings.register("nauren", "migracaoVidaInimigosV1", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoArmadilhaInimigosV1", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoInfusaoFloralV1", { scope: "world", config: false, type: Boolean, default: false });
+  game.settings.register("nauren", "migracaoDuracoesLivroV1", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoRevisaoClasses0921", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoRevisaoMago0924", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoEscudoDeMana0925", { scope: "world", config: false, type: Boolean, default: false });
@@ -7822,6 +7823,28 @@ Hooks.once("ready", async () => {
     for (const cena of game.scenes ?? []) for (const td of cena.tokens ?? []) if (!td.actorLink && td.actor) await arrumar(td.actor);
     await game.settings.set("nauren", "migracaoInfusaoFloralV1", true);
   } catch (err) { console.warn("Nauren RPG | migração da Infusão Floral", err); }
+});
+/** 0.109.12: Prisão das Brumas (Preso/Cego por 1 turno) e Fadiga (Atordoado por 1 rodada) nas fichas que já tinham a habilidade. */
+Hooks.once("ready", async () => {
+  try {
+    if (!game.user?.isGM || game.settings.get("nauren", "migracaoDuracoesLivroV1")) return;
+    const alvos = { "Prisão das Brumas": ["Preso", "Cego"], "Fadiga": ["Atordoado"] };
+    const arrumar = async ator => {
+      for (const it of ator?.items ?? []) {
+        const nomes = alvos[it.name]; if (!nomes || !["habilidade", "magia"].includes(it.type)) continue;
+        const acoes = foundry.utils.deepClone(it._source.system?.acoes ?? []);
+        let mudou = false;
+        for (const ac of acoes) for (const c of ac.condicoesAplicadas ?? []) {
+          const nome = c.uuid ? ((await fromUuid(c.uuid).catch(() => null))?.name ?? "") : "";
+          if (nomes.includes(nome) && !c.duracaoExtraPorCrescimento) { c.duracaoExtraPorCrescimento = "1"; mudou = true; }
+        }
+        if (mudou) await it.update({ "system.acoes": acoes }).catch(err => console.warn("Nauren RPG | migração de durações", err));
+      }
+    };
+    for (const a of game.actors ?? []) await arrumar(a);
+    for (const cena of game.scenes ?? []) for (const td of cena.tokens ?? []) if (!td.actorLink && td.actor) await arrumar(td.actor);
+    await game.settings.set("nauren", "migracaoDuracoesLivroV1", true);
+  } catch (err) { console.warn("Nauren RPG | migração de durações", err); }
 });
 Hooks.once("ready", () => { naurenMigrarArmadilhaSoInimigos().catch(err => console.warn("Nauren RPG | migração da Armadilha", err)); });
 

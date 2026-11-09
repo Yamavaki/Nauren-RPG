@@ -2435,8 +2435,9 @@ async function naurenSemearHabilidadesMistico(pack, packCondicoes) {
         numeroAlvos: 1, numeroAlvosExtraPorCrescimento: "@quantidadeEscolhida-1",
         usaPerguntaAtaqueNoTurno: true,
         condicoesAplicadas: [
-          { uuid: uuidPreso, acumulos: 1, ativo: true, soSeAcertar: false, perguntarParaEvitar: false },
-          { uuid: uuidCego, acumulos: 1, ativo: true, soSeAcertar: false, perguntarParaEvitar: false, condicaoParaAtivar: "@atacouNesteTurno" }
+          // 0.109.12 (livro: "Duração: 1 Turno"): Preso e Cego valem 1 rodada (até o seu próximo turno), não até serem removidos.
+          { uuid: uuidPreso, acumulos: 1, ativo: true, soSeAcertar: false, perguntarParaEvitar: false, duracaoExtraPorCrescimento: "1" },
+          { uuid: uuidCego, acumulos: 1, ativo: true, soSeAcertar: false, perguntarParaEvitar: false, condicaoParaAtivar: "@atacouNesteTurno", duracaoExtraPorCrescimento: "1" }
         ]
       }],
       descricao: naurenMontarDescricao({ regra: "Desenha um selo no ar liberado como névoa espiritual. Custo: 2 Estamina + X Energia, onde X é o número de alvos. Aplica Preso em todos os alvos escolhidos por 1 turno. Efeito Extra: se você já atacou um inimigo neste turno, também aplica Cego nos mesmos alvos.", automatico: "escolha quanto de Energia gastar (= número de alvos, marque-os com T); cada um fica Preso por 1 turno e, se você atacou neste turno, também Cego. Avisa se faltar Energia.", manual: "" })
@@ -2710,7 +2711,8 @@ async function naurenSemearHabilidadesEmpireo(pack, packCondicoes) {
           // "@euTenhoCondicao" resolvido ANTES da rolagem (ver bloco
           // dedicado em _executarAcao), detecta sozinho sem precisar
           // trocar nada manualmente no popup.
-          custoParaEvitarQuantidade: "1+@euTenhoCondicao"
+          custoParaEvitarQuantidade: "1+@euTenhoCondicao",
+          duracaoExtraPorCrescimento: "1" // 0.109.12 (livro: "atordoado por uma rodada")
         }],
         usaCondicaoPropria: true, condicaoPropriaUuid: uuidProfusaoRetraida, condicaoPropriaAcumulosMin: 1
       }],
@@ -3954,7 +3956,7 @@ async function naurenSemearHabilidadesDruida(pack, packCondicoes) {
         usaCrescimento: true, crescimentoCustoPorNivel: "2",
         condicoesAplicadas: [{ uuid: uuidInfusaoFloral, acumulos: 1, ativo: true, soSeAcertar: false, perguntarParaEvitar: false, copiarRankDoItem: true, duracaoExtraPorCrescimento: "3*@crescimento" }]
       }],
-      descricao: naurenMontarDescricao({ regra: "Pétalas místicas se dissolvem sobre o corpo do aliado, criando um perfume curativo que age lentamente. Aplica a Condição \"Infusão Floral\" (cura 1d4+Poder de Magia no início de cada turno, de qualquer um, pelos próximos 3 turnos. Crescimento: +2 Mana, a duração aumenta em 3 turnos por nível investido. Subclasse (Restauradores) — Comunhão Natural: se investido, o dado de cura sobe pra 1d6/1d8/1d10 automaticamente (rank desta Habilidade é copiado pra dentro da Condição aplicada).", automatico: "aplica a Condição \"Infusão Floral\" (cura no início de cada turno do alvo, por 3 turnos); Crescimento: +3 turnos por nível (+2 Mana cada).", manual: "" })
+      descricao: naurenMontarDescricao({ regra: "Pétalas místicas se dissolvem sobre o corpo do aliado, criando um perfume curativo que age lentamente. Aplica a Condição \"Infusão Floral\" (cura 1d4+Poder de Magia no início de cada turno, de qualquer um, pelos próximos 3 turnos. Crescimento: +2 Mana, a duração aumenta em 3 turnos por nível investido. Subclasse (Restauradores) — Comunhão Natural: se investido, o dado de cura sobe pra 1d6/1d8/1d10 automaticamente (rank desta Habilidade é copiado pra dentro da Condição aplicada).", automatico: "aplica a Condição \"Infusão Floral\" (cura no início de cada turno, de qualquer um, por 3 turnos); Crescimento: +3 turnos por nível (+2 Mana cada).", manual: "" })
     }
   });
 

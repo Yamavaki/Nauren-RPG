@@ -1,5 +1,5 @@
 /* Versão deste arquivo: o sistema confere no "ready" e, se o navegador/Forge tiver guardado um CSS antigo, carrega o novo. */
-:root { --nauren-css-versao: "0.109.11"; }
+:root { --nauren-css-versao: "0.109.12"; }
 /* 
 ===================================================
 1. FUNDO E FONTES GERAIS
@@ -369,11 +369,12 @@
 6. ABAS E LISTAS
 ===================================================
 */
-.sheet-tabs { display: flex; border-bottom: 2px solid #3a3555; margin-bottom: 10px; justify-content: center; gap: 12px;}
-.sheet-tabs .item { padding: 5px 8px; font-weight: bold; color: #a89bc4; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; font-size: 12px;}
-.sheet-tabs .item:hover { color: #ece6d6; }
-.sheet-tabs .item.active { color: #ece6d6; border-bottom-color: #cca162; }
-.sheet-tabs .item i { margin-right: 4px; color: #c4a162; }
+/* 0.109.12: só nas fichas do Nauren (antes pegava as abas verticais do Foundry, ex.: Prototype Token Overrides) */
+:where(.nauren-sheet, .nauren-rpg) .sheet-tabs { display: flex; border-bottom: 2px solid #3a3555; margin-bottom: 10px; justify-content: center; gap: 12px;}
+:where(.nauren-sheet, .nauren-rpg) .sheet-tabs .item { padding: 5px 8px; font-weight: bold; color: #a89bc4; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; font-size: 12px;}
+:where(.nauren-sheet, .nauren-rpg) .sheet-tabs .item:hover { color: #ece6d6; }
+:where(.nauren-sheet, .nauren-rpg) .sheet-tabs .item.active { color: #ece6d6; border-bottom-color: #cca162; }
+:where(.nauren-sheet, .nauren-rpg) .sheet-tabs .item i { margin-right: 4px; color: #c4a162; }
 
 /* Espaço de respiro no fim de cada aba, pra conteúdo não ficar colado
    na borda inferior da janela quando a lista/formulário for mais alto. */

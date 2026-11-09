@@ -16219,6 +16219,9 @@ class NaurenAlvoHelper {
         dados.system.efeitosPeriodicos[0].forcarMaximo = true;
       }
       const duracao = (origem.system.duracaoRodadas || 0) + duracaoExtra;
+      // 0.109.12: Condição "até o fim da cena" (ex.: Cego) aplicada com duração pela Ação (ex.: Prisão das Brumas, 1 turno)
+      // passa a contar rodadas - senão a duração nunca descontava.
+      if (duracaoExtra > 0 && !(origem.system.duracaoRodadas > 0) && origem.system.duracaoModo === "cena") foundry.utils.setProperty(dados, "system.duracaoModo", "rodadas");
       if (duracao > 0) {
         foundry.utils.setProperty(dados, "system.duracaoRestante", duracao);
         for (const [chave, valor] of Object.entries(naurenAncoraDuracaoAtual("system."))) foundry.utils.setProperty(dados, chave, valor);
