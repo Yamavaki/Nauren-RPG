@@ -298,6 +298,17 @@ function opcoes() {
   try { animar = game.settings.get("nauren", "moldurasAnimadas") !== false; leve = game.settings.get("nauren", "moldurasQualidade") === "leve"; } catch (err) { /* padrão */ }
   return { animar, leve };
 }
+/** 0.109.13: algum andar de cima (textura do andar ou tile acima do token) cobre o centro do token neste ponto? */
+function naurenPisoCobre(tm, token) {
+  try {
+    const c = token.center ?? { x: tm.position.x, y: tm.position.y }, el = Number(tm.elevation ?? token.document?.elevation ?? 0);
+    const cobre = m => m && !m.destroyed && m.visible !== false && m.renderable !== false && Number(m.elevation ?? 0) > el && typeof m.containsCanvasPoint === "function" && m.containsCanvasPoint(c, 0.5);
+    for (const lt of canvas.primary?.levelTextures ?? []) if (cobre(lt)) return true;
+    for (const t of canvas.tiles?.placeables ?? []) if (t.mesh && !t.document?.hidden && cobre(t.mesh)) return true;
+  } catch (err) { /* sem andares */ }
+  return false;
+}
+
 export class NaurenMolduraCamada {
   constructor(token) { this.token = token; this.mesh = null; this.atras = null; this.fundo = null; this.fx = {}; this.cfg = null; this.m = null; this.tex = null; this.flash = null; this.estado = {}; this.pronta = false; }
   get viva() { return !!this.mesh && !this.mesh.destroyed && !this.token.destroyed; }
@@ -430,7 +441,11 @@ export class NaurenMolduraCamada {
   arteDesenhada() {
     if (!this.outroAndar) return true;
     const tm = this.token?.mesh;
-    return !!tm && !tm.destroyed && quadroAtual - (tm._naurenDesenhou ?? -9) <= 1;
+    if (!tm || tm.destroyed || quadroAtual - (tm._naurenDesenhou ?? -9) > 1) return false;
+    // 0.109.13: no V14 a arte do token de baixo é desenhada e o piso de cima a recorta no shader; a moldura não passa
+    // por esse recorte. Então confere o piso: se um andar de cima cobre o centro do token, a moldura não aparece.
+    if (this._pisoQuadro !== quadroAtual) { this._pisoQuadro = quadroAtual; this._pisoCobre = naurenPisoCobre(tm, this.token); }
+    return !this._pisoCobre;
   }
   guardarAndar(s) {
     if (!s || s._naurenGuarda) return;
