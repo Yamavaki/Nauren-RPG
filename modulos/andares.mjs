@@ -152,3 +152,54 @@ if (globalThis.Hooks) {
     if (ups.length) doc.parent.updateEmbeddedDocuments("Region", ups).catch(err => console.warn("Nauren RPG | área no andar novo", err));
   });
 }
+
+/** 0.109.13: algum andar de cima (textura do andar ou tile acima do token) cobre o centro do token neste ponto? */
+export function naurenPisoCobre(tm, token) {
+  try {
+    const c = token.center ?? { x: tm.position.x, y: tm.position.y }, el = Number(tm.elevation ?? token.document?.elevation ?? 0);
+    const cobre = m => m && !m.destroyed && m.visible !== false && m.renderable !== false && Number(m.elevation ?? 0) > el && typeof m.containsCanvasPoint === "function" && m.containsCanvasPoint(c, 0.5);
+    for (const lt of canvas.primary?.levelTextures ?? []) if (cobre(lt)) return true;
+    for (const t of canvas.tiles?.placeables ?? []) if (t.mesh && !t.document?.hidden && cobre(t.mesh)) return true;
+  } catch (err) { /* sem andares */ }
+  return false;
+}
+
+
+/**
+ * 0.109.14: efeitos do Sequencer / Automated Animations presos a um token (auras, Condições) não sabem dos andares
+ * do V14: aparecem em todos. A cada quadro, um efeito cujo token está em outro andar só é desenhado quando a arte do
+ * token também é (buraco no piso) e o piso de cima não cobre o token.
+ */
+let naurenQuadroAndar = 0;
+function naurenEspiarArteToken(tm) {
+  if (!tm || tm._naurenEspiaAndar || typeof tm._render !== "function") return;
+  const orig = tm._render;
+  tm._render = function (r) { this._naurenAndarQuadro = naurenQuadroAndar; return orig.call(this, r); };
+  tm._naurenEspiaAndar = true;
+}
+function naurenEfeitosNoAndar() {
+  naurenQuadroAndar++;
+  const gerente = globalThis.Sequencer?.EffectManager;
+  let lista = null; try { lista = gerente?.effects ?? gerente?.getEffects?.() ?? null; } catch (err) { lista = null; }
+  if (!lista || !globalThis.canvas?.ready) return;
+  const vendo = canvas.level?.id;
+  for (const ef of (lista instanceof Map ? lista.values() : lista)) {
+    try {
+      const fonte = ef?.source ?? ef?.sourceDocument?.object ?? null;
+      const tok = fonte?.document?.documentName === "Token" ? fonte : (fonte?.documentName === "Token" ? fonte.object : null);
+      if (!tok) continue;
+      const andar = tok.document?.level?.id ?? tok.document?.level;
+      const outro = !!(vendo && andar && andar !== vendo && naurenCenaTemAndares(tok.document.parent));
+      let mostrar = true;
+      if (outro) {
+        const tm = tok.mesh; naurenEspiarArteToken(tm);
+        mostrar = !!tm && !tm.destroyed && (naurenQuadroAndar - (tm._naurenAndarQuadro ?? -9) <= 2) && !naurenPisoCobre(tm, tok);
+      }
+      if (!mostrar && ef.renderable !== false) { ef.renderable = false; ef._naurenOcultoAndar = true; }
+      else if (mostrar && ef._naurenOcultoAndar) { ef.renderable = true; ef._naurenOcultoAndar = false; }
+    } catch (err) { /* efeito sem token */ }
+  }
+}
+Hooks.on("canvasReady", () => {
+  try { canvas.app.ticker.remove(naurenEfeitosNoAndar); canvas.app.ticker.add(naurenEfeitosNoAndar, null, PIXI.UPDATE_PRIORITY.LOW); } catch (err) { /* sem ticker */ }
+});

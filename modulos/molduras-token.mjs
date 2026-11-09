@@ -8,6 +8,7 @@
  *
  * Texturas: SVG do modelo → imagem → canvas → PIXI.BaseTexture, uma por (modelo + cores + tamanho),
  * compartilhada por todos os tokens iguais. Efeitos: um ticker só, que só anima o que está visível. */
+import { naurenPisoCobre } from "./andares.mjs";
 import { naurenMolduraSvg, naurenMolduraSvgAtras, naurenMolduraTemAtras, naurenMolduraMascaraPath, naurenMolduraRaioDoPath, naurenMolduraNormalizar, naurenMolduraEstado, naurenMolduraModelo, naurenMolduraMisturar, naurenMolduraRecorteGira } from "./molduras-modelos.mjs";
 import { naurenBordaPintarTraco, naurenBordaConfig, naurenBordaCarregarImagem, naurenBordaTamanhoTextura, naurenBordaGerarFrente, naurenBordaTemFrente } from "./borda-token.mjs"; // (import circular: só usado em tempo de execução)
 
@@ -298,17 +299,6 @@ function opcoes() {
   try { animar = game.settings.get("nauren", "moldurasAnimadas") !== false; leve = game.settings.get("nauren", "moldurasQualidade") === "leve"; } catch (err) { /* padrão */ }
   return { animar, leve };
 }
-/** 0.109.13: algum andar de cima (textura do andar ou tile acima do token) cobre o centro do token neste ponto? */
-function naurenPisoCobre(tm, token) {
-  try {
-    const c = token.center ?? { x: tm.position.x, y: tm.position.y }, el = Number(tm.elevation ?? token.document?.elevation ?? 0);
-    const cobre = m => m && !m.destroyed && m.visible !== false && m.renderable !== false && Number(m.elevation ?? 0) > el && typeof m.containsCanvasPoint === "function" && m.containsCanvasPoint(c, 0.5);
-    for (const lt of canvas.primary?.levelTextures ?? []) if (cobre(lt)) return true;
-    for (const t of canvas.tiles?.placeables ?? []) if (t.mesh && !t.document?.hidden && cobre(t.mesh)) return true;
-  } catch (err) { /* sem andares */ }
-  return false;
-}
-
 export class NaurenMolduraCamada {
   constructor(token) { this.token = token; this.mesh = null; this.atras = null; this.fundo = null; this.fx = {}; this.cfg = null; this.m = null; this.tex = null; this.flash = null; this.estado = {}; this.pronta = false; }
   get viva() { return !!this.mesh && !this.mesh.destroyed && !this.token.destroyed; }
