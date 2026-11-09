@@ -7441,6 +7441,7 @@ Hooks.once("init", () => {
   game.settings.register("nauren", "migracaoAtaqueAgilidadeV1", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoVidaInimigosV1", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoArmadilhaInimigosV1", { scope: "world", config: false, type: Boolean, default: false });
+  game.settings.register("nauren", "migracaoInfusaoFloralV1", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoRevisaoClasses0921", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoRevisaoMago0924", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoEscudoDeMana0925", { scope: "world", config: false, type: Boolean, default: false });
@@ -7800,6 +7801,27 @@ Hooks.on("dropCanvasData", (cnv, data) => {
     if (r) ui.notifications.info(`${doc.name}${doc.system.acumulativel ? ` (+${acumulos})` : ""} aplicada em ${alvo.name}.`);
   })().catch(err => { console.error("Nauren RPG | arrastar Condição para o token", err); ui.notifications.error(`Não deu para aplicar: ${err.message}`); });
   return false;
+});
+/** 0.109.11: Infusão Floral já aplicada nas fichas passa a curar em todo turno (de qualquer um) e a contar turnos de qualquer um. */
+Hooks.once("ready", async () => {
+  try {
+    if (!game.user?.isGM || game.settings.get("nauren", "migracaoInfusaoFloralV1")) return;
+    const arrumar = async ator => {
+      for (const it of ator?.items ?? []) {
+        if (it.type !== "condicao" || it.name !== "Infusão Floral") continue;
+        const efs = foundry.utils.deepClone(it._source.system?.efeitosPeriodicos ?? []);
+        let mudou = false;
+        for (const ef of efs) if (ef.recurso === "cura" && ef.quando === "inicioTurnoPortador") { ef.quando = "inicioTurnoQualquer"; mudou = true; }
+        const upd = {};
+        if (mudou) upd["system.efeitosPeriodicos"] = efs;
+        if (it._source.system?.duracaoModo === "turnosPortador") upd["system.duracaoModo"] = "turnosQualquer";
+        if (Object.keys(upd).length) await it.update(upd).catch(err => console.warn("Nauren RPG | migração da Infusão Floral", err));
+      }
+    };
+    for (const a of game.actors ?? []) await arrumar(a);
+    for (const cena of game.scenes ?? []) for (const td of cena.tokens ?? []) if (!td.actorLink && td.actor) await arrumar(td.actor);
+    await game.settings.set("nauren", "migracaoInfusaoFloralV1", true);
+  } catch (err) { console.warn("Nauren RPG | migração da Infusão Floral", err); }
 });
 Hooks.once("ready", () => { naurenMigrarArmadilhaSoInimigos().catch(err => console.warn("Nauren RPG | migração da Armadilha", err)); });
 

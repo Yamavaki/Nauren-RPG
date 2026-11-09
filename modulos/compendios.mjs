@@ -1138,12 +1138,13 @@ async function naurenSemearCondicoes(pack) {
   await naurenGarantirItemNoPack(pack, "condicao-infusao-floral", {
     name: "Infusão Floral", type: "condicao", img: "icons/magic/nature/plant-sprout-hand-flower-pink.webp",
     system: {
-      duracaoRodadas: 3, duracaoPorTurno: true, duracaoModo: "turnosPortador", rankMax: 3,
+      // 0.109.11 (livro: "no início de cada turno, pelos próximos 3 turnos"): todo turno, de qualquer um.
+      duracaoRodadas: 3, duracaoPorTurno: true, duracaoModo: "turnosQualquer", rankMax: 3,
       efeitosPeriodicos: [{
-        recurso: "cura", formula: "1d4+@poderMagia", aumentaPorAcumulo: false, porTurno: true, quando: "inicioTurnoPortador",
+        recurso: "cura", formula: "1d4+@poderMagia", aumentaPorAcumulo: false, porTurno: true, quando: "inicioTurnoQualquer",
         porRank: [{ rank: 1, formula: "1d6+@poderMagia" }, { rank: 2, formula: "1d8+@poderMagia" }, { rank: 3, formula: "1d10+@poderMagia" }]
       }],
-      descricao: naurenMontarDescricao({ regra: "Origem: Infusão Floral (Druida). Recupera 1d4 + Poder de Magia no início de cada turno do alvo, por 3 turnos dele. Comunhão Natural (Restauradores) melhora o dado: 1d6, 1d8 ou 1d10 nos ranks 1, 2 e 3.", automatico: "a cura sai no início de cada turno do alvo e a Condição sai depois de 3 turnos dele; com Comunhão Natural o dado sobe pelo rank, e com Abundância de Vida a cura sai no máximo." })
+      descricao: naurenMontarDescricao({ regra: "Origem: Infusão Floral (Druida). Recupera 1d4 + Poder de Magia no início de cada turno (de qualquer um), pelos próximos 3 turnos. Comunhão Natural (Restauradores) melhora o dado: 1d6, 1d8 ou 1d10 nos ranks 1, 2 e 3.", automatico: "a cura sai no início de cada turno (de qualquer um) e a Condição sai depois de 3 turnos; com Comunhão Natural o dado sobe pelo rank, e com Abundância de Vida a cura sai no máximo." })
     }
   });
   await naurenGarantirItemNoPack(pack, "condicao-jardim-das-flores-silvestres", {
@@ -3953,7 +3954,7 @@ async function naurenSemearHabilidadesDruida(pack, packCondicoes) {
         usaCrescimento: true, crescimentoCustoPorNivel: "2",
         condicoesAplicadas: [{ uuid: uuidInfusaoFloral, acumulos: 1, ativo: true, soSeAcertar: false, perguntarParaEvitar: false, copiarRankDoItem: true, duracaoExtraPorCrescimento: "3*@crescimento" }]
       }],
-      descricao: naurenMontarDescricao({ regra: "Pétalas místicas se dissolvem sobre o corpo do aliado, criando um perfume curativo que age lentamente. Aplica a Condição \"Infusão Floral\" (cura 1d4+Poder de Magia no início de cada turno do alvo, por 3 turnos. Crescimento: +2 Mana, a duração aumenta em 3 turnos por nível investido. Subclasse (Restauradores) — Comunhão Natural: se investido, o dado de cura sobe pra 1d6/1d8/1d10 automaticamente (rank desta Habilidade é copiado pra dentro da Condição aplicada).", automatico: "aplica a Condição \"Infusão Floral\" (cura no início de cada turno do alvo, por 3 turnos); Crescimento: +3 turnos por nível (+2 Mana cada).", manual: "" })
+      descricao: naurenMontarDescricao({ regra: "Pétalas místicas se dissolvem sobre o corpo do aliado, criando um perfume curativo que age lentamente. Aplica a Condição \"Infusão Floral\" (cura 1d4+Poder de Magia no início de cada turno, de qualquer um, pelos próximos 3 turnos. Crescimento: +2 Mana, a duração aumenta em 3 turnos por nível investido. Subclasse (Restauradores) — Comunhão Natural: se investido, o dado de cura sobe pra 1d6/1d8/1d10 automaticamente (rank desta Habilidade é copiado pra dentro da Condição aplicada).", automatico: "aplica a Condição \"Infusão Floral\" (cura no início de cada turno do alvo, por 3 turnos); Crescimento: +3 turnos por nível (+2 Mana cada).", manual: "" })
     }
   });
 
