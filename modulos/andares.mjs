@@ -149,9 +149,15 @@ if (globalThis.Hooks) {
       const daEmanacao = r.flags?.nauren?.emanacaoOrigem?.tokenId;
       if (presa !== doc.id && daEmanacao !== doc.id) continue;
       const ls = listaDe(r.levels);
-      if (ls.length <= 1 && ls[0] !== novo) ups.push({ _id: r.id, levels: [novo] });
+      if (ls.length <= 1 && ls[0] !== novo) ups.push(r);
     }
-    if (ups.length) doc.parent.updateEmbeddedDocuments("Region", ups).catch(err => console.warn("Nauren RPG | área no andar novo", err));
+    if (!ups.length) return;
+    // 0.109.18: trocar só "levels" deixava um desenho fantasma da área no andar antigo (sumia com F5). Recria a Região
+    // no andar novo (mesmos dados e flags) e apaga a antiga.
+    const novas = ups.map(r => { const d = r.toObject(); delete d._id; d.levels = [novo]; return d; });
+    doc.parent.createEmbeddedDocuments("Region", novas)
+      .then(() => doc.parent.deleteEmbeddedDocuments("Region", ups.map(r => r.id)))
+      .catch(err => console.warn("Nauren RPG | área no andar novo", err));
   });
 }
 
@@ -229,8 +235,9 @@ function naurenInterfaceTokensNoAndar() {
       const andar = tok.document?.level?.id ?? tok.document?.level;
       let coberto = false;
       if (temAndares && vendo && andar && andar !== vendo && !tok.controlled) {
-        const tm = tok.mesh; naurenEspiarArteToken(tm);
-        coberto = !tm || tm.destroyed || (naurenQuadroAndar - (tm._naurenAndarQuadro ?? -9) > 2) || naurenPisoCobre(tm, tok);
+        // 0.109.18: só o piso decide (o teste "a arte foi desenhada" travava: escondido, o token não era mais desenhado).
+        const tm = tok.mesh;
+        coberto = !!tm && !tm.destroyed && naurenPisoCobre(tm, tok);
       }
       if (coberto && !tok._naurenCobertoAndar) {
         tok._naurenCobertoAndar = { renderable: tok.renderable, eventMode: tok.eventMode };
