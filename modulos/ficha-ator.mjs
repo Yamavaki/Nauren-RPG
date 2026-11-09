@@ -2631,6 +2631,9 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     if (!escolha || escolha === "cancelar") return false;
     if (escolha === "pagar") await NaurenAlvoHelper._aplicarRecursoNoAlvo(this.actor, recurso, quantidade);
     this._ultimaRemocaoPaga = escolha === "pagar" ? { recurso, quantidade } : null;
+    // 0.109.10: Remover Condição (paga) é uma ação: aciona as Condições de "usei uma Ação" (Alvejado), antes de sair.
+    if (escolha === "pagar") await naurenProcessarGatilhos("euUseiAcao", this.actor, { acaoNome: `Remover Condição: ${item.name}`, tipoItemUsado: "removerCondicao", ehAtaque: false, ehCura: false, _soCondicoes: true })
+      .catch(err => console.warn("Nauren RPG | Condições ao remover Condição", err));
     return true;
   }
 
