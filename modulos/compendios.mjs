@@ -786,7 +786,7 @@ async function naurenSemearCondicoes(pack) {
     system: {
       acumulativel: true, acumulosMax: 99,
       usaGatilhos: true, gatilhos: [{ evento: "euUseiAcao", recurso: "vida", quantidade: "-@acumulos" }],
-      descricao: "<p>Projéteis cravados no corpo. Causa 1 de dano por acúmulo sempre que o alvo realiza uma ação.</p><p class=\"nauren-desc-automacao\"><b>Automático:</b> a cada Ação usada, perde 1 de Vida por acúmulo.<br><b>Manual:</b> tirar os projéteis (Remover Condição) e ações que não passam pelo sistema.</p>"
+      descricao: "<p>Projéteis cravados no corpo. Causa 1 de dano por acúmulo sempre que o alvo realiza uma ação.</p><p class=\"nauren-desc-automacao\"><b>Automático:</b> a cada Ação usada e a cada ação de movimento paga, perde 1 de Vida por acúmulo (movimento sem gastar ou forçado não conta).<br><b>Manual:</b> tirar os projéteis (Remover Condição) e ações que não passam pelo sistema.</p>"
     }
   });
   await naurenGarantirItemNoPack(pack, "condicao-preso", {

@@ -2003,9 +2003,10 @@ async function naurenProcessarGatilhosInterno(tipoEvento, atorEvento, contexto =
       continue;
     }
     // 0.102: scripts dos itens que reagem a este evento (aba Script da ficha de item).
-    await naurenScriptsNoEvento(tipoEvento, candidato, contexto, atorEvento).catch(err => console.warn("Nauren RPG | scripts do evento", err));
+    if (!contexto._soCondicoes) await naurenScriptsNoEvento(tipoEvento, candidato, contexto, atorEvento).catch(err => console.warn("Nauren RPG | scripts do evento", err));
     for (const item of candidato.items) {
       if (!["habilidade", "peculiaridade", "magia", "condicao", "efeito"].includes(item.type) || !item.system.usaGatilhos) continue;
+      if (contexto._soCondicoes && item.type !== "condicao") continue; // 0.109.8: ação de movimento só aciona Condições (Alvejado)
       if (item.type !== "condicao" && !item.system.ativo) continue;
       if (item.type === "condicao" && naurenEhCondicaoModelo(item)) continue; // modelo guardado na ficha (NPC) não está "em" ninguém
       const usosGatilho = foundry.utils.deepClone(item.getFlag("nauren", "gatilhoUsos") ?? {});

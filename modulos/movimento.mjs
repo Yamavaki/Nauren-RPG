@@ -5,7 +5,7 @@ import { naurenMovimentoSemPrioridade } from "./monstros-regras.mjs";
 import { naurenAndarParaRegiao, naurenTokensDoAndar } from "./andares.mjs";
 import { NAUREN_KIT_JANELA } from "./janelas-kit.mjs";
 import { naurenConsumirUsoDaHabilidade, naurenUsoDisponivel } from "./prioridades.mjs";
-import { naurenPontoDentroDaRegiao } from "./icone-condicao-token.mjs";
+import { naurenPontoDentroDaRegiao, naurenProcessarGatilhos } from "./icone-condicao-token.mjs";
 import { NaurenAlvoHelper } from "./ficha-ator.mjs";
 
 
@@ -169,6 +169,22 @@ function naurenMotivosSemMovimento(actor, caido) {
 }
 
 
+/**
+ * 0.109.8: pelo livro, o Movimento é uma ação ("ação de movimento", custo 1 Estamina). Cada ação de movimento PAGA
+ * dispara "usei uma Ação" só para as Condições do personagem (ex.: Alvejado: 1 de dano por acúmulo).
+ * Não vale para movimento sem gastar ("Mover mesmo assim", grátis) nem para movimento forçado (empurrar, arrastar).
+ */
+async function naurenMovimentoComoAcao(actor, movimentos = 1) {
+  const n = Math.max(0, Math.min(10, Math.floor(Number(movimentos) || 0)));
+  if (!actor || !n) return;
+  const temGatilho = actor.items.some(i => i.type === "condicao" && i.system.ativo !== false && !naurenEhCondicaoModelo(i) && i.system.usaGatilhos && (i.system.gatilhos ?? []).some(g => g.evento === "euUseiAcao"));
+  if (!temGatilho) return;
+  for (let k = 0; k < n; k++) {
+    await naurenProcessarGatilhos("euUseiAcao", actor, { acaoNome: "Movimento", tipoItemUsado: "movimento", ehAtaque: false, ehCura: false, acaoDeMovimento: true, _soCondicoes: true })
+      .catch(err => console.warn("Nauren RPG | Condições na ação de movimento", err));
+  }
+}
+
 /** Movimento 0: explica o motivo e pergunta se quer mover mesmo assim (fica registrado no card). */
 async function naurenMoverSemMovimento(tokenDoc, origem, destino, distancia, caido) {
   const actor = tokenDoc.actor; if (!actor) return;
@@ -306,6 +322,7 @@ async function naurenJanelaMovimento(tokenDoc, origem, destino, distancia) {
   linhas.push({ label: "Trajeto", value: `${Math.round(distancia)}m`, breakdown: `sobram ${Math.max(0, Math.round(novoSaldo - distancia))}m neste turno` });
   await naurenCardMovimento(actor, tokenDoc, linhas);
   await tokenDoc.update({ x: destino.x, y: destino.y }, { naurenMovimentoLiberado: true });
+  if (escolha !== "gratis") await naurenMovimentoComoAcao(actor, movimentos); // Alvejado etc. (movimento pago)
 }
 
 
@@ -342,4 +359,4 @@ Hooks.on("updateItem", (it, mud) => { if (foundry.utils.hasProperty(mud, "system
 Hooks.on("createItem", it => { if ((it.system?.recursosDeclarados ?? []).length) naurenCacheRecursosDeclarados = null; });
 }
 
-export { naurenCacheRecursosDeclarados, naurenCardMovimento, naurenDepoisDoMovimento, naurenDesenharTracoAquarela, naurenGastarRecursoSimples, naurenJanelaMovimento, naurenModoMovimento, naurenMotivosSemMovimento, naurenMoverSemMovimento, naurenMovimentoEmDirecaoAInimigo, naurenMovimentoSaldo, naurenNomeRecursoMov, naurenRecursosCustomConhecidos };
+export { naurenMovimentoComoAcao, naurenCacheRecursosDeclarados, naurenCardMovimento, naurenDepoisDoMovimento, naurenDesenharTracoAquarela, naurenGastarRecursoSimples, naurenJanelaMovimento, naurenModoMovimento, naurenMotivosSemMovimento, naurenMoverSemMovimento, naurenMovimentoEmDirecaoAInimigo, naurenMovimentoSaldo, naurenNomeRecursoMov, naurenRecursosCustomConhecidos };

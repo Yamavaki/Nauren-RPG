@@ -1108,6 +1108,8 @@ Hooks.on("updateToken", async (tokenDoc, changes, options, userId) => {
     if (gasto > 0) {
       await actor.update({ "system.estaminaCombate.value": estaminaAtual - gasto });
       if (userId === game.user.id) await naurenCardMovimento(actor, tokenDoc, [{ label: "Pagou", value: `${gasto} Estamina`, breakdown: "modo automático" }, { label: "No turno", value: `${Math.round(estado.distancia)}m` }]);
+      // 0.109.8: cada ação de movimento paga aciona as Condições de "usei uma Ação" (Alvejado).
+      if (userId === game.user.id) import("./movimento.mjs").then(m => m.naurenMovimentoComoAcao(actor, Math.floor(gasto / (1 + extraA)))).catch(err => console.warn("Nauren RPG | Alvejado no movimento", err));
     }
     if (gasto < blocosNovos * (1 + extraA)) {
       ui.notifications.warn(`${actor.name} está sem Estamina suficiente pra continuar se movendo tão longe!`);
