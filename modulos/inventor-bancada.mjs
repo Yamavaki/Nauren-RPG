@@ -428,7 +428,7 @@ const NAUREN_ICONES_FORMULA = {
 const NAUREN_ROTULO_CURTO_MOD = {
   defesa: "Defesa", bloqueio: "Bloqueio", esquiva: "Esquiva", movimento: "Movimento", reducaoDano: "Redução de dano", reducaoDanoAtaque: "Redução de dano",
   estresse: "Estresse máx.", forca: "Força", agilidade: "Agilidade", estamina: "Estamina", inteligencia: "Inteligência", destino: "Destino",
-  danoBonus: "Dano", ataque: "Acerto", limiarDeflexao: "Limiar de Deflexão", vida: "Vida máx.", vitalidade: "Vitalidade", espirito: "Espírito", poderAtaque: "Poder de Ataque", poderMagia: "Poder de Magia", reducaoDanoAtaque: "Redução de dano", limiteOfensivo: "Limite ofensivo", categoria: "Categoria"
+  danoBonus: "Dano", ataque: "Acerto", limiarDeflexao: "Limiar de Deflexão", vida: "Vida máx.", vitalidade: "Vitalidade", espirito: "Espírito", poderAtaque: "Poder de Ataque", poderMagia: "Poder de Magia", limiteOfensivo: "Limite ofensivo", categoria: "Categoria"
 };
 
 /** Linhas do quadro "Protótipo": o item já montado, em linguagem de mesa. */

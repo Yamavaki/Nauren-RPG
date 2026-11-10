@@ -1,9 +1,9 @@
 /* Nauren RPG — Ficha de Item (NaurenItemSheet). Separado do nauren.mjs na 0.94.22. */
 import { naurenKitJanela, naurenKitSistema } from "./janelas-kit.mjs";
-import { NAUREN_ATRIBUTOS_CLASSE_LIVRO, naurenFormatarNumero, NAUREN_CATEGORIAS_EQUIPAMENTO, ARMADURA_TIPOS, ARMA_TIPOS, ATRIBUTOS_BASE_OPCOES, ATRIBUTOS_BONUS, HABILIDADE_CATEGORIAS, NAUREN_CAMPOS_MODIFICADOR_OPCOES, NAUREN_CAPACIDADES, NAUREN_EQUIPAMENTO_CLASSE_LIVRO, NAUREN_EQUIP_CATEGORIAS, NAUREN_LOGICA_CONDICOES_OPCOES, NAUREN_MODOS_DURACAO, NAUREN_MODOS_MODIFICADOR_EXTERNO_OPCOES, NAUREN_MOMENTOS_PERIODICOS, NAUREN_PAGAR_CUSTO_OPCOES, NAUREN_PAGAR_RECURSO_OPCOES, NAUREN_PRIORIDADE_DISPOSICAO, NAUREN_PRIORIDADE_INDICADORES, NAUREN_PRIORIDADE_INDICADORES_ACAO, NAUREN_PRIORIDADE_QUEM_RECEBE, NaurenCondicaoData, NaurenEfeitoData, NaurenGrupoHelper, NaurenHabilidadeData, NaurenMagiaData, NaurenSubclasseHelper, TEMPLATE_FORMATOS, campoCondicaoAplicada, campoModificador, campoModificadorExterno, campoRecursoDeclarado, naurenAjustarListasLargas, naurenBotoesDeFormula, naurenCategoriaDaArma, naurenClassificarCampoAcao, naurenCombatenteEhDoAtor, naurenCondicaoDoSistemaPorNome, naurenCondicaoNegativa, naurenGruposExclusivosConhecidos, naurenModificacoesRecebidas, naurenModoDuracaoCondicao, naurenMomentoEfeitoPeriodico, naurenMostrarNomesDosCamposUuid, naurenMunicoesCompativeis, naurenNomeParaUuid, naurenOpcoesDeCampoParaModificadorExterno, naurenPersistirDetalhesAbertos, naurenPesoOfensivo, naurenPostarCard, naurenProcessarEmanacoes, naurenProcessarGatilhos, naurenRecursosCustomConhecidos, naurenResumoDaAcao, naurenResumoEquipamentoClasse, naurenResumoModificador, naurenResumoPrioridadeAcao, naurenSincronizarRecursosCustom, naurenUsarAcalanto } from "../nauren.mjs";
+import { NAUREN_ATRIBUTOS_CLASSE_LIVRO, naurenFormatarNumero, NAUREN_CATEGORIAS_EQUIPAMENTO, ARMADURA_TIPOS, ARMA_TIPOS, ATRIBUTOS_BASE_OPCOES, ATRIBUTOS_BONUS, HABILIDADE_CATEGORIAS, NAUREN_CAMPOS_MODIFICADOR_OPCOES, NAUREN_CAPACIDADES, NAUREN_EQUIPAMENTO_CLASSE_LIVRO, NAUREN_EQUIP_CATEGORIAS, NAUREN_LOGICA_CONDICOES_OPCOES, NAUREN_MODOS_DURACAO, NAUREN_MODOS_MODIFICADOR_EXTERNO_OPCOES, NAUREN_MOMENTOS_PERIODICOS, NAUREN_PAGAR_CUSTO_OPCOES, NAUREN_PAGAR_RECURSO_OPCOES, NAUREN_PRIORIDADE_DISPOSICAO, NAUREN_PRIORIDADE_INDICADORES, NAUREN_PRIORIDADE_INDICADORES_ACAO, NAUREN_PRIORIDADE_QUEM_RECEBE, NaurenGrupoHelper, NaurenHabilidadeData, NaurenSubclasseHelper, TEMPLATE_FORMATOS, naurenAjustarListasLargas, naurenBotoesDeFormula, naurenCategoriaDaArma, naurenCombatenteEhDoAtor, naurenCondicaoDoSistemaPorNome, naurenCondicaoNegativa, naurenGruposExclusivosConhecidos, naurenModificacoesRecebidas, naurenModoDuracaoCondicao, naurenMomentoEfeitoPeriodico, naurenMostrarNomesDosCamposUuid, naurenMunicoesCompativeis, naurenNomeParaUuid, naurenOpcoesDeCampoParaModificadorExterno, naurenPersistirDetalhesAbertos, naurenPesoOfensivo, naurenPostarCard, naurenRecursosCustomConhecidos, naurenResumoDaAcao, naurenResumoEquipamentoClasse, naurenResumoModificador, naurenResumoPrioridadeAcao, naurenUsarAcalanto } from "../nauren.mjs";
 import { NAUREN_MOTION_CONDICAO_OPCOES, naurenMotionPresetCondicao } from "./animacoes.mjs";
 import { NAUREN_TORRE_LOJAS, NAUREN_TORRE_PIGMENTOS, NAUREN_TORRE_RARIDADES, NAUREN_TORRE_TIERS, naurenDisponivelNoInicio, naurenTierTorre } from "./compendios.mjs";
-import { NaurenActorSheet } from "./ficha-ator.mjs";
+import "./ficha-ator.mjs";
 import { NAUREN_CONDICOES_TIPOS, NaurenTiersEditor, naurenCondicoesEmbutidas, naurenContextoCatalogo, naurenDadosParaEmbutir, naurenEditarCondicaoEmbutida, naurenGravarCondicoesEmbutidas, naurenHtmlAbaCondicoes, naurenLigarFichaItemExtras, naurenSeloDoItem, naurenTorreDoCatalogo } from "./itens-catalogo.mjs";
 import { naurenLigarSeletorIcones } from "./seletor-icones.mjs";
 import { NAUREN_APARENCIA_TIPOS, naurenAparenciaHtml, naurenAparenciaLigar } from "./aparencia.mjs";
@@ -35,33 +35,9 @@ const TIPO_ITEM_LABEL = {
 };
 
 /**
- * Devolve os IDs de todos os usuários com permissão de Mestre (GM) - usado
- * pra mandar os avisos de progressão (subir/descer de nível, desbloquear
- * item de Classe/Subclasse) só pro Mestre em vez de pro chat público. Se
- * ninguém com GM estiver logado no momento (raro, mas possível), a lista
- * fica vazia e o Foundry trata como sussurro "sem destinatário" - a
- * mensagem ainda existe no histórico do chat, só não aparece "pop-up" pra
- * ninguém especificamente enquanto não houver GM online.
- */
-function naurenWhisperGMs() {
-  return game.users.filter(u => u.isGM).map(u => u.id);
-}
-
-/**
- * Sussurra só pra quem tem permissão OWNER sobre este Ator (o(s)
- * jogador(es) dono(s) + Mestres, que normalmente já têm OWNER em tudo
- * por padrão) - usado pra notificações curtas e privadas de "você
- * ganhou/perdeu X" (ver naurenNotificarGanhoPerda), que não fazem
- * sentido pra quem não é dono daquele personagem ver no chat geral.
- */
-function naurenWhisperAtor(actor) {
-  return game.users.filter(u => actor.testUserPermission(u, "OWNER")).map(u => u.id);
-}
-
-/**
  * Notificação curta e objetiva de "você ganhou/perdeu X de [recurso]
- * por causa de [origem]" - chat PRIVADO (só quem tem OWNER sobre o
- * Ator vê, ver naurenWhisperAtor), sem texto longo. Pensada pra
+ * por causa de [origem]" - card público no chat (auditável pelo
+ * grupo), sem texto longo. Pensada pra
  * regeneração automática, efeitos periódicos de Condição (Sangramento,
  * Queimando, etc.) e Gatilhos por Evento - qualquer lugar que já muda
  * um recurso/atributo sozinho, sem o jogador clicar em nada, e por
@@ -2936,6 +2912,14 @@ class NaurenItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
   }
 
   /** Remove um nível da Progressão da Classe. */
+  /** Adiciona um nível vazio à Progressão por Nível da Classe (o próximo depois do maior já configurado). */
+  static async onAddNivel(event, target) {
+    await this._enfileirarArray("niveis", niveis => {
+      const maior = niveis.reduce((m, n) => Math.max(m, Number(n?.nivel) || 0), 0);
+      niveis.push({ nivel: Math.min(20, maior + 1), itensConcedidos: [], upgradesDeRank: [], escolhaItens: { ativo: false, itensDisponiveis: [], quantidadeEscolhas: "1" } });
+    });
+  }
+
   static async onRemoveNivel(event, target) {
     const index = Number(target.dataset.index);
     await this._enfileirarArray("niveis", niveis => niveis.splice(index, 1));
@@ -3914,4 +3898,4 @@ class NaurenSubclasseSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
 }
 
 
-export { CARGAS_FONTE_OPCOES, MODOS_ALVO, NAUREN_CONTAGEM_DISPOSICAO_OPCOES, NAUREN_CONTAGEM_DISPOSICAO_OPCOES_SEM_DONO, NAUREN_EMANACAO_EFEITO_OPCOES, NAUREN_EMANACAO_EVENTO_OPCOES, NAUREN_GATILHO_EFEITO_OPCOES, NAUREN_GATILHO_EVENTO_OPCOES, NAUREN_GATILHO_LIMITE_ESCOPO, NAUREN_GATILHO_MOMENTO_ACAO, NAUREN_REACAO_CUSTO_OPCOES, NAUREN_REACAO_PRE_ATAQUE_OPCOES, NAUREN_REACAO_QUEM_OPCOES, NAUREN_REACAO_RESISTIR_OPCOES, NAUREN_TEMPLATE_PERSISTENTE_EFEITO_OPCOES, NAUREN_TEMPLATE_PERSISTENTE_EVENTO_OPCOES, NAUREN_TOMA_PRIORIDADE_OPCOES, NOVO_BLOCO_PADRAO, NaurenItemSheet, NaurenSubclasseSheet, RECURSOS_ALVO, RECURSOS_PERIODICOS, RESETAR_NO_ESCOPO_OPCOES, TIPO_ITEM_LABEL, USOS_RESET_LABEL, USOS_RESET_OPCOES, USOS_RESET_POR_COMBATE, naurenChaveEscopoRelogio, naurenNotificarGanhoPerda, naurenOnAddRecurso, naurenOnRemoveRecurso, naurenVisaoGatilho, naurenWhisperAtor, naurenWhisperGMs, novaAcaoPadrao, novoEfeitoPeriodicoPadrao, novoGastoRecursoPadrao, novoPorRankPadrao };
+export { CARGAS_FONTE_OPCOES, MODOS_ALVO, NAUREN_CONTAGEM_DISPOSICAO_OPCOES, NAUREN_CONTAGEM_DISPOSICAO_OPCOES_SEM_DONO, NAUREN_EMANACAO_EFEITO_OPCOES, NAUREN_EMANACAO_EVENTO_OPCOES, NAUREN_GATILHO_EFEITO_OPCOES, NAUREN_GATILHO_EVENTO_OPCOES, NAUREN_GATILHO_LIMITE_ESCOPO, NAUREN_GATILHO_MOMENTO_ACAO, NAUREN_REACAO_CUSTO_OPCOES, NAUREN_REACAO_PRE_ATAQUE_OPCOES, NAUREN_REACAO_QUEM_OPCOES, NAUREN_REACAO_RESISTIR_OPCOES, NAUREN_TEMPLATE_PERSISTENTE_EFEITO_OPCOES, NAUREN_TEMPLATE_PERSISTENTE_EVENTO_OPCOES, NAUREN_TOMA_PRIORIDADE_OPCOES, NOVO_BLOCO_PADRAO, NaurenItemSheet, NaurenSubclasseSheet, RECURSOS_ALVO, RECURSOS_PERIODICOS, RESETAR_NO_ESCOPO_OPCOES, TIPO_ITEM_LABEL, USOS_RESET_LABEL, USOS_RESET_OPCOES, USOS_RESET_POR_COMBATE, naurenChaveEscopoRelogio, naurenNotificarGanhoPerda, naurenOnAddRecurso, naurenOnRemoveRecurso, naurenVisaoGatilho, novaAcaoPadrao, novoEfeitoPeriodicoPadrao, novoGastoRecursoPadrao, novoPorRankPadrao };

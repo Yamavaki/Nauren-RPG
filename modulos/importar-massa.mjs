@@ -12,7 +12,7 @@
  *   - um lote: { "pasta": "Floresta", "documentos": [ ... ] }  (também "atores", "itens", "escritos");
  *   - Escritos no formato simples (ver escritos.mjs).
  */
-import { naurenConsertarReferenciasImport, naurenAvisarImportacao } from "../nauren.mjs";
+import { naurenConsertarReferenciasImport } from "../nauren.mjs";
 import { naurenEscritoDoJson } from "./escritos.mjs";
 import { naurenBordaAplicar, naurenBordaConfig } from "./borda-token.mjs";
 import { naurenProntaCfgPara, naurenProntasLista } from "./molduras-prontas.mjs";

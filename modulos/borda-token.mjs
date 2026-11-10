@@ -1,5 +1,5 @@
 /* Nauren RPG — Borda do token (Dynamic Token Ring). Separado do nauren.mjs na 0.94.31. */
-import { NaurenToken, naurenCardMovimento, naurenConsumirUsoDaHabilidade, naurenDepoisDoMovimento, naurenEhCondicaoModelo, naurenEhItem, naurenEmpurrarToken, naurenHud, naurenHudAnimacoesLigadas, naurenJanelaMovimento, naurenModoMovimento, naurenMoverSemMovimento, naurenMovimentoEmCombate, naurenMovimentoSaldo, naurenTemEstado, naurenTokensDeslocando, naurenUsoDisponivel } from "../nauren.mjs";
+import { naurenCardMovimento, naurenConsumirUsoDaHabilidade, naurenDepoisDoMovimento, naurenEhCondicaoModelo, naurenEhItem, naurenHud, naurenHudAnimacoesLigadas, naurenJanelaMovimento, naurenModoMovimento, naurenMoverSemMovimento, naurenMovimentoEmCombate, naurenMovimentoSaldo, naurenTemEstado, naurenTokensDeslocando, naurenUsoDisponivel } from "../nauren.mjs";
 /* ======================================================================
  * Borda do token (Dynamic Token Ring do Foundry)
  * ----------------------------------------------------------------------

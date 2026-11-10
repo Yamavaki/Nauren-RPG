@@ -1,6 +1,6 @@
 /* Nauren RPG — Compêndios oficiais (auto-semeadura, Torre, Bestiário, mascotes). Separado do nauren.mjs na 0.94.22. */
 import { NAUREN_KIT_JANELA } from "./janelas-kit.mjs";
-import { NAUREN_CAPACIDADE_POR_NOME, NAUREN_CORES_PINTURA, NAUREN_EQUIPAMENTO_CLASSE_LIVRO, NAUREN_ATRIBUTOS_CLASSE_LIVRO, NAUREN_ATRIBUTOS_CLASSE_LIVRO_0_101_0, naurenAtributosRecomendadosPreenchido, NaurenActorSheet, NaurenAlvoHelper, NaurenCondicaoData, NaurenHabilidadeData, NaurenMagiaData, campoAcao, campoModificador, naurenAtorTemRecurso, naurenClamparRecursosAoMaximo, naurenEhCondicaoModelo, naurenEquipRecomendadoPreenchido, naurenFixarTipoAlcanceSemeado, naurenInterpretarModificador, naurenMontarDescricao, naurenNomeDoRecurso, naurenPostarCard, naurenPreencherRecursosNoMaximo, naurenProcessarGatilhos, naurenRecursoEstaTravado, naurenResetarCompendios, naurenUuidPorSeed } from "../nauren.mjs";
+import { NAUREN_CAPACIDADE_POR_NOME, NAUREN_CORES_PINTURA, NAUREN_EQUIPAMENTO_CLASSE_LIVRO, NAUREN_ATRIBUTOS_CLASSE_LIVRO, NAUREN_ATRIBUTOS_CLASSE_LIVRO_0_101_0, naurenAtributosRecomendadosPreenchido, NaurenAlvoHelper, naurenAtorTemRecurso, naurenClamparRecursosAoMaximo, naurenEhCondicaoModelo, naurenEquipRecomendadoPreenchido, naurenFixarTipoAlcanceSemeado, naurenInterpretarModificador, naurenMontarDescricao, naurenNomeDoRecurso, naurenPostarCard, naurenPreencherRecursosNoMaximo, naurenProcessarGatilhos, naurenUuidPorSeed } from "../nauren.mjs";
 /* =======================================
  * 7. COMPÊNDIOS OFICIAIS DO SISTEMA (auto-semeadura)
  * =======================================
@@ -292,28 +292,6 @@ async function naurenGarantirEfeitoDeClasse(pack, seedId, dados) {
   return naurenGarantirItemNoPack(pack, seedId, dadosComOrigem);
 }
 
-/**
- * Busca os UUIDs de vários itens de um pack de uma vez, pelos seedIds
- * deles - usado pra montar pools de itens (ex: "Escolha de Itens" no
- * nível 1 de toda Classe, ver naurenSemearClasses) sem precisar buscar
- * um por um. Ignora silenciosamente qualquer seedId não encontrado
- * (nunca deveria acontecer se chamado DEPOIS do pack já ter sido
- * semeado, mas não trava a inicialização inteira se acontecer).
- */
-async function naurenBuscarUuidsDoPack(pack, seedIds) {
-  await pack.getIndex({ fields: ["flags.nauren.seedId"] });
-  const uuids = [];
-  for (const seedId of seedIds) {
-    const entrada = pack.index.find(i => i.flags?.nauren?.seedId === seedId);
-    if (!entrada) {
-      console.warn(`Nauren RPG | naurenBuscarUuidsDoPack: seedId "${seedId}" não encontrado em "${pack.metadata.label}".`);
-      continue;
-    }
-    const doc = await pack.getDocument(entrada._id);
-    uuids.push({ uuid: doc.uuid });
-  }
-  return uuids;
-}
 
 /** Semeia as 12 Armaduras/Capas/Botas do Capítulo VII do manual, com valores exatos. */
 async function naurenSemearArmaduras(pack) {
@@ -574,7 +552,7 @@ async function naurenSemearPeculiaridades(pack) {
   const garras = await naurenGarantirItemNoPack(pack, "peculiaridade-arma-garras", {
     name: "Garras/Presas", type: "arma", img: "icons/weapons/fist/claw-cloth-brown.webp",
     system: {
-      tipo: "Média", equipado: true,
+      categoria: "Média", equipado: true,
       descricao: "<p>Suas próprias garras, chifres ou dentes, considerados uma arma média com 1m de alcance - concedida automaticamente pelo Benefício \"Feroz\".</p>",
       acoes: [{
         nome: "Ataque Básico", custoEstamina: 1, alcance: "1m", ehAtaque: true, atributoAtaque: "poderAtaque",
@@ -2486,7 +2464,7 @@ async function naurenSemearHabilidadesMistico(pack, packCondicoes) {
       prioridadeIndicador: "PI",
       rankMax: 2,
       acoes: [{
-        nome: "Chute do Nascer do Sol", empurrarColisaoDano: "1d8", empurrarColisaoAmbos: true, custoEstamina: 2, alcance: "2m", ehAtaque: true, atributoAtaque: "poderMagia",
+        nome: "Chute do Nascer do Sol", custoEstamina: 2, alcance: "2m", ehAtaque: true, atributoAtaque: "poderMagia",
         modoAlvo: "selecionado", modoAlvoTravado: true, usaPerguntaAtaqueNoTurno: true,
         custosRecursoProprio: [{ recurso: "recursoCustom:energia", quantidade: "2", ativo: true }],
         usaEmpurrar: true, empurrarMetros: "3", empurrarColisaoDano: "1d8", empurrarColisaoAmbos: true,
@@ -4359,7 +4337,7 @@ async function naurenSemearEscritos(pack) {
     system: base({ formato: "livro", papel: "creme", fonte: "livro", capa: { cor: "#1f3b5c", detalhe: "#d9b45f", titulo: "Tomo das Marés Coloridas", subtitulo: "Anotações do Almirante Corvo" }, paginas: [
       pg("Prefácio", "<p>O mar de Nauren não é azul. Quem já navegou além do Farol Partido sabe disso: ele muda de cor com a lua, com o vento e, dizem os velhos marinheiros, com o humor de quem o atravessa.</p><p>Neste tomo registrei o que aprendi em trinta anos de travessias — as rotas seguras, as cores que anunciam tempestade e os lugares onde nenhuma bússola funciona.</p>"),
       pg("As cores da água", "<ul><li><strong>Turquesa:</strong> águas calmas; boa pesca.</li><li><strong>Âmbar:</strong> correnteza forte vinda do sul. Recolha as velas menores.</li><li><strong>Violeta:</strong> a aurora está perto da superfície. Não olhe para baixo por muito tempo.</li><li><strong>Cinza:</strong> volte. Volte agora.</li></ul>"),
-      pg("Carta náutica", "", { tipo: "imagem", src: "icons/svg/compass.svg", legenda: "Rascunho da rota até o Farol Partido." }),
+      pg("Carta náutica", "", { tipo: "imagem", src: "icons/tools/navigation/compass-brass-blue-red.webp", legenda: "Rascunho da rota até o Farol Partido." }),
       pg("O Farol Partido", "<p>O farol foi construído pelos engenheiros da Guilda do Vapor para guiar os navios pela névoa. Hoje a luz dele pisca em cores que não existem em nenhum catálogo de pigmentos.</p><blockquote><p>A luz não aponta o caminho. Ela aponta para quem está olhando.</p></blockquote>")] }, { descricao: "<p>Livro de capa azul com cantoneiras douradas. Exemplo de <b>Escrito</b> (livro): capa, páginas lado a lado e uma página de imagem.</p>" })
   });
   await naurenGarantirItemNoPack(pack, "escrito-diario-em-branco", {
@@ -5225,7 +5203,7 @@ async function naurenSemearSubclasseGuerreiroBerserker(pack, packHabilidades, pa
     name: "Rubra Tempestade", type: "habilidade", img: "icons/magic/lightning/bolt-forked-large-red.webp",
     system: {
       acoes: [{
-        nome: "Rubra Tempestade", categoria: "Subclasse", custoEstamina: 3, alcance: "2m", ehAtaque: true, atributoAtaque: "poderAtaque",
+        nome: "Rubra Tempestade", categoria: "Subclasse", custoEstamina: 3, alcance: "2m", atributoAtaque: "poderAtaque",
         usaTemplate: true, templateTipo: "circle", templateTamanho: 2, modoAlvo: "area", modoAlvoTravado: true, areaExcluirEu: true,
         usaArmaEscolhida: true, armaEscolhidaQualAtaque: "pesado", danoDiretoSemTeste: true, ehAtaque: false,
         danos: []
@@ -8173,21 +8151,6 @@ async function naurenReconciliarMascote(ator, uuids) {
 
 
 
-/**
- * Garante que existe uma Folder com esse nome dentro do pack (idempotente
- * - nunca cria duplicata, procura por nome antes de criar). Devolve o ID
- * da pasta, pra usar em "folder: id" na criação de um Actor no mesmo pack.
- */
-async function naurenGarantirPastaNoPack(pack, nomePasta) {
-  await pack.getIndex();
-  const existente = pack.folders?.find(f => f.name === nomePasta);
-  if (existente) return existente.id;
-
-  const [pasta] = await Folder.createDocuments([{
-    name: nomePasta, type: pack.metadata.type, folder: null
-  }], { pack: pack.collection });
-  return pasta.id;
-}
 
 
 
@@ -10305,4 +10268,4 @@ function naurenAliadosDoGrupo(actor) {
 }
 
 
-export { NAUREN_TORRE_RETIRADOS, NAUREN_ALVEJADO_NO_ACERTO, NAUREN_ARMAS_COM_ALVEJADO, NAUREN_DIARIOS, NAUREN_ICONES_AUTOMATICOS, NAUREN_ICONES_INEXISTENTES, NAUREN_ICONES_SEMEADOS, NAUREN_ICONE_FRASCO, NAUREN_ICONE_MAGIA, NAUREN_MASCOTES_INICIAIS, NAUREN_OWNERSHIP_APENAS_MESTRE, NAUREN_PACKS_DEFINICAO, NAUREN_REGRAS_VERSAO, NAUREN_SEED_IDS_EQUIPAMENTO_INICIAL, NAUREN_SEED_IDS_INICIAIS_PADRAO, NAUREN_TORRE, NAUREN_TORRE_LOJAS, NAUREN_TORRE_NOTAS, NAUREN_TORRE_PIGMENTOS, NAUREN_TORRE_RARIDADES, NAUREN_TORRE_TIERS, NAUREN_TORRE_VERSAO, NAUREN_VERSAO_SEED_MASCOTES, NAUREN_VIDA_MASCOTE, naurenAliadosDoGrupo, naurenBuscarUuidsDoPack, naurenCaminhoImagemSubclasse, naurenConsumiveisSaindo, naurenCorrigirIconesSemeados, naurenDisponivelNoInicio, naurenDuasArmasPendente, naurenExpirarEscudo, naurenExtraEstaminaCondicoes, naurenFundoPersonalizado, naurenGarantirAtorNoPack, naurenGarantirEfeitoDeClasse, naurenGarantirEfeitoDeSubclasse, naurenGarantirHabilidadeDeClasse, naurenGarantirHabilidadeDeSubclasse, naurenGarantirItemNoPack, naurenGarantirPastaNoPack, naurenGatilhoDanoDeArea, naurenItensDoMascote, naurenMigrarAlvejadoArcos, naurenMigrarCanalizarPorNivel, naurenMigrarLoucuraManual, naurenObterOuCriarPacks, naurenPerguntarEscolhaAoReceber, naurenPreverDuasArmasGratis, naurenReconciliarMascote, naurenRolarAjustePopup, naurenSemearArmaduras, naurenSemearArmas, naurenSemearArmasDisparoCarregado, naurenSemearArmasModeloSubclasse, naurenSemearBestiario, naurenSemearClasseCacador, naurenSemearClasseDruida, naurenSemearClasseEmpireo, naurenSemearClasseGuerreiro, naurenSemearClasseLadino, naurenSemearClasseMago, naurenSemearClasseMistico, naurenSemearClasseSacerdote, naurenSemearCondicoes, naurenSemearEfeitosGuardas, naurenSemearHabilidadeCondensarMagia, naurenSemearHabilidadeDarPrioridade, naurenSemearHabilidadeGrimorio, naurenSemearHabilidadeSendoUmMago, naurenSemearHabilidadesCacador, naurenSemearHabilidadesDruida, naurenSemearHabilidadesEmpireo, naurenSemearHabilidadesGuerreiro, naurenSemearHabilidadesLadino, naurenSemearHabilidadesMistico, naurenSemearHabilidadesSacerdote, naurenSemearMagias, naurenSemearMascotes, naurenSemearMunicoes, naurenSemearPeculiaridades, naurenSemearEquipamentos, naurenSemearEscritos, naurenSemearPigmentos, naurenSemearRegras, naurenSemearRemedioEFrascos, naurenSemearSubclasseCacador, naurenSemearSubclasseCacadorBatedor, naurenSemearSubclasseCacadorMestreDasBestas, naurenSemearSubclasseCacadorSobrevivente, naurenSemearSubclasseDruida, naurenSemearSubclasseDruidaAndarilhosDasPeles, naurenSemearSubclasseDruidaCrescimento, naurenSemearSubclasseDruidaRestauradores, naurenSemearSubclasseEmpireo, naurenSemearSubclasseEmpireoPaixao, naurenSemearSubclasseEmpireoSombras, naurenSemearSubclasseEmpireoVirtude, naurenSemearSubclasseGuerreiro, naurenSemearSubclasseGuerreiroBerserker, naurenSemearSubclasseGuerreiroGuardiao, naurenSemearSubclasseGuerreiroJuramentado, naurenSemearSubclasseLadino, naurenSemearSubclasseLadinoArdiloso, naurenSemearSubclasseLadinoEgoista, naurenSemearSubclasseLadinoOportunista, naurenSemearSubclasseMago, naurenSemearSubclasseMagoNova, naurenSemearSubclasseMistico, naurenSemearSubclasseMisticoCaligrafia, naurenSemearSubclasseMisticoPintura, naurenSemearSubclasseMisticoPoesia, naurenSemearSubclasseSacerdote, naurenSemearSubclasseSacerdoteAgraciado, naurenSemearSubclasseSacerdoteHerege, naurenSemearSubclasseSacerdotePenitente, naurenSemearTorre, naurenTierTorre, naurenTorreTransformarAcao, naurenUuidsMascotes };
+export { NAUREN_TORRE_RETIRADOS, NAUREN_ALVEJADO_NO_ACERTO, NAUREN_ARMAS_COM_ALVEJADO, NAUREN_DIARIOS, NAUREN_ICONES_AUTOMATICOS, NAUREN_ICONES_INEXISTENTES, NAUREN_ICONES_SEMEADOS, NAUREN_ICONE_FRASCO, NAUREN_ICONE_MAGIA, NAUREN_MASCOTES_INICIAIS, NAUREN_OWNERSHIP_APENAS_MESTRE, NAUREN_PACKS_DEFINICAO, NAUREN_REGRAS_VERSAO, NAUREN_SEED_IDS_EQUIPAMENTO_INICIAL, NAUREN_SEED_IDS_INICIAIS_PADRAO, NAUREN_TORRE, NAUREN_TORRE_LOJAS, NAUREN_TORRE_NOTAS, NAUREN_TORRE_PIGMENTOS, NAUREN_TORRE_RARIDADES, NAUREN_TORRE_TIERS, NAUREN_TORRE_VERSAO, NAUREN_VERSAO_SEED_MASCOTES, NAUREN_VIDA_MASCOTE, naurenAliadosDoGrupo, naurenCaminhoImagemSubclasse, naurenConsumiveisSaindo, naurenCorrigirIconesSemeados, naurenDisponivelNoInicio, naurenDuasArmasPendente, naurenExpirarEscudo, naurenExtraEstaminaCondicoes, naurenFundoPersonalizado, naurenGarantirAtorNoPack, naurenGarantirEfeitoDeClasse, naurenGarantirEfeitoDeSubclasse, naurenGarantirHabilidadeDeClasse, naurenGarantirHabilidadeDeSubclasse, naurenGarantirItemNoPack, naurenGatilhoDanoDeArea, naurenItensDoMascote, naurenMigrarAlvejadoArcos, naurenMigrarCanalizarPorNivel, naurenMigrarLoucuraManual, naurenObterOuCriarPacks, naurenPerguntarEscolhaAoReceber, naurenPreverDuasArmasGratis, naurenReconciliarMascote, naurenRolarAjustePopup, naurenSemearArmaduras, naurenSemearArmas, naurenSemearArmasDisparoCarregado, naurenSemearArmasModeloSubclasse, naurenSemearBestiario, naurenSemearClasseCacador, naurenSemearClasseDruida, naurenSemearClasseEmpireo, naurenSemearClasseGuerreiro, naurenSemearClasseLadino, naurenSemearClasseMago, naurenSemearClasseMistico, naurenSemearClasseSacerdote, naurenSemearCondicoes, naurenSemearEfeitosGuardas, naurenSemearHabilidadeCondensarMagia, naurenSemearHabilidadeDarPrioridade, naurenSemearHabilidadeGrimorio, naurenSemearHabilidadeSendoUmMago, naurenSemearHabilidadesCacador, naurenSemearHabilidadesDruida, naurenSemearHabilidadesEmpireo, naurenSemearHabilidadesGuerreiro, naurenSemearHabilidadesLadino, naurenSemearHabilidadesMistico, naurenSemearHabilidadesSacerdote, naurenSemearMagias, naurenSemearMascotes, naurenSemearMunicoes, naurenSemearPeculiaridades, naurenSemearEquipamentos, naurenSemearEscritos, naurenSemearPigmentos, naurenSemearRegras, naurenSemearRemedioEFrascos, naurenSemearSubclasseCacador, naurenSemearSubclasseCacadorBatedor, naurenSemearSubclasseCacadorMestreDasBestas, naurenSemearSubclasseCacadorSobrevivente, naurenSemearSubclasseDruida, naurenSemearSubclasseDruidaAndarilhosDasPeles, naurenSemearSubclasseDruidaCrescimento, naurenSemearSubclasseDruidaRestauradores, naurenSemearSubclasseEmpireo, naurenSemearSubclasseEmpireoPaixao, naurenSemearSubclasseEmpireoSombras, naurenSemearSubclasseEmpireoVirtude, naurenSemearSubclasseGuerreiro, naurenSemearSubclasseGuerreiroBerserker, naurenSemearSubclasseGuerreiroGuardiao, naurenSemearSubclasseGuerreiroJuramentado, naurenSemearSubclasseLadino, naurenSemearSubclasseLadinoArdiloso, naurenSemearSubclasseLadinoEgoista, naurenSemearSubclasseLadinoOportunista, naurenSemearSubclasseMago, naurenSemearSubclasseMagoNova, naurenSemearSubclasseMistico, naurenSemearSubclasseMisticoCaligrafia, naurenSemearSubclasseMisticoPintura, naurenSemearSubclasseMisticoPoesia, naurenSemearSubclasseSacerdote, naurenSemearSubclasseSacerdoteAgraciado, naurenSemearSubclasseSacerdoteHerege, naurenSemearSubclasseSacerdotePenitente, naurenSemearTorre, naurenTierTorre, naurenTorreTransformarAcao, naurenUuidsMascotes };

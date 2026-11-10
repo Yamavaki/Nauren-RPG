@@ -434,6 +434,7 @@ Hooks.on("hotbarDrop", (bar, data, slot) => {
  */
 Hooks.on("dropCanvasData", (canvas, data) => {
   if (data.type !== "Item") return true; // deixa o Foundry cuidar de outros tipos de drop normalmente
+  const shift = !!globalThis.event?.shiftKey || !!game.keyboard?.isModifierActive?.("Shift");
 
   (async () => {
     const item = await fromUuid(data.uuid);
@@ -451,7 +452,9 @@ Hooks.on("dropCanvasData", (canvas, data) => {
     }
     if (item.type !== "condicao" && item.type !== "efeito") return; // outros tipos: não faz nada, deixa como estava
 
-    const tokenAlvo = canvas.tokens.placeables.find(t => t.bounds.contains(data.x, data.y));
+    // 0.109.19: só tokens visíveis; com vários empilhados, o de cima.
+    const tokenAlvo = canvas.tokens.placeables.filter(t => t.visible && t.actor && t.bounds.contains(data.x, data.y))
+      .sort((a, b) => (b.document.sort ?? 0) - (a.document.sort ?? 0) || (b.zIndex ?? 0) - (a.zIndex ?? 0))[0];
     if (!tokenAlvo?.actor) {
       ui.notifications.warn(`Solte "${item.name}" em cima de um token pra aplicar automaticamente.`);
       return;
@@ -461,7 +464,18 @@ Hooks.on("dropCanvasData", (canvas, data) => {
       return;
     }
 
-    const resultado = await NaurenAlvoHelper.aplicarCondicao(tokenAlvo.actor, data.uuid);
+    // 0.109.7: segurar Shift ao soltar pergunta quantos acúmulos (Condição acumulável); quem aplicou fica registrado
+    // como origem quando a Condição vem da ficha de um ator (ex.: modelo na ficha de um monstro).
+    let acumulos = 1;
+    if (shift && item.type === "condicao" && item.system.acumulativel) {
+      const v = await foundry.applications.api.DialogV2.prompt({ window: { title: item.name }, content: `<p>Quantos acúmulos de <b>${foundry.utils.escapeHTML(item.name)}</b> em <b>${foundry.utils.escapeHTML(tokenAlvo.name)}</b>?</p><input type="number" name="n" value="1" min="1" autofocus>`,
+        ok: { label: "Aplicar", callback: (ev, btn) => Number(btn.form.elements.n.value) || 1 }, rejectClose: false }).catch(() => null);
+      if (!v) return;
+      acumulos = Math.max(1, Math.floor(v));
+    }
+    const dono = item.parent?.documentName === "Actor" ? item.parent : null;
+    const conjurador = dono ? ((dono.isToken ? dono.token?.uuid : (dono.getActiveTokens?.(false, true)?.[0]?.uuid ?? dono.uuid)) ?? "") : "";
+    const resultado = await NaurenAlvoHelper.aplicarCondicao(tokenAlvo.actor, data.uuid, acumulos, null, 0, 0, "", "1", "", conjurador);
     if (resultado) {
       naurenPostarCard({ ator: tokenAlvo.actor, titulo: resultado, fonte: "Aplicada arrastando no token",
         linhas: [{ label: "Recebeu", value: resultado }] });

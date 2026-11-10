@@ -4,7 +4,7 @@
 
 Sistema completo do **Nauren RPG** para o Foundry VTT: fichas, combate automatizado e compêndios com todo o livro.
 
-![Foundry](https://img.shields.io/badge/Foundry-v13%20%7C%20v14-orange) ![Versão](https://img.shields.io/badge/vers%C3%A3o-0.109.18-purple) ![Idioma](https://img.shields.io/badge/idioma-pt--BR-green)
+![Foundry](https://img.shields.io/badge/Foundry-v13%20%7C%20v14-orange) ![Versão](https://img.shields.io/badge/vers%C3%A3o-0.109.19-purple) ![Idioma](https://img.shields.io/badge/idioma-pt--BR-green)
 
 ## Instalar
 
@@ -30,6 +30,10 @@ Para atualizar, use **Atualizar** na lista de sistemas: o Foundry compara a vers
 - **HUD de combate.** As Ações do token selecionado ficam num painel embaixo da tela.
 - **Criador de Monstros e Bestiário.** Inclui o Bando de lacaios e mais de 500 Habilidades de Monstros prontas.
 - **Itens da Torre Infinita.** Itens Pigmentados, consumíveis e equipamentos prontos, com instruções de uso.
+- **Armazenamentos e lojas.** Baús, cofres e balcões no mapa, com tranca por chave e venda de itens.
+- **Escritos.** Notas, cartas, pergaminhos e livros para os jogadores lerem, com parágrafos secretos do Mestre.
+- **Molduras e barras de token.** Molduras desenhadas pelo sistema, barras de Vida e Estamina e suporte a cenas com andares.
+- **Organizador das listas e Importar em massa.** Selecionar, mover e apagar vários de uma vez (com Lixeira) e importar fichas em JSON.
 - **Animações (opcional).** Integração com Automated Animations, Sequencer e JB2A, com movimento, cor do token e som sincronizados. O menu pronto fica em [`docs/`](docs/).
 
 ## Módulos recomendados (opcionais)
@@ -64,6 +68,7 @@ templates/ styles/   telas (Handlebars) e estilos
 lang/ data/          tradução e dados (Habilidades de Monstros)
 assets/              imagens das árvores de subclasse
 docs/                guias e arquivos de apoio
+tools/empacotar.sh   monta o dist/nauren.zip a partir do repositório
 dist/nauren.zip      pacote que o Foundry baixa
 LICENSE              licença de uso
 ```

@@ -134,6 +134,9 @@ export function naurenElevacaoDoPiso(regiao = null) {
   return Number.isFinite(b) ? b : null;
 }
 
+/** Contador de quadros do canvas (sobe uma vez por quadro, em naurenEfeitosNoAndar). */
+let naurenQuadroAndar = 0;
+
 /**
  * Área grudada no token (Emanação, aura): quando o token troca de andar (escada, Região "Mudar de Andar"),
  * a Região vai junto para o andar novo. Só mexe nas Regiões grudadas que estavam em um andar só.
@@ -152,17 +155,31 @@ if (globalThis.Hooks) {
       if (ls.length <= 1 && ls[0] !== novo) ups.push(r);
     }
     if (!ups.length) return;
-    // 0.109.18: trocar só "levels" deixava um desenho fantasma da área no andar antigo (sumia com F5). Recria a Região
-    // no andar novo (mesmos dados e flags) e apaga a antiga.
-    const novas = ups.map(r => { const d = r.toObject(); delete d._id; d.levels = [novo]; return d; });
+    // 0.109.18: trocar só "levels" deixava um desenho fantasma da área no andar antigo (sumia com F5). A área visual da
+    // Emanação (só desenho, achada pela flag) é recriada no andar novo e a antiga apagada.
+    // 0.109.19: as outras áreas presas ao token NÃO são recriadas - o ID delas é guardado em outros lugares
+    // (Condição de Presença "regioesPresenca", "regiaoUuid" das entidades) e recriar soltava esses vínculos;
+    // nelas só o andar muda.
+    const visuais = ups.filter(r => r.flags?.nauren?.emanacaoOrigem && !r.flags?.nauren?.templatePersistente);
+    const outras = ups.filter(r => !visuais.includes(r));
+    if (outras.length) doc.parent.updateEmbeddedDocuments("Region", outras.map(r => ({ _id: r.id, levels: [novo] }))).catch(err => console.warn("Nauren RPG | área no andar novo", err));
+    if (!visuais.length) return;
+    const novas = visuais.map(r => { const d = r.toObject(); delete d._id; d.levels = [novo]; return d; });
     doc.parent.createEmbeddedDocuments("Region", novas)
-      .then(() => doc.parent.deleteEmbeddedDocuments("Region", ups.map(r => r.id)))
+      .then(() => doc.parent.deleteEmbeddedDocuments("Region", visuais.map(r => r.id)))
       .catch(err => console.warn("Nauren RPG | área no andar novo", err));
   });
 }
 
 /** 0.109.13: algum andar de cima (textura do andar ou tile acima do token) cobre o centro do token neste ponto? */
 export function naurenPisoCobre(tm, token) {
+  // 0.109.19: a moldura, os efeitos e a interface perguntam a mesma coisa no mesmo quadro: calcula uma vez por quadro.
+  if (token && token._naurenPisoQuadro === naurenQuadroAndar && naurenQuadroAndar > 0) return token._naurenPisoCobre;
+  const r = naurenPisoCobreCalcular(tm, token);
+  if (token) { token._naurenPisoQuadro = naurenQuadroAndar; token._naurenPisoCobre = r; }
+  return r;
+}
+function naurenPisoCobreCalcular(tm, token) {
   try {
     const c = token.center ?? { x: tm.position.x, y: tm.position.y };
     // 0.109.16: compara pelos PISOS dos andares (Scene#levels), não pela elevação da malha - o V14 pode desenhar o
@@ -191,7 +208,6 @@ export function naurenPisoCobre(tm, token) {
  * do V14: aparecem em todos. A cada quadro, um efeito cujo token está em outro andar só é desenhado quando a arte do
  * token também é (buraco no piso) e o piso de cima não cobre o token.
  */
-let naurenQuadroAndar = 0;
 function naurenEspiarArteToken(tm) {
   if (!tm || tm._naurenEspiaAndar || typeof tm._render !== "function") return;
   const orig = tm._render;
@@ -200,9 +216,10 @@ function naurenEspiarArteToken(tm) {
 }
 function naurenEfeitosNoAndar() {
   naurenQuadroAndar++;
+  if (!globalThis.canvas?.ready || !naurenCenaTemAndares(canvas.scene)) return; // sem andares: nenhum efeito a esconder
   const gerente = globalThis.Sequencer?.EffectManager;
   let lista = null; try { lista = gerente?.effects ?? gerente?.getEffects?.() ?? null; } catch (err) { lista = null; }
-  if (!lista || !globalThis.canvas?.ready) return;
+  if (!lista) return;
   const vendo = canvas.level?.id;
   for (const ef of (lista instanceof Map ? lista.values() : lista)) {
     try {
@@ -230,6 +247,9 @@ function naurenInterfaceTokensNoAndar() {
   if (!globalThis.canvas?.ready || !canvas.tokens) return;
   const vendo = canvas.level?.id;
   const temAndares = naurenCenaTemAndares(canvas.scene);
+  // 0.109.19: cena sem andares e nenhum token escondido por este código: nada a fazer neste quadro.
+  if (!temAndares && !naurenAlgumCobertoAndar) return;
+  naurenAlgumCobertoAndar = false;
   for (const tok of canvas.tokens.placeables) {
     try {
       const andar = tok.document?.level?.id ?? tok.document?.level;
@@ -246,18 +266,21 @@ function naurenInterfaceTokensNoAndar() {
       } else if (coberto) {
         if (tok.renderable) tok.renderable = false; // o Foundry pode religar num refresh
         if (tok.eventMode !== "none") tok.eventMode = "none";
-      } else if (!coberto && tok._naurenCobertoAndar) {
+      } else if (tok._naurenCobertoAndar) {
         const o = tok._naurenCobertoAndar; tok._naurenCobertoAndar = null;
         tok.renderable = o.renderable ?? true; tok.eventMode = o.eventMode ?? "static";
       }
+      if (coberto) naurenAlgumCobertoAndar = true;
     } catch (err) { /* token sendo apagado */ }
   }
 }
+let naurenAlgumCobertoAndar = false;
 Hooks.on("canvasReady", () => {
-  try { canvas.app.ticker.remove(naurenInterfaceTokensNoAndar); canvas.app.ticker.add(naurenInterfaceTokensNoAndar, null, PIXI.UPDATE_PRIORITY.LOW); } catch (err) { /* sem ticker */ }
-});
-Hooks.on("canvasReady", () => {
-  try { canvas.app.ticker.remove(naurenEfeitosNoAndar); canvas.app.ticker.add(naurenEfeitosNoAndar, null, PIXI.UPDATE_PRIORITY.LOW); } catch (err) { /* sem ticker */ }
+  naurenAlgumCobertoAndar = false;
+  try {
+    canvas.app.ticker.remove(naurenInterfaceTokensNoAndar); canvas.app.ticker.add(naurenInterfaceTokensNoAndar, null, PIXI.UPDATE_PRIORITY.LOW);
+    canvas.app.ticker.remove(naurenEfeitosNoAndar); canvas.app.ticker.add(naurenEfeitosNoAndar, null, PIXI.UPDATE_PRIORITY.LOW);
+  } catch (err) { /* sem ticker */ }
 });
 
 /** 0.109.16: diagnóstico no console (F12): naurenDiagnosticoAndar() com um token selecionado. */

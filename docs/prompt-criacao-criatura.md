@@ -203,7 +203,7 @@ As três Funções saem diferentes de verdade. Os pontos são distribuídos pelo
 | Segunda vida, explosão ao morrer | Gatilho `vidaZerou` (`recurso: "vida"` ou `oferecerAcaoDesteItem`), `limiteUsos: "1"`, `limiteEscopo: "cena"` | 8c |
 | Resistir a uma Condição recebida | Gatilho `euRecebiCondicao` + `removerCondicaoRecebida` | 8j |
 | Raio sustentado | `sustentarPorTurno` + custo + incremento | 13 |
-| Dano que salta | `cadeiaCondicaoUuid` + `cadeiaCondicaoRaio` | 13 |
+| Dano que salta | `cadeiaCondicaoUuid` + `cadeiaRaio` | 13 |
 | Barra própria (Pressão, Cabeças) | `recursosDeclarados` | 10 |
 | Perjúrio do Acaso | Ação com `consomePerjurio: true`, efeito forte e temático | 4.7 |
 | Grupo de lacaios que age como um (Bando) | `flags.nauren.bando`, token não vinculado, Vida `/ N`, dano e custo com `@bandoNoAlcance` | 16.1 |

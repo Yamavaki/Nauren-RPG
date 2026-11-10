@@ -1,11 +1,11 @@
 /* Nauren RPG — Relógio de combate: tempo das Condições. Separado do nauren.mjs na 0.94.31. */
-import { naurenKitJanela, naurenKitSistema } from "./janelas-kit.mjs";
-import { NAUREN_CAMPOS_MODIFICADOR_OPCOES, NaurenHabilidadeData, NaurenMagiaData, campoAcao, campoCuraBloco, campoDanoBloco, campoModificador, naurenDefinirCaminhoProfundo, naurenInterpretarModificador, naurenItemCorrespondeAoAlvo, naurenPostarCard, naurenResolverPorNivel, naurenUsosExtrasPara, naurenUsosPassivaMax } from "../nauren.mjs";
-import { NaurenActorSheet, NaurenAlvoHelper } from "./ficha-ator.mjs";
-import { NaurenItemSheet, USOS_RESET_OPCOES } from "./ficha-item.mjs";
-import { naurenCaminhoImagemSubclasse, naurenGarantirItemNoPack } from "./compendios.mjs";
+import { naurenKitJanela } from "./janelas-kit.mjs";
+import { NAUREN_CAMPOS_MODIFICADOR_OPCOES, naurenDefinirCaminhoProfundo, naurenInterpretarModificador, naurenItemCorrespondeAoAlvo, naurenPostarCard, naurenResolverPorNivel, naurenUsosExtrasPara, naurenUsosPassivaMax } from "../nauren.mjs";
+import "./ficha-ator.mjs";
+import "./ficha-item.mjs";
+import { naurenCaminhoImagemSubclasse } from "./compendios.mjs";
 import { naurenReaplicarUpgradesDeSubclasse, naurenReconciliarItemComCompendio } from "./icone-condicao-token.mjs";
-import { naurenRelogioProcessarTransicao } from "./relogio-combate.mjs";
+import "./relogio-combate.mjs";
 /* =======================================
  * RELÓGIO DE COMBATE - tempo das Condições
  * -----------------------------------------------------------------------

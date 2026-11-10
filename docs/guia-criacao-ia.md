@@ -2125,7 +2125,7 @@ um. Onde há um nome de campo, é o nome exato do JSON.
   e `"areaExcluirEu": true` (a criatura no centro da área não se atinge).
 - **Dano por acúmulo no alvo**: `"bonusDanoPorAcumuloUuid": "self:X"`,
   `"bonusDanoPorAcumuloValor": 5` (+5 por acúmulo da Condição X no alvo).
-- **Dano que salta**: `"cadeiaCondicaoUuid": "self:X"`, `"cadeiaCondicaoRaio": 1`
+- **Dano que salta**: `"cadeiaCondicaoUuid": "self:X"`, `"cadeiaRaio": "1"` (metros em volta do alvo)
   (se o alvo tem X, o dano repete em quem está a 1m dele).
 - **Dano extra só no crítico**: `"danoExtraEmCritico": "2d6"`.
 - **Área persistente** (fica no mapa): além dos campos da seção 9.5,

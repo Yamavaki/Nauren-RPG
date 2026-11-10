@@ -1,6 +1,6 @@
 /* Nauren RPG — Entidades de campo. Separado do nauren.mjs na 0.94.31. */
 import * as NK from "./janelas-kit.mjs";
-import { naurenAndarParaRegiao, naurenAndarParaToken, naurenColideParede, naurenMesmoAndar, naurenTokensDoAndar } from "./andares.mjs";
+import { naurenAndarParaToken, naurenColideParede, naurenMesmoAndar, naurenTokensDoAndar } from "./andares.mjs";
 import { ARMA_TIPOS, ATRIBUTOS_BONUS, NAUREN_CAMPOS_MODIFICADOR_OPCOES, NAUREN_REFERENCIA_FORMULAS, NAUREN_TOKENS_CONTEXTO, naurenAvaliarExpressaoSimples, naurenCasasLivresEmVolta, naurenCondicoesAtivas, naurenConsumirUsoDaHabilidade, naurenCriarInvocacoes, naurenCriarObraPrima, naurenDisposicaoDoAtor, naurenFormulaParaTexto, naurenMedirDistanciaBordas, naurenMontarDescricao, naurenPostarCard, naurenPrioridadesNoTurno, naurenResolverPorNivel, naurenResolverTokenFormula, naurenTextoRolagem, naurenTravaPrioridade, naurenUsoDisponivel } from "../nauren.mjs";
 import { NAUREN_MASCOTES_INICIAIS, NAUREN_PACKS_DEFINICAO, naurenAliadosDoGrupo } from "./compendios.mjs";
 import { NAUREN_MOTION_ALVO_OPCOES, NAUREN_MOTION_USUARIO_OPCOES } from "./animacoes.mjs";
@@ -201,12 +201,12 @@ Hooks.on("createItem", async (item) => {
 
 /* ---- Cores da Pintura (Místico): cada habilidade lista as cores que pode pintar ---- */
 const NAUREN_CORES_PINTURA = {
-  vermelhoPdA: { seed: "condicao-pintura-vermelho-pda", nomeCondicao: "Pintura: Vermelho (Poder de Ataque)", rotulo: "Vermelho: +1 Poder de Ataque", texto: "+1 Poder de Ataque", img: "icons/magic/fire/flame-burning-hand-red.webp", modificadores: [{ campo: "poderAtaque", valor: "@acumulos" }] },
+  vermelhoPdA: { seed: "condicao-pintura-vermelho-pda", nomeCondicao: "Pintura: Vermelho (Poder de Ataque)", rotulo: "Vermelho: +1 Poder de Ataque", texto: "+1 Poder de Ataque", img: "icons/magic/fire/flame-burning-hand-orange.webp", modificadores: [{ campo: "poderAtaque", valor: "@acumulos" }] },
   vermelhoPdM: { seed: "condicao-pintura-vermelho-pdm", nomeCondicao: "Pintura: Vermelho (Poder de Magia)", rotulo: "Vermelho: +1 Poder de Magia", texto: "+1 Poder de Magia", img: "icons/magic/fire/orb-vortex.webp", modificadores: [{ campo: "poderMagia", valor: "@acumulos" }] },
   azul: { seed: "condicao-pintura-azul", nomeCondicao: "Pintura: Azul (Espírito)", rotulo: "Azul: +2 Espírito", texto: "+2 Espírito", img: "icons/magic/water/orb-water-bubbles-blue.webp", modificadores: [{ campo: "espirito", valor: "2*@acumulos" }] },
   verde: { seed: "condicao-pintura-verde", nomeCondicao: "Pintura: Verde (Vida por Nível)", rotulo: "Verde: +1 Vida Máxima por Nível", texto: "+1 Vida Máxima por Nível", img: "icons/magic/nature/leaf-glow-green.webp", modificadores: [{ campo: "vidaBonusPorNivel", valor: "@acumulos" }] },
   laranja: { seed: "condicao-pintura-laranja", nomeCondicao: "Pintura: Laranja (Crítico)", rotulo: "Laranja: +1 no Limiar de Crítico", texto: "Crítico 1 mais fácil", img: "icons/magic/fire/projectile-fireball-orange.webp", modificadores: [{ campo: "critMin", valor: "-@acumulos" }] },
-  rosa: { seed: "condicao-pintura-rosa", nomeCondicao: "Pintura: Rosa (Movimento)", rotulo: "Rosa: +1 Movimento", texto: "+1 Movimento", img: "icons/magic/nature/flower-pink.webp", modificadores: [{ campo: "movimento", valor: "@acumulos" }] },
+  rosa: { seed: "condicao-pintura-rosa", nomeCondicao: "Pintura: Rosa (Movimento)", rotulo: "Rosa: +1 Movimento", texto: "+1 Movimento", img: "icons/commodities/flowers/blooms-pink.webp", modificadores: [{ campo: "movimento", valor: "@acumulos" }] },
   branco: { seed: null, rotulo: "Branco: repete o efeito de outra pintura" }
 };
 const NAUREN_CORES_PINTURA_POR_FONTE = {
@@ -522,7 +522,6 @@ function naurenAnotarModsRecebidosNoCard(secondaryLines, fotos, porAlvo) {
 }
 
 /* ---------- Corpo a corpo x à distância ---------- */
-const NAUREN_TIPO_ALCANCE_NOMES = { corpoACorpo: "Corpo a corpo", distancia: "À distância" };
 /** A Ação acerta um alvo com golpe/dano (o que faz sentido classificar)? Áreas ficam de fora. */
 function naurenAcaoEhGolpe(acao) {
   if (!acao) return false;
@@ -970,30 +969,6 @@ async function naurenArmarPoderosa(actor, efeito) {
   return [{ label: "Conjuração Poderosa", value: `armado: ${NAUREN_PODEROSA_EFEITOS[efeito]?.nome ?? efeito}`, breakdown: `${lista.length} efeito(s) para a próxima magia: ${lista.map(k => NAUREN_PODEROSA_EFEITOS[k]?.nome ?? k).join(", ")}` }];
 }
 
-/**
- * Conjuração Poderosa = duas magias fundidas: dobra a fórmula termo a termo.
- * Dados têm a quantidade dobrada (4d6 -> 8d6); qualquer outro termo é
- * multiplicado por 2 (@poderMagia -> 2*@poderMagia, 5 -> 2*5, 2*@rank -> 2*2*@rank).
- */
-function naurenFundirFormula(formula) {
-  const f = String(formula ?? "").trim();
-  if (!f) return f;
-  const termos = []; let atual = "", prof = 0;
-  for (const ch of f) {
-    if (ch === "(") prof++;
-    if (ch === ")") prof--;
-    if ((ch === "+" || ch === "-") && prof === 0 && atual.trim()) { termos.push(atual); atual = ch; continue; }
-    atual += ch;
-  }
-  if (atual.trim()) termos.push(atual);
-  return termos.map(t => {
-    const sinal = /^\s*[+-]/.test(t) ? t.trim()[0] : "";
-    const corpo = t.trim().replace(/^[+-]\s*/, "");
-    const dado = corpo.match(/^(\d*)d(\d+)(.*)$/i);
-    const novo = dado ? `${(Number(dado[1]) || 1) * 2}d${dado[2]}${dado[3]}` : `2*${/^[\w@.]+$/.test(corpo) ? corpo : `(${corpo})`}`;
-    return `${sinal ? ` ${sinal} ` : ""}${novo}`;
-  }).join("").trim();
-}
 
 /**
  * Condições modelo dentro da ficha de um NPC: itens "condicao" com
@@ -1256,11 +1231,6 @@ const NAUREN_CAPACIDADES = {
 "desc": "Em Profusão Retraída, 1 Estresse anula todo o dano de um golpe, 1 vez por combate.",
 "legado": "Fortaleza das Emoções"
 },
-"golpeEspiritual": {
-"nome": "É o Golpe Espiritual (dado de referência)",
-"desc": "Outras habilidades usam o dado de dano desta.",
-"legado": "Golpe Espiritual"
-},
 "guiarDestino": {
 "nome": "Guiar o Destino",
 "desc": "Pode ceder seus Dados de Destino a aliados.",
@@ -1391,7 +1361,7 @@ const NAUREN_CAPACIDADES = {
 "comunhaoSabioPendente": {"nome": "Comunhão do Sábio pendente", "desc": "Condição que faz o próximo Comungar restaurar Estamina.", "legado": "Comunhão do Sábio (Pendente)"},
 "aureum": {"nome": "Dado de Acalanto no início do combate", "desc": "Ao entrar num combate, o dono rola o d20 guardado do Acalanto do Destino (Palavra de Destino: Aureum).", "legado": "Palavra de Destino: Aureum"},
 "exercicioTeorico": {"nome": "É o Exercício Teórico", "desc": "Marca o item como o Exercício Teórico (a Bancada e o Alambique oferecem usá-lo).", "legado": "Exercício Teórico"},
-"golpeEspiritual": {"nome": "É um Golpe Espiritual", "desc": "Os ataques deste item contam como Golpe Espiritual (Sequência Caligráfica e Eco do Ideograma reagem a eles).", "legado": "Golpe Espiritual"},
+"golpeEspiritual": {"nome": "É um Golpe Espiritual", "desc": "Os ataques deste item contam como Golpe Espiritual (Sequência Caligráfica e Eco do Ideograma reagem a eles); outras habilidades usam o dado de dano deste item como referência.", "legado": "Golpe Espiritual"},
 "semMana": {"nome": "Sem Mana", "desc": "Enquanto o item estiver na ficha: Mana máxima 0 e nenhuma Ação com custo de Mana (ex.: Capacidade Inventiva do Inventor).", "legado": "Capacidade Inventiva"}
 };
 const NAUREN_CAPACIDADE_POR_NOME = Object.fromEntries(Object.entries(NAUREN_CAPACIDADES).map(([k, v]) => [v.legado, k]));
@@ -3160,4 +3130,4 @@ const NAUREN_QUERY_DISPARAR_EVENTO = "nauren.dispararEvento";
 const NAUREN_QUERY_APLICAR_CONDICAO = "nauren.aplicarCondicaoNoDono";
 
 
-export { NAUREN_ACALANTO_EFEITOS, NAUREN_CAMPOS_ACIMA_AUTOMATICOS, NAUREN_CAMPOS_ACIMA_GERAIS, NAUREN_CAMPOS_ANALISE_CRIATIVA, NAUREN_CAPACIDADES, NAUREN_CAPACIDADE_POR_NOME, NAUREN_CONDICOES_NEGATIVAS_LIVRO, NAUREN_CORES_PINTURA, NAUREN_CORES_PINTURA_POR_FONTE, NAUREN_PASTA_ENTIDADES, NAUREN_PODEROSA_EFEITOS, NAUREN_PODEROSA_MAX_POR_EFEITO, NAUREN_PREVIA_CONTEXTO, NAUREN_QUERY_ACALANTO, NAUREN_QUERY_ACOVARDAR, NAUREN_QUERY_APLICAR_CONDICAO, NAUREN_QUERY_APLICAR_CONDICAO_ECO, NAUREN_QUERY_AUREUM, NAUREN_QUERY_BESTA_INICIAL, NAUREN_QUERY_CRIAR_ITEM, NAUREN_QUERY_DISPARAR_EVENTO, NAUREN_QUERY_DOMAR, NAUREN_QUERY_ENTIDADE, NAUREN_QUERY_ESCOLHA_DRUIDISMO, NAUREN_QUERY_ESCOLHA_PALAVRA, NAUREN_QUERY_ESTRELA, NAUREN_QUERY_ESTUDO, NAUREN_QUERY_ITEM_MESTRE, NAUREN_QUERY_MANIPULAR, NAUREN_QUERY_MOVER_TOKEN, NAUREN_QUERY_RECURSO, NAUREN_QUERY_RESISTIR_ROUBO, NAUREN_SEEDS_POR_NOME, NAUREN_TERMOS_DA_HORA, NAUREN_TIPO_ALCANCE_NOMES, NAUREN_TIPO_ALCANCE_SEMEADO, naurenAcaoEhCura, naurenAcaoEhGolpe, naurenAcaoSemCustoEstaminaMana, naurenAcovardarRecentes, naurenAjustarDirecaoParedesEntidade, naurenAjustarEfeitoDruidismo, naurenAjusteCriticoDoGrupo, naurenAjusteCustoManaMagia, naurenAliadosAte, naurenAnotarModsRecebidosNoCard, naurenApagandoItens, naurenApagarItensSeExistirem, naurenAplicarAcalanto, naurenAplicarDeltaUsosExtras, naurenAplicarPalavraComEscolha, naurenArmarAcalanto, naurenArmarPoderosa, naurenAtacanteRecente, naurenAtacouNoTurnoAtual, naurenAtaquesNoTurno, naurenAtualizarItemViaMestre, naurenAtualizarTreinoResistencia, naurenAureumValido, naurenAvisarEstrelaDoArcoIris, naurenBeneficiosDoEstado, naurenBonusAcimaContra, naurenBonusDanoPeriodico, naurenBotoesDeFormula, naurenBotoesDirecaoGrimorio, naurenCasaLivreAoLado, naurenCategoriaDaArma, naurenChaveTurnoAtual, naurenCondicaoDoSistemaPorNome, naurenCondicaoNegativa, naurenCondicaoPoderosa, naurenContribuicaoUsosExtras, naurenCriarItemNoAtor, naurenCronometroNoDialog, naurenDadosParedesEntidade, naurenDeslocarToken, naurenDirecaoForaDaParede, naurenEhCondicaoModelo, naurenEhGolpeEspiritual, naurenEhItem, naurenEntidadeInterativa, naurenEntidadesLimpando, naurenEscolherCorDaPintura, naurenEscolherEfeitoPoderosa, naurenEscolherPontoNoMapa, naurenEstresseDosAliados, naurenEstudoNoAlvo, naurenFaceD20, naurenFixarTipoAlcanceSemeado, naurenFotografarModsRecebidos, naurenFundirFormula, naurenGrimorio, naurenGuardarD20Roubado, naurenHandleQueryAcalanto, naurenHandleQueryAcovardar, naurenHandleQueryAplicarCondicaoEco, naurenHandleQueryAureum, naurenHandleQueryBestaInicial, naurenHandleQueryCriarItem, naurenHandleQueryDomar, naurenHandleQueryEntidade, naurenHandleQueryEscolhaDruidismo, naurenHandleQueryEscolhaPalavra, naurenHandleQueryEstrela, naurenHandleQueryEstudo, naurenHandleQueryItemMestre, naurenHandleQueryManipular, naurenHandleQueryMoverToken, naurenHandleQueryRecurso, naurenHandleQueryResistirRoubo, naurenLadinosTudoEMeu, naurenLigarPreviaFormula, naurenLimitePrioridadeAtingido, naurenLimparEntidade, naurenLimparEntidadeInterno, naurenLinhasEntidade, naurenMaisDadosPoderosa, naurenMascoteFoge, naurenModsAcima, naurenMontarSelecaoPrioridade, naurenMostrarNomesDosCamposUuid, naurenMoverGrimorio, naurenMoverTokenPara, naurenMoverTokenViaMestre, naurenMunicoesCompativeis, naurenNivelAntesDruidismo, naurenNomeBate, naurenNomeDeToken, naurenNomeDoRecurso, naurenNomeNormalizado, naurenNomeTokenEntidade, naurenOferecerAcovardar, naurenOferecerDestino, naurenOperarEntidade, naurenOperarEstudo, naurenOperarRecursoViaMestre, naurenOrdemListaMagias, naurenPersonagensEmCena, naurenPisoGuiarDestino, naurenPreparacaoUsadas, naurenPresosPorArmadilha, naurenPrioridadesGeradas, naurenRecalcularBonusDeAliados, naurenRegistrarAtaqueNoTurno, naurenReordenarGrimorio, naurenResolverSelf, naurenResolverSelfEmObjeto, naurenResumoDaAcao, naurenRetanguloParedes, naurenSincronizarCriativasDoLadino, naurenSincronizarGrimorio, naurenSomarEfeitoPermanente, naurenSouMestreAtivo, naurenTemEstado, naurenTempoReacao, naurenTextoHistoricoDestino, naurenTextoPreviaFormula, naurenTimeoutReacaoMs, naurenTipoAlcanceAdivinhado, naurenTipoAlcanceDaAcao, naurenTiposEstudoDoAtor, naurenTokenParecido, naurenTokensConhecidos, naurenTokensConhecidosCache, naurenTokensDeslocando, naurenUltimoAtacante, naurenUsarAcalanto, naurenUsosExtrasPara, naurenUsosMaxDaAcaoNoNivel, naurenUuidPorSeed, naurenValidarFormula, naurenValorEstudo, naurenVidaZerouEmCurso };
+export { NAUREN_ACALANTO_EFEITOS, NAUREN_CAMPOS_ACIMA_AUTOMATICOS, NAUREN_CAMPOS_ACIMA_GERAIS, NAUREN_CAMPOS_ANALISE_CRIATIVA, NAUREN_CAPACIDADES, NAUREN_CAPACIDADE_POR_NOME, NAUREN_CONDICOES_NEGATIVAS_LIVRO, NAUREN_CORES_PINTURA, NAUREN_CORES_PINTURA_POR_FONTE, NAUREN_PASTA_ENTIDADES, NAUREN_PODEROSA_EFEITOS, NAUREN_PODEROSA_MAX_POR_EFEITO, NAUREN_PREVIA_CONTEXTO, NAUREN_QUERY_ACALANTO, NAUREN_QUERY_ACOVARDAR, NAUREN_QUERY_APLICAR_CONDICAO, NAUREN_QUERY_APLICAR_CONDICAO_ECO, NAUREN_QUERY_AUREUM, NAUREN_QUERY_BESTA_INICIAL, NAUREN_QUERY_CRIAR_ITEM, NAUREN_QUERY_DISPARAR_EVENTO, NAUREN_QUERY_DOMAR, NAUREN_QUERY_ENTIDADE, NAUREN_QUERY_ESCOLHA_DRUIDISMO, NAUREN_QUERY_ESCOLHA_PALAVRA, NAUREN_QUERY_ESTRELA, NAUREN_QUERY_ESTUDO, NAUREN_QUERY_ITEM_MESTRE, NAUREN_QUERY_MANIPULAR, NAUREN_QUERY_MOVER_TOKEN, NAUREN_QUERY_RECURSO, NAUREN_QUERY_RESISTIR_ROUBO, NAUREN_SEEDS_POR_NOME, NAUREN_TERMOS_DA_HORA, NAUREN_TIPO_ALCANCE_SEMEADO, naurenAcaoEhCura, naurenAcaoEhGolpe, naurenAcaoSemCustoEstaminaMana, naurenAcovardarRecentes, naurenAjustarDirecaoParedesEntidade, naurenAjustarEfeitoDruidismo, naurenAjusteCriticoDoGrupo, naurenAjusteCustoManaMagia, naurenAliadosAte, naurenAnotarModsRecebidosNoCard, naurenApagandoItens, naurenApagarItensSeExistirem, naurenAplicarAcalanto, naurenAplicarDeltaUsosExtras, naurenAplicarPalavraComEscolha, naurenArmarAcalanto, naurenArmarPoderosa, naurenAtacanteRecente, naurenAtacouNoTurnoAtual, naurenAtaquesNoTurno, naurenAtualizarItemViaMestre, naurenAtualizarTreinoResistencia, naurenAureumValido, naurenAvisarEstrelaDoArcoIris, naurenBeneficiosDoEstado, naurenBonusAcimaContra, naurenBonusDanoPeriodico, naurenBotoesDeFormula, naurenBotoesDirecaoGrimorio, naurenCasaLivreAoLado, naurenCategoriaDaArma, naurenChaveTurnoAtual, naurenCondicaoDoSistemaPorNome, naurenCondicaoNegativa, naurenCondicaoPoderosa, naurenContribuicaoUsosExtras, naurenCriarItemNoAtor, naurenCronometroNoDialog, naurenDadosParedesEntidade, naurenDeslocarToken, naurenDirecaoForaDaParede, naurenEhCondicaoModelo, naurenEhGolpeEspiritual, naurenEhItem, naurenEntidadeInterativa, naurenEntidadesLimpando, naurenEscolherCorDaPintura, naurenEscolherEfeitoPoderosa, naurenEscolherPontoNoMapa, naurenEstresseDosAliados, naurenEstudoNoAlvo, naurenFaceD20, naurenFixarTipoAlcanceSemeado, naurenFotografarModsRecebidos, naurenGrimorio, naurenGuardarD20Roubado, naurenHandleQueryAcalanto, naurenHandleQueryAcovardar, naurenHandleQueryAplicarCondicaoEco, naurenHandleQueryAureum, naurenHandleQueryBestaInicial, naurenHandleQueryCriarItem, naurenHandleQueryDomar, naurenHandleQueryEntidade, naurenHandleQueryEscolhaDruidismo, naurenHandleQueryEscolhaPalavra, naurenHandleQueryEstrela, naurenHandleQueryEstudo, naurenHandleQueryItemMestre, naurenHandleQueryManipular, naurenHandleQueryMoverToken, naurenHandleQueryRecurso, naurenHandleQueryResistirRoubo, naurenLadinosTudoEMeu, naurenLigarPreviaFormula, naurenLimitePrioridadeAtingido, naurenLimparEntidade, naurenLimparEntidadeInterno, naurenLinhasEntidade, naurenMaisDadosPoderosa, naurenMascoteFoge, naurenModsAcima, naurenMontarSelecaoPrioridade, naurenMostrarNomesDosCamposUuid, naurenMoverGrimorio, naurenMoverTokenPara, naurenMoverTokenViaMestre, naurenMunicoesCompativeis, naurenNivelAntesDruidismo, naurenNomeBate, naurenNomeDeToken, naurenNomeDoRecurso, naurenNomeNormalizado, naurenNomeTokenEntidade, naurenOferecerAcovardar, naurenOferecerDestino, naurenOperarEntidade, naurenOperarEstudo, naurenOperarRecursoViaMestre, naurenOrdemListaMagias, naurenPersonagensEmCena, naurenPisoGuiarDestino, naurenPreparacaoUsadas, naurenPresosPorArmadilha, naurenPrioridadesGeradas, naurenRecalcularBonusDeAliados, naurenRegistrarAtaqueNoTurno, naurenReordenarGrimorio, naurenResolverSelf, naurenResolverSelfEmObjeto, naurenResumoDaAcao, naurenRetanguloParedes, naurenSincronizarCriativasDoLadino, naurenSincronizarGrimorio, naurenSomarEfeitoPermanente, naurenSouMestreAtivo, naurenTemEstado, naurenTempoReacao, naurenTextoHistoricoDestino, naurenTextoPreviaFormula, naurenTimeoutReacaoMs, naurenTipoAlcanceAdivinhado, naurenTipoAlcanceDaAcao, naurenTiposEstudoDoAtor, naurenTokenParecido, naurenTokensConhecidos, naurenTokensConhecidosCache, naurenTokensDeslocando, naurenUltimoAtacante, naurenUsarAcalanto, naurenUsosExtrasPara, naurenUsosMaxDaAcaoNoNivel, naurenUuidPorSeed, naurenValidarFormula, naurenValorEstudo, naurenVidaZerouEmCurso };

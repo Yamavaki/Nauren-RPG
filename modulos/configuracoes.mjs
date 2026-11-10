@@ -52,7 +52,6 @@ export function naurenConfiguracoesRecolher() {
     menus.set(curto, m); game.settings.menus.delete(id);
   }
 }
-export function naurenConfiguracoesRecolhidas() { return [...recolhidas.keys()]; }
 
 /** Seções com as configurações que existem de fato (e "Outras" para as sem assunto). */
 function secoes() {

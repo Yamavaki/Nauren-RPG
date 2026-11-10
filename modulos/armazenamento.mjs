@@ -27,7 +27,7 @@ const ICONES = {
   bau: { rotulo: "Baú", img: "icons/containers/chest/chest-reinforced-steel-brown.webp", fa: "fa-box-archive" },
   saco: { rotulo: "Saco", img: "icons/containers/bags/sack-simple-leather-brown.webp", fa: "fa-sack" },
   balcao: { rotulo: "Balcão / loja", img: "icons/environment/settlement/market-stall.webp", fa: "fa-store" },
-  cofre: { rotulo: "Cofre", img: "icons/containers/chest/chest-simple-box-steel-grey.webp", fa: "fa-vault" },
+  cofre: { rotulo: "Cofre", img: "icons/containers/chest/chest-simple-box-steel-brown.webp", fa: "fa-vault" },
   forja: { rotulo: "Forja", img: "icons/tools/smithing/anvil.webp", fa: "fa-hammer" },
   barril: { rotulo: "Barril", img: "icons/containers/barrels/barrel-open-brown-red.webp", fa: "fa-whiskey-glass" }
 };
@@ -478,7 +478,6 @@ async function desfazer(armazem, indice) {
 }
 
 /* ============================ JANELAS: peças comuns ============================ */
-const ApplicationV2 = () => foundry.applications.api.ApplicationV2;
 function trocarHtml(alvo, html) {
   // Mantém a rolagem das listas ao redesenhar.
   const rol = [...alvo.querySelectorAll("[data-rola]")].map(e => [e.dataset.rola, e.scrollTop]);

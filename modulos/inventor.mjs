@@ -269,7 +269,7 @@ async function naurenSemearInventorSubclasses(packs) {
   const bugigangas = await hab("habilidade-inventor-mr-bugigangas", "Mr. Bugigangas", "icons/containers/chest/chest-reinforced-steel-brown.webp", {
     acoes: [{ ...NP, nome: "Tirar requisito da maleta", usaEscolhaDeRecurso: true, escolhaDeRecursoTipo: "recursoCustom:pdi", escolhaDeRecursoMinimo: 1, custosRecursoProprio: pdi("@quantidadeEscolhida"), lembreteNoCard: "cada PdI paga 2 Florins de um item exigido por habilidade de Inventor" }],
     descricao: D("Passiva. Sua maleta cria itens de requisito: para cada 2 Florins de custo de um item exigido por uma habilidade de Inventor, gaste 1 PdI para obtê-lo.", "a Ação pergunta quantos PdI gastar e registra no card (1 PdI = 2 Florins).", "o item de requisito em si.") });
-  const cartola = await hab("habilidade-inventor-truque-da-cartola", "Truque da Cartola", "icons/equipment/head/hat-tricorn-black.webp", {
+  const cartola = await hab("habilidade-inventor-truque-da-cartola", "Truque da Cartola", "icons/equipment/head/hat-tophat.webp", {
     descricao: D("Passiva. Os custos em Florins dos requisitos dos seus itens são reduzidos pela metade.", "aparece na ficha como lembrete.", "a economia em Florins.") });
   const relogio = await hab("habilidade-inventor-mecanismo-do-relogio", "Mecanismo do Relógio", "icons/magic/time/clock-spinning-gold-pink.webp", { prioridadeIndicador: "NP",
     acoes: [{ ...NP, nome: "Mecanismo do Relógio", motionUsuario: "rebobinar", usaUsos: true, usosMax: 1, usosAtual: 1, usosReset: "cena", custosRecursoProprio: pdi(5),
@@ -345,9 +345,9 @@ async function naurenSemearInventorSubclasses(packs) {
   const uPancada = (await hab("habilidade-obra-prima-pancada", "Pancada", "icons/skills/melee/unarmed-punch-fist-yellow-red.webp", { prioridadeIndicador: "PI",
     acoes: [{ nome: "Pancada", custoEstamina: 2, alcance: "1m", ehAtaque: true, atributoAtaque: "poderAtaque", modoAlvo: "selecionado", modoAlvoTravado: true, prioridadeIndicador: "PI", danos: [{ formula: "1d6+@poderAtaque", aplicarNoAlvo: true }] }],
     descricao: D("Ataque básico (P/I). Alcance 1 m, custo 2 PdE. Ataque (1d20 + PdA) que causa 1d6 + PdA de dano num acerto (substituído pelo dano da arma, se estiver empunhando uma).", "ataque e dano automáticos.", "com uma arma, use o ataque da arma no lugar.") })).uuid;
-  const obraPrima = await hab("habilidade-inventor-obra-prima", "Obra Prima", "icons/creatures/magical/construct-golem-flesh-pink.webp", {
+  const obraPrima = await hab("habilidade-inventor-obra-prima", "Obra Prima", "icons/creatures/magical/construct-golem-robot-blue.webp", {
     obraPrima: { recurso: "recursoCustom:pdi", sigla: "PdI", titulo: "Obra Prima", subtitulo: "Cobaia Nº 1", nomePadrao: "Obra Prima", atributoBase: 1, categoria: 2, defesa: 14, movimento: 5,
-      img: "icons/creatures/magical/construct-golem-flesh-pink.webp", itensUuids: [uObediencia, uCobaiaOP, uPancada],
+      img: "icons/creatures/magical/construct-golem-robot-blue.webp", itensUuids: [uObediencia, uCobaiaOP, uPancada],
       passivas: [{ nome: "Obediência Cega", texto: "sem turno na iniciativa; só age quando recebe Prioridade." }, { nome: "Cobaia", texto: "todo Frasco nela dá 1 benefício extra sorteado." }] },
     acoes: [{ ...NP, nome: "Construir a Obra Prima", abrirConstrucao: "obraPrima" }],
     descricao: D("Passiva. Você pode construir uma Obra Prima durante o Exercício Teórico; só pode existir uma por vez. Um autômato ou golem de pigmento semelhante a carne: gaste Pontos de Invenção para aumentar os atributos dela (menos Inteligência). Categoria 2, criada no seu nível; usa todos os tipos de armas e armaduras. Ficha: Vida 1 (atributos 1), Defesa 14, Movimento 5 m, Estresse 2.",
@@ -1100,7 +1100,7 @@ class NaurenObraPrima extends foundry.applications.api.HandlebarsApplicationMixi
     const dados = {
       tokenUuid: tok.document.uuid, inventorUuid: this.actor.uuid, anteriorUuid: anterior?.uuid ?? "",
       nome: (this.nome || "").trim() || `${cfg.nomePadrao || "Obra Prima"} de ${this.actor.name}`,
-      img: cfg.img || "icons/creatures/magical/construct-golem-flesh-pink.webp",
+      img: cfg.img || "icons/creatures/magical/construct-golem-robot-blue.webp",
       atributos: v, nivel: this.actor.system?.nivel ?? 1, defesa: Number(cfg.defesa ?? 14), movimento: Number(cfg.movimento ?? 5), categoria: Number(cfg.categoria ?? 2),
       itens: cfg.itensUuids ?? [], gasto, sigla: cfg.sigla || "PdI", fonte: this.habilidade?.name ?? "Obra Prima"
     };

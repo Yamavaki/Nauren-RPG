@@ -26,3 +26,19 @@
 | Arquivo | O que é |
 |---|---|
 | `catalogo-torre-infinita.json` | Catálogo dos itens da Torre Infinita (chaves, tiers, pigmentos). |
+
+## Exemplos para importar
+| Arquivo | O que é |
+|---|---|
+| `exemplos/lote-exemplo.json` | Exemplo de lote para o botão **Importar em massa** (atores e itens, com pastas). |
+| `exemplos/escritos-exemplo.json` | Exemplo de Escritos (nota, carta, livro) para importar pela aba Itens. |
+
+## Notas de versão
+| Arquivo | O que é |
+|---|---|
+| `organizador-0.109.md` | Organizador das listas (selecionar vários, mover, Lixeira, dono na lista). |
+| `rebalanceamento-0.108.md` | Vida e dano dos inimigos (0.108). |
+| `andares-0.108.2.md` | Suporte a cenas com andares: áreas, alvos, distâncias e efeitos. |
+| `andares-molduras-0.108.1.md` | Molduras de token em cenas com andares. |
+| `importar-massa-0.107.md` | Importar em massa (atores, itens e Escritos em JSON). |
+| `correcoes-0.107.2.md` | Correções da 0.107.2. |

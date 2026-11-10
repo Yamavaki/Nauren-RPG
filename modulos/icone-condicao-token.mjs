@@ -1,10 +1,10 @@
 /* Nauren RPG — Ícone da Condição no token. Separado do nauren.mjs na 0.94.31. */
-import { NAUREN_CM_PECS, NAUREN_QUERY_APLICAR_CONDICAO, NAUREN_QUERY_DISPARAR_EVENTO, NAUREN_QUERY_ITEM_MESTRE, NaurenActorData, NaurenConcessaoHelper, NaurenCondicaoData, NaurenCriadorMonstro, NaurenEfeitoData, NaurenHabilidadeData, NaurenPeculiaridadeData, NaurenProgressaoHelper, NaurenSubclasseData, calcularVidaBase, campoAcao, campoGatilho, campoRecursoDeclarado, naurenAtaqueBasicoNaReacao, naurenAvaliarExpressaoSimples, naurenBotoesDirecaoGrimorio, naurenCondicaoNegativa, naurenContarAliadosProximos, naurenDescricaoParaChat, naurenDeslocarToken, naurenDisposicaoDoAtor, naurenEhCondicaoModelo, naurenEhItem, naurenEscolherCorDaPintura, naurenEscolherPontoNoMapa, naurenFormulaComTokensDoAtor, naurenFormulaParaTexto, naurenGrimorio, naurenInterpretarModificador, naurenInterpretarModificadorComDado, naurenItemCorrespondeAoAlvo, naurenMedirDistanciaBordas, naurenModsAcima, naurenMontarDescricao, naurenMoverGrimorio, naurenMoverTokenPara, naurenNomeDeToken, naurenNomeDoRecurso, naurenOperarRecursoViaMestre, naurenOperarRegistroPrioridade, naurenPostarCard, naurenRecarregarUsos, naurenRecursoDoAtor, naurenResolverPorNivel, naurenResolverPorRank, naurenResolverSelfEmObjeto, naurenResolverTokenFormula, naurenRollToBreakdownText, naurenRotuloToken, naurenTemEstado, naurenTextoRolagem, naurenUsosExtrasPara, naurenUsuarioResponsavel, naurenUuidPorSeed } from "../nauren.mjs";
+import { NAUREN_CM_PECS, NAUREN_QUERY_APLICAR_CONDICAO, NAUREN_QUERY_DISPARAR_EVENTO, NAUREN_QUERY_ITEM_MESTRE, NaurenConcessaoHelper, NaurenProgressaoHelper, calcularVidaBase, naurenAtaqueBasicoNaReacao, naurenAvaliarExpressaoSimples, naurenBotoesDirecaoGrimorio, naurenCondicaoNegativa, naurenContarAliadosProximos, naurenDescricaoParaChat, naurenDeslocarToken, naurenDisposicaoDoAtor, naurenEhCondicaoModelo, naurenEhItem, naurenEscolherCorDaPintura, naurenEscolherPontoNoMapa, naurenFormulaComTokensDoAtor, naurenFormulaParaTexto, naurenGrimorio, naurenInterpretarModificador, naurenInterpretarModificadorComDado, naurenItemCorrespondeAoAlvo, naurenMedirDistanciaBordas, naurenModsAcima, naurenMontarDescricao, naurenMoverGrimorio, naurenMoverTokenPara, naurenNomeDeToken, naurenNomeDoRecurso, naurenOperarRecursoViaMestre, naurenOperarRegistroPrioridade, naurenPostarCard, naurenRecarregarUsos, naurenRecursoDoAtor, naurenResolverPorNivel, naurenResolverPorRank, naurenResolverSelfEmObjeto, naurenResolverTokenFormula, naurenRollToBreakdownText, naurenRotuloToken, naurenTemEstado, naurenTextoRolagem, naurenUsosExtrasPara, naurenUsuarioResponsavel, naurenUuidPorSeed } from "../nauren.mjs";
 import { naurenScriptsNoEvento } from "./itens-scripts.mjs";
-import { naurenAndarParaRegiao, naurenAndarParaToken, naurenColideParede, naurenMesmoAndar, naurenNoAndarDaRegiao, naurenTokensDoAndar } from "./andares.mjs";
-import { NAUREN_GATILHO_EVENTO_OPCOES, RECURSOS_ALVO, naurenChaveEscopoRelogio, naurenNotificarGanhoPerda } from "./ficha-item.mjs";
+import { naurenColideParede, naurenMesmoAndar, naurenNoAndarDaRegiao, naurenTokensDoAndar } from "./andares.mjs";
+import { NAUREN_GATILHO_EVENTO_OPCOES, naurenChaveEscopoRelogio, naurenNotificarGanhoPerda } from "./ficha-item.mjs";
 import { NAUREN_HAB_MONSTROS_VERSAO } from "../data/habilidades-monstros.mjs";
-import { NAUREN_MASCOTES_INICIAIS, NAUREN_PACKS_DEFINICAO, NAUREN_VERSAO_SEED_MASCOTES, naurenFundoPersonalizado, naurenGarantirAtorNoPack, naurenGatilhoDanoDeArea, naurenReconciliarMascote, naurenUuidsMascotes } from "./compendios.mjs";
+import { NAUREN_MASCOTES_INICIAIS, NAUREN_PACKS_DEFINICAO, NAUREN_VERSAO_SEED_MASCOTES, naurenFundoPersonalizado, naurenGatilhoDanoDeArea, naurenReconciliarMascote, naurenUuidsMascotes } from "./compendios.mjs";
 import { NaurenAlvoHelper, NaurenRegionHelper } from "./ficha-ator.mjs";
 import { naurenAnimarPassiva, naurenMotionEmTodos } from "./animacoes.mjs";
 import { naurenBordaConfig, naurenBordaDadosPreparados } from "./borda-token.mjs";
@@ -514,7 +514,6 @@ async function naurenMigrarMagoAntigoV1() {
     if (trancadoM) await packM.configure({ locked: true });
   }
   await game.settings.set("nauren", "migracaoMagoAntigoV2", true);
-  await game.settings.set("nauren", "migracaoMagoAntigoV1", true);
 }
 
 /** Caçador: a Marca passou a guardar o benefício; os 3 Efeitos antigos saem das fichas. */
