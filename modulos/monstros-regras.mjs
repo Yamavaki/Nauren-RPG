@@ -6,6 +6,7 @@ import { NaurenAlvoHelper, NaurenRegionHelper } from "./ficha-ator.mjs";
 import { naurenAplicarEfeitoTemplatePersistente, naurenAtualizarCondicaoPresenca, naurenCelulasNaArea, naurenColetarGatilhosTemplatePersistenteExternos, naurenPontoDentroDaRegiao, naurenTokenElegivelPorDisposicao } from "./icone-condicao-token.mjs";
 import { naurenOperarRegistroPrioridade } from "./prioridades.mjs";
 import { naurenAjustarTamanhoAura } from "./animacoes.mjs";
+import { naurenLog } from "./depuracao.mjs";
 
 
 // 0.94.31: Borda do token (Dynamic Token Ring) foi para modulos/borda-token.mjs.
@@ -629,6 +630,27 @@ Hooks.on("refreshToken", (tokenPlaceable) => {
  * cascata que apagava a Região dos DOIS tokens em vez de só separar os
  * dados - pior que o problema original. Revertido.
  */
+/**
+ * 0.109.22: Emanações criadas antes da versão nativa (Região solta, arrastada à mão) viram Emanação presa ao token
+ * quando a cena abre. Só o Mestre principal faz isso; só mexe em Região do Nauren cujo item ainda está ativo.
+ */
+Hooks.on("canvasReady", async () => {
+  if (game.users.activeGM !== game.user || typeof foundry.documents?.RegionDocument?.createTokenEmanation !== "function") return;
+  const cena = canvas.scene; if (!cena) return;
+  for (const regiao of [...cena.regions]) {
+    const origem = regiao.flags?.nauren?.emanacaoOrigem;
+    if (!origem || regiao.attachment?.token || regiao.flags?.nauren?.templatePersistente) continue;
+    const tokenDoc = cena.tokens.get(origem.tokenId);
+    const item = tokenDoc?.actor?.items.find(i => i.uuid === origem.itemUuid) ?? fromUuidSync(origem.itemUuid);
+    if (!tokenDoc || !item?.system?.ativo || !item.system.usaEmanacao) continue;
+    try {
+      await regiao.delete();
+      await NaurenRegionHelper.criarRegiaoEmanacao(item);
+      naurenLog(`Nauren RPG | Emanação de "${item.name}" (${tokenDoc.name}) agora presa ao token.`);
+    } catch (err) { console.warn(`Nauren RPG | Falha ao converter a Emanação de "${item.name}".`, err); }
+  }
+});
+
 Hooks.on("createToken", (tokenDoc, options, userId) => {
   if (userId !== game.user.id) return;
   const actor = tokenDoc.actor;

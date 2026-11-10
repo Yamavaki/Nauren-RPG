@@ -9,6 +9,7 @@
  * Texturas: SVG do modelo → imagem → canvas → PIXI.BaseTexture, uma por (modelo + cores + tamanho),
  * compartilhada por todos os tokens iguais. Efeitos: um ticker só, que só anima o que está visível. */
 import { naurenPisoCobre } from "./andares.mjs";
+import { naurenRegistrarComandoDepuracao } from "./depuracao.mjs";
 import { naurenMolduraSvg, naurenMolduraSvgAtras, naurenMolduraTemAtras, naurenMolduraMascaraPath, naurenMolduraRaioDoPath, naurenMolduraNormalizar, naurenMolduraEstado, naurenMolduraModelo, naurenMolduraMisturar, naurenMolduraRecorteGira } from "./molduras-modelos.mjs";
 import { naurenBordaPintarTraco, naurenBordaConfig, naurenBordaCarregarImagem, naurenBordaTamanhoTextura, naurenBordaGerarFrente, naurenBordaTemFrente } from "./borda-token.mjs"; // (import circular: só usado em tempo de execução)
 
@@ -557,6 +558,26 @@ export async function naurenMolduraAnexar(token) {
 }
 export function naurenMolduraSincronizar(token) { const c = token && camadas.get(token); if (!c) return; if (c.mascaraGiro && token.mesh && c.mascaraGiro.dono !== token.mesh) c.atualizarMascaraGiro(); c.sincronizar(); }
 export function naurenMolduraRemover(token) { (token && camadas.get(token))?.destruir(); }
+/**
+ * 0.109.22: moldura que ficou na tela sem o token (o token trocou de andar e o Foundry desenhou outro no lugar):
+ * apaga. Também apaga malhas de moldura soltas no canvas que não pertencem a nenhuma moldura viva. Devolve quantas.
+ */
+export function naurenMolduraLimparOrfas() {
+  let n = 0;
+  try {
+    for (const [tok, c] of [...camadas]) {
+      const vivo = tok && !tok.destroyed && canvas?.tokens?.get?.(tok.id) === tok;
+      if (!vivo) { c.destruir(); n++; }
+    }
+    const vivas = new Set();
+    for (const c of camadas.values()) for (const m of [c.mesh, c.atras, c.fundo, c.frente]) if (m) vivas.add(m);
+    for (const m of [...(canvas?.primary?.children ?? [])]) {
+      if (!/\.moldura(\.|$)/.test(m?.name ?? "") || vivas.has(m)) continue;
+      try { m.parent?.removeChild(m); m.destroy({ children: true }); n++; } catch (err) { /* já foi */ }
+    }
+  } catch (err) { console.warn("Nauren RPG | Moldura do token: limpeza", err); }
+  return n;
+}
 export function naurenMolduraPiscar(token, cor) { const c = token && camadas.get(token); if (!c?.viva) return false; c.piscar(cor); return true; }
 export function naurenMolduraInvalidar(token) { (token && camadas.get(token))?.invalidarSituacao(); }
 export function naurenMolduraTodas() { return [...camadas.values()]; }
@@ -594,11 +615,27 @@ export function naurenMolduraTick() {
   }
 }
 export function naurenMolduraLimparTudo() { for (const c of [...camadas.values()]) c.destruirMalhas(); camadas.clear(); for (const t of texturasPixi.values()) { try { t.destroy(true); } catch (err) { /* ok */ } } texturasPixi.clear(); tickerLigado = false; }
+/** 0.109.22: diagnóstico das molduras (F12): naurenDiagnosticoMolduras(). Só com o Modo de depuração ligado. */
+naurenRegistrarComandoDepuracao("naurenDiagnosticoMolduras", function () {
+  const linhas = [...camadas].map(([tok, c]) => ({
+    token: tok?.name, id: tok?.id, tokenDestruido: !!tok?.destroyed, tokenNoCanvas: canvas?.tokens?.get?.(tok?.id) === tok,
+    andar: tok?.document?.level?.id ?? tok?.document?.level ?? "", x: Math.round(c.mesh?.x ?? 0), y: Math.round(c.mesh?.y ?? 0)
+  }));
+  console.log(`Molduras vivas (${linhas.length}):`); console.table(linhas);
+  const soltas = (canvas?.primary?.children ?? []).filter(m => /\.moldura(\.|$)/.test(m?.name ?? "")).map(m => ({ nome: m.name, x: Math.round(m.x), y: Math.round(m.y), visivel: !!m.visible }));
+  console.log(`Malhas de moldura no canvas (${soltas.length}):`); console.table(soltas);
+  console.log("Órfãs apagadas agora:", naurenMolduraLimparOrfas());
+});
 /** Ganchos do canvas. Chamado uma vez no init. */
 export function naurenMoldurasHooks() {
   Hooks.on("drawToken", token => { naurenMolduraAnexar(token); });
   Hooks.on("refreshToken", token => { naurenMolduraSincronizar(token); });
   Hooks.on("destroyToken", token => { naurenMolduraRemover(token); });
+  Hooks.on("deleteToken", () => setTimeout(naurenMolduraLimparOrfas, 0));
+  Hooks.on("updateToken", (doc, changes) => {
+    if (!("level" in (changes ?? {}))) return;
+    for (const ms of [50, 600]) setTimeout(naurenMolduraLimparOrfas, ms); // depois de o Foundry redesenhar o token
+  });
   Hooks.on("updateToken", (doc, changes) => {
     const tok = doc.object; if (!tok) return;
     const mudouBorda = changes.flags?.nauren && "borda" in changes.flags.nauren;
@@ -611,7 +648,7 @@ export function naurenMoldurasHooks() {
   Hooks.on("updateItem", it => { if (it.parent?.documentName === "Actor" && it.type === "condicao") for (const t of it.parent.getActiveTokens?.(true, false) ?? []) naurenMolduraInvalidar(t); });
   for (const h of ["updateCombat", "combatTurn", "combatRound", "deleteCombat", "combatStart"]) Hooks.on(h, () => { for (const c of camadas.values()) c.invalidarSituacao(); });
   Hooks.on("canvasTearDown", () => naurenMolduraLimparTudo());
-  Hooks.on("canvasReady", () => { ligarTicker(); });
+  Hooks.on("canvasReady", () => { ligarTicker(); setTimeout(naurenMolduraLimparOrfas, 0); });
 }
 export function naurenMoldurasInit() {
   game.settings.register("nauren", "moldurasAnimadas", { name: "Molduras dos tokens: animações", hint: "Liga os efeitos animados das molduras dos tokens (girar, pulso, brilho…). Desligado, as molduras ficam paradas. Vale só para você.", scope: "client", config: true, type: Boolean, default: true, onChange: () => { for (const c of camadas.values()) c.pedirAtualizacao = true; } });

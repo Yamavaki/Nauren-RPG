@@ -12995,6 +12995,25 @@ class NaurenRegionHelper {
       };
       naurenAndarParaRegiao(opcoes, tokenDoc); // andares (V14): no andar do dono
 
+      // 0.109.22: Emanação nativa do V14 (RegionDocument.createTokenEmanation): a Região nasce PRESA ao token e o
+      // próprio Foundry a leva junto (posição e tamanho), sem o Nauren arrastar a área à mão a cada quadro - era
+      // esse arrasto que deixava área fantasma ao trocar de andar. O raio vai em unidades da cena, contado da borda.
+      const criarNativa = foundry.documents?.RegionDocument?.createTokenEmanation;
+      if (typeof criarNativa === "function") {
+        const raioUnidades = parseFloat(raioOverride ?? item.system.emanacaoRaio) || 3;
+        const dadosNativa = { ...opcoes, flags: { nauren: { emanacaoOrigem: { itemUuid: item.uuid, tokenId: tokenDoc.id } } } };
+        delete dadosNativa.shapes;
+        try {
+          const criada = await criarNativa.call(foundry.documents.RegionDocument, tokenDoc, raioUnidades, dadosNativa);
+          if (criada) {
+            naurenLog(`Nauren RPG | Área visual da Emanação de "${item.name}" criada (presa ao token "${tokenDoc.name}", raio ${raioUnidades}).`);
+            continue;
+          }
+        } catch (err) {
+          console.warn(`Nauren RPG | Emanação nativa do Foundry recusada para "${item.name}"; usando a área solta.`, err);
+        }
+      }
+
       let regiao;
       try {
         [regiao] = await cena.createEmbeddedDocuments("Region", [opcoes]);
@@ -13057,6 +13076,7 @@ class NaurenRegionHelper {
   static sincronizarVisualComToken(item, tokenDoc, tokenPlaceable) {
     const [regiao] = this.buscarRegioesDoItem(item.uuid, tokenDoc.id);
     if (!regiao?.object?.refresh) return;
+    if (regiao.attachment?.token) return; // 0.109.22: presa ao token (Emanação nativa): o Foundry move sozinho
     // 0.109.21: token no meio da troca de andar (a área ainda está no andar antigo): não mexe no dado local,
     // senão a cópia da tela diverge do servidor e sobra um desenho fantasma até o F5.
     const andarToken = tokenDoc.level?.id ?? tokenDoc.level;
@@ -13093,6 +13113,7 @@ class NaurenRegionHelper {
       return;
     }
     if (!novoCentro) return;
+    if (regiao.attachment?.token) return; // 0.109.22: presa ao token (Emanação nativa): o Foundry move sozinho
     const raioAtual = regiao.shapes?.[0]?.radius ?? this.metrosParaPixels(parseFloat(item.system.emanacaoRaio) || 3);
     const novoShape = { type: "circle", x: novoCentro.x, y: novoCentro.y, radius: raioAtual };
     try {
