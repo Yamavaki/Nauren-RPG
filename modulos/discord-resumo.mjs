@@ -9,6 +9,7 @@ import { naurenTravaPrioridade } from "./monstros-regras.mjs";
 import { naurenBandoChave, naurenBandoPrioridadeBloqueada } from "./bando.mjs";
 import { naurenMovimentoSaldo } from "./movimento.mjs";
 import { NAUREN_TIPOS_ENTREGAVEIS, naurenOferecerItem } from "./entrega-itens.mjs";
+import { naurenLog } from "./depuracao.mjs";
 
 
 /* ============================================================
@@ -149,7 +150,7 @@ async function naurenConcederPrioridadePeloCard(message, uuids = []) {
     const mesmoLado = !!origemAtor && tokenDoc.disposition === naurenDisposicaoDoAtor(origemAtor);
     if (mesmoLado && prio.contexto?.indicador !== "PI" && regraLimite !== "ignorar" && !poucosNoCombate && naurenPrioridadesNoTurno(origemUuid, tokenDoc.actor.uuid) >= 2) {
       if (regraLimite === "aplicar") {
-        console.log(`Nauren RPG | Limite de Prioridade: ${nome} já recebeu 2 de ${origemAtor?.name} neste turno (rodada ${game.combat?.round}, turno ${game.combat?.turn}).`, naurenRegistroPrioridades().filter(e => e.deUuid === origemUuid && e.paraUuid === tokenDoc.actor.uuid));
+        naurenLog(`Nauren RPG | Limite de Prioridade: ${nome} já recebeu 2 de ${origemAtor?.name} neste turno (rodada ${game.combat?.round}, turno ${game.combat?.turn}).`, naurenRegistroPrioridades().filter(e => e.deUuid === origemUuid && e.paraUuid === tokenDoc.actor.uuid));
         avisos.push(`${nome} já recebeu 2 Prioridades suas neste turno`); continue;
       }
       avisos.push(`${nome} passou do limite de 2 neste turno`);

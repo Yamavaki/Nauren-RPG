@@ -304,7 +304,6 @@ Hooks.on("updateCombat", (combat, changed) => {
   const atorPrev = prev?.combatantId ? (combat.combatants.get(prev.combatantId)?.actor ?? null) : null;
   const atorDoTurnoAnterior = combat._naurenAtorDoTurnoAnterior ?? visto?.ator ?? atorPrev ?? null;
   const rodadaAnterior = combat._naurenRodadaAnterior ?? visto?.round ?? (Number.isFinite(prev?.round) ? prev.round : (combat.round ?? 0));
-  const turnoAnterior = combat._naurenTurnoAnterior ?? visto?.turn ?? (Number.isFinite(prev?.turn) ? prev.turn : 0);
   naurenRelogioUltimoVisto.set(combat.id, { round: combat.round ?? 0, turn: combat.turn ?? 0, ator: atorDoTurno });
   delete combat._naurenAtorDoTurnoAnterior;
   delete combat._naurenRodadaAnterior;

@@ -14,7 +14,7 @@ Os números (atributos, Vida, Defesa, dano) seguem **sempre** a Parte 1 deste ar
 
 Planilha modelo: https://docs.google.com/spreadsheets/d/1rAehdLS7vgaajeYAZzBQ7uD1Au-uYVUqia60AiLfy0s/edit?usp=sharing
 
-Modelo em Excel (Windows): `docs/modelo-ficha-codex.xlsx`, com as abas Modelo, Exemplo Capélia, Exemplo Saiko Fugin, Como usar e Instruções para IA, já com todos os cuidados do Excel aplicados. É o arquivo para mandar a outros mestres.
+Modelo em Excel (Windows): `docs/criacao-ia/modelo-ficha-codex.xlsx`, com as abas Modelo, Exemplo Capélia, Exemplo Saiko Fugin, Como usar e Instruções para IA, já com todos os cuidados do Excel aplicados. É o arquivo para mandar a outros mestres.
 
 ---
 

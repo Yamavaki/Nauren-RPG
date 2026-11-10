@@ -1,0 +1,56 @@
+# Publica o sistema: a cada push na main com uma versão nova no system.json,
+# monta o nauren.zip (tools/empacotar.sh) e cria a Release "v<versão>" com o zip anexado.
+# O system.json aponta o "download" para essa Release, então o Foundry baixa dali.
+name: Release
+
+on:
+  push:
+    branches: [main]
+    paths: [system.json]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ler a versão
+        id: versao
+        run: echo "v=$(jq -r .version system.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Ver se a Release já existe
+        id: existe
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "v${{ steps.versao.outputs.v }}" > /dev/null 2>&1; then echo "sim=1" >> "$GITHUB_OUTPUT"; else echo "sim=0" >> "$GITHUB_OUTPUT"; fi
+
+      - name: Conferir o link de download
+        if: steps.existe.outputs.sim == '0'
+        run: |
+          esperado="https://github.com/${{ github.repository }}/releases/download/v${{ steps.versao.outputs.v }}/nauren.zip"
+          atual=$(jq -r .download system.json)
+          [ "$atual" = "$esperado" ] || { echo "O download do system.json é $atual, mas devia ser $esperado"; exit 1; }
+
+      - name: Montar o zip
+        if: steps.existe.outputs.sim == '0'
+        run: bash tools/empacotar.sh
+
+      - name: Criar a Release
+        if: steps.existe.outputs.sim == '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          v="${{ steps.versao.outputs.v }}"
+          gh release create "v$v" dist/nauren.zip system.json \
+            --title "Nauren RPG $v" \
+            --notes "Instale pelo manifesto: https://raw.githubusercontent.com/${{ github.repository }}/main/system.json" \
+            --target "$GITHUB_SHA"

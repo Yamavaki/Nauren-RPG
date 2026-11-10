@@ -97,9 +97,7 @@ async function naurenDesenharTracoAquarela(tokenDoc, origem, destino, caminho = 
 
 async function naurenDepoisDoMovimento(tokenDoc, origem, destino, caminho = null) {
   const actor = tokenDoc.actor; if (!actor || !canvas?.scene) return;
-  const g = canvas.grid.size, dMetros = canvas.scene.grid.distance || 1;
-  const centro = p => ({ x: p.x + tokenDoc.width * g / 2, y: p.y + tokenDoc.height * g / 2 });
-  const co = centro(origem), cd = centro(destino);
+  const dMetros = canvas.scene.grid.distance || 1;
   // Traço da Aquarela: pinta os QUADRADOS do grid por onde o token passou
   // (dura a cena). Região visível para todos, alinhada ao grid.
   const traco = actor.items.find(i => i.type === "habilidade" && naurenEhItem(i, "Traço da Aquarela") && i.system.ativo !== false);

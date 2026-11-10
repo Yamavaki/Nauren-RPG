@@ -17,6 +17,7 @@
 import { naurenBordaAplicar, naurenBordaConfig, naurenBordaPreviaDataUrl } from "./borda-token.mjs";
 import { naurenMolduraCamadaDe } from "./molduras-token.mjs";
 import { naurenProntaCfgPara, naurenProntaPorId, naurenProntaDados } from "./molduras-prontas.mjs";
+import { naurenLog } from "./depuracao.mjs";
 
 const SIS = "nauren";
 export const NAUREN_APARENCIA_TIPOS = new Set(["condicao", "efeito", "habilidade", "peculiaridade", "arma", "armadura"]);
@@ -396,7 +397,7 @@ export async function naurenAparenciaMigrar() {
     const ap = { ...NAUREN_APARENCIA_PADRAO(), ativa: true, imagem: item.system.transformacaoImagem || "", tamanho: item.system.transformacaoTamanho || "", borda: { modo: "manter", prontaId: "", dados: null } };
     try { await item.update({ "flags.nauren.aparencia": ap, "system.usaTransformacao": false }); n++; } catch (err) { /* sem permissão */ }
   }
-  if (n) console.log(`Nauren RPG | ${n} Transformação(ões) de Token viraram Aparência.`);
+  if (n) naurenLog(`Nauren RPG | ${n} Transformação(ões) de Token viraram Aparência.`);
 }
 
 /* ------------------------------ painel na ficha do item ------------------------------ */

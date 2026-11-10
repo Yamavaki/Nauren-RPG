@@ -2353,8 +2353,8 @@ A busca é por **parte do nome**, sem diferenciar maiúsculas: uma entrada "Mord
 5. **Áreas persistentes** (`usaTemplatePersistente`) também animam: o sistema não entrega a Region ao módulo (para ela não ser apagada) e toca ele mesmo a animação de área do nome, no centro e no tamanho da área.
 6. **Passivas** (habilidades sem Ação) animam uma vez quando o **gatilho** delas dá efeito ou quando são **ligadas pelo raio**; também precisam de nome específico.
 7. **Condições:** reaproveite as do sistema (seção 4.6), que já têm animação (contínua para Queimando, Congelando, Envenenado, Sangramento, Cego, Preso, Atordoado e Medo; aviso único para o resto, marcas incluídas). Condição nova com uma palavra da tabela no nome (ex.: "Queimadura Negra", "Preso nas Raízes") ganha a animação certa quando o menu for regerado.
-8. **Criatura nova com nomes novos** já anima pela reserva do tipo de Ação. Para ganhar animação própria pelo nome, o Mestre exporta a lista de itens e regera o menu (ver `docs/animacoes.md`).
-9. **JSON de animações (opcional):** se o usuário pedir, gere também o arquivo de animações da criatura seguindo `docs/guia-animacoes-ia.md` (importado no Automated Animations com Merge). Sem pedido, não gere.
+8. **Criatura nova com nomes novos** já anima pela reserva do tipo de Ação. Para ganhar animação própria pelo nome, o Mestre exporta a lista de itens e regera o menu (ver `docs/animacoes/animacoes.md`).
+9. **JSON de animações (opcional):** se o usuário pedir, gere também o arquivo de animações da criatura seguindo `docs/animacoes-ia/guia-animacoes-ia.md` (importado no Automated Animations com Merge). Sem pedido, não gere.
 
 ---
 

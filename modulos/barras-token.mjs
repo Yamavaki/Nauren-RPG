@@ -9,6 +9,7 @@ import { NaurenHudRecursosEditor } from "./hud-recursos.mjs";
 import { naurenXpParaNivel } from "./ficha-ator.mjs";
 import { naurenChaveConstrucao, naurenConstrucaoDe, naurenMontarItemDoProjeto } from "./inventor-bancada.mjs";
 import { NAUREN_INVENTOR_CONSTRUCAO } from "./inventor.mjs";
+import { naurenLog } from "./depuracao.mjs";
 
 
 /* =======================================================================
@@ -165,7 +166,6 @@ function naurenHudBarrasDoToken(tokenOuDoc, { incluirEscondidas = true } = {}) {
   const doAtor = actor.getFlag("nauren", "barras");
   const fonte = (doToken?.soEsteToken ? doToken : doAtor) ?? {};
   const gravada = fonte.lista ?? [];
-  const antiga = (fonte.versao ?? 1) < NAUREN_HUD_VERSAO_PADRAO;
   const recursos = naurenHudRecursosDoAtor(actor);
   const porRecurso = new Map(recursos.map(r => [r.id, r]));
   const lista = [];
@@ -369,12 +369,6 @@ function naurenHudDesenharBarrasNoToken(token, { animado = true } = {}) {
       pilhas[barra.posicao] = n + esp + folga;
       const vert = lado || barra.forma === "vertical";
       const L = compr, E = esp; // comprimento e espessura
-      const rect = (c0, c1, cor, alpha = 1) => { // trecho [c0,c1] em 0..1 do comprimento
-        if (c1 <= c0) return;
-        g.beginFill(cor, alpha);
-        if (vert) g.drawRect(x, y + L * (1 - c1), E, L * (c1 - c0)); else g.drawRect(x + L * c0, y, L * (c1 - c0), E);
-        g.endFill();
-      };
       if (barra.forma === "numero") {
         /* só texto, abaixo */
       } else if (barra.forma === "pontos" || barra.forma === "losangos") {
@@ -1007,7 +1001,7 @@ async function naurenMigrarLojaRestaurar0977() {
   if (game.settings.get("nauren", "migracaoLojaRestaurar0977")) return;
   const restaurados = await naurenRestaurarArmasDaLoja();
   if (restaurados.length) {
-    console.log("Nauren RPG | Loja de Invenções: melhorias restauradas em", restaurados);
+    naurenLog("Nauren RPG | Loja de Invenções: melhorias restauradas em", restaurados);
     ChatMessage.create({ whisper: game.users.filter(u => u.isGM).map(u => u.id), content: `<p class="nauren-aviso-chat"><i class="fas fa-hammer"></i> <b>Loja de Invenções:</b> as melhorias voltaram em ${restaurados.map(r => `<b>${foundry.utils.escapeHTML(r)}</b>`).join(", ")} (tinham sido apagadas ao ressincronizar com o compêndio).</p>` }).catch(() => null);
   }
   await game.settings.set("nauren", "migracaoLojaRestaurar0977", true);

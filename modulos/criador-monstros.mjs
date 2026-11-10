@@ -3,7 +3,7 @@ import { NAUREN_HAB_MONSTROS, NAUREN_HAB_MONSTROS_VERSAO } from "../data/habilid
 import { naurenFixarTipoAlcanceSemeado, naurenUuidPorSeed } from "./entidades-campo.mjs";
 import { NAUREN_PACKS_DEFINICAO, NAUREN_SEED_IDS_EQUIPAMENTO_INICIAL, naurenCorrigirIconesSemeados, naurenMigrarAlvejadoArcos, naurenMigrarCanalizarPorNivel, naurenMigrarLoucuraManual, naurenObterOuCriarPacks, naurenSemearArmaduras, naurenSemearArmas, naurenSemearArmasDisparoCarregado, naurenSemearArmasModeloSubclasse, naurenSemearBestiario, naurenSemearClasseCacador, naurenSemearClasseDruida, naurenSemearClasseEmpireo, naurenSemearClasseGuerreiro, naurenSemearClasseLadino, naurenSemearClasseMago, naurenSemearClasseMistico, naurenSemearClasseSacerdote, naurenSemearCondicoes, naurenSemearEfeitosGuardas, naurenSemearEquipamentos, naurenSemearEscritos, naurenSemearHabilidadeDarPrioridade, naurenSemearHabilidadeGrimorio, naurenSemearHabilidadesCacador, naurenSemearHabilidadesDruida, naurenSemearHabilidadesEmpireo, naurenSemearHabilidadesGuerreiro, naurenSemearHabilidadesLadino, naurenSemearHabilidadesMistico, naurenSemearHabilidadesSacerdote, naurenSemearMagias, naurenSemearMascotes, naurenSemearMunicoes, naurenSemearPeculiaridades, naurenSemearPigmentos, naurenSemearRegras, naurenSemearRemedioEFrascos, naurenSemearSubclasseCacador, naurenSemearSubclasseDruida, naurenSemearSubclasseEmpireo, naurenSemearSubclasseGuerreiro, naurenSemearSubclasseLadino, naurenSemearSubclasseMago, naurenSemearSubclasseMistico, naurenSemearSubclasseSacerdote, naurenSemearTorre } from "./compendios.mjs";
 import { naurenSemearClasseInventor } from "./inventor.mjs";
-import { naurenMigrarCorpoDePedraV1, naurenMigrarExtensaoImagemFundoSubclasse, naurenMigrarImagemFundoSubclasse } from "./relogio-condicoes.mjs";
+import { naurenMigrarCorpoDePedraV1, naurenMigrarExtensaoImagemFundoSubclasse, naurenMigrarImagemFundoWebpV1, naurenMigrarImagemFundoSubclasse } from "./relogio-condicoes.mjs";
 import { naurenKitSistema } from "./janelas-kit.mjs";
 import { naurenConfigurarSplatter, naurenMigrarAcimaSoContraAlvoV1, naurenMigrarAmbidestria0927, naurenMigrarBandoExtra09423, naurenMigrarBorda09224, naurenMigrarCacador09218, naurenMigrarCacador09219, naurenMigrarCaligrafiaV1, naurenMigrarCamadasSubclasseV1, naurenMigrarCatalisadorSemPesadoV1, naurenMigrarCustoMedoV1, naurenMigrarDisposicaoJogadoresV1, naurenMigrarDruida09214, naurenMigrarEfeitoPermanenteV1, naurenMigrarEmpireo09211, naurenMigrarEscudoDeMana0925, naurenMigrarGuerreiro09216, naurenMigrarGuerreiro09217, naurenMigrarHabilidadesMonstros09241, naurenMigrarImpetoFadigaCustoV1, naurenMigrarLacunas09240, naurenMigrarLadinoEstudosV1, naurenMigrarLadinoRevisaoV1, naurenMigrarLivro08ItensV1, naurenMigrarLivro08PequenasV1, naurenMigrarMagoAntigoV1, naurenMigrarMarcaCacadorV1, naurenMigrarMisticoRevisaoV1, naurenMigrarMotion09416, naurenMigrarMunicaoSemCuraV1, naurenMigrarPrereqColunaEsquerdaV1, naurenMigrarRegras0926, naurenMigrarRevisaoClasses092, naurenMigrarRevisaoMago0924, naurenMigrarSabedoria09215, naurenMigrarSacerdote09238, naurenMigrarSacerdote09239, naurenMigrarSanatio09413, naurenOferecerSincronizacaoDeVersao, naurenPreencherRecursosNoMaximo } from "./icone-condicao-token.mjs";
 import { naurenMigrarLojaRestaurar0977, naurenMigrarXpTotal0962 } from "./barras-token.mjs";
@@ -11,6 +11,7 @@ import { naurenMigrarCondicoesAuditoria, naurenMigrarPesoEscudos, naurenMigrarQu
 import { naurenEscalaPorCategoria, naurenValorBasePorNivel } from "../nauren.mjs";
 import { naurenAbrirBorda, naurenAvisarSeLinkBloqueado } from "./borda-token.mjs";
 import { naurenMontarDescricao } from "./prioridades.mjs";
+import { naurenLog } from "./depuracao.mjs";
 
 // 0.94.22: roda na lista de migrações, depois dos compêndios (ver "naurenPassosDeMigracao").
 
@@ -43,7 +44,7 @@ async function naurenSemearHabilidadesMonstros(packs) {
   }
   const emDia = d => d?.getFlag("nauren", "habMonstroVersao") === VERSAO;
   if (dados.habilidades.every(h => emDia(porChave.get(h.chave))) && Object.keys(dados.estados).every(k => emDia(porEstado.get(k)))) return;
-  console.log(`Nauren RPG | Habilidades de Monstros: atualizando para a versão ${VERSAO}...`);
+  naurenLog(`Nauren RPG | Habilidades de Monstros: atualizando para a versão ${VERSAO}...`);
 
   const PASTA_ESTADOS = "Estados das Habilidades";
   const Folder_ = getDocumentClass("Folder");
@@ -111,7 +112,7 @@ async function naurenSemearHabilidadesMonstros(packs) {
       flags: { nauren: { habMonstro: h.meta, habMonstroVersao: VERSAO } } } };
   });
   await gravar(listaHab);
-  console.log(`Nauren RPG | Habilidades de Monstros: ${listaHab.length} habilidades e ${listaEstados.length} estados prontos.`);
+  naurenLog(`Nauren RPG | Habilidades de Monstros: ${listaHab.length} habilidades e ${listaEstados.length} estados prontos.`);
 }
 
 
@@ -174,7 +175,7 @@ async function naurenSemearTudo() {
   // cuida de quem já existia ANTES desta convenção, com "imagemFundo" vazio.
   if (game.users.activeGM === game.user) {
     naurenMigrarImagemFundoSubclasse(packs);
-    naurenMigrarExtensaoImagemFundoSubclasse(packs);
+    naurenMigrarExtensaoImagemFundoSubclasse(packs).then(() => naurenMigrarImagemFundoWebpV1(packs));
     naurenMigrarCorpoDePedraV1(packs);
   }
   await naurenSemearTorre(packs).catch(err => console.error("Nauren RPG | Falha ao criar os Itens da Torre Infinita.", err));
@@ -293,7 +294,7 @@ async function naurenGarantirMacroDeReset() {
       command: "game.nauren.resetarCompendios();",
       author: game.user.id
     });
-    console.log('Nauren RPG | Criei a macro "Resetar Compêndios do Nauren" - arraste ela da aba de Macros pra sua hotbar.');
+    naurenLog('Nauren RPG | Criei a macro "Resetar Compêndios do Nauren" - arraste ela da aba de Macros pra sua hotbar.');
   } catch (err) {
     console.warn("Nauren RPG | Não consegui criar a macro de reset automaticamente.", err);
   }
@@ -519,7 +520,7 @@ class NaurenCriadorMonstro extends foundry.applications.api.HandlebarsApplicatio
     return partes.join(", ");
   }
   _derivados() {
-    const s = this.s, vb = naurenValorBasePorNivel(s.nivel), [tEst, tPdaBase, tDef] = NAUREN_CM_TETOS[NAUREN_CM_FAIXA(s.nivel)], monstro = s.tipo === "monstro";
+    const s = this.s, vb = naurenValorBasePorNivel(s.nivel), [, tPdaBase, tDef] = NAUREN_CM_TETOS[NAUREN_CM_FAIXA(s.nivel)], monstro = s.tipo === "monstro";
     const ex = NAUREN_CM_EXTRAS[s.func];
     // Chefe: Estamina extra = o custo de 1 ataque dele (1 + Estamina extra da Categoria) -> 1 ataque a mais por rodada.
     // Sem isso, um Chefe de Categoria 3-4 sozinho atacava 1-2 vezes contra 8+ ataques do grupo (economia de ações).
@@ -694,13 +695,13 @@ class NaurenCriadorMonstro extends foundry.applications.api.HandlebarsApplicatio
   }
 
   _render() {
-    const s = this.s, d = this._derivados(), r = this.element, monstro = s.tipo === "monstro";
+    const s = this.s, d = this._derivados(), monstro = s.tipo === "monstro";
     const esc = foundry.utils.escapeHTML;
     this.ref("fNome").textContent = s.nome || "Sem nome";
     this.ref("fSub").textContent = `${monstro ? "Monstro" : "NPC"} · Nível ${s.nivel}${monstro ? ` · Categoria ${d.cat}` : ""} · ${s.func}${s.chefe ? " · Chefe" : ""}`;
     this.ref("rVB").textContent = "Valor Base " + d.vb;
     this.ref("caixaCategoria").classList.toggle("apagada", !monstro);
-    const [tEst, tPda, tDef] = d.tetos.valores;
+    const [tEst, tPda] = d.tetos.valores;
     const rec = [["Vida", d.vida, d.vida !== d.vidaCalc ? "ajustada" : `${d.cat}×(${d.vit}×${s.nivel + 2}${d.piso ? "+" + d.piso : ""})${s.chefe ? "×1,5" : ""}`, false, d.vida !== d.vidaCalc], ["Mana", d.mana, "", false, false],
       ["Estamina", d.est, d.est !== d.estCalc ? "ajustada" : (d.tetos.est ? "teto " + tEst : s.chefe ? `+${d.ch.estamina} Chefe` : ""), d.tetos.est && d.est === d.estCalc, d.est !== d.estCalc],
       ["Pod. Ataque", d.pda, d.tetos.pda ? "teto " + tPda : "", d.tetos.pda, false], ["Pod. Magia", d.pdm, "", false, false],
@@ -1045,7 +1046,7 @@ Hooks.once("ready", async () => {
   // regravavam os mesmos documentos ("doc is undefined" no console).
   if (game.users.activeGM && game.users.activeGM.id !== game.user.id) {
     game.nauren = { resetarCompendios: naurenResetarCompendios };
-    console.log(`Nauren RPG | Outro Mestre (${game.users.activeGM.name}) é o principal: compêndios e migrações ficam com ele.`);
+    naurenLog(`Nauren RPG | Outro Mestre (${game.users.activeGM.name}) é o principal: compêndios e migrações ficam com ele.`);
     return;
   }
   // Registrado antes de tudo: o macro de reset funciona mesmo se algum passo
@@ -1062,7 +1063,7 @@ Hooks.once("ready", async () => {
   // 0.94.22: mundo já migrado nesta versão do sistema = pula a lista inteira (abre mais rápido).
   // Cada migração continua com a própria marca, então um mundo antigo roda só as que faltam.
   const jaMigrado = (() => { try { return game.settings.get("nauren", "versaoMigrada") === game.system.version; } catch (err) { return false; } })();
-  if (jaMigrado) console.log(`Nauren RPG | Mundo já migrado para ${game.system.version}.`);
+  if (jaMigrado) naurenLog(`Nauren RPG | Mundo já migrado para ${game.system.version}.`);
   if (game.users.activeGM === game.user && !jaMigrado) {
     await passo("migração das camadas de Subclasse", () => naurenMigrarCamadasSubclasseV1());
     await passo("migração do Efeito permanente", () => naurenMigrarEfeitoPermanenteV1());
@@ -1081,7 +1082,7 @@ Hooks.once("ready", async () => {
     });
     await passo("Remover o compêndio de NPCs de Classe", async () => {
       const pk = game.packs.get("world.nauren-npcs-de-classe");
-      if (pk && game.user.isGM) { await pk.deleteCompendium(); console.log("Nauren RPG | Compêndio de NPCs de Classe removido (só o Bestiário continua)."); }
+      if (pk && game.user.isGM) { await pk.deleteCompendium(); naurenLog("Nauren RPG | Compêndio de NPCs de Classe removido (só o Bestiário continua)."); }
     });
     await passo("munições sem o efeito de cura padrão", () => naurenMigrarMunicaoSemCuraV1());
     await passo("Ladino: Estudos (Lerdeza/Desestabilizar pelo nível), Avaliar, Marcar o Alvo e Olhar da Morte", () => naurenMigrarLadinoEstudosV1());

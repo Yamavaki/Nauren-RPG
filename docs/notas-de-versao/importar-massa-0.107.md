@@ -32,7 +32,7 @@ Cada ator pode trazer `"borda"`:
 O sistema mede a moldura, recorta a imagem e grava tudo no token padrão. Ao arrastar a ficha para o mapa, o token já aparece com a borda.
 
 ## Pedindo para a IA
-Anexe o `guia-criacao-ia.md` e o `prompt-criacao-criatura.md` (pasta docs do sistema) e preencha o prompt. Dois campos são novos:
+Anexe o `guia-criacao-ia.md` e o `prompt-criacao-criatura.md` (pasta docs/criacao-ia do sistema) e preencha o prompt. Dois campos são novos:
 - **Borda do token:** "automática pelas cores e pela personalidade", "Pronta 'Nome'" ou "sem borda".
 - **Quantas:** 1, ou várias (aí a IA entrega um lote).
 

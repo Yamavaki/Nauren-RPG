@@ -9,6 +9,7 @@ import { NaurenAlvoHelper, NaurenRegionHelper } from "./ficha-ator.mjs";
 import { naurenAnimarPassiva, naurenMotionEmTodos } from "./animacoes.mjs";
 import { naurenBordaConfig, naurenBordaDadosPreparados } from "./borda-token.mjs";
 import { NAUREN_KIT_JANELA, naurenKitJanela, naurenKitSistema } from "./janelas-kit.mjs";
+import { naurenLog } from "./depuracao.mjs";
 /** 0.95: ofertas de gatilho dizem o que aconteceu antes de perguntar. */
 function naurenOfertaPrefixo(item, rotuloEvento) {
   const r = String(rotuloEvento ?? "").replace(/\s*\(.*\)\s*$/, "");
@@ -246,7 +247,7 @@ async function naurenReconciliarItemComCompendio(item) {
         origem = await pack.getDocument(encontrado._id).catch(() => null);
         if (origem) {
           await item.setFlag("nauren", "origemUuid", origem.uuid);
-          console.log(`Nauren RPG | "${item.name}": UUID de origem estava órfão (compêndio recriado) - relinkado com "${origem.uuid}".`);
+          naurenLog(`Nauren RPG | "${item.name}": UUID de origem estava órfão (compêndio recriado) - relinkado com "${origem.uuid}".`);
         }
       }
     }
@@ -614,7 +615,7 @@ async function naurenMigrarPrereqColunaEsquerdaV1() {
     for (const no of nos) if (alvos.has(no.id) && (no.prerequisitos ?? []).length) { no.prerequisitos = []; mudou = true; }
     if (mudou) { await sub.update({ "system.nos": nos }); n++; }
   }
-  if (n) console.log(`Nauren RPG | ${n} subclasse(s): pré-requisito removido da coluna da esquerda (Fulgor, Raízes Afiadas).`);
+  if (n) naurenLog(`Nauren RPG | ${n} subclasse(s): pré-requisito removido da coluna da esquerda (Fulgor, Raízes Afiadas).`);
 }
 
 async function naurenMigrarMarcaCacadorV1() {
@@ -652,8 +653,6 @@ async function naurenMigrarLadinoEstudosV1() {
   if (game.settings.get("nauren", "migracaoLadinoEstudosV3")) return;
   const atores = new Set(game.actors);
   for (const cena of game.scenes) for (const t of cena.tokens) if (t.actor && !t.actorLink) atores.add(t.actor);
-  const novoEfeito = { ativo: true, tipoAtaque: "qualquer", tipoArma: "", condicaoUuid: "", acumulos: "1", multiplicarPeloRank: false, danoExtraDado: "", dadosExtrasDaArma: "1", multiplicarPorInformacoes: true };
-  const descMarcar = naurenMontarDescricao({ regra: "Causa 1 dado extra de dano para cada informação que você tem de um alvo.", automatico: "em qualquer ataque contra um alvo que você estudou, +1 dado DA ARMA por informação sua sobre ele (ex.: adaga 1d4 com 3 informações = +3d4).", manual: "" });
   const novoAvaliar = { ativo: true, tipoAtaque: "qualquer", tipoArma: "", condicaoUuid: "", acumulos: "1", multiplicarPeloRank: false, danoExtraDado: "", criticoPorInformacao: true, soPrimeiroAtaque: false };
   const descAvaliar = naurenMontarDescricao({ regra: "Quando você adquire informação do inimigo com Análise Paciente, sua chance de crítico aumenta em 1 contra ele para cada informação, no seu primeiro ataque contra ele.", automatico: "no primeiro ataque contra o alvo DEPOIS dos estudos, o crítico fica 1 mais fácil por informação nova (estudada desde o seu último ataque contra ele); esse ataque gasta as informações novas, e para valer de novo é preciso estudar de novo. O total de informações (usado por Marcar o Alvo etc.) não diminui.", manual: "" });
   const corrigirNos = nos => {
@@ -708,7 +707,7 @@ async function naurenMigrarMisticoRevisaoV1() {
     if (mudou) total++;
   }
   await game.settings.set("nauren", "migracaoMisticoRevisaoV2", true);
-  if (total) console.log(`Nauren RPG | Revisão do Místico: ${total} item(ns) de ficha atualizados.`);
+  if (total) naurenLog(`Nauren RPG | Revisão do Místico: ${total} item(ns) de ficha atualizados.`);
 }
 
 /**
@@ -732,7 +731,7 @@ async function naurenMigrarLadinoRevisaoV1() {
     if (a.type === "personagem" && !emCombate.has(a.uuid)) await naurenRecarregarUsos(a, "cena").catch(() => {});
   }
   await game.settings.set("nauren", "migracaoLadinoRevisaoV1", true);
-  if (total) console.log(`Nauren RPG | Revisão do Ladino: ${total} item(ns) de ficha atualizados.`);
+  if (total) naurenLog(`Nauren RPG | Revisão do Ladino: ${total} item(ns) de ficha atualizados.`);
 }
 
 /**
@@ -757,7 +756,7 @@ async function naurenMigrarRevisaoClasses092() {
     await naurenClamparRecursosAoMaximo(a).catch(() => {});
   }
   await game.settings.set("nauren", "migracaoRevisaoClasses0921", true);
-  if (total) console.log(`Nauren RPG | Revisão das classes (0.92.0): ${total} item(ns) de ficha atualizados.`);
+  if (total) naurenLog(`Nauren RPG | Revisão das classes (0.92.0): ${total} item(ns) de ficha atualizados.`);
 }
 
 /** 0.92.4: revisão do Mago (Mísseis repete no dano máximo, Escudo de Mana sustentado, Salto Etéreo, Flor em cone...). */
@@ -773,7 +772,7 @@ async function naurenMigrarRevisaoMago0924() {
     if (await naurenReconciliarItemComCompendio(it).catch(() => false)) total++;
   }
   await game.settings.set("nauren", "migracaoRevisaoMago0924", true);
-  if (total) console.log(`Nauren RPG | Revisão do Mago (0.92.4): ${total} item(ns) de ficha atualizados.`);
+  if (total) naurenLog(`Nauren RPG | Revisão do Mago (0.92.4): ${total} item(ns) de ficha atualizados.`);
 }
 
 /** 0.92.5: Escudo de Mana - o Estresse não corta o dano que o escudo absorve. */
@@ -1201,7 +1200,7 @@ async function naurenMigrarLivro08PequenasV1() {
   }
   await game.settings.set("nauren", "migracaoLivro08PequenasV1", true);
   if (relatorio.length) {
-    console.log("Nauren RPG | Livro 0.8:", relatorio);
+    naurenLog("Nauren RPG | Livro 0.8:", relatorio);
     naurenPostarCard({ titulo: "Atualização do livro 0.8", icone: "icons/sundries/books/book-backed-silver-red.webp", fonte: "Fichas ajustadas",
       linhas: relatorio.map(r => ({ label: "Ajuste", value: r })) }).catch(() => {});
   }
@@ -1248,7 +1247,7 @@ async function naurenMigrarLivro08ItensV1() {
     }
   }
   await game.settings.set("nauren", "migracaoLivro08ItensV1", true);
-  if (total) console.log(`Nauren RPG | Livro 0.8: ${total} item(ns) de ficha atualizados.`);
+  if (total) naurenLog(`Nauren RPG | Livro 0.8: ${total} item(ns) de ficha atualizados.`);
 }
 
 /** 0.90.1 - "Eu estou acima" da 0.90.0 tinha Modificadores gerais: agora vale só contra o alvo analisado. */
@@ -1291,7 +1290,7 @@ async function naurenConfigurarSplatter() {
     await game.settings.set("splatter", chave, valor);
     trocados.push(`${chave} = ${valor}`);
   }
-  if (trocados.length) console.log(`Nauren RPG | Splatter configurado: ${trocados.join(", ")}.`);
+  if (trocados.length) naurenLog(`Nauren RPG | Splatter configurado: ${trocados.join(", ")}.`);
 }
 
 /** Munições criadas na 0.30.0 herdaram o "Cura 1d6 PV" padrão do consumível: limpa. */
@@ -1330,7 +1329,7 @@ async function naurenMigrarEfeitoPermanenteV1() {
     total++;
   }
   await game.settings.set("nauren", "migracaoEfeitoPermanenteV1", true);
-  if (total) console.log(`Nauren RPG | Efeito permanente: ${total} item(ns) convertido(s) para "sem/com penitência".`);
+  if (total) naurenLog(`Nauren RPG | Efeito permanente: ${total} item(ns) convertido(s) para "sem/com penitência".`);
 }
 
 async function naurenOferecerSincronizacaoDeVersao() {
@@ -1948,7 +1947,7 @@ async function naurenProcessarGatilhosInterno(tipoEvento, atorEvento, contexto =
   if (tipoEvento.startsWith("aliado")) {
     tokenEvento = atorEvento.getActiveTokens?.(true)?.[0] ?? null;
     if (!tokenEvento) {
-      console.log(`Nauren RPG | Gatilho "${tipoEvento}" não processado: "${atorEvento.name}" não tem token ativo na cena atual (não dá pra saber quem são os aliados dele sem isso).`);
+      naurenLog(`Nauren RPG | Gatilho "${tipoEvento}" não processado: "${atorEvento.name}" não tem token ativo na cena atual (não dá pra saber quem são os aliados dele sem isso).`);
       return;
     }
     // "aliado" = mesma disposição de TOKEN (Amigável/Neutro/Hostil) do
@@ -2160,7 +2159,7 @@ async function naurenProcessarGatilhosInterno(tipoEvento, atorEvento, contexto =
       });
       if (!gatilhosBatendo.length) continue;
       if (item.system.usaUsosPassiva && (item.system.usosPassivaAtual ?? 0) <= 0) {
-        console.log(`Nauren RPG | Gatilho "${item.name}" (${tipoEvento}) não disparou: sem usos sobrando.`);
+        naurenLog(`Nauren RPG | Gatilho "${item.name}" (${tipoEvento}) não disparou: sem usos sobrando.`);
         // 0.94.43: reação que seria oferecida (Penitência Desesperada...) avisa na tela em vez de sumir calada.
         if (gatilhosBatendo.some(g => g.recurso === "oferecerAcaoDesteItem") && !(tipoEvento === "penitenciaAceita" && !(Number(contexto.danoPenitencia) > 0))) {
           const quando = { cena: "por cena", combate: "por combate", dia: "por dia", rodada: "por rodada", turno: "por turno" }[item.system.usosPassivaReset] ?? "";
@@ -2573,7 +2572,7 @@ async function naurenProcessarGatilhosInterno(tipoEvento, atorEvento, contexto =
           const atacanteToken = contexto.atacanteTokenUuid ? await fromUuid(contexto.atacanteTokenUuid).catch(() => null) : null;
           const atacanteActor = atacanteToken?.actor ?? atacanteToken;
           if (!atacanteActor) {
-            console.log(`Nauren RPG | Gatilho "${item.name}" (${tipoEvento}) "danoNoAtacante" bateu, mas não achei o token/ator do atacante no contexto.`);
+            naurenLog(`Nauren RPG | Gatilho "${item.name}" (${tipoEvento}) "danoNoAtacante" bateu, mas não achei o token/ator do atacante no contexto.`);
             continue;
           }
           let dano = 0;
@@ -2616,7 +2615,7 @@ async function naurenProcessarGatilhosInterno(tipoEvento, atorEvento, contexto =
           const atacanteToken = contexto.atacanteTokenUuid ? await fromUuid(contexto.atacanteTokenUuid).catch(() => null) : null;
           const atacanteActor = atacanteToken?.actor ?? atacanteToken;
           if (!atacanteActor) {
-            console.log(`Nauren RPG | Gatilho "${item.name}" (${tipoEvento}) "estresseNoAtacante" bateu, mas não achei o token/ator do atacante no contexto.`);
+            naurenLog(`Nauren RPG | Gatilho "${item.name}" (${tipoEvento}) "estresseNoAtacante" bateu, mas não achei o token/ator do atacante no contexto.`);
             continue;
           }
           let quantidadeEstresse = 0;
@@ -2768,7 +2767,7 @@ async function naurenProcessarGatilhosInterno(tipoEvento, atorEvento, contexto =
           // diagnóstico: o gatilho BATEU, mas não concedeu nada -
           // normalmente porque o recurso já estava no máximo (nada pra
           // ganhar) ou o nome do recurso está errado/não existe.
-          console.log(`Nauren RPG | Gatilho "${item.name}" (${tipoEvento}) bateu, mas não concedeu nada - "${g.recurso}" já deve estar no máximo, ou o nome do recurso não existe em ${candidato.name}.`);
+          naurenLog(`Nauren RPG | Gatilho "${item.name}" (${tipoEvento}) bateu, mas não concedeu nada - "${g.recurso}" já deve estar no máximo, ou o nome do recurso não existe em ${candidato.name}.`);
         }
       } while (false);
         if (linhasCard.length > linhasAntes || (concedeuAlgo && !concedeuAntes)) await registrarUsoGatilho(g);
@@ -3763,7 +3762,7 @@ Hooks.on("preCreateActor", (actor, data) => {
  * na CRIAÇÃO de qualquer Ator (personagem OU npc) - sem isso, um Ator
  * novo nasce com esses 4 recursos em 0/0 (o motor só recalcula ".max"
  * sozinho a partir dos atributos; ".value" nunca é tocado automaticamente
- * - ver docs/guia-criacao-ia.md, seção 3). "Estresse" fica de fora de
+ * - ver docs/criacao-ia/guia-criacao-ia.md, seção 3). "Estresse" fica de fora de
  * propósito (0 é o valor CORRETO pra nascer, não "cheio").
  *
  * Só usa os ATRIBUTOS - nenhum item existe ainda neste exato momento da

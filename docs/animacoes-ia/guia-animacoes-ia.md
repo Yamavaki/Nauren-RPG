@@ -4,7 +4,7 @@
 
 O resultado é um **arquivo separado** (ex.: `balerion-animacoes.json`) que o Mestre importa no Automated Animations em **Menu Manager → Merge**. Ele **não** vai dentro da ficha.
 
-Arquivos de apoio (todos em `docs/`):
+Arquivos de apoio (em `docs/animacoes-ia/`, e os dois últimos em `docs/animacoes/`):
 - `aa-modelos-entradas.json`: uma entrada-modelo completa de cada categoria (melee, range, ontoken, templatefx, aura, aefx), já testadas nesta mesa;
 - `jb2a-catalogo.md`: resumo das famílias de animação do JB2A, com cores e exemplos;
 - `jb2a-caminhos.txt`: **todos** os caminhos que existem (7.814). Todo caminho usado precisa estar nesta lista, **letra por letra**. Nunca invente nem "complete" um caminho de memória;

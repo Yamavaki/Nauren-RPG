@@ -2,10 +2,10 @@
   "id": "nauren",
   "title": "Nauren RPG",
   "description": "Um mundo pintado e abandonado, onde o Acaso mancha as bordas da realidade e os personagens resistem usando Estamina, Prioridade e o poder do Grande Prisma.",
-  "version": "0.109.19",
+  "version": "0.109.20",
   "compatibility": {
-    "minimum": 13,
-    "verified": 14
+    "minimum": "14",
+    "verified": "14"
   },
   "authors": [
     {
@@ -14,7 +14,7 @@
   ],
   "url": "https://github.com/Yamavaki/Nauren-RPG",
   "manifest": "https://raw.githubusercontent.com/Yamavaki/Nauren-RPG/main/system.json",
-  "download": "https://raw.githubusercontent.com/Yamavaki/Nauren-RPG/main/dist/nauren.zip",
+  "download": "https://github.com/Yamavaki/Nauren-RPG/releases/download/v0.109.20/nauren.zip",
   "readme": "https://github.com/Yamavaki/Nauren-RPG#readme",
   "bugs": "https://github.com/Yamavaki/Nauren-RPG/issues",
   "esmodules": [
@@ -66,6 +66,5 @@
     "units": "m"
   },
   "primaryTokenAttribute": "vida",
-  "secondaryTokenAttribute": "estaminaCombate",
-  "socket": true
+  "secondaryTokenAttribute": "estaminaCombate"
 }

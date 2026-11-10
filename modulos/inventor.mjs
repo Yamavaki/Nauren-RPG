@@ -227,7 +227,7 @@ async function naurenSemearInventorSubclasses(packs) {
     efeitosAoRemover: [{ nome: "Explosão imediata", rotulo: "Explosão imediata", tipo: "danoArea", formula: "(@acumulos-1)d6", raio: 3, excluirEu: false }],
     descricao: D("Bomba presa ao alvo. Explode depois de 6 turnos (de qualquer criatura), causando 6d6 de dano a todos a até 3 m. O alvo pode gastar 1 PdE para arrancá-la, mas ela explode na hora com 1d6 de dano por turno em que esteve presa.",
       "conta 1 a cada início de turno de qualquer um (começa em 1); no 7 explode (6d6 em 3 m, inclusive o alvo) e some. Arrancar pela ficha custa 1 Estamina e explode com (acúmulos − 1)d6 em 3 m.") });
-  const cPotencia = await cond("condicao-potencia-eletrica", "Potência Elétrica", "icons/magic/lightning/bolt-strike-blue.webp", {
+  await cond("condicao-potencia-eletrica", "Potência Elétrica", "icons/magic/lightning/bolt-strike-blue.webp", {
     duracaoModo: "cena", acoesExtrasNaPrioridade: 1,
     descricao: D("Na próxima Prioridade você faz 2 Ações.", "a Prioridade usada volta para a 2ª Ação; a Condição sai depois.") });
   const efFlores = await naurenGarantirEfeitoDeSubclasse(ph, "efeito-perfume-de-flores-aura", { name: "Aroma de Flores", type: "efeito", img: "icons/commodities/flowers/flower-green.webp",

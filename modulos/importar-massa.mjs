@@ -267,7 +267,7 @@ export class NaurenImportarMassa extends foundry.applications.api.ApplicationV2 
         <div class="im-lista">${linhas}</div>
         <div class="im-dests">${nA ? this.destinoHtml("Actor", nA) : ""}${nI ? this.destinoHtml("Item", nI) : ""}</div>
       </section>` : `<section class="im-ajuda"><p class="im-dica"><b>Aceita:</b> uma ficha, uma lista de fichas, ou um lote <code>{ "pasta": "…", "documentos": [ … ] }</code>. NPCs, personagens, baús, qualquer item e Escritos. Cada ator pode ter <code>"borda"</code> (o modelo, a paleta e os efeitos da moldura, ou o nome de uma Pronta do Mestre) e já sai com a borda no token.</p>
-        <p class="im-dica">Para pedir à IA: anexe o <b>guia-criacao-ia.md</b> (seção 17) e o <b>prompt-criacao-criatura.md</b> da pasta docs do sistema e peça "um lote JSON para importar em massa".</p></section>`}
+        <p class="im-dica">Para pedir à IA: anexe o <b>guia-criacao-ia.md</b> (seção 17) e o <b>prompt-criacao-criatura.md</b> da pasta docs/criacao-ia do sistema e peça "um lote JSON para importar em massa".</p></section>`}
       <footer class="im-rodape">
         ${feito ? `<span class="im-ok"><i class="fas fa-circle-check"></i> ${feito.criados.length} criadas${feito.bordas ? ` · ${feito.bordas} com borda` : ""}${feito.falhas.length ? ` · <span class="im-ruim">${feito.falhas.length} falharam (veja o chat)</span>` : ""}</span>` : `<span class="im-prog" data-prog></span>`}
         <button type="button" class="im-btn nt-ch im-p" data-action="importar" ${!L?.itens.length || this.ocupado ? "disabled" : ""}><i class="fas fa-file-import"></i> Importar ${L?.itens.length ?? ""}</button>

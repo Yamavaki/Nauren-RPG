@@ -4,7 +4,7 @@
 
 Sistema completo do **Nauren RPG** para o Foundry VTT: fichas, combate automatizado e compêndios com todo o livro.
 
-![Foundry](https://img.shields.io/badge/Foundry-v13%20%7C%20v14-orange) ![Versão](https://img.shields.io/badge/vers%C3%A3o-0.109.19-purple) ![Idioma](https://img.shields.io/badge/idioma-pt--BR-green)
+![Foundry](https://img.shields.io/badge/Foundry-v14-orange) ![Versão](https://img.shields.io/badge/vers%C3%A3o-0.109.20-purple) ![Idioma](https://img.shields.io/badge/idioma-pt--BR-green)
 
 ## Instalar
 
@@ -34,7 +34,7 @@ Para atualizar, use **Atualizar** na lista de sistemas: o Foundry compara a vers
 - **Escritos.** Notas, cartas, pergaminhos e livros para os jogadores lerem, com parágrafos secretos do Mestre.
 - **Molduras e barras de token.** Molduras desenhadas pelo sistema, barras de Vida e Estamina e suporte a cenas com andares.
 - **Organizador das listas e Importar em massa.** Selecionar, mover e apagar vários de uma vez (com Lixeira) e importar fichas em JSON.
-- **Animações (opcional).** Integração com Automated Animations, Sequencer e JB2A, com movimento, cor do token e som sincronizados. O menu pronto fica em [`docs/`](docs/).
+- **Animações (opcional).** Integração com Automated Animations, Sequencer e JB2A, com movimento, cor do token e som sincronizados. O menu pronto fica em [`docs/animacoes/`](docs/animacoes/).
 
 ## Módulos recomendados (opcionais)
 
@@ -51,10 +51,15 @@ Sem esses módulos, o sistema funciona normalmente.
 
 A pasta [`docs/`](docs/) tem:
 
-- os guias de uso: HUD, reação em dois passos e animações;
-- os guias para criar fichas e animações com IA;
-- o menu do Automated Animations e a lista de sons;
-- o catálogo da Torre Infinita.
+| Pasta | Para quê |
+|---|---|
+| `jogar/` | Guias de uso na mesa: HUD de combate e reação em dois passos |
+| `animacoes/` | Como ligar as animações, o menu do Automated Animations e a lista de sons |
+| `criacao-ia/` | Guia, prompt, planilha e lista de ícones para criar fichas com IA |
+| `animacoes-ia/` | Guia e listas do JB2A para a IA montar animações de criaturas |
+| `torre-infinita/` | Catálogo dos itens da Torre Infinita |
+| `exemplos/` | Arquivos de exemplo para o Importar em massa e os Escritos |
+| `notas-de-versao/` | O que mudou em cada versão grande |
 
 O índice de tudo está em [`docs/README.md`](docs/README.md).
 
@@ -67,9 +72,9 @@ modulos/             animações, compêndios, fichas, borda e ícones do token,
 templates/ styles/   telas (Handlebars) e estilos
 lang/ data/          tradução e dados (Habilidades de Monstros)
 assets/              imagens das árvores de subclasse
-docs/                guias e arquivos de apoio
+docs/                guias e arquivos de apoio, separados em pastas por assunto
 tools/empacotar.sh   monta o dist/nauren.zip a partir do repositório
-dist/nauren.zip      pacote que o Foundry baixa
+.github/workflows/   publica a Release com o zip a cada versão nova (o Foundry baixa dali)
 LICENSE              licença de uso
 ```
 

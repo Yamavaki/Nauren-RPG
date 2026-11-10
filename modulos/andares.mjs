@@ -1,3 +1,4 @@
+import { naurenRegistrarComandoDepuracao } from "./depuracao.mjs";
 /**
  * Nauren RPG — suporte a andares (Levels do Foundry V14).
  *
@@ -169,6 +170,15 @@ if (globalThis.Hooks) {
       .then(() => doc.parent.deleteEmbeddedDocuments("Region", visuais.map(r => r.id)))
       .catch(err => console.warn("Nauren RPG | área no andar novo", err));
   });
+  // 0.109.20: quando só o andar de uma Região muda, o V14 pode deixar o desenho antigo no andar de onde ela saiu
+  // (sumia com F5). Em toda tela, manda a Região se redesenhar do zero; o ID continua o mesmo, então nada se solta.
+  Hooks.on("updateRegion", (regiao, mudou) => {
+    if (!("levels" in (mudou ?? {})) || !canvas?.ready || regiao.parent !== canvas.scene) return;
+    const obj = regiao.object;
+    if (!obj || obj.destroyed) return;
+    try { obj.renderFlags.set({ redraw: true }); }
+    catch (err) { console.warn("Nauren RPG | redesenho da área no andar novo", err); }
+  });
 }
 
 /** 0.109.13: algum andar de cima (textura do andar ou tile acima do token) cobre o centro do token neste ponto? */
@@ -283,12 +293,15 @@ Hooks.on("canvasReady", () => {
   } catch (err) { /* sem ticker */ }
 });
 
-/** 0.109.16: diagnóstico no console (F12): naurenDiagnosticoAndar() com um token selecionado. */
-globalThis.naurenDiagnosticoAndar = function (tok = canvas.tokens.controlled[0] ?? canvas.tokens.hover) {
+/**
+ * 0.109.16: diagnóstico no console (F12): naurenDiagnosticoAndar() com um token selecionado.
+ * 0.109.20: só existe com o Modo de depuração ligado (Configurações > Nauren RPG).
+ */
+naurenRegistrarComandoDepuracao("naurenDiagnosticoAndar", function (tok = canvas.tokens.controlled[0] ?? canvas.tokens.hover) {
   if (!tok) return console.log("Selecione ou passe o mouse num token.");
   const c = tok.center, nv = canvas.level;
   console.log("Vendo:", nv?.name, nv?.id, "piso", nv?.elevation?.bottom);
   console.log("Token:", tok.name, "andar", tok.document.level?.id ?? tok.document.level, "elev doc", tok.document.elevation, "elev malha", tok.mesh?.elevation);
   (canvas.primary?.levelTextures ?? []).forEach((lt, i) => console.log("levelTexture", i, { nome: lt.name, elev: lt.elevation, objeto: lt.object?.id, visivel: lt.visible, cobre: lt.containsCanvasPoint?.(c, 0.5) }));
   console.log("Coberto (Nauren):", naurenPisoCobre(tok.mesh, tok));
-};
+});

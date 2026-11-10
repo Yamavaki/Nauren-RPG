@@ -406,8 +406,7 @@ async function vender(armazem, ator, itemId, qtd, user) {
   if (!s.caixaSemLimite && s.caixa < total) return { ok: false, codigo: "caixa", msg: `A loja não tem ${s.moeda} suficientes no caixa (${fmt(s.caixa)}).` };
   const nome = item.name, img = item.img, dados = dadosCopia(item, qtd);
   const desfazTirar = await retirar(item, qtd);
-  let voltaSaldo;
-  try { voltaSaldo = await mudarSaldo(ator, s.moeda, total); }
+  try { await mudarSaldo(ator, s.moeda, total); }
   catch (err) { await desfazTirar(); return { ok: false, msg: "Não deu para pagar. Nada mudou." }; }
   const c = cfgItem(daLoja);
   if (c.estoque >= 0) await daLoja.update({ "flags.nauren.armazem.estoque": c.estoque + Math.max(1, Math.floor(qtd / unidadeLoja)) });

@@ -6,6 +6,7 @@ import "./ficha-item.mjs";
 import { naurenCaminhoImagemSubclasse } from "./compendios.mjs";
 import { naurenReaplicarUpgradesDeSubclasse, naurenReconciliarItemComCompendio } from "./icone-condicao-token.mjs";
 import "./relogio-combate.mjs";
+import { naurenLog } from "./depuracao.mjs";
 /* =======================================
  * RELÓGIO DE COMBATE - tempo das Condições
  * -----------------------------------------------------------------------
@@ -211,7 +212,7 @@ async function naurenMigrarOpcoesPadraoLigado() {
       }
       await game.settings.set("nauren", setting, true);
       if (alvos.length) {
-        console.log(`Nauren RPG | Migração: "${label}" habilitado automaticamente em ${alvos.length} personagem(ns)/NPC(s) que ainda estavam com o valor antigo.`);
+        naurenLog(`Nauren RPG | Migração: "${label}" habilitado automaticamente em ${alvos.length} personagem(ns)/NPC(s) que ainda estavam com o valor antigo.`);
       }
     } catch (err) {
       console.warn(`Nauren RPG | Falha ao rodar a migração de "${campo}".`, err);
@@ -254,7 +255,7 @@ async function naurenMigrarImagemFundoSubclasse(packs) {
     }
     await game.settings.set("nauren", "migracaoImagemFundoSubclasseV1", true);
     if (total > 0) {
-      console.log(`Nauren RPG | Migração: caminho de imagem de fundo preenchido em ${total} Subclasse(s) que ainda estavam sem nenhuma configurada.`);
+      naurenLog(`Nauren RPG | Migração: caminho de imagem de fundo preenchido em ${total} Subclasse(s) que ainda estavam sem nenhuma configurada.`);
     }
   } catch (err) {
     console.warn("Nauren RPG | Falha ao rodar a migração de imagem de fundo das Subclasses.", err);
@@ -287,10 +288,52 @@ async function naurenMigrarExtensaoImagemFundoSubclasse(packs) {
     }
     await game.settings.set("nauren", "migracaoImagemFundoExtensaoV1", true);
     if (total > 0) {
-      console.log(`Nauren RPG | Migração: extensão de imagem de fundo corrigida de .webp pra .png em ${total} Subclasse(s).`);
+      naurenLog(`Nauren RPG | Migração: extensão de imagem de fundo corrigida de .webp pra .png em ${total} Subclasse(s).`);
     }
   } catch (err) {
     console.warn("Nauren RPG | Falha ao rodar a migração de extensão de imagem de fundo.", err);
+  }
+}
+
+/**
+ * Migração one-shot (0.109.20): as artes das árvores de Subclasse passaram de
+ * ".png" para ".webp" (60 MB -> 12 MB). Troca o caminho de fábrica antigo pelo novo
+ * no compêndio, nos Itens do mundo e nos Itens dentro das fichas. Só mexe em
+ * caminho que bate EXATAMENTE com o padrão de fábrica - imagem escolhida pelo
+ * Mestre nunca é tocada. O que escapar ainda abre: o fundo que não carrega tenta
+ * as outras extensões sozinho (ver o tratador de erro em compendios.mjs).
+ */
+async function naurenMigrarImagemFundoWebpV1(packs) {
+  try {
+    if (game.settings.get("nauren", "migracaoImagemFundoWebpV1")) return;
+    const novoCaminho = item => {
+      if (item?.type !== "subclasse") return null;
+      const atual = String(item.system?.imagemFundo ?? "");
+      const m = atual.match(/^systems\/nauren\/assets\/subclasses\/([a-z]+)\.png$/);
+      return m ? `systems/nauren/assets/subclasses/${m[1]}.webp` : null;
+    };
+    let total = 0;
+    const docs = packs?.subclasses ? await packs.subclasses.getDocuments() : [];
+    for (const doc of [...docs, ...game.items]) {
+      const caminho = novoCaminho(doc);
+      if (!caminho) continue;
+      await doc.update({ "system.imagemFundo": caminho });
+      total++;
+    }
+    for (const ator of game.actors) {
+      const mudancas = [];
+      for (const item of ator.items) {
+        const caminho = novoCaminho(item);
+        if (caminho) mudancas.push({ _id: item.id, "system.imagemFundo": caminho });
+      }
+      if (!mudancas.length) continue;
+      await ator.updateEmbeddedDocuments("Item", mudancas);
+      total += mudancas.length;
+    }
+    await game.settings.set("nauren", "migracaoImagemFundoWebpV1", true);
+    if (total > 0) naurenLog(`Nauren RPG | Migração: fundo de ${total} Subclasse(s) trocado de .png para .webp.`);
+  } catch (err) {
+    console.warn("Nauren RPG | Falha ao trocar o fundo das Subclasses para .webp.", err);
   }
 }
 
@@ -351,7 +394,7 @@ async function naurenMigrarCorpoDePedraV1(packs) {
 
     await game.settings.set("nauren", "migracaoCorpoDePedraV1", true);
     if (total > 0) {
-      console.log(`Nauren RPG | Migração: "Corpo de Pedra" corrigido (Efeito Vinculado adicionado) em ${total} lugar(es) - molde e/ou cópias já concedidas.`);
+      naurenLog(`Nauren RPG | Migração: "Corpo de Pedra" corrigido (Efeito Vinculado adicionado) em ${total} lugar(es) - molde e/ou cópias já concedidas.`);
     }
   } catch (err) {
     console.warn("Nauren RPG | Falha ao rodar a migração de \"Corpo de Pedra\".", err);
@@ -409,7 +452,7 @@ async function naurenMigrarFormulasUnificadas() {
 
     await game.settings.set("nauren", "migracaoFormulaUnificadaV1", true);
     if (totalItens > 0) {
-      console.log(`Nauren RPG | Migração: fórmula de Dano/Cura/Ataque unificada em ${totalItens} item(ns) que ainda usavam os campos antigos (Atributo/Bônus fixo/Dado extra).`);
+      naurenLog(`Nauren RPG | Migração: fórmula de Dano/Cura/Ataque unificada em ${totalItens} item(ns) que ainda usavam os campos antigos (Atributo/Bônus fixo/Dado extra).`);
     }
   } catch (err) {
     console.warn("Nauren RPG | Falha ao rodar a migração de fórmulas unificadas.", err);
@@ -476,7 +519,7 @@ async function naurenMigrarModificadoresParaTexto() {
 
     await game.settings.set("nauren", "migracaoModificadorTextoV1", true);
     if (totalItens > 0 || totalAtores > 0) {
-      console.log(`Nauren RPG | Migração: campos de bônus convertidos pro formato de texto (+X soma, número puro fixa) em ${totalItens} item(ns) e ${totalAtores} personagem(ns)/NPC(s).`);
+      naurenLog(`Nauren RPG | Migração: campos de bônus convertidos pro formato de texto (+X soma, número puro fixa) em ${totalItens} item(ns) e ${totalAtores} personagem(ns)/NPC(s).`);
     }
   } catch (err) {
     console.warn("Nauren RPG | Falha ao rodar a migração dos modificadores pra texto.", err);
@@ -535,7 +578,7 @@ async function naurenMigrarModificadoresParaLista() {
 
     await game.settings.set("nauren", "migracaoModificadorListaV1", true);
     if (totalItens > 0) {
-      console.log(`Nauren RPG | Migração: campos de bônus de Efeito/Condição convertidos pra lista dinâmica de modificadores em ${totalItens} item(ns).`);
+      naurenLog(`Nauren RPG | Migração: campos de bônus de Efeito/Condição convertidos pra lista dinâmica de modificadores em ${totalItens} item(ns).`);
     }
   } catch (err) {
     console.warn("Nauren RPG | Falha ao rodar a migração dos modificadores pra lista.", err);
@@ -1330,4 +1373,4 @@ class NaurenSubclasseHelper {
 // 0.94.22: Ficha de Item (NaurenItemSheet) foi para modulos/ficha-item.mjs.
 
 
-export { CAMPOS_MIGRADOS_PARA_LIGADO, NAUREN_CAMPOS_MODIFICADOR_18, NAUREN_MODOS_DURACAO, NAUREN_MOMENTOS_PERIODICOS, NaurenConcessaoHelper, NaurenGrupoHelper, NaurenProgressaoHelper, NaurenSubclasseHelper, naurenAncoraDuracaoAtual, naurenAvancarDuracoesCondicoes, naurenMigrarCorpoDePedraV1, naurenMigrarExtensaoImagemFundoSubclasse, naurenMigrarFormulasUnificadas, naurenMigrarImagemFundoSubclasse, naurenMigrarModificadoresParaLista, naurenMigrarModificadoresParaTexto, naurenMigrarOpcoesPadraoLigado, naurenModoDuracaoCondicao, naurenMomentoEfeitoPeriodico, naurenRecarregarUsos };
+export { CAMPOS_MIGRADOS_PARA_LIGADO, NAUREN_CAMPOS_MODIFICADOR_18, NAUREN_MODOS_DURACAO, NAUREN_MOMENTOS_PERIODICOS, NaurenConcessaoHelper, NaurenGrupoHelper, NaurenProgressaoHelper, NaurenSubclasseHelper, naurenAncoraDuracaoAtual, naurenAvancarDuracoesCondicoes, naurenMigrarCorpoDePedraV1, naurenMigrarExtensaoImagemFundoSubclasse, naurenMigrarImagemFundoWebpV1, naurenMigrarFormulasUnificadas, naurenMigrarImagemFundoSubclasse, naurenMigrarModificadoresParaLista, naurenMigrarModificadoresParaTexto, naurenMigrarOpcoesPadraoLigado, naurenModoDuracaoCondicao, naurenMomentoEfeitoPeriodico, naurenRecarregarUsos };

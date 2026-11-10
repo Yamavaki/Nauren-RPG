@@ -2,6 +2,7 @@
  * Separado do nauren.mjs na 0.94.22. Usa estas funções do arquivo principal: naurenAcaoEhCura, naurenAcaoEhGolpe, naurenAlcanceEmMetros, naurenBandoMembros, naurenEhCondicaoModelo, naurenMedirDistanciaBordas, naurenResolverPorRank, naurenTipoAlcanceAdivinhado, naurenTipoAlcanceDaAcao. */
 import { naurenAcaoEhCura, naurenAcaoEhGolpe, naurenAlcanceEmMetros, naurenBandoMembros, naurenEhCondicaoModelo, naurenMedirDistanciaBordas, naurenResolverPorRank, naurenTipoAlcanceAdivinhado, naurenTipoAlcanceDaAcao } from "../nauren.mjs";
 import { naurenElevacaoDoPiso } from "./andares.mjs";
+import { naurenLog } from "./depuracao.mjs";
 /* =====================================================================
    ANIMAÇÕES (Automated Animations + Sequencer + JB2A) - opcional
    O Nauren avisa o módulo quando uma Ação é usada e espelha Condições em
@@ -278,7 +279,7 @@ async function naurenLigarAnimacaoAura(item) {
   setTimeout(() => {
     const novos = (gerente?.getEffects?.({ object: token }) ?? []).filter(e => !antes.has(e.id ?? e.data?.id));
     if (naurenAurasTocando.has(chave)) naurenAurasTocando.set(chave, novos);
-    if (novos.length) console.log(`Nauren RPG | Aura "${item.name}": efeitos do Sequencer`, novos.map(e => ({ id: e.id ?? e.data?.id, nome: e.data?.name, origem: e.data?.origin })));
+    if (novos.length) naurenLog(`Nauren RPG | Aura "${item.name}": efeitos do Sequencer`, novos.map(e => ({ id: e.id ?? e.data?.id, nome: e.data?.name, origem: e.data?.origin })));
   }, 1500);
 }
 /** Encerra efeitos pelo gerenciador do Sequencer: apaga também o registro persistente na cena (para todos). */

@@ -79,7 +79,6 @@ class NaurenCarrosselTurnos extends foundry.applications.api.ApplicationV2 {
   }
   async _prepareContext() {
     const combate = NaurenCarrosselTurnos.combate;
-    const e = s => naurenHudEscapar(String(s ?? ""));
     const gm = game.user.isGM;
     let tamanho = 64, modo = "fila", nomes = false, opacidade = 1, escondeCenas = false, extras = "", fundo = false;
     try { fundo = !!game.settings.get("nauren", "carrosselFundo"); } catch (err) { fundo = false; }

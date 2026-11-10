@@ -25,6 +25,7 @@ import { NAUREN_CAMPOS_ESTADO_ACAO, NAUREN_CAMPOS_ESTADO_ITEM, NAUREN_QUERY_AREA
 import { naurenAplicarEfeitosPeriodicos, naurenAtaqueBasicoNaReacao, naurenMestreDaMesa, naurenUsuarioResponsavel } from "./modulos/relogio-combate.mjs";
 import { CAMPOS_MIGRADOS_PARA_LIGADO, NAUREN_MODOS_DURACAO, NAUREN_MOMENTOS_PERIODICOS, NaurenConcessaoHelper, NaurenGrupoHelper, NaurenProgressaoHelper, NaurenSubclasseHelper, naurenAncoraDuracaoAtual, naurenAvancarDuracoesCondicoes, naurenMigrarFormulasUnificadas, naurenMigrarModificadoresParaLista, naurenMigrarModificadoresParaTexto, naurenMigrarOpcoesPadraoLigado, naurenModoDuracaoCondicao, naurenMomentoEfeitoPeriodico, naurenRecarregarUsos } from "./modulos/relogio-condicoes.mjs";
 import { NAUREN_CAMPOS_ACIMA_AUTOMATICOS, NAUREN_CAMPOS_ACIMA_GERAIS, NAUREN_CAMPOS_ANALISE_CRIATIVA, NAUREN_CAPACIDADES, NAUREN_CAPACIDADE_POR_NOME, NAUREN_CORES_PINTURA, NAUREN_PODEROSA_EFEITOS, NAUREN_QUERY_ACALANTO, NAUREN_QUERY_ACOVARDAR, NAUREN_QUERY_APLICAR_CONDICAO, NAUREN_QUERY_APLICAR_CONDICAO_ECO, NAUREN_QUERY_AUREUM, NAUREN_QUERY_BESTA_INICIAL, NAUREN_QUERY_CRIAR_ITEM, NAUREN_QUERY_DISPARAR_EVENTO, NAUREN_QUERY_DOMAR, NAUREN_QUERY_ENTIDADE, NAUREN_QUERY_ESCOLHA_DRUIDISMO, NAUREN_QUERY_ESCOLHA_PALAVRA, NAUREN_QUERY_ESTRELA, NAUREN_QUERY_ESTUDO, NAUREN_QUERY_ITEM_MESTRE, NAUREN_QUERY_MANIPULAR, NAUREN_QUERY_MOVER_TOKEN, NAUREN_QUERY_RECURSO, NAUREN_QUERY_RESISTIR_ROUBO, naurenAcaoEhCura, naurenAcaoEhGolpe, naurenAcaoSemCustoEstaminaMana, naurenAjusteCriticoDoGrupo, naurenAjusteCustoManaMagia, naurenAliadosAte, naurenAnotarModsRecebidosNoCard, naurenApagarItensSeExistirem, naurenAplicarAcalanto, naurenAplicarPalavraComEscolha, naurenArmarPoderosa, naurenAtacouNoTurnoAtual, naurenAtualizarItemViaMestre, naurenAvisarEstrelaDoArcoIris, naurenBeneficiosDoEstado, naurenBonusAcimaContra, naurenBonusDanoPeriodico, naurenBotoesDeFormula, naurenBotoesDirecaoGrimorio, naurenCategoriaDaArma, naurenCondicaoDoSistemaPorNome, naurenCondicaoNegativa, naurenCriarItemNoAtor, naurenCronometroNoDialog, naurenDeslocarToken, naurenEhCondicaoModelo, naurenEhGolpeEspiritual, naurenEhItem, naurenEscolherCorDaPintura, naurenEscolherEfeitoPoderosa, naurenEscolherPontoNoMapa, naurenEstresseDosAliados, naurenEstudoNoAlvo, naurenFaceD20, naurenFixarTipoAlcanceSemeado, naurenFotografarModsRecebidos, naurenGrimorio, naurenGuardarD20Roubado, naurenHandleQueryAcalanto, naurenHandleQueryAcovardar, naurenHandleQueryAplicarCondicaoEco, naurenHandleQueryAureum, naurenHandleQueryBestaInicial, naurenHandleQueryCriarItem, naurenHandleQueryDomar, naurenHandleQueryEntidade, naurenHandleQueryEscolhaDruidismo, naurenHandleQueryEscolhaPalavra, naurenHandleQueryEstrela, naurenHandleQueryEstudo, naurenHandleQueryItemMestre, naurenHandleQueryManipular, naurenHandleQueryMoverToken, naurenHandleQueryRecurso, naurenHandleQueryResistirRoubo, naurenMaisDadosPoderosa, naurenModsAcima, naurenMontarSelecaoPrioridade, naurenMostrarNomesDosCamposUuid, naurenMoverGrimorio, naurenMoverTokenPara, naurenMoverTokenViaMestre, naurenMunicoesCompativeis, naurenNomeDeToken, naurenNomeDoRecurso, naurenNomeNormalizado, naurenOferecerAcovardar, naurenOferecerDestino, naurenOperarEntidade, naurenOperarEstudo, naurenOperarRecursoViaMestre, naurenOrdemListaMagias, naurenPersonagensEmCena, naurenPreparacaoUsadas, naurenPresosPorArmadilha, naurenPrioridadesGeradas, naurenRegistrarAtaqueNoTurno, naurenReordenarGrimorio, naurenResolverSelf, naurenResolverSelfEmObjeto, naurenResumoDaAcao, naurenSincronizarCriativasDoLadino, naurenSincronizarGrimorio, naurenSomarEfeitoPermanente, naurenTemEstado, naurenTempoReacao, naurenTextoHistoricoDestino, naurenTimeoutReacaoMs, naurenTipoAlcanceAdivinhado, naurenTipoAlcanceDaAcao, naurenTiposEstudoDoAtor, naurenTokensDeslocando, naurenUltimoAtacante, naurenUsarAcalanto, naurenUsosExtrasPara, naurenUuidPorSeed, naurenValorEstudo } from "./modulos/entidades-campo.mjs";
+import { naurenLog } from "./modulos/depuracao.mjs";
 import { NAUREN_QUERY_REACAO_PRE_ATAQUE, NAUREN_QUERY_REGISTRO_PRIORIDADE, NAUREN_TOKENS_CONTEXTO, naurenAgindoForaDoTurno, naurenConsumirUsoDaHabilidade, naurenDescricaoParaChat, naurenDispararEventoNoDono, naurenFontesDeModificadores, naurenHandleQueryAplicarCondicao, naurenHandleQueryDispararEvento, naurenHandleQueryReacaoPreAtaque, naurenHandleQueryRegistroPrioridade, naurenMapearStrings, naurenModificacoesRecebidas, naurenMontarDescricao, naurenOperarRegistroPrioridade, naurenPrioridadesNoTurno, naurenResumoModificador, naurenSubstituirTokensDeContexto, naurenUsoDisponivel } from "./modulos/prioridades.mjs";
 import { NAUREN_NOMES_ATRIBUTO_CURTO, NAUREN_QUERY_ROLAGEM_AUDITADA, __naurenIniciar_registro_rolagens, naurenAnotarNoRegistro, naurenHandleQueryRolagemAuditada, naurenRegistroParaExport, naurenRegistroParaFicha, naurenRolagemAuditada } from "./modulos/registro-rolagens.mjs";
 import { __naurenIniciar_desfazer_acao, naurenDiferencaDesfazer, naurenFotoCenaDesfazer } from "./modulos/desfazer-acao.mjs";
@@ -7653,6 +7654,9 @@ Hooks.once("init", () => {
   game.settings.register("nauren", "migracaoImagemFundoExtensaoV1", {
     scope: "world", config: false, type: Boolean, default: false
   });
+  game.settings.register("nauren", "migracaoImagemFundoWebpV1", {
+    scope: "world", config: false, type: Boolean, default: false
+  });
   game.settings.register("nauren", "migracaoCorpoDePedraV1", {
     scope: "world", config: false, type: Boolean, default: false
   });
@@ -7687,7 +7691,7 @@ async function naurenMigrarAtaqueAgilidade() {
   const mundo = game.items.map(corrigir).filter(Boolean);
   if (mundo.length) { await Item.updateDocuments(mundo).catch(err => console.warn("Nauren RPG | migração ataque/agilidade (itens)", err)); n += mundo.length; }
   await game.settings.set("nauren", "migracaoAtaqueAgilidadeV1", true);
-  if (n) console.log(`Nauren RPG | ${n} armas passaram a atacar com o Poder de Ataque.`);
+  if (n) naurenLog(`Nauren RPG | ${n} armas passaram a atacar com o Poder de Ataque.`);
 }
 Hooks.once("ready", () => { naurenMigrarAtaqueAgilidade().catch(err => console.warn("Nauren RPG | migração ataque/agilidade", err)); });
 
@@ -7727,7 +7731,7 @@ async function naurenMigrarVidaInimigos() {
   }
   await game.settings.set("nauren", "migracaoVidaInimigosV1", true);
   if (n) {
-    console.log(`Nauren RPG | Vida rebalanceada em ${n} criaturas.`);
+    naurenLog(`Nauren RPG | Vida rebalanceada em ${n} criaturas.`);
     ui.notifications?.info(`Nauren RPG 0.108: a Vida de ${n} criatura(s) do Criador de Monstros foi rebalanceada (piso de Vida por Categoria).`);
   }
 }
@@ -7821,7 +7825,7 @@ Hooks.once("ready", () => {
     if (v === atual) return;
     const link = document.createElement("link");
     link.rel = "stylesheet"; link.href = `systems/${game.system.id}/styles/nauren.css?v=${encodeURIComponent(atual)}`;
-    link.addEventListener("load", () => console.log(`Nauren RPG | CSS antigo no cache (${v || "sem versão"}); carreguei o da ${atual}.`));
+    link.addEventListener("load", () => naurenLog(`Nauren RPG | CSS antigo no cache (${v || "sem versão"}); carreguei o da ${atual}.`));
     document.head.append(link);
   } catch (err) { console.warn("Nauren RPG | conferência do CSS", err); }
 });

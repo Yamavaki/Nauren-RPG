@@ -5,13 +5,15 @@ Coloque aqui a imagem de fundo de cada árvore de Subclasse, com o nome exato
 
 | Arquivo esperado    | Classe      |
 |----------------------|-------------|
-| `druida.png`         | Druida      |
-| `guerreiro.png`       | Guerreiro   |
-| `ladino.png`          | Ladino      |
-| `empireo.png`         | Empíreo     |
-| `mistico.png`         | Místico     |
-| `sacerdote.png`       | Sacerdote   |
-| `cacador.png`         | Caçador     |
+| `druida.webp`         | Druida      |
+| `guerreiro.webp`       | Guerreiro   |
+| `ladino.webp`          | Ladino      |
+| `empireo.webp`         | Empíreo     |
+| `mistico.webp`         | Místico     |
+| `sacerdote.webp`       | Sacerdote   |
+| `cacador.webp`         | Caçador     |
+| `mago.webp`            | Mago        |
+| `inventor.webp`        | Inventor    |
 
 ## Proporção recomendada
 
@@ -21,14 +23,15 @@ proporção retrato longa (ex: 900×1600px, ~9:16).
 
 ## Formato
 
-`.png` (o código está configurado pra esperar exatamente essa extensão - se
-usar outro formato, ajuste a extensão no código de semeadura em `nauren.mjs`,
-função `naurenCaminhoImagemSubclasse`).
+`.webp` (desde a 0.109.20; antes eram `.png`, cinco vezes maiores). O código
+espera essa extensão (função `naurenCaminhoImagemSubclasse`, em
+`modulos/compendios.mjs`). Se uma imagem não carregar, o sistema tenta sozinho
+as outras extensões (`.png`, `.jpg`) e variações do nome.
 
 ## O que acontece automaticamente
 
 Ao seu mundo do Foundry ser aberto, cada Subclasse já é criada apontando pro
-caminho esperado aqui (`assets/subclasses/<classe>.png`). Se o arquivo ainda
+caminho esperado aqui (`assets/subclasses/<classe>.webp`). Se o arquivo ainda
 não existir, o navegador mostra uma imagem quebrada, mas o sistema tem uma
 altura mínima de segurança (CSS) pra não deixar a árvore pior do que ficaria
 sem imagem nenhuma. Assim que você adicionar o arquivo aqui (com o nome

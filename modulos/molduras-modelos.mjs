@@ -54,16 +54,10 @@ const W = w => `style="stroke-width:${w}"`;
 const L = (d, w = 1.5) => `<path class="lm" ${W(w)} d="${d}"/>`;
 const C = (r, w = 1.5) => `<circle class="lm" ${W(w)} r="${f(r)}"/>`;
 /** Ponto do segmento a→b que fica no raio r (a e b em [x, y]). */
-const noRaio = (a, b, r) => { const dx = b[0] - a[0], dy = b[1] - a[1], A2 = dx * dx + dy * dy, B = 2 * (a[0] * dx + a[1] * dy), C2 = a[0] * a[0] + a[1] * a[1] - r * r, d = Math.max(0, B * B - 4 * A2 * C2), t = (-B + Math.sqrt(d)) / (2 * A2), t2 = (-B - Math.sqrt(d)) / (2 * A2), tt = t >= -1e-6 && t <= 1 + 1e-6 ? t : t2; return [a[0] + tt * dx, a[1] + tt * dy]; };
-const angDe = q => (Math.atan2(q[0], -q[1]) * 180 / Math.PI + 360) % 360;
 /** Círculo como faixa de metal (preenchida, com o contorno escuro das peças). */
 const aro = (r, w) => anel(r - w / 2, r + w / 2, "m");
 const A = (r, a0, a1) => `A${f(r)},${f(r)} 0 ${((a1 - a0 + 360) % 360) > 180 ? 1 : 0} 1 ${P(r, a1)}`;
-const Ai = (r, a0, a1) => `A${f(r)},${f(r)} 0 ${((a0 - a1 + 360) % 360) > 180 ? 1 : 0} 0 ${P(r, a1)}`;
 const arco = (r, a0, a1, w, cls = "lm") => `<path class="${cls}" ${W(w)} d="M${P(r, a0)} ${A(r, a0, a1)}"/>`;
-const radial = (r1, r2, a, w) => L(`M${P(r1, a)} L${P(r2, a)}`, w);
-const placa = (ro, ri, a0, a1, w, s = 0) => L(`M${P(ro, a0)} ${A(ro, a0, a1)} L${P(ri, a1 - s)} ${Ai(ri, a1 - s, a0 + s)} Z`, w);
-const placaAberta = (ro, ri, a0, a1, w, s = 0) => L(`M${P(ro, a0)} L${P(ri, a0 + s)} ${A(ri, a0 + s, a1 - s)} L${P(ro, a1)}`, w);
 const noAnel = (id, tag, r1, r2, conteudo) => `<clipPath id="k${id}${tag}"><path fill-rule="evenodd" clip-rule="evenodd" d="${circulo(r2)} M0,${f(-r1)} A${f(r1)},${f(r1)} 0 1 0 0,${f(r1)} A${f(r1)},${f(r1)} 0 1 0 0,${f(-r1)}Z"/></clipPath><g clip-path="url(#k${id}${tag})">${conteudo}</g>`;
 function cruza(p1, p2, p3, p4) { const d = (p1[0] - p2[0]) * (p3[1] - p4[1]) - (p1[1] - p2[1]) * (p3[0] - p4[0]);
   const t = ((p1[0] - p3[0]) * (p3[1] - p4[1]) - (p1[1] - p3[1]) * (p3[0] - p4[0])) / d; return [p1[0] + t * (p2[0] - p1[0]), p1[1] + t * (p2[1] - p1[1])]; }
@@ -87,11 +81,6 @@ function passos(itens, fechar = true) {
   return d + (fechar ? "Z" : "");
 }
 const degraus = lista => passos(lista.map(([a0, a1, r]) => ({ r, a0, a1 })));
-const comV = (r, apex, faixas) => {
-  const it = [];
-  faixas.forEach(([a0, a1], i) => { it.push({ r, a0, a1 }); const prox = faixas[(i + 1) % faixas.length]; const meio = ((a1 + (prox[0] < a1 ? prox[0] + 360 : prox[0])) / 2) % 360; it.push([apex, meio]); });
-  return passos(it);
-};
 const GREGA2 = [[[0, .5 / 9], [1, .5 / 9]], [[0, 8.5 / 9], [1, 8.5 / 9]],
   [[.5 / 8, .5 / 9], [.5 / 8, 6.5 / 9], [6.5 / 8, 6.5 / 9], [6.5 / 8, 2.5 / 9], [2.5 / 8, 2.5 / 9], [2.5 / 8, 4.5 / 9], [4.5 / 8, 4.5 / 9]]];
 

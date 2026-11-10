@@ -8,9 +8,9 @@ O Nauren está preparado para o módulo **Automated Animations** (mantido por th
 3. **Automated Animations** (`autoanimations`), versão 7 ou mais nova (Foundry V14).
 
 ## Menu pronto do Nauren
-- `docs/nauren-aa-menu-completo.json`: todas as animações e sons do sistema (armas, magias, habilidades de classe, Habilidades de Monstros, itens da Torre e Condições). No Automated Animations: **Menu Manager → Overwrite** (substitui o menu) ou **Merge** (soma ao que já existe).
-- `docs/nauren-aa-novas-0.94.27.json`: só as entradas novas desde a 0.92.2 (Leva 1 da Torre, óleos, Condições do Inventor e das Habilidades de Monstros). Para quem já importou o menu antes: **Merge** só este arquivo.
-- Os sons ficam no Forge; a lista com os endereços está em `docs/sons-forge.txt`.
+- `docs/animacoes/nauren-aa-menu-completo.json`: todas as animações e sons do sistema (armas, magias, habilidades de classe, Habilidades de Monstros, itens da Torre e Condições). No Automated Animations: **Menu Manager → Overwrite** (substitui o menu) ou **Merge** (soma ao que já existe).
+- `docs/animacoes/nauren-aa-novas-0.94.27.json`: só as entradas novas desde a 0.92.2 (Leva 1 da Torre, óleos, Condições do Inventor e das Habilidades de Monstros). Para quem já importou o menu antes: **Merge** só este arquivo.
+- Os sons ficam no Forge; a lista com os endereços está em `docs/animacoes/sons-forge.txt`.
 
 ## O que o Nauren faz
 - **Ações**: ao usar uma Ação (ataque, magia, habilidade, consumível), o Nauren chama o módulo com o item, o token de quem usou, os alvos e quem foi atingido. O módulo escolhe a animação **pelo nome do item**, no menu Global Automatic Recognition. Erros tocam a animação de erro (miss) do menu.

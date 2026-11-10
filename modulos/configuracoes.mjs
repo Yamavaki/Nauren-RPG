@@ -23,7 +23,8 @@ export const NAUREN_CONFIG_SECOES = [
   { id: "itens", rotulo: "Equipamento e itens", icone: "fa-shield-halved", chaves: ["limiteEquipamentoOfensivo", "pesosEquipamentoOfensivo", "limiteVagasDefesa", "removerConsumivelZerado", "luzDosItens", "scriptsItens"], menus: ["tiersItensMenu"] },
   { id: "criacao", rotulo: "Criação de personagem", icone: "fa-user-plus", chaves: ["criadorAtributosTravados", "criadorTodoEquipamento"] },
   { id: "animacoes", rotulo: "Animações e sons", icone: "fa-wand-sparkles", chaves: ["animacoesAcoes", "animacoesReserva", "animacoesCriticos", "motionAtivo", "motionMinhaTela", "motionIntensidade", "motionImpacto", "motionCorCura", "somSincronizado"] },
-  { id: "molduras", rotulo: "Molduras dos tokens", icone: "fa-circle-dot", chaves: ["moldurasAnimadas", "moldurasQualidade"], extra: "molduras" }
+  { id: "molduras", rotulo: "Molduras dos tokens", icone: "fa-circle-dot", chaves: ["moldurasAnimadas", "moldurasQualidade"], extra: "molduras" },
+  { id: "depuracao", rotulo: "Depuração", icone: "fa-bug", chaves: ["modoDepuracao"] }
 ];
 
 /** Configurações recolhidas (chave → objeto de registro do Foundry). */
@@ -41,7 +42,7 @@ export function naurenConfiguracoesInit() {
   Hooks.once("setup", naurenConfiguracoesRecolher);
 }
 export function naurenConfiguracoesRecolher() {
-  for (const [id, s] of game.settings.settings) {
+  for (const [, s] of game.settings.settings) {
     if (s.namespace !== SIS || !s.config) continue;
     recolhidas.set(s.key, s); s.config = false;
   }

@@ -3,6 +3,7 @@ import { NAUREN_KIT_JANELA } from "./janelas-kit.mjs";
 import { NaurenAlvoHelper } from "./ficha-ator.mjs";
 import { naurenPostarCard } from "../nauren.mjs";
 import { naurenSeloDoItem } from "./itens-catalogo.mjs";
+import { naurenLog } from "./depuracao.mjs";
 
 
 // 0.94.22: Compêndios oficiais (auto-semeadura, Torre, Bestiário, mascotes) foi para modulos/compendios.mjs.
@@ -128,7 +129,7 @@ async function naurenMigrarQueimandoPorAcumulo() {
     if (upd.length) { await a.updateEmbeddedDocuments("Item", upd).catch(err => console.warn("Nauren RPG | Queimando por acúmulo", a.name, err)); n += upd.length; }
   }
   await game.settings.set("nauren", "migracaoQueimandoAcumuloV1", true);
-  if (n) console.log(`Nauren RPG | Queimando agora soma por acúmulo: ${n} cópia(s) atualizada(s).`);
+  if (n) naurenLog(`Nauren RPG | Queimando agora soma por acúmulo: ${n} cópia(s) atualizada(s).`);
 }
 
 // 0.94.22: roda na lista de migrações, depois dos compêndios (ver "naurenPassosDeMigracao").
@@ -163,7 +164,7 @@ async function naurenMigrarCondicoesAuditoria(tentativa = 0) {
     if (upd.length) { await a.updateEmbeddedDocuments("Item", upd).catch(err => console.warn("Nauren RPG | auditoria das Condições", a.name, err)); n += upd.length; }
   }
   await game.settings.set("nauren", "migracaoCondicoesAuditoriaV1", true);
-  if (n) console.log(`Nauren RPG | Condições corrigidas nas fichas: ${n} cópia(s).`);
+  if (n) naurenLog(`Nauren RPG | Condições corrigidas nas fichas: ${n} cópia(s).`);
 }
 
 // 0.94.22: roda na lista de migrações, depois dos compêndios (ver "naurenPassosDeMigracao").
@@ -206,7 +207,7 @@ async function naurenMigrarVenenos(tentativa = 0) {
     if (upd.length) { await a.updateEmbeddedDocuments("Item", upd).catch(err => console.warn("Nauren RPG | venenos", a.name, err)); n += upd.length; }
   }
   await game.settings.set("nauren", "migracaoVenenosV1", true);
-  if (n) console.log(`Nauren RPG | Venenos atualizados nas fichas: ${n} item(ns).`);
+  if (n) naurenLog(`Nauren RPG | Venenos atualizados nas fichas: ${n} item(ns).`);
 }
 
 // 0.94.22: roda na lista de migrações, depois dos compêndios (ver "naurenPassosDeMigracao").
