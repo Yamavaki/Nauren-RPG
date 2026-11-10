@@ -13057,6 +13057,11 @@ class NaurenRegionHelper {
   static sincronizarVisualComToken(item, tokenDoc, tokenPlaceable) {
     const [regiao] = this.buscarRegioesDoItem(item.uuid, tokenDoc.id);
     if (!regiao?.object?.refresh) return;
+    // 0.109.21: token no meio da troca de andar (a área ainda está no andar antigo): não mexe no dado local,
+    // senão a cópia da tela diverge do servidor e sobra um desenho fantasma até o F5.
+    const andarToken = tokenDoc.level?.id ?? tokenDoc.level;
+    const andaresRegiao = Array.from(regiao.levels ?? [], l => l?.id ?? l);
+    if (andarToken && andaresRegiao.length && !andaresRegiao.includes(andarToken)) return;
     const centro = tokenPlaceable.center;
     if (!centro) return;
     const raioAtual = regiao.shapes?.[0]?.radius ?? this.metrosParaPixels(parseFloat(item.system.emanacaoRaio) || 3);

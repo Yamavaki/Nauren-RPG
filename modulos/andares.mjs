@@ -1,4 +1,4 @@
-import { naurenRegistrarComandoDepuracao } from "./depuracao.mjs";
+import { naurenLog, naurenRegistrarComandoDepuracao } from "./depuracao.mjs";
 /**
  * Nauren RPG — suporte a andares (Levels do Foundry V14).
  *
@@ -156,19 +156,19 @@ if (globalThis.Hooks) {
       if (ls.length <= 1 && ls[0] !== novo) ups.push(r);
     }
     if (!ups.length) return;
-    // 0.109.18: trocar só "levels" deixava um desenho fantasma da área no andar antigo (sumia com F5). A área visual da
-    // Emanação (só desenho, achada pela flag) é recriada no andar novo e a antiga apagada.
-    // 0.109.19: as outras áreas presas ao token NÃO são recriadas - o ID delas é guardado em outros lugares
-    // (Condição de Presença "regioesPresenca", "regiaoUuid" das entidades) e recriar soltava esses vínculos;
-    // nelas só o andar muda.
-    const visuais = ups.filter(r => r.flags?.nauren?.emanacaoOrigem && !r.flags?.nauren?.templatePersistente);
-    const outras = ups.filter(r => !visuais.includes(r));
-    if (outras.length) doc.parent.updateEmbeddedDocuments("Region", outras.map(r => ({ _id: r.id, levels: [novo] }))).catch(err => console.warn("Nauren RPG | área no andar novo", err));
-    if (!visuais.length) return;
-    const novas = visuais.map(r => { const d = r.toObject(); delete d._id; d.levels = [novo]; return d; });
-    doc.parent.createEmbeddedDocuments("Region", novas)
-      .then(() => doc.parent.deleteEmbeddedDocuments("Region", visuais.map(r => r.id)))
-      .catch(err => console.warn("Nauren RPG | área no andar novo", err));
+    // 0.109.21: uma única gravação por Região, sem recriar (a 0.109.18 criava uma cópia e apagava a antiga, e isso
+    // corria junto com o hook que move a área, deixando cópia no lugar velho). A área visual da Emanação (flag
+    // "emanacaoOrigem", círculo único) já vai com o andar novo E o centro novo do token na mesma gravação.
+    const g = doc.parent?.grid?.size ?? canvas?.grid?.size ?? 100;
+    const centro = { x: (mudou.x ?? doc.x) + (doc.width ?? 1) * g / 2, y: (mudou.y ?? doc.y) + (doc.height ?? 1) * g / 2 };
+    const dados = ups.map(r => {
+      const d = { _id: r.id, levels: [novo] };
+      const forma = r.shapes?.[0];
+      const visual = r.flags?.nauren?.emanacaoOrigem && !r.flags?.nauren?.templatePersistente;
+      if (visual && r.shapes?.length === 1 && forma?.type === "circle") d.shapes = [{ type: "circle", x: centro.x, y: centro.y, radius: forma.radius }];
+      return d;
+    });
+    doc.parent.updateEmbeddedDocuments("Region", dados).catch(err => console.warn("Nauren RPG | área no andar novo", err));
   });
   // 0.109.20: quando só o andar de uma Região muda, o V14 pode deixar o desenho antigo no andar de onde ela saiu
   // (sumia com F5). Em toda tela, manda a Região se redesenhar do zero; o ID continua o mesmo, então nada se solta.
@@ -178,7 +178,26 @@ if (globalThis.Hooks) {
     if (!obj || obj.destroyed) return;
     try { obj.renderFlags.set({ redraw: true }); }
     catch (err) { console.warn("Nauren RPG | redesenho da área no andar novo", err); }
+    naurenLog(`Nauren RPG | Área "${regiao.name}" mudou de andar (${listaDe(regiao.levels).join(", ")}): redesenhada.`);
   });
+  // 0.109.21: desenho de Região que ficou na tela sem o documento existir mais (sumia com F5): apaga.
+  Hooks.on("deleteRegion", regiao => { if (regiao.parent === canvas?.scene) setTimeout(naurenLimparRegioesOrfas, 0); });
+  Hooks.on("canvasReady", () => setTimeout(naurenLimparRegioesOrfas, 0));
+}
+
+/** Regiões desenhadas no canvas cujo documento não existe mais na cena: destrói o desenho. Devolve quantas. */
+function naurenLimparRegioesOrfas() {
+  let n = 0;
+  try {
+    const cena = canvas?.scene; if (!cena || !canvas.regions) return 0;
+    for (const obj of [...(canvas.regions.placeables ?? [])]) {
+      const id = obj?.document?.id;
+      if (!obj || obj.destroyed || (id && cena.regions.get(id) === obj.document)) continue;
+      try { obj.parent?.removeChild(obj); obj.destroy({ children: true }); n++; } catch (err) { /* já destruído */ }
+    }
+    if (n) naurenLog(`Nauren RPG | ${n} desenho(s) de Região sem documento apagado(s) da tela.`);
+  } catch (err) { console.warn("Nauren RPG | limpeza de Regiões órfãs", err); }
+  return n;
 }
 
 /** 0.109.13: algum andar de cima (textura do andar ou tile acima do token) cobre o centro do token neste ponto? */
@@ -291,6 +310,30 @@ Hooks.on("canvasReady", () => {
     canvas.app.ticker.remove(naurenInterfaceTokensNoAndar); canvas.app.ticker.add(naurenInterfaceTokensNoAndar, null, PIXI.UPDATE_PRIORITY.LOW);
     canvas.app.ticker.remove(naurenEfeitosNoAndar); canvas.app.ticker.add(naurenEfeitosNoAndar, null, PIXI.UPDATE_PRIORITY.LOW);
   } catch (err) { /* sem ticker */ }
+});
+
+/**
+ * 0.109.21: diagnóstico das Regiões (F12): naurenDiagnosticoRegioes(). Lista as Regiões da cena (documento),
+ * os desenhos no canvas e as áreas das Emanações, para achar área fantasma. Só com o Modo de depuração ligado.
+ */
+naurenRegistrarComandoDepuracao("naurenDiagnosticoRegioes", function () {
+  const cena = canvas?.scene; if (!cena) return console.log("Nenhuma cena aberta.");
+  console.log("Andar visto:", canvas.level?.name, canvas.level?.id);
+  const docs = cena.regions.contents.map(r => ({
+    id: r.id, nome: r.name, andares: listaDe(r.levels).join(", ") || "(todos)",
+    forma: r.shapes?.map(f => `${f.type} ${Math.round(f.x ?? 0)},${Math.round(f.y ?? 0)}${f.radius ? " r" + Math.round(f.radius) : ""}`).join(" | "),
+    emanacao: r.flags?.nauren?.emanacaoOrigem ? `${r.flags.nauren.emanacaoOrigem.tokenId}` : "",
+    desenho: r.object ? (r.object.destroyed ? "destruído" : (r.object.visible ? "visível" : "oculto")) : "sem desenho"
+  }));
+  console.log(`Regiões no documento da cena (${docs.length}):`); console.table(docs);
+  const objs = (canvas.regions?.placeables ?? []).map(o => ({
+    id: o.document?.id, nome: o.document?.name, existeNaCena: cena.regions.get(o.document?.id) === o.document,
+    visivel: !!o.visible, destruido: !!o.destroyed
+  }));
+  console.log(`Desenhos de Região no canvas (${objs.length}):`); console.table(objs);
+  const camadas = Object.keys(canvas.interface?.grid?.highlightLayers ?? {});
+  console.log("Camadas de destaque do grid:", camadas);
+  console.log("Órfãos apagados agora:", naurenLimparRegioesOrfas());
 });
 
 /**
