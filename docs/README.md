@@ -7,6 +7,7 @@ Os arquivos estão separados em pastas pelo uso. Nenhum deles é lido pelo siste
 |---|---|
 | [`jogar/hud-combate.md`](jogar/hud-combate.md) | O painel de Ações embaixo da tela: quando aparece, atalhos e o que cada botão faz. |
 | [`jogar/reacao-em-dois-passos.md`](jogar/reacao-em-dois-passos.md) | Como a reação a um ataque funciona no sistema (reagir e depois resolver). |
+| [`jogar/aprimorar-itens.md`](jogar/aprimorar-itens.md) | Pigmentos em armas e armaduras e itens que modificam habilidades (aba Aprimorar). |
 | [`animacoes/animacoes.md`](animacoes/animacoes.md) | Como ligar o Automated Animations, o Sequencer e o JB2A, e quais nomes cadastrar. |
 | [`animacoes/nauren-aa-menu-completo.json`](animacoes/nauren-aa-menu-completo.json) | O menu completo de animações e sons do Nauren, para importar no Automated Animations. |
 | [`animacoes/nauren-aa-novas-0.94.27.json`](animacoes/nauren-aa-novas-0.94.27.json) | Só as animações novas desde a 0.92.2 (importar com Merge). |

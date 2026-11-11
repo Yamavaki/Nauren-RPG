@@ -6,6 +6,7 @@ import "./ficha-item.mjs";
 import { naurenCaminhoImagemSubclasse } from "./compendios.mjs";
 import { naurenReaplicarUpgradesDeSubclasse, naurenReconciliarItemComCompendio } from "./icone-condicao-token.mjs";
 import "./relogio-combate.mjs";
+import { naurenSistemaEfetivo } from "./aprimoramentos.mjs";
 import { naurenLog } from "./depuracao.mjs";
 /* =======================================
  * RELÓGIO DE COMBATE - tempo das Condições
@@ -179,8 +180,10 @@ async function naurenRecarregarUsos(actor, escopo) {
     }
     // Usos de Habilidade Passiva - mesmo motor de reset, só que no
     // nível do item inteiro (não dentro de uma Ação específica dele).
-    if (sys?.usaUsosPassiva && (sys.usosPassivaReset || "turno") === escopo && (sys.usosPassivaAtual ?? 0) < naurenUsosPassivaMax(sys)) {
-      updateData["system.usosPassivaAtual"] = naurenUsosPassivaMax(sys);
+    // 0.110: o máximo conta com os itens equipados que mudam esta passiva.
+    const usosPassivaMaxEf = sys?.usaUsosPassiva ? naurenUsosPassivaMax(naurenSistemaEfetivo(actor, item)) : 0;
+    if (sys?.usaUsosPassiva && (sys.usosPassivaReset || "turno") === escopo && (sys.usosPassivaAtual ?? 0) < usosPassivaMaxEf) {
+      updateData["system.usosPassivaAtual"] = usosPassivaMaxEf;
     }
     if (Object.keys(updateData).length) await item.update(updateData);
   }

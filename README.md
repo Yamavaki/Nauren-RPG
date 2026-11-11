@@ -4,7 +4,7 @@
 
 Sistema completo do **Nauren RPG** para o Foundry VTT: fichas, combate automatizado e compêndios com todo o livro.
 
-![Foundry](https://img.shields.io/badge/Foundry-v14-orange) ![Versão](https://img.shields.io/badge/vers%C3%A3o-0.109.22-purple) ![Idioma](https://img.shields.io/badge/idioma-pt--BR-green)
+![Foundry](https://img.shields.io/badge/Foundry-v14-orange) ![Versão](https://img.shields.io/badge/vers%C3%A3o-0.110.0-purple) ![Idioma](https://img.shields.io/badge/idioma-pt--BR-green)
 
 ## Instalar
 
@@ -30,6 +30,7 @@ Para atualizar, use **Atualizar** na lista de sistemas: o Foundry compara a vers
 - **HUD de combate.** As Ações do token selecionado ficam num painel embaixo da tela.
 - **Criador de Monstros e Bestiário.** Inclui o Bando de lacaios e mais de 500 Habilidades de Monstros prontas.
 - **Itens da Torre Infinita.** Itens Pigmentados, consumíveis e equipamentos prontos, com instruções de uso.
+- **Aprimorar itens.** Pigmentos aplicados em armas e armaduras (espaços pelo tier, bônus enquanto equipado) e itens que modificam uma Habilidade, Magia ou a Condição que ela aplica, somando depois das Subclasses.
 - **Armazenamentos e lojas.** Baús, cofres e balcões no mapa, com tranca por chave e venda de itens.
 - **Escritos.** Notas, cartas, pergaminhos e livros para os jogadores lerem, com parágrafos secretos do Mestre.
 - **Molduras e barras de token.** Molduras desenhadas pelo sistema, barras de Vida e Estamina e suporte a cenas com andares.

@@ -6,6 +6,7 @@ import { NAUREN_KIT_JANELA } from "./janelas-kit.mjs";
 import { naurenConcederRecurso, naurenProcessarGatilhos } from "./icone-condicao-token.mjs";
 import { naurenBandoCfg, naurenBandoDados, naurenCombatenteEhDoAtor } from "./bando.mjs";
 import { NaurenAlvoHelper } from "./ficha-ator.mjs";
+import { naurenFontesDeItens } from "./aprimoramentos.mjs";
 
 
 // 0.94.31: Entidades de campo foi para modulos/entidades-campo.mjs.
@@ -296,6 +297,7 @@ function naurenMapearStrings(valor, fn) {
  */
 function naurenFontesDeModificadores(actor) {
   const fontes = [];
+  // Camada 0: Efeitos e nós de Subclasse. Camada 1 (0.110): itens equipados - entram DEPOIS (ver fim da função).
   for (const item of actor?.items ?? []) {
     if (item.type === "efeito" && item.system.ativo && item.system.modificaOutroItem) {
       fontes.push({ nome: item.name, rank: item.system.rankAtual ?? 0, entradas: item.system.modificadoresExternos ?? [], chave: `efeito:${item.id}`, tipo: "Efeito" });
@@ -306,6 +308,7 @@ function naurenFontesDeModificadores(actor) {
       }
     }
   }
+  try { fontes.push(...naurenFontesDeItens(actor)); } catch (err) { console.warn("Nauren RPG | Modificações de itens equipados", err); }
   return fontes;
 }
 

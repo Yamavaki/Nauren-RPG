@@ -9,6 +9,7 @@ import { NaurenAlvoHelper, NaurenRegionHelper } from "./ficha-ator.mjs";
 import { naurenAnimarPassiva, naurenMotionEmTodos } from "./animacoes.mjs";
 import { naurenBordaConfig, naurenBordaDadosPreparados } from "./borda-token.mjs";
 import { NAUREN_KIT_JANELA, naurenKitJanela, naurenKitSistema } from "./janelas-kit.mjs";
+import { naurenSistemaEfetivo, naurenRaioEmanacaoComItens } from "./aprimoramentos.mjs";
 import { naurenLog } from "./depuracao.mjs";
 /** 0.95: ofertas de gatilho dizem o que aconteceu antes de perguntar. */
 function naurenOfertaPrefixo(item, rotuloEvento) {
@@ -2009,7 +2010,7 @@ async function naurenProcessarGatilhosInterno(tipoEvento, atorEvento, contexto =
       if (item.type === "condicao" && naurenEhCondicaoModelo(item)) continue; // modelo guardado na ficha (NPC) não está "em" ninguém
       const usosGatilho = foundry.utils.deepClone(item.getFlag("nauren", "gatilhoUsos") ?? {});
       if (naurenEhCondicaoModelo(item)) continue; // modelo na ficha do NPC: não age nele
-      const gatilhosBatendo = (item.system.gatilhos ?? []).map((g, indice) => ({ ...naurenResolverSelfEmObjeto(g, candidato), _indice: indice })).filter(g => {
+      const gatilhosBatendo = (naurenSistemaEfetivo(candidato, item)?.gatilhos ?? []).map((g, indice) => ({ ...naurenResolverSelfEmObjeto(g, candidato), _indice: indice })).filter(g => {
         if (g.evento !== tipoEvento) return false;
         if (g.apenasAtaque && !contexto.ehAtaque) return false;
         if (g.soSeAcertou && contexto.acertou === false) return false;
@@ -2828,7 +2829,7 @@ async function naurenAurasDeEstaminaSobreMim(alvoActor) {
       const mesma = tokAlvo.document.disposition === tokFonte.document.disposition;
       if (filtro === "aliados" && !mesma) continue;
       if (filtro === "inimigos" && mesma) continue;
-      const raio = parseFloat(naurenResolverPorRank(item.system.emanacaoRaioPorRank, item.system.rankAtual ?? 0, "valor") ?? item.system.emanacaoRaio) || 0;
+      const raio = naurenRaioEmanacaoComItens(item, parseFloat(naurenResolverPorRank(item.system.emanacaoRaioPorRank, item.system.rankAtual ?? 0, "valor") ?? item.system.emanacaoRaio) || 0);
       if (naurenMedirDistanciaBordas(tokFonte, tokAlvo) > raio) continue;
       let roll; try { roll = await new Roll(naurenFormulaComTokensDoAtor(item.system.emanacaoQuantidade || "0", fonte)).evaluate(); } catch (err) { continue; }
       if (!roll.total) continue;
@@ -2868,7 +2869,7 @@ async function naurenProcessarEmanacoesSobre(atorAlvo) {
       const disp = item.system.emanacaoDisposicao || "inimigos";
       const mesma = t.document.disposition === meuTok.document.disposition;
       if ((disp === "aliados" && !mesma) || (disp === "inimigos" && mesma)) continue;
-      const raio = parseFloat(item.system.emanacaoRaio) || 0;
+      const raio = naurenRaioEmanacaoComItens(item, parseFloat(item.system.emanacaoRaio) || 0);
       let d = Infinity; try { d = naurenMedirDistanciaBordas(t, meuTok); } catch (err) { d = Infinity; }
       if (d > raio + 0.01) continue;
       const linhas = [];
@@ -2916,7 +2917,7 @@ async function naurenProcessarEmanacoes(tipoEvento, atorFonte) {
     // usa naurenResolverPorRank (mesma função de dano/cura por rank),
     // com fallback pro raio simples se não houver override pro rank atual.
     const raioOverride = naurenResolverPorRank(item.system.emanacaoRaioPorRank, item.system.rankAtual ?? 0, "valor");
-    const raio = parseFloat(raioOverride ?? item.system.emanacaoRaio) || 0;
+    const raio = naurenRaioEmanacaoComItens(item, parseFloat(raioOverride ?? item.system.emanacaoRaio) || 0);
     const disposicaoFiltro = item.system.emanacaoDisposicao || "inimigos";
     const incluiDono = disposicaoFiltro === "todosComVoce";
     const alvos = [];

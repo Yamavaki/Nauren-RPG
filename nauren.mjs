@@ -45,6 +45,7 @@ import { __naurenIniciar_equipamento_regras, naurenLimiteOfensivoBase, naurenLim
 import { __naurenIniciar_inventor, naurenAplicarEfeitoSimples, naurenContextoInvencoes, naurenCriarFrascoEspecial, naurenCriarObraPrima, naurenEfeitoComSubst, naurenEscolherFrasco, naurenEscolherPeculiaridade, naurenFrascoParaPacote, naurenObraPrimaDe, naurenProcessarFrascoNoAlvo, naurenTextoEfeitoFrasco, naurenTextoFrascoEspecial, naurenUmaVezMarcar, naurenUmaVezRecusa } from "./modulos/inventor.mjs";
 import { __naurenIniciar_condicao_hud_token } from "./modulos/condicao-hud-token.mjs";
 import { naurenOrganizadorInit } from "./modulos/organizador.mjs";
+import { naurenCorrespondeAlvoComposto, naurenSistemaEfetivo, naurenBonusPigmentosDoItem } from "./modulos/aprimoramentos.mjs";
 const { HTMLField, SchemaField, NumberField, StringField, BooleanField, ArrayField, ObjectField } = foundry.data.fields;
 
 /* =======================================
@@ -398,6 +399,43 @@ function campoModificadorExterno() {
     condicaoNovaPerguntarParaEvitar: new BooleanField({ initial: false }),
     condicaoNovaCustoParaEvitarRecurso: new StringField({ initial: "estamina" }),
     condicaoNovaCustoParaEvitarQuantidade: new StringField({ initial: "1" })
+  };
+}
+
+/**
+ * 0.110: pigmento aplicado num item (Códex Inventariun). "cor" é uma das 8 cores, "qualidade" 1 a 3
+ * (o bônus), "escolha" só para Branco (qualquer meta atributo) e Vermelho (PdA ou PdM) - definida ao aplicar.
+ * O bônus só vale com o item EQUIPADO (ver naurenBonusPigmentosDoItem em modulos/aprimoramentos.mjs).
+ */
+function campoPigmentoAplicado() {
+  return {
+    cor: new StringField({ initial: "" }),
+    qualidade: new NumberField({ initial: 1, min: 1, max: 3, integer: true }),
+    escolha: new StringField({ initial: "" })
+  };
+}
+
+/**
+ * 0.110: "Modifica habilidade" de um item EQUIPADO (arma/armadura). Cada linha aponta para uma Habilidade,
+ * Magia ou Condição pelo seedId (estável entre atualizações do compêndio), com o UUID e o nome de reserva.
+ * Entra no mesmo motor dos modificadores de Subclasse (naurenFontesDeModificadores), DEPOIS deles, e só com
+ * os modos aditivos (somar, dado extra, subir dado, adicionar Condição) - ver modulos/aprimoramentos.mjs.
+ */
+function campoModificaHabilidade() {
+  return {
+    alvoUuid: new StringField({ initial: "" }),
+    alvoSeedId: new StringField({ initial: "" }),
+    alvoNome: new StringField({ initial: "" }),
+    alvoTipo: new StringField({ initial: "" }),
+    // Habilidade/Magia de onde a linha foi escolhida (quando o alvo é a Condição que ela aplica).
+    viaUuid: new StringField({ initial: "" }),
+    viaSeedId: new StringField({ initial: "" }),
+    viaNome: new StringField({ initial: "" }),
+    campo: new StringField({ initial: "" }),
+    rotulo: new StringField({ initial: "" }),
+    modo: new StringField({ initial: "somar" }),
+    valor: new StringField({ initial: "" }),
+    condicaoNovaAcumulos: new StringField({ initial: "1" })
   };
 }
 
@@ -2364,6 +2402,9 @@ class NaurenArmaData extends foundry.abstract.TypeDataModel {
       // 0.94.24: Efeitos (passivas com gatilho, efeito nos ataques, imunidade) que o item coloca na ficha
       // enquanto estiver EQUIPADO e tira ao desequipar/remover - ver naurenSincronizarEfeitosAoEquipar.
       efeitosAoEquipar: new ArrayField(new StringField()),
+      // 0.110: pigmentos aplicados (Códex) e modificações de habilidades enquanto equipada.
+      pigmentosAplicados: new ArrayField(new SchemaField(campoPigmentoAplicado())),
+      modificaHabilidades: new ArrayField(new SchemaField(campoModificaHabilidade())),
       // Rank desta arma (mesmo mecanismo da Habilidade - útil pra
       // armas concedidas/melhoradas por Classe ou Subclasse). Ver
       // NaurenHabilidadeData pra explicação completa de rankAtual/rankMax
@@ -2548,6 +2589,9 @@ class NaurenArmaduraData extends foundry.abstract.TypeDataModel {
       // 0.94.24: Efeitos (passivas com gatilho, efeito nos ataques, imunidade) que o item coloca na ficha
       // enquanto estiver EQUIPADO e tira ao desequipar/remover - ver naurenSincronizarEfeitosAoEquipar.
       efeitosAoEquipar: new ArrayField(new StringField()),
+      // 0.110: pigmentos aplicados (Códex) e modificações de habilidades enquanto equipada.
+      pigmentosAplicados: new ArrayField(new SchemaField(campoPigmentoAplicado())),
+      modificaHabilidades: new ArrayField(new SchemaField(campoModificaHabilidade())),
       usaCargas: new BooleanField({ initial: false }),
       cargasAtual: new NumberField({ initial: 0, min: 0, integer: true }),
       cargasMax: new NumberField({ initial: 1, min: 0, integer: true }),
@@ -2573,7 +2617,7 @@ class NaurenArmaduraData extends foundry.abstract.TypeDataModel {
 }
 
 /** 0.98.7: categorias do Equipamento (tipo de item "consumivel" por dentro). Só a de Consumível gasta 1 a cada uso. */
-const NAUREN_CATEGORIAS_EQUIPAMENTO = { consumivel: "Consumível", ferramenta: "Ferramenta", acessorio: "Acessório", utensilio: "Utensílio", vestimenta: "Vestimenta", escrito: "Escrito (nota, carta, livro)", moeda: "Moeda", outro: "Outro" };
+const NAUREN_CATEGORIAS_EQUIPAMENTO = { consumivel: "Consumível", ferramenta: "Ferramenta", acessorio: "Acessório", utensilio: "Utensílio", vestimenta: "Vestimenta", escrito: "Escrito (nota, carta, livro)", moeda: "Moeda", outro: "Outro", pigmento: "Pigmento (aplicar em item)" };
 /** 0.99: maior quantidade que um item guarda (cabe em qualquer tela com os pontos de milhar). */
 const NAUREN_QUANTIDADE_MAXIMA = 999999999;
 /** Número inteiro por extenso com pontos de milhar: 1250000 → "1.250.000". */
@@ -2697,6 +2741,9 @@ class NaurenConsumivelData extends foundry.abstract.TypeDataModel {
       luzVisao: campoLuzVisao(), // 0.99: luz e visão do item no token
       // 0.98.7: o tipo "consumivel" aparece como "Equipamento"; a categoria diz o que ele é. Só "consumivel" gasta 1 ao usar.
       categoria: new StringField({ initial: "consumivel" }),
+      // 0.110: categoria "pigmento": a cor e a qualidade (1 a 3) que ele dá ao ser aplicado num item.
+      pigmentoCor: new StringField({ initial: "Azul" }),
+      pigmentoQualidade: new NumberField({ initial: 1, min: 1, max: 3, integer: true }),
       venenoCondicaoUuid: new StringField({ initial: "" }),     // frasco de veneno: a Condição que ele aplica
       ehMunicao: new BooleanField({ initial: false }),          // é munição (flecha, bala...)
       tipoMunicao: new StringField({ initial: "" }),            // tipo (ex.: flecha, municao) - a arma usa munição deste tipo
@@ -4869,6 +4916,8 @@ function naurenResolverPorRank(lista, rankAtual, campo = "formula") {
  */
 function naurenItemCorrespondeAoAlvo(item, alvoUuid) {
   if (!item || !alvoUuid) return false;
+  // 0.110: alvo composto dos itens que modificam habilidade (seedId|uuid|tipo|nome) - ver modulos/aprimoramentos.mjs.
+  if (String(alvoUuid).startsWith("alvo:")) return naurenCorrespondeAlvoComposto(item, alvoUuid);
   return item.uuid === alvoUuid ||
     item.getFlag("nauren", "origemUuid") === alvoUuid ||
     item.getFlag("core", "sourceId") === alvoUuid ||
@@ -6764,7 +6813,7 @@ class NaurenActor extends Actor {
       if ((item.type !== "habilidade" && item.type !== "magia") || !item.system.ativo) continue;
       if (!item.system.modificadores?.length) continue;
       if (item.system.modificadoresSoComEstado && !naurenTemEstado(this, item.system.modificadoresSoComEstado)) continue;
-      somarModificadores(item.system.modificadores, total, 1, item, `${item.name} (Habilidade)`);
+      somarModificadores(naurenSistemaEfetivo(this, item)?.modificadores ?? item.system.modificadores, total, 1, item, `${item.name} (Habilidade)`); // 0.110: com itens equipados
     }
 
     // 3) Itens de Efeito VINCULADOS de forma PASSIVA a uma Armadura, Arma,
@@ -6866,7 +6915,7 @@ class NaurenActor extends Actor {
     for (const item of this.items) {
       const ativoAqui = item.type === "condicao" ? item.system.ativo !== false : ((item.type === "habilidade" || item.type === "efeito") && item.system.ativo);
       if (!ativoAqui) continue;
-      for (const b of (item.system.bonusCondicionalAoAlvo ?? [])) {
+      for (const b of (naurenSistemaEfetivo(this, item)?.bonusCondicionalAoAlvo ?? [])) { // 0.110: com itens que mudam a passiva
         if (!b.ativo || !b.condicaoUuid) continue;
         const valorResolvido = naurenInterpretarModificador(b.valor, this, item)?.valor ?? 0;
         if (!valorResolvido) continue;
@@ -6907,6 +6956,14 @@ class NaurenActor extends Actor {
       if (item.type !== "cor" || !item.system.ativo) continue;
       somar(item.system, totalPigmento, item.getFlag?.("nauren", "dobrada") ? 2 : 1, item, `${item.name} (Pigmento)${item.getFlag?.("nauren", "dobrada") ? " ×2" : ""}`);
       if (item.system.bonusMenorAtributo) bonusMenorAtributoTotal += (item.system.bonusMenorAtributoValor || 0) * (item.getFlag?.("nauren", "dobrada") ? 2 : 1);
+    }
+    // 3.61) 0.110: Pigmentos APLICADOS em armas/armaduras EQUIPADAS (Códex Inventariun): +1/+2/+3 pela qualidade.
+    for (const item of this.items) {
+      if (!["arma", "armadura"].includes(item.type) || !item.system.equipado || !(item.system.pigmentosAplicados ?? []).length) continue;
+      for (const b of naurenBonusPigmentosDoItem(item)) {
+        if (b.campo === "menorAtributo") { bonusMenorAtributoTotal += b.valor; continue; }
+        aplicarCampo(total, b.campo, String(b.valor), 1, item, b.origem);
+      }
     }
     if (bonusMenorAtributoTotal !== 0) {
       // Ordem de desempate do manual: Força, Agilidade, Estamina, Inteligência, Destino

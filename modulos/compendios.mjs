@@ -4280,6 +4280,22 @@ async function naurenSemearEquipamentos(pack) {
       descricao: "<p>Uma chave de ferro comum. <b>Modelo:</b> arraste para o mundo, troque o nome (ex.: \"Chave da Cripta\") e a imagem.</p><p>Para trancar um Armazenamento com ela: na ficha do armazenamento, aba <b>Configurar</b>, ligue <b>Trancado</b> e arraste esta chave para <b>Abre com o item</b>. Quem tiver um item com o mesmo nome abre o baú (e, se \"Gasta a chave ao abrir\" estiver ligado, perde a chave).</p>"
     }
   });
+  // 0.110: Pigmentos para aplicar em armas e armaduras (Códex Inventariun) - 8 cores × 3 qualidades.
+  const icones = { Vermelho: "icons/consumables/potions/bottle-round-corked-red.webp", Azul: "icons/consumables/potions/bottle-round-corked-blue.webp",
+    Verde: "icons/consumables/potions/bottle-round-corked-green.webp", Roxo: "icons/consumables/potions/bottle-bulb-corked-purple.webp",
+    Preto: "icons/commodities/materials/powder-black.webp", Branco: "icons/commodities/materials/bowl-liquid-white.webp",
+    Rosa: "icons/consumables/potions/bottle-round-corked-pink.webp", Dourado: "icons/commodities/materials/bowl-powder-gold.webp" };
+  const efeitos = { Vermelho: "Poder de Ataque ou Poder de Magia (escolha ao aplicar)", Azul: "Espírito", Verde: "Vitalidade", Roxo: "seu menor atributo",
+    Preto: "limite de Estresse", Branco: "qualquer meta atributo (escolha ao aplicar)", Rosa: "Movimento", Dourado: "Destino" };
+  for (const [cor, img] of Object.entries(icones)) for (const q of [1, 2, 3]) {
+    await naurenGarantirItemNoPack(pack, `equip-pigmento-${cor.toLowerCase()}-${q}`, {
+      name: `Pigmento ${cor} (qualidade ${q})`, type: "consumivel", img,
+      system: {
+        categoria: "pigmento", pigmentoCor: cor, pigmentoQualidade: q, quantidade: 1, quantidadeMax: 1, efeito: "", equipado: false,
+        descricao: `<p>Aplicado num item, dá <b>+${q} em ${efeitos[cor]}</b> enquanto o item estiver equipado.</p><p><b>Como usar:</b> abra a ficha da arma ou armadura, aba <b>Aprimorar</b>, e arraste o pigmento para "Pigmentos". Espaços pelo tier do item: Bronze 1, Prata 2, Ouro 3. Com os espaços cheios, o novo substitui um antigo, que se perde. Item sem tier não aceita pigmento.</p>`
+      }
+    });
+  }
   await naurenGarantirItemNoPack(pack, "equip-florins", {
     name: "Florins", type: "consumivel", img: "icons/commodities/currency/coins-plain-stack-gold-yellow.webp",
     system: {

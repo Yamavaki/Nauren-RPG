@@ -1,4 +1,5 @@
 /* Nauren RPG — Ficha de Item (NaurenItemSheet). Separado do nauren.mjs na 0.94.22. */
+import { naurenTemAbaAprimorar, naurenAprimorarHtml, naurenAprimorarLigar } from "./aprimoramentos.mjs";
 import { naurenKitJanela, naurenKitSistema } from "./janelas-kit.mjs";
 import { NAUREN_ATRIBUTOS_CLASSE_LIVRO, naurenFormatarNumero, NAUREN_CATEGORIAS_EQUIPAMENTO, ARMADURA_TIPOS, ARMA_TIPOS, ATRIBUTOS_BASE_OPCOES, ATRIBUTOS_BONUS, HABILIDADE_CATEGORIAS, NAUREN_CAMPOS_MODIFICADOR_OPCOES, NAUREN_CAPACIDADES, NAUREN_EQUIPAMENTO_CLASSE_LIVRO, NAUREN_EQUIP_CATEGORIAS, NAUREN_LOGICA_CONDICOES_OPCOES, NAUREN_MODOS_DURACAO, NAUREN_MODOS_MODIFICADOR_EXTERNO_OPCOES, NAUREN_MOMENTOS_PERIODICOS, NAUREN_PAGAR_CUSTO_OPCOES, NAUREN_PAGAR_RECURSO_OPCOES, NAUREN_PRIORIDADE_DISPOSICAO, NAUREN_PRIORIDADE_INDICADORES, NAUREN_PRIORIDADE_INDICADORES_ACAO, NAUREN_PRIORIDADE_QUEM_RECEBE, NaurenGrupoHelper, NaurenHabilidadeData, NaurenSubclasseHelper, TEMPLATE_FORMATOS, naurenAjustarListasLargas, naurenBotoesDeFormula, naurenCategoriaDaArma, naurenCombatenteEhDoAtor, naurenCondicaoDoSistemaPorNome, naurenCondicaoNegativa, naurenGruposExclusivosConhecidos, naurenModificacoesRecebidas, naurenModoDuracaoCondicao, naurenMomentoEfeitoPeriodico, naurenMostrarNomesDosCamposUuid, naurenMunicoesCompativeis, naurenNomeParaUuid, naurenOpcoesDeCampoParaModificadorExterno, naurenPersistirDetalhesAbertos, naurenPesoOfensivo, naurenPostarCard, naurenRecursosCustomConhecidos, naurenResumoDaAcao, naurenResumoEquipamentoClasse, naurenResumoModificador, naurenResumoPrioridadeAcao, naurenUsarAcalanto } from "../nauren.mjs";
 import { NAUREN_MOTION_CONDICAO_OPCOES, naurenMotionPresetCondicao } from "./animacoes.mjs";
@@ -881,6 +882,12 @@ class NaurenItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       context.botoesScriptHtml = naurenHtmlBotoesScript(item);
       // 0.105: aba Aparência (imagem/tamanho/borda no mapa enquanto o item valer)
       if (naurenEhEscrito(item)) context.escritoHtml = naurenEscritoAbaHtml(item); // 0.106: Escritos
+      // 0.110: aba Aprimorar (pigmentos aplicados e modificações de habilidades) - armas e armaduras.
+      if (naurenTemAbaAprimorar(item)) {
+        try { context.aprimorarHtml = await naurenAprimorarHtml(item); } catch (err) { console.warn("Nauren RPG | aba Aprimorar", err); }
+        context.aprimorarQtd = (item.system.pigmentosAplicados?.length ?? 0) + (item.system.modificaHabilidades?.length ?? 0);
+        context.aprimorarRotulo = item.type === "consumivel" ? "Pigmento" : "Aprimorar";
+      }
       if (NAUREN_APARENCIA_TIPOS.has(item.type) && !ehModelo) { context.aparenciaHtml = naurenAparenciaHtml(item, naurenProntasLista()); context.aparenciaAtiva = !!item.getFlag("nauren", "aparencia")?.ativa; }
       context.torreOpcoes = { tiers: NAUREN_TORRE_TIERS, raridades: NAUREN_TORRE_RARIDADES, lojas: NAUREN_TORRE_LOJAS, pigmentos: NAUREN_TORRE_PIGMENTOS };
       context.podeEditarTorre = game.user.isGM;
@@ -1527,6 +1534,7 @@ class NaurenItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     // 0.102: aba Condições, seletor de Condição, aba Script e botões de script.
     try { naurenAparenciaLigar(this); } catch (err) { console.warn("Nauren RPG | Aparência na ficha", err); }
     try { naurenEscritoLigarAba(this); } catch (err) { console.warn("Nauren RPG | Escrito na ficha", err); }
+    try { naurenAprimorarLigar(this); } catch (err) { console.warn("Nauren RPG | Aprimorar na ficha", err); }
     // 0.105.2: guarda a rolagem entre renders (qualquer item.update re-desenha a ficha e ela voltava para o topo)
     this._naurenRolagem ??= {};
     for (const sel of [".nauren-sheet", ".window-content"]) {

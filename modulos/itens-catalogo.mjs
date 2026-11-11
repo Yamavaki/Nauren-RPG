@@ -23,8 +23,8 @@ export const NAUREN_TIERS_PADRAO = [
   { id: "prismatico", nome: "Prismático", icone: "fa-star", texto: "#ffffff", fundo: { cores: ["#d94c6a", "#e0a040", "#57c27a", "#4a9be0", "#9a62e0"], posicoes: [0, 25, 50, 75, 100], angulo: 90 }, borda: { cores: ["#ffd0dc", "#fff2c0", "#d0ffe0", "#d0e8ff", "#ecd8ff"], largura: 1.5 }, forma: "losango", efeito: "arco", efeitos: [{ tipo: "ciclo", cores: ["#d94c6a", "#e0a040", "#57c27a", "#4a9be0", "#9a62e0"], vel: 3, int: 60 }, { tipo: "borda", cores: ["#ffffff", "#ffe7a0"], vel: 3, int: 90 }] }
 ];
 // Valores do bot da Torre (flags.nauren.torre.tier) ⇄ id do tier.
-const TORRE_PARA_ID = { Bronze: "bronze", Prata: "prata", Ouro: "ouro", Diamante: "diamante", Prismatico: "prismatico" };
-const ID_PARA_TORRE = Object.fromEntries(Object.entries(TORRE_PARA_ID).map(([k, v]) => [v, k]));
+const TORRE_PARA_ID = { Bronze: "bronze", Prata: "prata", Ouro: "ouro", Diamante: "diamante", Prismatico: "prismatico", "Prismático": "prismatico" };
+const ID_PARA_TORRE = { bronze: "Bronze", prata: "Prata", ouro: "Ouro", diamante: "Diamante", prismatico: "Prismatico" };
 
 const corValida = c => typeof c === "string" && /^(#[0-9a-f]{3,8}|rgba?\(\s*[\d.\s,%]+\))$/i.test(c.trim()) ? c.trim() : null;
 const numero = (v, min, max, padrao) => { const n = Number(v); return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : padrao; };
@@ -173,7 +173,7 @@ export function naurenCatalogoDoItem(item) {
   const c = f.catalogo ?? {}, t = f.torre ?? null;
   const tem = k => c[k] !== undefined && c[k] !== null;
   return {
-    tier: tem("tier") ? String(c.tier) : (t?.tier ? (TORRE_PARA_ID[t.tier] ?? String(t.tier).toLowerCase()) : ""),
+    tier: tem("tier") ? String(c.tier) : (t?.tier ? (TORRE_PARA_ID[t.tier] ?? String(t.tier).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()) : ""),
     raridade: tem("raridade") ? String(c.raridade) : (t?.raridade ?? ""),
     valor: tem("valor") && c.valor !== "" ? Math.max(0, Math.round(Number(c.valor) || 0)) : (t ? Math.max(0, Number(t.preco) || 0) : 0),
     temValor: (tem("valor") && c.valor !== "") || !!t,

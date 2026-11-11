@@ -1,5 +1,5 @@
 /* Versão deste arquivo: o sistema confere no "ready" e, se o navegador/Forge tiver guardado um CSS antigo, carrega o novo. */
-:root { --nauren-css-versao: "0.109.22"; }
+:root { --nauren-css-versao: "0.110.0"; }
 /* 
 ===================================================
 1. FUNDO E FONTES GERAIS
@@ -8899,3 +8899,87 @@ li.directory-item.nauren-org-tem-dono > .entry-name > .nauren-org-nome { overflo
 .nauren-org-menu-jog button[hidden] { display: none; }
 .nauren-org-busca-jog { display: block; width: calc(100% - 16px); margin: 4px 8px 6px; box-sizing: border-box; }
 .nauren-org-menu-jog button i.nauren-org-bolinha { width: 9px; height: 9px; margin: 0 3px; }
+
+/* ===================== 0.110: Aprimorar (pigmentos em itens e item que modifica habilidade) ===================== */
+.apr-painel { display: flex; flex-direction: column; gap: 12px; --apr-ouro: var(--n-ouro, #e0b257); --apr-suave: var(--n-suave, #b3a6c9); --apr-txt: var(--n-texto, #ece6f5); --apr-linha: var(--n-borda, #3b3154); }
+.apr-bloco { display: flex; flex-direction: column; gap: 10px; padding: 12px 14px; --cc: 9px; --cbg: var(--n-painel, #241e36); --cbd: var(--apr-linha); }
+.apr-cab { display: flex; align-items: center; gap: 8px; font: 600 14px Signika, sans-serif; color: var(--apr-txt); }
+.apr-cab > i { color: var(--apr-ouro); width: 16px; text-align: center; }
+.apr-cab > b { flex: 1 1 auto; }
+.apr-pilula { flex: 0 0 auto; padding: 1px 8px; border-radius: 999px; font: 600 11px Signika, sans-serif; color: var(--apr-suave); background: color-mix(in srgb, var(--apr-linha) 70%, transparent); white-space: nowrap; }
+.apr-dica { margin: 0; font-size: 11.5px; line-height: 1.45; color: var(--apr-suave); }
+.apr-dica b { color: var(--apr-txt); }
+.apr-dica.apr-aviso > i { color: var(--apr-ouro); margin-right: 4px; }
+.apr-rot { font: 600 11px Signika, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--apr-ouro); }
+.apr-painel [data-apr-drop].apr-sobre { outline: 2px dashed var(--apr-ouro); outline-offset: 3px; }
+
+/* Bolinha de pigmento (cor + qualidade) */
+.apr-bola { flex: 0 0 auto; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font: 700 12px Signika, sans-serif; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.7);
+  background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--c) 55%, #fff) 0, var(--c) 45%, color-mix(in srgb, var(--c) 70%, #000) 100%);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--c) 40%, #17111f), 0 0 10px color-mix(in srgb, var(--c) 45%, transparent); }
+.apr-bola.vaga { background: transparent; box-shadow: none; border: 1.5px dashed color-mix(in srgb, var(--apr-suave) 60%, transparent); color: var(--apr-suave); font-size: 10px; text-shadow: none; }
+.apr-bola.grande { width: 44px; height: 44px; font-size: 17px; }
+
+/* Espaços de pigmento */
+.apr-slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.apr-slot { display: flex; align-items: center; gap: 10px; min-height: 46px; padding: 8px 10px; border-radius: 8px; background: color-mix(in srgb, #000 22%, var(--n-painel, #241e36)); border: 1px solid color-mix(in srgb, var(--apr-linha) 80%, transparent); box-sizing: border-box; }
+.apr-slot.cheio { border-color: color-mix(in srgb, var(--c) 45%, var(--apr-linha)); }
+.apr-slot.vago { border-style: dashed; }
+.apr-slot-txt { flex: 1 1 auto; display: flex; flex-direction: column; min-width: 0; font: 13px Signika, sans-serif; color: var(--apr-txt); line-height: 1.2; }
+.apr-slot-txt small { font-size: 11.5px; color: var(--apr-suave); }
+.apr-painel a.apr-x { flex: 0 0 auto; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 5px; color: var(--apr-suave); cursor: pointer; }
+.apr-painel a.apr-x:hover { color: #ff8a8a; background: rgba(255, 138, 138, .1); }
+
+/* Linhas "modifica habilidade" */
+.apr-mod { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; --cc: 7px; --cbg: color-mix(in srgb, #000 22%, var(--n-painel, #241e36)); --cbd: color-mix(in srgb, var(--apr-linha) 85%, transparent); }
+.apr-mod-cab { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.apr-mod-cab > img { width: 28px; height: 28px; border-radius: 5px; border: 0; object-fit: cover; flex: 0 0 28px; }
+.apr-mod-cab > i { width: 28px; text-align: center; color: var(--apr-suave); }
+.apr-mod-nome { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; font: 13.5px Signika, sans-serif; color: var(--apr-txt); line-height: 1.2; }
+.apr-mod-nome b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.apr-via { font-size: 11px; color: var(--apr-suave); }
+.apr-mod-grade { display: grid; grid-template-columns: minmax(0, 1fr) 130px 150px; gap: 8px; align-items: end; }
+.apr-mod-grade.larga { grid-template-columns: minmax(0, 1fr) 150px minmax(170px, .8fr); }
+.apr-campo { display: flex; flex-direction: column; gap: 4px; min-width: 0; margin: 0; }
+.apr-campo > span:first-child { font: 600 10.5px Signika, sans-serif; letter-spacing: .05em; text-transform: uppercase; color: var(--apr-suave); }
+.apr-painel .apr-campo select, .apr-painel .apr-campo input { width: 100%; height: 30px; box-sizing: border-box; min-width: 0; }
+.apr-valor-linha { display: flex; gap: 6px; align-items: center; min-width: 0; }
+.apr-painel .apr-valor-linha .apr-num { width: 52px; flex: 0 0 52px; text-align: center; }
+.apr-valor-cond { flex: 1 1 auto; min-width: 0; height: 30px; display: flex; align-items: center; gap: 6px; padding: 0 8px; border-radius: 5px; border: 1px dashed color-mix(in srgb, var(--apr-suave) 55%, transparent); font: 12px Signika, sans-serif; color: var(--apr-suave); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; box-sizing: border-box; cursor: copy; }
+.apr-valor-cond img { width: 20px; height: 20px; border: 0; border-radius: 3px; }
+@media (max-width: 560px) { .apr-mod-grade { grid-template-columns: 1fr 1fr; } .apr-o-que { grid-column: 1 / -1; } }
+.apr-painel { container-type: inline-size; }
+@container (max-width: 520px) { .apr-mod-grade, .apr-mod-grade.larga { grid-template-columns: 1fr 1fr; } .apr-o-que { grid-column: 1 / -1; } }
+
+.apr-drop { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; padding: 10px; border-radius: 8px; border: 1.5px dashed color-mix(in srgb, var(--apr-ouro) 45%, transparent); background: color-mix(in srgb, var(--apr-ouro) 5%, transparent); font: 13px Signika, sans-serif; color: var(--apr-suave); text-align: center; }
+.apr-drop > i { color: var(--apr-ouro); font-size: 16px; }
+.apr-drop b { color: var(--apr-txt); }
+.apr-regras { list-style: none; margin: 0; padding: 8px 0 0; border-top: 1px solid color-mix(in srgb, var(--apr-linha) 70%, transparent); display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 4px 12px; }
+.apr-regras li { margin: 0; font-size: 11.5px; color: var(--apr-suave); display: flex; align-items: center; gap: 6px; }
+.apr-regras li i { width: 14px; text-align: center; color: var(--apr-ouro); font-size: 10.5px; }
+
+/* Botões (mesmo desenho dos da aba Aparência) */
+.nauren-rpg.sheet.item .nauren-sheet .apr-painel button.apr-mini, .nauren-rpg.sheet.item .nauren-sheet .apr-painel button.apr-seg, .nauren-rpg.sheet.item .nauren-sheet .apr-painel button.apr-cor {
+  all: unset; box-sizing: border-box; display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 11px; font: 12.5px Signika, sans-serif; color: var(--apr-suave); cursor: pointer; border-radius: 6px;
+  background: color-mix(in srgb, #000 25%, var(--n-painel, #241e36)); border: 1px solid var(--apr-linha); }
+.nauren-rpg.sheet.item .nauren-sheet .apr-painel button:is(.apr-mini, .apr-seg, .apr-cor):hover { color: var(--apr-txt); border-color: color-mix(in srgb, var(--apr-ouro) 50%, var(--apr-linha)); }
+.nauren-rpg.sheet.item .nauren-sheet .apr-painel button:is(.apr-seg, .apr-cor).on { color: var(--apr-txt); border-color: var(--apr-ouro); background: color-mix(in srgb, var(--apr-ouro) 14%, #17111f); }
+.nauren-rpg.sheet.item .nauren-sheet .apr-painel button.apr-mini i { font-size: 10.5px; color: var(--apr-ouro); }
+.apr-cores, .apr-segs { display: flex; flex-wrap: wrap; gap: 6px; }
+.nauren-rpg.sheet.item .nauren-sheet .apr-painel button.apr-cor span { width: 12px; height: 12px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 1px rgba(0,0,0,.4); }
+.nauren-rpg.sheet.item .nauren-sheet .apr-painel button.apr-seg { flex-direction: column; height: auto; padding: 5px 12px; gap: 0; color: var(--apr-ouro); letter-spacing: 1px; }
+.apr-segs button.apr-seg small { font-size: 10.5px; color: var(--apr-suave); letter-spacing: 0; }
+.apr-previa-pig { display: flex; align-items: center; gap: 12px; padding: 4px 2px 6px; }
+.apr-previa-pig > span:last-child { display: flex; flex-direction: column; gap: 2px; font: 14px Signika, sans-serif; color: var(--apr-txt); }
+.apr-previa-pig small { font-size: 12px; color: var(--apr-suave); }
+.apr-previa-pig small b { color: var(--apr-txt); }
+
+/* Diálogos de pigmento */
+.apr-opcoes { display: flex; flex-direction: column; gap: 6px; margin: 8px 0 4px; }
+.apr-opcao { display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--n-borda, #3b3154); cursor: pointer; }
+.apr-opcao:has(input:checked) { border-color: var(--n-ouro, #e0b257); background: color-mix(in srgb, var(--n-ouro, #e0b257) 10%, transparent); }
+.apr-opcao .apr-bola { width: 22px; height: 22px; font-size: 11px; }
+
+/* Bolinhas na linha do inventário */
+.apr-bolinhas { display: inline-flex; gap: 3px; margin-left: 6px; vertical-align: middle; }
+.apr-bolinhas i { width: 9px; height: 9px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 1px rgba(0,0,0,.45), 0 0 5px color-mix(in srgb, var(--c) 60%, transparent); }

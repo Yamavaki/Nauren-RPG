@@ -475,7 +475,7 @@ Clique para abrir">
             <li class="item-entry ns-linha {{#unless item.system.ativo}}efeito-inativo{{/unless}} {{#if item.nsSemUsos}}ns-sem-usos{{/if}}" data-item-id="{{item.id}}" draggable="true">
               <div class="item-img-container"><img src="{{item.img}}" title="{{item.name}}" /></div>
               <div class="item-info">
-                <h4>{{item.name}}{{#if item.modificadoPor.length}} <i class="fas fa-arrow-up-long ns-mod" title="Modificado por Subclasse: {{#each item.modificadoPor}}{{this.nome}} (rank {{this.rank}}){{#unless @last}}, {{/unless}}{{/each}}"></i>{{/if}}</h4>
+                <h4>{{item.name}}{{#if item.modificadoPor.length}} <i class="fas fa-arrow-up-long ns-mod" title="Modificado por: {{#each item.modificadoPor}}{{this.rotulo}}{{#unless @last}}, {{/unless}}{{/each}}"></i>{{/if}}</h4>
                 <div class="ns-chips">
                   {{#if item.acaoAtiva.categoria}}<span class="ns-chip ns-chip-origem">{{item.acaoAtiva.categoria}}</span>{{else}}{{#if item.origemLabel}}<span class="ns-chip ns-chip-origem">{{item.origemLabel}}</span>{{/if}}{{/if}}
                   {{#each item.nsCustos as |c|}}<span class="ns-chip {{#if c.mana}}ns-chip-mana{{/if}} {{#if c.falta}}ns-chip-falta{{/if}}">{{c.texto}}{{#if c.falta}} · você tem {{c.tem}}{{/if}}</span>{{/each}}
@@ -679,7 +679,7 @@ Clique para abrir">
                 <span class="item-category">{{item.resumo}}</span>
               </div>
               {{#if item.modificadoPor.length}}
-              <i class="fas fa-arrow-up-long" style="color: #a15c2e; margin: 0 4px; flex-shrink: 0;" title="Modificado por Subclasse: {{#each item.modificadoPor}}{{this.nome}} (rank {{this.rank}}){{#unless @last}}, {{/unless}}{{/each}}"></i>
+              <i class="fas fa-arrow-up-long" style="color: #a15c2e; margin: 0 4px; flex-shrink: 0;" title="Modificado por: {{#each item.modificadoPor}}{{this.rotulo}}{{#unless @last}}, {{/unless}}{{/each}}"></i>
               {{/if}}
               {{#if item.acumulativel}}
               <div class="cond-acumulos" title="Acúmulos desta condição">
@@ -729,12 +729,12 @@ Clique para abrir">
             <li class="item-entry {{#if item.system.equipado}}equipped{{/if}}" data-item-id="{{item.id}}" draggable="true">
               <div class="item-img-container"><img src="{{item.img}}" title="{{item.name}}" /></div>
               <div class="item-info">
-                <h4>{{item.name}}{{#if item.seloTier}} {{{item.seloTier}}}{{/if}}</h4>
+                <h4>{{item.name}}{{#if item.seloTier}} {{{item.seloTier}}}{{/if}}{{#if item.pigmentosHtml}}{{{item.pigmentosHtml}}}{{/if}}</h4>
                 <span class="item-category">{{#if item.acaoAtiva}}{{item.acaoAtiva.tipo}} | Alcance: {{item.acaoAtiva.alcance}}{{else}}Sem Ação configurada{{/if}}</span>
               </div>
               {{#if item.pesoOfensivo}}<span class="nauren-peso-arma {{#if item.naoCabe}}nao-cabe{{/if}}" title="{{#if item.naoCabe}}Não cabe no limite de equipamentos ofensivos agora: dá para carregar, não para equipar.{{else}}Ocupa {{item.pesoOfensivo}} ponto(s) do limite ao equipar.{{/if}}">{{item.pesoOfensivo}} pt{{#if item.naoCabe}} · não cabe{{/if}}</span>{{/if}}
               {{#if item.modificadoPor.length}}
-              <i class="fas fa-arrow-up-long" style="color: #a15c2e; margin: 0 4px; flex-shrink: 0;" title="Modificado por Subclasse: {{#each item.modificadoPor}}{{this.nome}} (rank {{this.rank}}){{#unless @last}}, {{/unless}}{{/each}}"></i>
+              <i class="fas fa-arrow-up-long" style="color: #a15c2e; margin: 0 4px; flex-shrink: 0;" title="Modificado por: {{#each item.modificadoPor}}{{this.rotulo}}{{#unless @last}}, {{/unless}}{{/each}}"></i>
               {{/if}}
               {{#if item.acaoOptions}}
               <select class="item-select-acao" title="Escolher qual Ação está ativa">
@@ -780,13 +780,13 @@ Clique para abrir">
             <li class="item-entry {{#if item.system.equipado}}equipped{{/if}}" data-item-id="{{item.id}}" draggable="true">
               <div class="item-img-container"><img src="{{item.img}}" title="{{item.name}}" /></div>
               <div class="item-info">
-                <h4>{{item.name}}{{#if item.seloTier}} {{{item.seloTier}}}{{/if}}</h4>
+                <h4>{{item.name}}{{#if item.seloTier}} {{{item.seloTier}}}{{/if}}{{#if item.pigmentosHtml}}{{{item.pigmentosHtml}}}{{/if}}</h4>
                 <span class="item-category">Defesa: +{{item.system.defesaBonus}} | {{item.system.tipo}}{{#if item.system.equipado}} · Equipada{{/if}}</span>
               </div>
               {{#if item.pesoOfensivo}}<span class="nauren-peso-arma {{#if item.naoCabe}}nao-cabe{{/if}}" title="{{#if item.naoCabe}}Não cabe no limite de Ataque agora (armas e escudos): dá para carregar, não para equipar.{{else}}Ocupa {{item.pesoOfensivo}} ponto(s) do limite de Ataque ao equipar.{{/if}}">{{item.pesoOfensivo}} pt{{#if item.naoCabe}} · não cabe{{/if}}</span>{{/if}}
               {{#if item.vagaOcupada}}<span class="nauren-peso-arma nao-cabe" title="Já tem outra do mesmo tipo equipada: desequipe a outra antes.">vaga ocupada</span>{{/if}}
               {{#if item.modificadoPor.length}}
-              <i class="fas fa-arrow-up-long" style="color: #a15c2e; margin: 0 4px; flex-shrink: 0;" title="Modificado por Subclasse: {{#each item.modificadoPor}}{{this.nome}} (rank {{this.rank}}){{#unless @last}}, {{/unless}}{{/each}}"></i>
+              <i class="fas fa-arrow-up-long" style="color: #a15c2e; margin: 0 4px; flex-shrink: 0;" title="Modificado por: {{#each item.modificadoPor}}{{this.rotulo}}{{#unless @last}}, {{/unless}}{{/each}}"></i>
               {{/if}}
               {{#if item.acaoOptions}}
               <select class="item-select-acao" title="Escolher qual poder ativo está selecionado">
@@ -832,11 +832,11 @@ Clique para abrir">
             <li class="item-entry {{#if item.system.equipado}}equipped{{/if}}" data-item-id="{{item.id}}" draggable="true">
               <div class="item-img-container"><img src="{{item.img}}" title="{{item.name}}" /></div>
               <div class="item-info">
-                <h4>{{item.name}}{{#if item.seloTier}} {{{item.seloTier}}}{{/if}}</h4>
+                <h4>{{item.name}}{{#if item.seloTier}} {{{item.seloTier}}}{{/if}}{{#if item.pigmentosHtml}}{{{item.pigmentosHtml}}}{{/if}}</h4>
                 <span class="item-category">{{#if item.categoriaEquip}}{{item.categoriaEquip}}{{#if item.acaoAtiva}} · {{item.acaoAtiva.nome}}{{/if}}{{else}}{{#if item.acaoAtiva}}{{item.acaoAtiva.nome}}{{else}}{{item.system.efeito}}{{/if}}{{/if}}</span>
               </div>
               {{#if item.modificadoPor.length}}
-              <i class="fas fa-arrow-up-long" style="color: #a15c2e; margin: 0 4px; flex-shrink: 0;" title="Modificado por Subclasse: {{#each item.modificadoPor}}{{this.nome}} (rank {{this.rank}}){{#unless @last}}, {{/unless}}{{/each}}"></i>
+              <i class="fas fa-arrow-up-long" style="color: #a15c2e; margin: 0 4px; flex-shrink: 0;" title="Modificado por: {{#each item.modificadoPor}}{{this.rotulo}}{{#unless @last}}, {{/unless}}{{/each}}"></i>
               {{/if}}
               {{#if item.acaoOptions}}
               <select class="item-select-acao" title="Escolher qual uso está ativo">
@@ -942,7 +942,7 @@ Clique para abrir">
                 <div class="ns-chips">{{#if item.acaoAtiva}}{{#each item.nsCustos as |c|}}<span class="ns-chip {{#if c.mana}}ns-chip-mana{{/if}} {{#if c.falta}}ns-chip-falta{{/if}}">{{c.texto}}{{#if c.falta}} · você tem {{c.tem}}{{/if}}</span>{{else}}<span class="ns-chip">sem custo</span>{{/each}}{{#if item.nsAlcance}}<span class="ns-chip">{{item.nsAlcance}}</span>{{/if}}{{else}}<span class="ns-chip ns-chip-apagado">Sem Ação configurada</span>{{/if}}{{#if item.system.paginaAberta}}<span class="ns-chip ns-chip-classe">Página aberta</span>{{/if}}</div>
               </div>
               {{#if item.modificadoPor.length}}
-              <i class="fas fa-arrow-up-long" style="color: #a15c2e; margin: 0 4px; flex-shrink: 0;" title="Modificado por Subclasse: {{#each item.modificadoPor}}{{this.nome}} (rank {{this.rank}}){{#unless @last}}, {{/unless}}{{/each}}"></i>
+              <i class="fas fa-arrow-up-long" style="color: #a15c2e; margin: 0 4px; flex-shrink: 0;" title="Modificado por: {{#each item.modificadoPor}}{{this.rotulo}}{{#unless @last}}, {{/unless}}{{/each}}"></i>
               {{/if}}
               {{#if item.acaoOptions}}
               <select class="item-select-acao" title="Escolher qual Ação está ativa">

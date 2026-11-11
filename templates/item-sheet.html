@@ -42,6 +42,7 @@
     <a class="nauren-aba-botao" data-aba="avancado"><i class="fas fa-gears"></i> Avançado</a>
     {{#if condicoesHtml}}<a class="nauren-aba-botao" data-aba="condicoes"><i class="fas fa-droplet"></i> Condições{{#if condicoesQtd}}<span class="nt-aba-badge">{{condicoesQtd}}</span>{{/if}}</a>{{/if}}
     {{#if scriptHtml}}<a class="nauren-aba-botao" data-aba="script" title="Só o Mestre vê"><i class="fas fa-code"></i> Script{{#if scriptsPendentes}}<span class="nt-aba-badge nt-aba-badge-pend" title="Precisa aprovar">{{scriptsPendentes}}</span>{{/if}}</a>{{/if}}
+    {{#if aprimorarHtml}}<a class="nauren-aba-botao" data-aba="aprimorar"><i class="fas fa-wand-magic-sparkles"></i> {{aprimorarRotulo}}{{#if aprimorarQtd}}<span class="nt-aba-badge">{{aprimorarQtd}}</span>{{/if}}</a>{{/if}}
     {{#if aparenciaHtml}}<a class="nauren-aba-botao" data-aba="aparencia"><i class="fas fa-masks-theater"></i> Aparência</a>{{/if}}
     <a class="nauren-aba-botao" data-aba="descricao"><i class="fas fa-feather"></i> Descrição</a>
   </nav>
@@ -4555,6 +4556,7 @@
   {{#if condicoesHtml}}<div class="nauren-aba-painel" data-aba="condicoes">{{{condicoesHtml}}}</div>{{/if}}
   {{#if scriptHtml}}<div class="nauren-aba-painel" data-aba="script">{{{scriptHtml}}}</div>{{/if}}
   {{#if escritoHtml}}<div class="nauren-aba-painel" data-aba="escrito">{{{escritoHtml}}}</div>{{/if}}
+  {{#if aprimorarHtml}}<div class="nauren-aba-painel" data-aba="aprimorar">{{{aprimorarHtml}}}</div>{{/if}}
   {{#if aparenciaHtml}}<div class="nauren-aba-painel" data-aba="aparencia">{{{aparenciaHtml}}}</div>{{/if}}
   <div class="nauren-aba-painel" data-aba="descricao">
   {{#if isGrupo}}
