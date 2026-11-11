@@ -1,5 +1,5 @@
 /* Versão deste arquivo: o sistema confere no "ready" e, se o navegador/Forge tiver guardado um CSS antigo, carrega o novo. */
-:root { --nauren-css-versao: "0.110.0"; }
+:root { --nauren-css-versao: "0.110.1"; }
 /* 
 ===================================================
 1. FUNDO E FONTES GERAIS
@@ -8983,3 +8983,16 @@ li.directory-item.nauren-org-tem-dono > .entry-name > .nauren-org-nome { overflo
 /* Bolinhas na linha do inventário */
 .apr-bolinhas { display: inline-flex; gap: 3px; margin-left: 6px; vertical-align: middle; }
 .apr-bolinhas i { width: 9px; height: 9px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 1px rgba(0,0,0,.45), 0 0 5px color-mix(in srgb, var(--c) 60%, transparent); }
+/* 0.110.1: qualidade 1-10 e escolha do atributo no pigmento */
+.apr-qs { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 5px; max-width: 420px; }
+.nauren-rpg.sheet.item .nauren-sheet .apr-painel button.apr-q { all: unset; box-sizing: border-box; height: 30px; display: grid; place-items: center; border-radius: 6px; cursor: pointer;
+  font: 600 13px Signika, sans-serif; color: var(--apr-ouro); background: color-mix(in srgb, #000 25%, var(--n-painel, #241e36)); border: 1px solid var(--apr-linha); }
+.nauren-rpg.sheet.item .nauren-sheet .apr-painel button.apr-q.extra { color: var(--apr-suave); border-style: dashed; }
+.nauren-rpg.sheet.item .nauren-sheet .apr-painel button.apr-q:hover { border-color: color-mix(in srgb, var(--apr-ouro) 50%, var(--apr-linha)); }
+.nauren-rpg.sheet.item .nauren-sheet .apr-painel button.apr-q.on { color: var(--apr-txt); border: 1px solid var(--apr-ouro); background: color-mix(in srgb, var(--apr-ouro) 16%, #17111f); }
+.nauren-rpg.sheet.item .nauren-sheet .apr-painel button.apr-seg2 { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 11px; border-radius: 6px; cursor: pointer;
+  font: 12.5px Signika, sans-serif; color: var(--apr-suave); background: color-mix(in srgb, #000 25%, var(--n-painel, #241e36)); border: 1px solid var(--apr-linha); }
+.nauren-rpg.sheet.item .nauren-sheet .apr-painel button.apr-seg2 i { font-size: 11px; color: var(--apr-ouro); }
+.nauren-rpg.sheet.item .nauren-sheet .apr-painel button.apr-seg2:hover { color: var(--apr-txt); }
+.nauren-rpg.sheet.item .nauren-sheet .apr-painel button.apr-seg2.on { color: var(--apr-txt); border-color: var(--apr-ouro); background: color-mix(in srgb, var(--apr-ouro) 14%, #17111f); }
+.apr-rot-nota { margin-left: 6px; font: 400 10.5px Signika, sans-serif; letter-spacing: 0; text-transform: none; color: var(--apr-suave); }

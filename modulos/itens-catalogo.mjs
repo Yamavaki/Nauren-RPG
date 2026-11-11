@@ -29,6 +29,8 @@ const ID_PARA_TORRE = { bronze: "Bronze", prata: "Prata", ouro: "Ouro", diamante
 const corValida = c => typeof c === "string" && /^(#[0-9a-f]{3,8}|rgba?\(\s*[\d.\s,%]+\))$/i.test(c.trim()) ? c.trim() : null;
 const numero = (v, min, max, padrao) => { const n = Number(v); return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : padrao; };
 
+/** Espaços de pigmento de fábrica (Códex: Bronze 1, Prata 2, Ouro 3). Editável em "Tiers dos itens". */
+export const NAUREN_PIGMENTOS_POR_TIER_PADRAO = { bronze: 1, prata: 2, ouro: 3, diamante: 3, prismatico: 3 };
 /** Deixa um tier com todos os campos e só valores seguros (vai para atributos style). */
 export function naurenNormalizarTier(t, i = 0) {
   const p = NAUREN_TIERS_PADRAO[2];
@@ -43,7 +45,9 @@ export function naurenNormalizarTier(t, i = 0) {
     fundo: { cores: fCores, posicoes: pos, angulo: numero(t?.fundo?.angulo, 0, 360, 135) },
     borda: { cores: cores(t?.borda?.cores, p.borda.cores), largura: numero(t?.borda?.largura, 0, 4, 1.5) },
     forma: ["chanfro", "losango", "pilula"].includes(t?.forma) ? t.forma : "chanfro",
-    efeitos: naurenNormalizarEfeitos(t)
+    efeitos: naurenNormalizarEfeitos(t),
+    // 0.110.1: quantos pigmentos um item deste tier aceita (Códex). Mundo antigo sem o campo: o padrão do tier.
+    pigmentos: Math.round(numero(t?.pigmentos, 0, 10, NAUREN_PIGMENTOS_POR_TIER_PADRAO[t?.id] ?? 1))
   };
 }
 
@@ -479,6 +483,9 @@ export class NaurenTiersEditor extends foundry.applications.api.ApplicationV2 {
               <div class="nt-c"><span>Forma</span>${this.#seg("forma", FORMAS, t.forma)}</div>
               <div class="nt-c"><span>Efeitos</span><button type="button" class="nt-in nt-ch nt-in-ic nt-fx-resumo" data-action="aba" data-v="efeitos" title="Abrir a aba Efeitos"><i class="fas fa-wand-magic-sparkles"></i><span>${esc(rotuloEfeitos(t))}</span><i class="fas fa-chevron-right"></i></button></div>
             </div>
+            <div class="nt-g2">
+              <label class="nt-c" title="Quantos pigmentos dá para aplicar num item deste tier (aba Aprimorar da arma ou armadura). 0 = não aceita."><span>Espaços de pigmento <b data-ver="pigmentos">${t.pigmentos}</b></span><input type="range" class="nt-rng" data-campo="pigmentos" min="0" max="10" step="1" value="${t.pigmentos}"></label>
+            </div>
             </div>`}
           </div>
           <div class="nt-prev nt-ch">
@@ -512,6 +519,7 @@ export class NaurenTiersEditor extends foundry.applications.api.ApplicationV2 {
     el.querySelectorAll(".nt-marca").forEach((m, k) => { m.style.left = `${t.fundo.posicoes[k]}%`; m.style.setProperty("--c", t.fundo.cores[k]); });
     const ang = el.querySelector('[data-ver="angulo"]'); if (ang) ang.textContent = `${t.fundo.angulo}°`;
     const lar = el.querySelector('[data-ver="largura"]'); if (lar) lar.textContent = `${String(t.borda.largura).replace(".", ",")} px`;
+    const pig = el.querySelector('[data-ver="pigmentos"]'); if (pig) pig.textContent = String(t.pigmentos);
     const nome = el.querySelector(".nt-ed-nome"); if (nome) nome.textContent = t.nome;
     el.querySelectorAll("[data-galeria]").forEach(g => { g.innerHTML = this.#seloComEfeito(t, g.dataset.galeria); });
     const e = this.atual.efeitos?.[this.slot];
@@ -525,6 +533,7 @@ export class NaurenTiersEditor extends foundry.applications.api.ApplicationV2 {
       if (inp.dataset.campo === "nome") t.nome = v;
       else if (inp.dataset.campo === "angulo") t.fundo.angulo = Number(v);
       else if (inp.dataset.campo === "largura") t.borda.largura = Number(v);
+      else if (inp.dataset.campo === "pigmentos") t.pigmentos = Number(v);
       else if ((inp.dataset.campo === "vel" || inp.dataset.campo === "int") && t.efeitos?.[this.slot]) t.efeitos[this.slot][inp.dataset.campo] = Number(v);
       this.#atualizarPrevia();
     }));

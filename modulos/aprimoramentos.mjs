@@ -1,8 +1,8 @@
 /* Nauren RPG — 0.110: Aprimoramentos de itens (Códex Inventariun).
  *
- * 1) PIGMENTOS EM ITENS. Um Equipamento da categoria "pigmento" (cor + qualidade 1 a 3) é arrastado até a aba
- *    Aprimorar de uma arma/armadura. Espaços pelo tier do item: Bronze 1, Prata 2, Ouro 3 (Diamante e Prismático
- *    também 3; tier criado no mundo: posição na lista, no máximo 3; sem tier: não aceita). Com os espaços cheios,
+ * 1) PIGMENTOS EM ITENS. Um Equipamento da categoria "pigmento" (cor + qualidade 1 a 10; o Códex vai até 3) é
+ *    arrastado até a aba Aprimorar de uma arma/armadura. Espaços pelo tier do item, configuráveis em "Tiers dos
+ *    itens" (de fábrica Bronze 1, Prata 2, Ouro/Diamante/Prismático 3; sem tier: não aceita). Com os espaços cheios,
  *    o novo substitui um dos que estão lá (o anterior se perde). Um item pode vir de fábrica com mais pigmentos que
  *    os espaços: nada corta - o limite só vale para aplicar à mão. O bônus da cor vale enquanto o item está
  *    EQUIPADO (somado em prepareDerivedData, nauren.mjs, passo 3.6).
@@ -43,17 +43,19 @@ export const NAUREN_PIGMENTO_CORES = {
   Dourado: { hex: "#cca162", campo: "destino", texto: "Destino" }
 };
 const ROTULO_CAMPO_PIGMENTO = { ...META, menorAtributo: "menor atributo", estresse: "limite de Estresse", movimento: "Movimento", destino: "Destino" };
-const ESPACOS_POR_TIER = { bronze: 1, prata: 2, ouro: 3, diamante: 3, prismatico: 3 };
-export const NAUREN_PIGMENTO_MAX_ESPACOS = 3;
+/** Qualidade máxima de um pigmento (o Códex usa 1 a 3; o sistema aceita até 10). */
+export const NAUREN_PIGMENTO_QUALIDADE_MAX = 10;
+const qualidadeValida = v => Math.max(1, Math.min(NAUREN_PIGMENTO_QUALIDADE_MAX, Math.round(Number(v) || 1)));
 
-/** Quantos pigmentos dá para aplicar à mão neste item (pelo tier do catálogo). 0 = não aceita. */
+/**
+ * Quantos pigmentos dá para aplicar à mão neste item: o campo "Espaços de pigmento" do tier dele
+ * (Configurações › Tiers dos itens; de fábrica Bronze 1, Prata 2, Ouro/Diamante/Prismático 3). 0 = não aceita.
+ */
 export function naurenEspacosPigmento(item) {
   if (!["arma", "armadura"].includes(item?.type)) return 0;
   const id = naurenCatalogoDoItem(item).tier;
   if (!id) return 0;
-  if (id in ESPACOS_POR_TIER) return ESPACOS_POR_TIER[id];
-  const i = naurenTiersDoMundo().findIndex(t => t.id === id);
-  return i < 0 ? 0 : Math.min(NAUREN_PIGMENTO_MAX_ESPACOS, i + 1);
+  return naurenTiersDoMundo().find(t => t.id === id)?.pigmentos ?? 0;
 }
 
 export function naurenEhPigmentoAplicavel(item) {
@@ -64,7 +66,7 @@ export function naurenEhPigmentoAplicavel(item) {
 export function naurenEfeitoDoPigmento(p) {
   const def = NAUREN_PIGMENTO_CORES[p?.cor];
   if (!def) return null;
-  const q = Math.max(1, Math.min(3, Math.round(Number(p.qualidade) || 1)));
+  const q = qualidadeValida(p.qualidade);
   const campo = def.campo === "escolha" ? (def.opcoes[p.escolha] ? p.escolha : Object.keys(def.opcoes)[0]) : def.campo;
   return { campo, valor: q, rotulo: `+${q} ${ROTULO_CAMPO_PIGMENTO[campo] ?? campo}` };
 }
@@ -109,10 +111,11 @@ export async function naurenAplicarPigmentoNoItem(alvo, pigmento, { consumir = t
   const espacos = naurenEspacosPigmento(alvo);
   if (!espacos && !livre) return ui.notifications.warn(`"${alvo.name}" não tem tier, então não aceita pigmento. Defina o tier na aba Geral.`);
   const cor = dados?.cor ?? pigmento?.system?.pigmentoCor;
-  const qualidade = Math.max(1, Math.min(3, Math.round(Number(dados?.qualidade ?? pigmento?.system?.pigmentoQualidade) || 1)));
+  const qualidade = qualidadeValida(dados?.qualidade ?? pigmento?.system?.pigmentoQualidade);
   const def = NAUREN_PIGMENTO_CORES[cor];
   if (!def) return ui.notifications.warn("Esse pigmento não tem uma cor válida.");
-  let escolha = dados?.escolha ?? "";
+  // Branco/Vermelho: o pigmento pode já vir com o atributo definido (aba Pigmento); senão pergunta agora.
+  let escolha = dados?.escolha ?? pigmento?.system?.pigmentoEscolha ?? "";
   if (def.campo === "escolha" && !def.opcoes[escolha]) {
     escolha = await escolherMeta(def, cor);
     if (!escolha) return;
@@ -374,14 +377,20 @@ export function naurenTemAbaAprimorar(item) { return NAUREN_APRIMORAR_TIPOS.has(
 function pigmentoConfigHtml(item) {
   const cor = item.system.pigmentoCor, q = Number(item.system.pigmentoQualidade) || 1, def = NAUREN_PIGMENTO_CORES[cor];
   const cores = Object.entries(NAUREN_PIGMENTO_CORES).map(([k, d]) => `<button type="button" class="apr-cor ${k === cor ? "on" : ""}" data-apr-pig="cor" data-v="${k}" style="--c:${d.hex}" title="${esc(k)}: ${esc(d.texto)}"><span></span>${esc(k)}</button>`).join("");
-  const qs = [1, 2, 3].map(n => `<button type="button" class="apr-seg ${n === q ? "on" : ""}" data-apr-pig="q" data-v="${n}">${"★".repeat(n)}<small>qualidade ${n}</small></button>`).join("");
+  const qs = Array.from({ length: NAUREN_PIGMENTO_QUALIDADE_MAX }, (_, k) => k + 1).map(n => `<button type="button" class="apr-q ${n === q ? "on" : ""} ${n > 3 ? "extra" : ""}" data-apr-pig="q" data-v="${n}" title="Qualidade ${n}: +${n}${n > 3 ? " (acima do Códex, que vai até 3)" : ""}">${n}</button>`).join("");
+  const escolha = item.system.pigmentoEscolha ?? "";
+  const ehEscolha = def?.campo === "escolha";
+  const alvoTxt = ehEscolha ? (def.opcoes[escolha] ?? def.texto) : def?.texto;
+  const escolhas = ehEscolha ? [["", `<i class="fas fa-circle-question"></i> Perguntar ao aplicar`], ...Object.entries(def.opcoes)].map(([k, v]) =>
+    `<button type="button" class="apr-seg2 ${k === (def.opcoes[escolha] ? escolha : "") ? "on" : ""}" data-apr-pig="escolha" data-v="${k}">${k ? esc(v) : v}</button>`).join("") : "";
   return `<div class="apr-painel"><section class="apr-bloco nt-ch">
     <header class="apr-cab"><i class="fas fa-palette"></i><b>Pigmento</b></header>
     <div class="apr-previa-pig"><span class="apr-bola grande" style="--c:${def?.hex ?? "#777"}">${q}</span>
-      <span><b>${esc(cor)} · qualidade ${q}</b><small>Aplicado num item equipado: <b>+${q} em ${esc(def?.texto ?? "?")}</b></small></span></div>
+      <span><b>${esc(cor)} · qualidade ${q}</b><small>Aplicado num item equipado: <b>+${q} em ${esc(alvoTxt ?? "?")}</b></small></span></div>
     <span class="apr-rot">Cor</span><div class="apr-cores">${cores}</div>
-    <span class="apr-rot">Qualidade</span><div class="apr-segs">${qs}</div>
-    <p class="apr-dica">Para aplicar: abra a ficha da arma ou armadura, aba <b>Aprimorar</b>, e arraste este pigmento para "Pigmentos". Se ele estiver numa ficha, gasta 1.${def?.campo === "escolha" ? " Esta cor pergunta, na hora de aplicar, qual meta atributo aumenta." : ""}</p>
+    ${ehEscolha ? `<span class="apr-rot">Aumenta</span><div class="apr-segs">${escolhas}</div>` : ""}
+    <span class="apr-rot">Qualidade <small class="apr-rot-nota">o Códex vai até 3</small></span><div class="apr-qs">${qs}</div>
+    <p class="apr-dica">Para aplicar: abra a ficha da arma ou armadura, aba <b>Aprimorar</b>, e arraste este pigmento para "Pigmentos". Se ele estiver numa ficha, gasta 1.${ehEscolha ? ` Com "Perguntar ao aplicar", quem aplica escolhe o atributo na hora.` : ""}</p>
   </section></div>`;
 }
 
@@ -401,6 +410,8 @@ async function alvoDaLinha(m) {
 export async function naurenAprimorarHtml(item) {
   if (naurenEhPigmentoAplicavel(item)) return pigmentoConfigHtml(item);
   const espacos = naurenEspacosPigmento(item);
+  const tierId = naurenCatalogoDoItem(item).tier;
+  const tierNome = naurenTiersDoMundo().find(t => t.id === tierId)?.nome ?? tierId;
   const lista = item.system.pigmentosAplicados ?? [];
   const gm = game.user.isGM;
   const slot = (p, i) => {
@@ -417,8 +428,8 @@ export async function naurenAprimorarHtml(item) {
   const pigmentos = `<section class="apr-bloco nt-ch" data-apr-drop="pigmento">
     <header class="apr-cab"><i class="fas fa-palette"></i><b>Pigmentos</b><span class="apr-pilula">${contagem}</span>
       ${gm ? `<button type="button" class="apr-mini" data-apr="pigmentoMestre" title="Mestre: põe um pigmento direto (para criar itens que já vêm pigmentados)"><i class="fas fa-plus"></i> Pigmento</button>` : ""}</header>
-    ${espacos ? `<p class="apr-dica">Arraste um <b>Pigmento</b> (Equipamento › categoria Pigmento) até aqui. Espaços pelo tier: Bronze 1, Prata 2, Ouro 3. Com os espaços cheios, o novo substitui um antigo. O bônus vale enquanto o item estiver <b>equipado</b>.</p>`
-      : `<p class="apr-dica apr-aviso"><i class="fas fa-circle-info"></i> Sem tier, este item não aceita pigmento. Defina o tier na aba Geral.</p>`}
+    ${espacos ? `<p class="apr-dica">Arraste um <b>Pigmento</b> (Equipamento › categoria Pigmento) até aqui. Este item é <b>${esc(tierNome)}</b>: ${espacos} ${espacos === 1 ? "espaço" : "espaços"} (definido em Configurações › Tiers dos itens). Com os espaços cheios, o novo substitui um antigo. O bônus vale enquanto o item estiver <b>equipado</b>.</p>`
+      : `<p class="apr-dica apr-aviso"><i class="fas fa-circle-info"></i> ${tierId ? `O tier <b>${esc(tierNome)}</b> está com 0 espaços de pigmento (Configurações › Tiers dos itens).` : "Sem tier, este item não aceita pigmento. Defina o tier na aba Geral."}</p>`}
     ${lista.length > espacos && espacos ? `<p class="apr-dica">Este item veio com mais pigmentos que os espaços do tier. Eles continuam valendo; para aplicar um novo à mão, ele substitui um dos atuais.</p>` : ""}
     ${slots ? `<div class="apr-slots">${slots}</div>` : ""}
   </section>`;
@@ -486,7 +497,10 @@ export function naurenAprimorarLigar(sheet) {
   raiz.querySelectorAll("[data-apr-pig]").forEach(el => el.addEventListener("click", ev => {
     ev.preventDefault();
     if (!item.isOwner) return;
-    return item.update(el.dataset.aprPig === "cor" ? { "system.pigmentoCor": el.dataset.v } : { "system.pigmentoQualidade": Number(el.dataset.v) });
+    const k = el.dataset.aprPig;
+    // Trocar de cor apaga a escolha (Branco e Vermelho têm opções diferentes).
+    return item.update(k === "cor" ? { "system.pigmentoCor": el.dataset.v, "system.pigmentoEscolha": "" }
+      : k === "escolha" ? { "system.pigmentoEscolha": el.dataset.v } : { "system.pigmentoQualidade": Number(el.dataset.v) });
   }));
   const linhas = () => foundry.utils.deepClone(item.system.modificaHabilidades ?? []).map(m => ({ ...m }));
   const salvar = arr => item.update({ "system.modificaHabilidades": arr });
@@ -565,7 +579,7 @@ async function pigmentoDoMestre(item) {
     window: { title: "Pôr pigmento (Mestre)", icon: "fas fa-palette" },
     content: `<p class="apr-dica">Põe o pigmento sem gastar nada e sem olhar os espaços do tier (para itens que já vêm pigmentados).</p>
       <div class="form-group"><label>Cor</label><select name="cor">${cores}</select></div>
-      <div class="form-group"><label>Qualidade</label><select name="q"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>`,
+      <div class="form-group"><label>Qualidade</label><select name="q">${Array.from({ length: NAUREN_PIGMENTO_QUALIDADE_MAX }, (_, k) => `<option value="${k + 1}">${k + 1}</option>`).join("")}</select></div>`,
     ok: { label: "Pôr", icon: "fas fa-check", callback: (ev, botao) => ({ cor: botao.form.elements.cor.value, qualidade: Number(botao.form.elements.q.value) }) },
     rejectClose: false
   }).catch(() => null);

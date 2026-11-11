@@ -4,11 +4,12 @@ Armas e armaduras ganharam a aba **Aprimorar**. Ela tem duas partes.
 
 ## Pigmentos (Códex Inventariun)
 
-- O pigmento é um Equipamento da categoria **Pigmento**: tem uma cor e uma qualidade (1, 2 ou 3). Os 24 modelos (8 cores × 3 qualidades) estão em *Nauren - Equipamentos*.
+- O pigmento é um Equipamento da categoria **Pigmento**: tem uma cor e uma qualidade de 1 a 10 (o Códex usa de 1 a 3). Os 24 modelos (8 cores × qualidades 1 a 3) estão em *Nauren - Equipamentos*.
+- **Branco e Vermelho:** na aba Pigmento do próprio item dá para fixar qual atributo ele aumenta, ou deixar em "Perguntar ao aplicar".
 - **Aplicar:** abra a arma ou armadura, aba Aprimorar, e arraste o pigmento para "Pigmentos". Se ele estiver numa ficha, gasta 1.
-- **Espaços pelo tier do item:** Bronze 1, Prata 2, Ouro 3 (Diamante e Prismático também 3). Item sem tier não aceita.
+- **Espaços pelo tier do item:** configuráveis em *Configurações › Tiers dos itens* (campo "Espaços de pigmento", de 0 a 10). De fábrica: Bronze 1, Prata 2, Ouro, Diamante e Prismático 3. Item sem tier não aceita.
 - **Espaços cheios:** o novo substitui um dos que estão lá (você escolhe qual), e o antigo se perde.
-- **Bônus** (+1, +2 ou +3 pela qualidade), só com o item **equipado**:
+- **Bônus** igual à qualidade (+1 a +10), só com o item **equipado**:
 
 | Cor | Bônus |
 |---|---|

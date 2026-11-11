@@ -403,14 +403,14 @@ function campoModificadorExterno() {
 }
 
 /**
- * 0.110: pigmento aplicado num item (Códex Inventariun). "cor" é uma das 8 cores, "qualidade" 1 a 3
+ * 0.110: pigmento aplicado num item (Códex Inventariun). "cor" é uma das 8 cores, "qualidade" 1 a 10 (Códex: até 3)
  * (o bônus), "escolha" só para Branco (qualquer meta atributo) e Vermelho (PdA ou PdM) - definida ao aplicar.
  * O bônus só vale com o item EQUIPADO (ver naurenBonusPigmentosDoItem em modulos/aprimoramentos.mjs).
  */
 function campoPigmentoAplicado() {
   return {
     cor: new StringField({ initial: "" }),
-    qualidade: new NumberField({ initial: 1, min: 1, max: 3, integer: true }),
+    qualidade: new NumberField({ initial: 1, min: 1, max: 10, integer: true }),
     escolha: new StringField({ initial: "" })
   };
 }
@@ -2743,7 +2743,9 @@ class NaurenConsumivelData extends foundry.abstract.TypeDataModel {
       categoria: new StringField({ initial: "consumivel" }),
       // 0.110: categoria "pigmento": a cor e a qualidade (1 a 3) que ele dá ao ser aplicado num item.
       pigmentoCor: new StringField({ initial: "Azul" }),
-      pigmentoQualidade: new NumberField({ initial: 1, min: 1, max: 3, integer: true }),
+      pigmentoQualidade: new NumberField({ initial: 1, min: 1, max: 10, integer: true }),
+      // Branco/Vermelho: atributo já definido no pigmento ("" = perguntar ao aplicar).
+      pigmentoEscolha: new StringField({ initial: "" }),
       venenoCondicaoUuid: new StringField({ initial: "" }),     // frasco de veneno: a Condição que ele aplica
       ehMunicao: new BooleanField({ initial: false }),          // é munição (flecha, bala...)
       tipoMunicao: new StringField({ initial: "" }),            // tipo (ex.: flecha, municao) - a arma usa munição deste tipo
