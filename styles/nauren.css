@@ -1,5 +1,5 @@
 /* Versão deste arquivo: o sistema confere no "ready" e, se o navegador/Forge tiver guardado um CSS antigo, carrega o novo. */
-:root { --nauren-css-versao: "0.115.0"; }
+:root { --nauren-css-versao: "0.116.0"; }
 /* 
 ===================================================
 1. FUNDO E FONTES GERAIS
@@ -9435,16 +9435,16 @@ li.directory-item.nauren-org-tem-dono > .entry-name > .nauren-org-nome { overflo
 .nqm-img { width: 100%; max-height: 22em; object-fit: cover; border: 0; }
 .nqm-lacre { position: absolute; right: 1.4em; bottom: 1.3em; width: 3.4em; height: 3.4em; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-size: 1em; color: rgba(255, 255, 255, .8);
   background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--nl-lacre) 60%, #fff), var(--nl-lacre) 45%, color-mix(in srgb, var(--nl-lacre) 55%, #000)); }
-.nqm.nl-era-classico.nl-fmt-nota { clip-path: polygon(0 0, 100% 0, 100% 96%, 92% 100%, 80% 98%, 66% 100%, 50% 98%, 34% 100%, 18% 98%, 6% 100%, 0 97%); }
-.nqm.nl-fmt-pergaminho.nl-era-classico { box-shadow: 0 -1.1em 0 -.3em #8a5a30, 0 1.1em 0 -.3em #8a5a30, inset 0 0 0 .1em var(--nl-borda-p); margin: 1em 0; }
-.nqm.nl-papel-postit { width: 22em; min-height: 20em; }
-.nqm.nl-papel-postit .nqm-tit { font-weight: 500; }
-.nqm.nl-papel-pautado { background-image: linear-gradient(90deg, transparent 3em, rgba(220, 70, 70, .45) 3em, rgba(220, 70, 70, .45) 3.15em, transparent 3.15em), repeating-linear-gradient(180deg, transparent 0 2.1em, rgba(70, 110, 200, .3) 2.1em 2.24em), radial-gradient(ellipse at center, var(--nl-p1) 55%, var(--nl-p2) 100%); padding-left: 4em; }
-.nqm.nl-era-cyberpunk { clip-path: polygon(1.4em 0, 100% 0, 100% calc(100% - 1.4em), calc(100% - 1.4em) 100%, 0 100%, 0 1.4em); box-shadow: inset 0 0 0 .12em var(--nl-borda-p), inset 0 0 3em color-mix(in srgb, var(--nl-brilho, transparent) 40%, transparent); }
-.nqm.nl-era-cyberpunk .nqm-tit { color: var(--nl-acento, var(--nl-tinta)); text-transform: uppercase; letter-spacing: .06em; text-shadow: 0 0 .6em var(--nl-brilho, transparent); }
-.nqm.nl-era-cyberpunk .nqm-txt { text-shadow: 0 0 .5em color-mix(in srgb, var(--nl-tinta) 40%, transparent); }
-.nqm.nl-papel-holograma { background-image: repeating-linear-gradient(0deg, rgba(120, 230, 255, .08) 0 1px, transparent 1px 4px), linear-gradient(180deg, rgba(40, 200, 255, .16), rgba(40, 200, 255, .05)), radial-gradient(ellipse at center, var(--nl-p1) 40%, var(--nl-p2) 100%); }
-.nqm.nl-papel-tela { border-radius: 1em; }
+.nqm-folha.nl-era-classico.nl-fmt-nota { clip-path: polygon(0 0, 100% 0, 100% 96%, 92% 100%, 80% 98%, 66% 100%, 50% 98%, 34% 100%, 18% 98%, 6% 100%, 0 97%); }
+.nqm-folha.nl-fmt-pergaminho.nl-era-classico { box-shadow: 0 -1.1em 0 -.3em #8a5a30, 0 1.1em 0 -.3em #8a5a30, inset 0 0 0 .1em var(--nl-borda-p); margin: 1em 0; }
+.nqm-folha.nl-papel-postit { width: 22em; min-height: 20em; }
+.nqm-folha.nl-papel-postit .nqm-tit { font-weight: 500; }
+.nqm-folha.nl-papel-pautado { background-image: linear-gradient(90deg, transparent 3em, rgba(220, 70, 70, .45) 3em, rgba(220, 70, 70, .45) 3.15em, transparent 3.15em), repeating-linear-gradient(180deg, transparent 0 2.1em, rgba(70, 110, 200, .3) 2.1em 2.24em), radial-gradient(ellipse at center, var(--nl-p1) 55%, var(--nl-p2) 100%); padding-left: 4em; }
+.nqm-folha.nl-era-cyberpunk { clip-path: polygon(1.4em 0, 100% 0, 100% calc(100% - 1.4em), calc(100% - 1.4em) 100%, 0 100%, 0 1.4em); box-shadow: inset 0 0 0 .12em var(--nl-borda-p), inset 0 0 3em color-mix(in srgb, var(--nl-brilho, transparent) 40%, transparent); }
+.nqm-folha.nl-era-cyberpunk .nqm-tit { color: var(--nl-acento, var(--nl-tinta)); text-transform: uppercase; letter-spacing: .06em; text-shadow: 0 0 .6em var(--nl-brilho, transparent); }
+.nqm-folha.nl-era-cyberpunk .nqm-txt { text-shadow: 0 0 .5em color-mix(in srgb, var(--nl-tinta) 40%, transparent); }
+.nqm-folha.nl-papel-holograma { background-image: repeating-linear-gradient(0deg, rgba(120, 230, 255, .08) 0 1px, transparent 1px 4px), linear-gradient(180deg, rgba(40, 200, 255, .16), rgba(40, 200, 255, .05)), radial-gradient(ellipse at center, var(--nl-p1) 40%, var(--nl-p2) 100%); }
+.nqm-folha.nl-papel-tela { border-radius: 1em; }
 .nqm-trancado { align-items: center; justify-content: center; text-align: center; }
 .nqm-negado { font: 700 2.2em "Nauren Tecno", "Nauren Mono", sans-serif; color: #ff6b6b; letter-spacing: .1em; text-shadow: 0 0 .5em rgba(255, 107, 107, .6); }
 .nqm-livro { width: 18em; height: 24em; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .6em; padding: 2em; text-align: center; border-radius: .4em 1em 1em .4em;
@@ -9461,3 +9461,10 @@ li.directory-item.nauren-org-tem-dono > .entry-name > .nauren-org-nome { overflo
 .nl-quadro-barra { flex: 0 0 auto; display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: rgba(36, 30, 54, .96); border-top: 1px solid #3b3154; font: 12.5px Signika, sans-serif; color: #b3a6c9; }
 .nl-quadro-barra > i { color: #e0b257; } .nl-quadro-barra span { flex: 1 1 auto; }
 @media (prefers-reduced-motion: reduce) { .nq-letreiro-txt { animation: none; } .nq-nota { transition: none; } }
+
+/* 0.116: títulos compridos dos cartazes encolhem em vez de quebrar no meio da palavra */
+.ncz-cyberpunk .ncz-tit.ncz-tit-l { font-size: 1.75em; } .ncz-cyberpunk .ncz-tit.ncz-tit-xl { font-size: 1.4em; }
+.ncz-moderno .ncz-faixa.ncz-tit-xl { font-size: 2.3em; }
+.ncz-classico .ncz-tit.ncz-tit-xl { font-size: 2.2em; }
+.ncz-cyberpunk .ncz-tit, .ncz-moderno .ncz-faixa { overflow-wrap: normal; word-break: normal; }
+.nl-som-in { flex: 1 1 auto; }

@@ -121,6 +121,7 @@ export function naurenMensagensEditorHtml(m) {
         <label class="nl-check" title="Os jogadores só veem as mensagens que você revelar, uma por vez"><input type="checkbox" data-msg-geral="aosPoucos" ${m.aosPoucos ? "checked" : ""}> Revelar aos poucos</label>
         <label class="nl-check" title="Mostra os três pontinhos quando a próxima mensagem escondida é recebida"><input type="checkbox" data-msg-geral="digitando" ${m.digitando ? "checked" : ""}> "Digitando…"</label>
       </div>
+      <label class="nl-campo"><span class="nl-rot-p">Som de mensagem nova (vazio = sem som)</span><input type="text" class="nl-in" data-msg-geral="som" value="${esc(m.som)}" placeholder="sounds/notify.wav"></label>
     </div>
     <div class="nm-ed-lista">${linhas || `<p class="nl-dica">Nenhuma mensagem. Use os botões abaixo.</p>`}</div>
     <div class="nm-ed-novas">
@@ -198,8 +199,8 @@ function xorFluxo(dados, k) {
   return out;
 }
 /** Cifra as páginas com a senha. */
-export function naurenCifrar(paginas, senha) {
-  const sal = hexDe(naurenSha256(utf8(`${Math.random()}:${Date.now()}`))).slice(0, 16);
+export function naurenCifrar(paginas, senha, salFixo = "") {
+  const sal = salFixo || hexDe(naurenSha256(utf8(`${Math.random()}:${Date.now()}`))).slice(0, 16); // sal fixo só nos modelos do compêndio (não mudam a cada atualização)
   const k = chave(senha, sal);
   return { sal, verif: hexDe(naurenSha256(junta(k, utf8("nauren-verif")))).slice(0, 20), dados: b64De(xorFluxo(utf8(JSON.stringify(paginas ?? [])), k)) };
 }
@@ -281,7 +282,8 @@ export function naurenCartazHtml(c, era = "classico", { nomeItem = "" } = {}) {
   const t = NAUREN_CARTAZ_TIPOS[c.tipo];
   const titulo = c.titulo || t.rot;
   const rec = c.recompensa ? { rot: c.recRotulo || t.rec, val: c.recompensa } : null;
-  const nome = c.nome || (t.retrato ? "" : nomeItem);
+  const nome = c.nome; void nomeItem;
+  const longo = titulo.length > 12 ? "ncz-tit-xl" : titulo.length > 9 ? "ncz-tit-l" : ""; // títulos compridos encolhem (não quebram no meio da palavra)
   const cor = c.cor || t.cor;
   const temRetrato = !!c.retrato || t.retrato;
   const img = cor2 => c.retrato ? `<img src="${esc(c.retrato)}" alt="">` : SILHUETA(cor2);
@@ -291,7 +293,7 @@ export function naurenCartazHtml(c, era = "classico", { nomeItem = "" } = {}) {
   const base = `ncz-cartaz ncz-${era} ncz-tipo-${c.tipo}`;
   if (era === "moderno") {
     return `<div class="${base}" style="--ncz-cor:${esc(cor)}">
-      <div class="ncz-faixa">${esc(titulo)}</div>
+      <div class="ncz-faixa ${longo}">${esc(titulo)}</div>
       ${c.subtitulo ? `<div class="ncz-subt">${esc(c.subtitulo)}</div>` : ""}
       <div class="ncz-corpo ${temRetrato ? "ncz-com-retrato" : ""}">
         ${temRetrato ? `<div class="ncz-retrato">${img("#6d6b66")}</div>` : ""}
@@ -304,7 +306,7 @@ export function naurenCartazHtml(c, era = "classico", { nomeItem = "" } = {}) {
   if (era === "cyberpunk") {
     return `<div class="${base}">
       <div class="ncz-cab"><span>${esc(t.cyber)}</span><span>${esc(c.codigo || "")}</span></div>
-      <div class="ncz-tit">${esc(titulo)}</div>
+      <div class="ncz-tit ${longo}">${esc(titulo)}</div>
       ${c.subtitulo ? `<div class="ncz-subt">${esc(c.subtitulo)}</div>` : ""}
       <div class="ncz-corpo ${temRetrato ? "ncz-com-retrato" : ""}">
         ${temRetrato ? `<div class="ncz-retrato">${img("#6fe6ff")}</div>` : ""}

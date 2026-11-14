@@ -2,6 +2,8 @@
 import { NAUREN_KIT_JANELA } from "./janelas-kit.mjs";
 import { NAUREN_CAPACIDADE_POR_NOME, NAUREN_CORES_PINTURA, NAUREN_EQUIPAMENTO_CLASSE_LIVRO, NAUREN_ATRIBUTOS_CLASSE_LIVRO, NAUREN_ATRIBUTOS_CLASSE_LIVRO_0_101_0, naurenAtributosRecomendadosPreenchido, NaurenAlvoHelper, naurenAtorTemRecurso, naurenClamparRecursosAoMaximo, naurenEhCondicaoModelo, naurenEquipRecomendadoPreenchido, naurenFixarTipoAlcanceSemeado, naurenInterpretarModificador, naurenMontarDescricao, naurenNomeDoRecurso, naurenPostarCard, naurenPreencherRecursosNoMaximo, naurenProcessarGatilhos, naurenUuidPorSeed } from "../nauren.mjs";
 import { naurenLog } from "./depuracao.mjs";
+import { naurenEscritoDoJson } from "./escritos.mjs";
+import { NAUREN_ESCRITOS_MODELOS } from "./escritos-modelos.mjs";
 /* =======================================
  * 7. COMPÊNDIOS OFICIAIS DO SISTEMA (auto-semeadura)
  * =======================================
@@ -4348,6 +4350,16 @@ async function naurenSemearEscritos(pack) {
     name: "Diário de Viagem", type: "consumivel", img: "icons/sundries/books/book-embossed-bound-brown.webp",
     system: base({ formato: "diario", papel: "creme", fonte: "caligrafia", quemEscreve: "dono", capa: { cor: "#5a3a22", detalhe: "#caa46a", titulo: "Diário de Viagem", subtitulo: "" }, paginas: [pg("Dia 1", ""), pg("", ""), pg("", ""), pg("", "")] }, { descricao: "<p>Um diário em branco, com fita marcadora. Exemplo de <b>Escrito</b> em que <b>o dono escreve</b>: o jogador que estiver com ele pode anotar o que quiser.</p>" })
   });
+  // 0.116: modelos modernos e cyberpunk (Mensagens, Terminal, Cartazes nas três eras) — modulos/escritos-modelos.mjs
+  for (const { seedId, json } of NAUREN_ESCRITOS_MODELOS) {
+    try {
+      const { _pasta, ...dados } = naurenEscritoDoJson(json);
+      // ids das páginas/mensagens fixos por modelo (senão cada atualização do compêndio muda o item à toa)
+      let k = 0; const fixa = lista => (lista ?? []).forEach(x => { x.id = `${seedId.slice(-8)}${String(k++).padStart(2, "0")}`.slice(-10); });
+      fixa(dados.system.escrito.paginas); fixa(dados.system.escrito.mensagens?.lista);
+      await naurenGarantirItemNoPack(pack, seedId, dados);
+    } catch (err) { console.error(`Nauren RPG | modelo de escrito ${seedId}`, err); }
+  }
 }
 
 async function naurenSemearPigmentos(pack) {

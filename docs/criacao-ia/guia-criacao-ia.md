@@ -2582,3 +2582,68 @@ Escolha a borda pela **personalidade e pelas cores** da criatura, nesta ordem:
 ```
 
 (Em `items` vão as Habilidades, armas, Pigmentos, etc. completos, como no resto deste guia; aqui estão vazios só para encurtar.)
+
+---
+
+## 18. Escritos: notas, cartas, celulares, terminais e cartazes (0.106–0.116)
+
+Escritos são itens `consumivel` com `system.categoria = "escrito"`. Para a IA, use sempre o **formato simples** abaixo (o mesmo do botão Importar JSON e do Importar em massa); o sistema monta o item.
+
+### 18.1 Campos comuns
+
+| Campo | Valores |
+|---|---|
+| `nome` | nome do item |
+| `era` | `classico` (padrão), `moderno` ou `cyberpunk` |
+| `formato` | `nota`, `carta`, `pergaminho` (vira Ficha no Moderno e Painel no Cyberpunk), `livro`, `diario`, `mensagens`*, `terminal`*, `cartaz` (*só Moderno e Cyberpunk; sem era, vira Moderno) |
+| `papel` | Clássico: `envelhecido`, `pergaminho`, `creme`, `branco`, `noturno`, `arcano` · Moderno: `a4`, `postit`, `pautado`, `cartao`, `tela` · Cyberpunk: `terminal`, `neon`, `holograma`, `ambar` (vazio = o sugerido para a era e o formato) |
+| `letra` | Clássico: `caligrafia`, `livro`, `classica`, `antiga`, `letreiro` · Moderno: `simples`, `sans`, `manuscrita`, `maquina` · Cyberpunk: `mono`, `tecno` |
+| `efeitos` | `{ "varredura": true, "falha": false, "digitacao": true }` (opcional) |
+| `som` | arquivo de som que toca ao abrir (opcional) |
+| `paginas` | `[ { "titulo": "…", "texto": "…" }, { "imagem": "caminho", "legenda": "…" } ]` — não vale para `mensagens` nem `cartaz` |
+| outros | `capa`, `lacre`, `quemEscreve` (`mestre`/`dono`), `lerNoBau`, `someAoUsar`, `icone`, `descricao`, `pasta`, `preco`, `acoes` |
+
+No `texto`: linha em branco = parágrafo; `**negrito**`, `*itálico*`, `# Título`, `- item`, `> citação`, `-> à direita`, `---` e `[segredo] … [/segredo]` (só o Mestre vê). HTML também vale.
+
+### 18.2 Mensagens (celular)
+
+Só o Mestre escreve. Com `aosPoucos`, os jogadores veem as mensagens que o Mestre revelar, uma por vez.
+
+```json
+{ "nome": "Celular da Mira", "era": "moderno", "formato": "mensagens",
+  "mensagens": { "contato": "Kael", "status": "visto por último às 23:58", "tema": "claro", "aosPoucos": true,
+    "lista": [ { "data": "ontem" },
+      { "lado": "outro", "hora": "22:41", "texto": "Você ainda tá com a chave do galpão?" },
+      { "lado": "eu", "hora": "22:43", "texto": "Tô. Por quê?" },
+      { "lado": "outro", "quem": "Kael", "hora": "23:57", "texto": "Não vai lá hoje. **Eles sabem.**" },
+      { "lado": "outro", "imagem": "worlds/meu-mundo/galpao.webp" } ] } }
+```
+`tema`: `claro`, `escuro` ou `neon`. `lado`: `outro` (recebida, à esquerda) ou `eu` (enviada pelo dono do celular). `quem` é o nome acima do balão (grupos). `{ "data": "…" }` é um separador.
+
+### 18.3 Terminal (com ou sem senha)
+
+```json
+{ "nome": "mensagem.dat", "era": "cyberpunk", "formato": "terminal",
+  "terminal": { "caminho": "//terminal/docas-9 — mensagem.dat", "comando": "abrir mensagem.dat", "senha": "aurora", "dica": "o nome do navio", "tentativas": 3 },
+  "descricao": "<section class=\"secret\"><p>Senha: aurora</p></section>",
+  "paginas": [ { "titulo": "DE: ????? // PARA: DOCA 9", "texto": "O carregamento sai às 3h." } ] }
+```
+Com `senha`, o texto já entra **cifrado** (a senha não fica guardada no item — anote-a num segredo da descrição, como acima). Maiúsculas e espaços nas pontas não importam. `tentativas: 0` = sem limite.
+
+### 18.4 Cartaz (para o Quadro de avisos)
+
+```json
+{ "nome": "Procurado: Dorian", "era": "classico", "formato": "cartaz",
+  "cartaz": { "tipo": "procurado", "subtitulo": "vivo ou morto", "nome": "Dorian \"Mão Leve\"", "retrato": "caminho.webp",
+    "texto": "Roubo ao tesouro do Barão.", "recompensa": "500 Florins", "contratante": "Barão de Velmor", "prazo": "até a lua cheia",
+    "detalhes": [ { "rot": "Altura", "val": "1,78 m" } ] } }
+```
+`tipo`: `procurado`, `desaparecido`, `missao`, `aviso`, `recompensa` ou `evento` (decide a categoria no quadro). Opcionais: `titulo` (vazio = nome do tipo), `recRotulo` (Recompensa/Paga/Multa/Entrada), `ameaca` 0–100 e `codigo` (Cyberpunk), `cor` da faixa (Moderno). Sem `retrato`, Procurado e Desaparecido mostram uma silhueta.
+
+### 18.5 Quadro de avisos
+
+É um ator **Armazenamento** no modo `quadro` (ficha → Baú/Loja/**Quadro**). Os Escritos dentro dele aparecem pregados. Para já entrar numa posição, ponha no item `flags.nauren.quadro = { "x": 10, "y": 8, "rot": -3, "pino": "prego", "cat": "missoes" }` (x/y em % do quadro; `pino`: `prego`, `tacha`, `fita`, `punhal`, `nenhum`; `cat`: `procurados`, `missoes`, `avisos`, `recompensas`, `eventos` ou uma categoria criada pelo Mestre). Sem isso, o sistema arruma sozinho.
+
+### 18.6 Modelos prontos
+
+O compêndio **Nauren - Equipamentos** traz modelos de cada formato e um cartaz de cada tipo em cada era (o terminal trancado usa a senha `aurora`). O código-fonte dos modelos está em `modulos/escritos-modelos.mjs` — bom para copiar como exemplo.
