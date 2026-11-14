@@ -1,5 +1,5 @@
 /* Versão deste arquivo: o sistema confere no "ready" e, se o navegador/Forge tiver guardado um CSS antigo, carrega o novo. */
-:root { --nauren-css-versao: "0.116.1"; }
+:root { --nauren-css-versao: "0.116.2"; }
 /* 
 ===================================================
 1. FUNDO E FONTES GERAIS
@@ -9369,7 +9369,7 @@ li.directory-item.nauren-org-tem-dono > .entry-name > .nauren-org-nome { overflo
    ===================================================================== */
 .application.nauren-kit.nauren-armazem.nauren-armazem-quadro:not(.minimized):not(.minimizing):not(.maximizing) { max-width: calc((100vw - 16px) / var(--nauren-escala, 1)) !important; }
 .nauren-armazem-quadro .na-janela { height: 100%; display: flex; flex-direction: column; }
-.nauren-armazem-quadro .na-corpo { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+.nauren-armazem-quadro .na-corpo:has(> .nq) { overflow: hidden; } /* 0.116.2: só a aba do quadro fica sem rolagem (o quadro tem a dele); Configurar e Registro rolam */
 .nq { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 10px; }
 .nq-filtros { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .nq-chip { all: unset; cursor: pointer; padding: 5px 12px; border-radius: 999px; border: 1px solid #3b3154; color: #b3a6c9; font: 13px Signika, sans-serif; }

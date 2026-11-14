@@ -30,7 +30,8 @@ const ICONES = {
   balcao: { rotulo: "Balcão / loja", img: "icons/environment/settlement/market-stall.webp", fa: "fa-store" },
   cofre: { rotulo: "Cofre", img: "icons/containers/chest/chest-simple-box-steel-brown.webp", fa: "fa-vault" },
   forja: { rotulo: "Forja", img: "icons/tools/smithing/anvil.webp", fa: "fa-hammer" },
-  barril: { rotulo: "Barril", img: "icons/containers/barrels/barrel-open-brown-red.webp", fa: "fa-whiskey-glass" }
+  barril: { rotulo: "Barril", img: "icons/containers/barrels/barrel-open-brown-red.webp", fa: "fa-whiskey-glass" },
+  quadro: { rotulo: "Quadro de avisos", img: "icons/environment/settlement/sign-wood.webp", fa: "fa-thumbtack" } // 0.116.2
 };
 
 /* ============================ DADOS ============================ */
@@ -1037,16 +1038,16 @@ class NaurenArmazemSheet extends foundry.applications.sheets.ActorSheetV2 {
     const outras = (game.scenes?.contents ?? []).filter(c => c !== canvas?.scene && pontosDaCena(c).some(p => p.comportamento.system.armazem === this.actor.uuid)).length;
     const icones = [...Object.entries(ICONES).map(([k, v]) => [k, v.rotulo]), ["proprio", "Imagem do armazenamento"], ["imagem", "Outra imagem"]];
     return `<div class="na-config">
-      <section class="na-caixa"><h3>Espaços</h3>
+      ${s.modo === "quadro" ? "" : `<section class="na-caixa"><h3>Espaços</h3>
         ${op("Quantos espaços", "uma pilha ocupa 1", num("system.espacos", s.espacos, `min="1" max="500" ${s.semLimite ? "disabled" : ""}`))}
         ${op("Sem limite de espaços", "", sw("system.semLimite", s.semLimite))}
         ${op("Máximo por pilha", "0 = sem limite", num("system.maxPilha", s.maxPilha, `min="0"`))}
-      </section>
+      </section>`}
       <section class="na-caixa"><h3>Quem pode abrir</h3>
         <div class="na-seg na-seg-3">${[["todos", "Todos"], ["escolhidos", "Escolhidos"], ["mestre", "Só o Mestre"]].map(([k, r]) => `<button type="button" class="${s.quemAbre === k ? "on" : ""}" data-action="quem" data-quem="${k}">${r}</button>`).join("")}</div>
         ${escolhidosHtml}
-        ${op(loja ? "Pode comprar" : "Pode pegar", "", sw("system.podePegar", s.podePegar))}
-        ${op(loja ? "Pode vender" : "Pode guardar", loja ? "só com a compra de volta ligada" : "", sw("system.podeGuardar", s.podeGuardar))}
+        ${s.modo === "quadro" ? "" : `${op(loja ? "Pode comprar" : "Pode pegar", "", sw("system.podePegar", s.podePegar))}
+        ${op(loja ? "Pode vender" : "Pode guardar", loja ? "só com a compra de volta ligada" : "", sw("system.podeGuardar", s.podeGuardar))}`}
       </section>
       <section class="na-caixa"><h3>Tranca e distância</h3>
         ${op("Trancado", "", sw("system.trancado", s.trancado))}
@@ -1064,10 +1065,11 @@ class NaurenArmazemSheet extends foundry.applications.sheets.ActorSheetV2 {
         </div><div class="na-mapa-op">
           ${op("Jogadores podem arrancar", "levam a nota; ela sai do quadro", sw("system.podePegar", s.podePegar))}
           ${op("Jogadores podem pregar", "um escrito deles", sw("system.podeGuardar", s.podeGuardar))}
+          ${op("Frase no topo", "aparece embaixo do nome", `<input type="text" name="system.frase" value="${ESC(s.frase)}" placeholder="ex.: Trabalho honesto, pagamento justo.">`, "na-op-largo")}
           ${op("Categorias a mais", "além de Procurados, Missões, Avisos, Recompensas e Eventos · separe com vírgula", `<input type="text" class="na-cats-in" value="${ESC((s.quadro?.categorias ?? []).join(", "))}" placeholder="Rumores, Vagas de emprego">`, "na-op-largo")}
         </div></div>
       </section>` : ""}
-      <section class="na-caixa ${loja ? "" : "na-apagada"}"><h3>Loja ${loja ? "" : "<small>· só no modo Loja</small>"}</h3>
+      ${s.modo === "quadro" ? "" : `<section class="na-caixa ${loja ? "" : "na-apagada"}"><h3>Loja ${loja ? "" : "<small>· só no modo Loja</small>"}</h3>
         ${op("Moeda", "", sel("system.moeda", moedas.map(x => [x, x]), s.moeda))}
         ${op("Ajuste dos preços", "promoção ou inflação", num("system.ajustePreco", s.ajustePreco, `min="0" max="10000"`, "%"))}
         ${op("Compra de volta", "compra o que ela também vende", sw("system.compraDeVolta", s.compraDeVolta))}
@@ -1075,7 +1077,7 @@ class NaurenArmazemSheet extends foundry.applications.sheets.ActorSheetV2 {
         ${op("Caixa sem limite", "", sw("system.caixaSemLimite", s.caixaSemLimite))}
         ${op("Caixa da loja", "", num("system.caixa", s.caixa, `min="0" ${s.caixaSemLimite ? "disabled" : ""}`, "", "ƒ"), s.caixaSemLimite ? "na-op-off" : "")}
         ${op("Frase da loja", "aparece no topo", `<input type="text" name="system.frase" value="${ESC(s.frase)}" placeholder="ex.: Aço bom não é barato.">`, "na-op-largo")}
-      </section>
+      </section>`}
       <section class="na-caixa na-larga"><h3>No mapa</h3>
         <div class="na-mapa">
           <div class="na-mapa-op">
@@ -1115,7 +1117,7 @@ class NaurenArmazemSheet extends foundry.applications.sheets.ActorSheetV2 {
   static #onModo(ev, el) {
     const m = el.dataset.modo;
     // 0.115: virar quadro — sem limite de espaços, jogadores arrancam mas não pregam (dá para mudar em Configurar)
-    if (m === "quadro" && this.actor.system.modo !== "quadro") return this.actor.update({ "system.modo": m, "system.semLimite": true, "system.podePegar": true, "system.podeGuardar": false });
+    if (m === "quadro" && this.actor.system.modo !== "quadro") return this.actor.update({ "system.modo": m, "system.semLimite": true, "system.podePegar": true, "system.podeGuardar": false, ...(["bau", undefined].includes(this.actor.system.mapa?.icone) ? { "system.mapa.icone": "quadro" } : {}) });
     this.actor.update({ "system.modo": m });
   }
   static #onAba(ev, el) { this.estado.aba = el.dataset.aba; this.render(); }
