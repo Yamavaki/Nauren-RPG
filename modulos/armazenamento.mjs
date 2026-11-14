@@ -594,10 +594,14 @@ class NaurenArmazemJanela extends foundry.applications.api.ApplicationV2 {
   async _renderHTML() { const m = this.armazem?.system?.modo; return m === "loja" ? this.#htmlLoja() : m === "quadro" ? this.#htmlQuadro() : this.#htmlBau(); }
   _replaceHTML(html, content) { trocarHtml(content, html); }
   _onFirstRender() { janelasAbertas.add(this); }
+  /** 0.116.3: depois que a pessoa redimensiona, a vitrine e a grade crescem junto com a janela. */
+  _onPosition(position) { super._onPosition?.(position); this.#marcarLivre(position); }
+  #marcarLivre(position = this.position) { this.element?.classList.toggle("na-livre", Number.isFinite(Number(position?.height)) && Number(position.height) > 0); }
   _onClose() { janelasAbertas.delete(this); }
   _onRender() {
     const el = this.element;
     el.classList.toggle("nauren-armazem-quadro", this.armazem?.system?.modo === "quadro");
+    this.#marcarLivre();
     if (this.armazem?.system?.modo === "quadro") return this.#ligarQuadro(el);
     el.querySelectorAll(".na-busca-in").forEach(inp => inp.addEventListener("input", foundry.utils.debounce(() => { this.estado.busca = inp.value; this.render(); }, 180)));
     el.querySelectorAll(".na-qtd-in").forEach(inp => inp.addEventListener("change", () => { this.estado.qtd[inp.dataset.id] = Math.max(1, naurenLerNumero(inp.value) || 1); this.render(); }));

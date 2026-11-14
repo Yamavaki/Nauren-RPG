@@ -1,5 +1,5 @@
 /* Versão deste arquivo: o sistema confere no "ready" e, se o navegador/Forge tiver guardado um CSS antigo, carrega o novo. */
-:root { --nauren-css-versao: "0.116.2"; }
+:root { --nauren-css-versao: "0.116.3"; }
 /* 
 ===================================================
 1. FUNDO E FONTES GERAIS
@@ -6584,7 +6584,7 @@ img.nauren-criador-token.com-borda { border: none; border-radius: 0; background:
 .na-espacos-larga i { grid-column: auto; }
 /* baú: grade grande + detalhe ao lado */
 .na-bau { display: grid; grid-template-columns: minmax(0, 1fr) 250px; gap: 14px; align-items: start; }
-.na-grade { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; max-height: 330px; overflow-y: auto; padding: 2px; align-content: start; }
+.na-grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 8px; max-height: 330px; overflow-y: auto; padding: 2px; align-content: start; }
 .na-grade.na-alvo, .na-mochila.na-alvo { outline: 1px dashed var(--nk-ouro); outline-offset: 2px; }
 .na-slot { all: unset; box-sizing: border-box; position: relative; aspect-ratio: 1; display: grid; place-items: center; cursor: pointer; --cc: 8px; padding: 8px; }
 .na-slot img { width: 78%; height: 78%; object-fit: contain; border: 0; pointer-events: none; }
@@ -6756,7 +6756,7 @@ img.nauren-criador-token.com-borda { border: none; border-radius: 0; background:
   .na-venda .na-stepper, .na-venda .na-stepper-vazio { display: none; }
   .na-venda-cab { display: none; }
 }
-.application.nauren-kit.nauren-armazem:not(.minimized):not(.minimizing):not(.maximizing) { max-width: min(980px, calc((100vw - 16px) / var(--nauren-escala, 1))) !important; }
+.application.nauren-kit.nauren-armazem:not(.minimized):not(.minimizing):not(.maximizing) { max-width: calc((100vw - 16px) / var(--nauren-escala, 1)) !important; } /* 0.116.3: sem trava de 980px — dá para alargar e ver mais colunas */
 .na-caixa .na-busca { flex: 0 0 auto; }
 .na-seg button { white-space: nowrap; }
 .na-seg-3 button { padding: 0 6px; font-size: 12.5px; }
@@ -9509,3 +9509,11 @@ li.directory-item.nauren-org-tem-dono > .entry-name > .nauren-org-nome { overflo
 .ncz-classico .ncz-rec.ncz-rec-longo { font-size: 1.55em; line-height: 1.15; }
 .ncz-cyberpunk .ncz-rec.ncz-rec-longo { flex-direction: column; align-items: flex-start; gap: .25em; }
 .ncz-cyberpunk .ncz-rec.ncz-rec-longo b { font-size: 1.2em; }
+
+/* 0.116.3: baú e loja acompanham a janela redimensionada (classe na-livre: a pessoa mexeu no tamanho) */
+.nauren-armazem-jogador.na-livre .na-corpo { overflow-y: auto; }
+.nauren-armazem-jogador.na-livre .na-vitrine { flex: 1 1 0; min-height: 200px; max-height: none; }
+.nauren-armazem-jogador.na-livre .na-vendas { flex: 1 1 0; min-height: 160px; max-height: none; }
+.nauren-armazem-jogador.na-livre .na-bau { flex: 1 1 0; min-height: 220px; grid-template-rows: minmax(0, 1fr); }
+.nauren-armazem-jogador.na-livre .na-grade { max-height: none; min-height: 0; height: 100%; }
+.nauren-armazem-jogador.na-livre .na-bau .na-detalhe { overflow-y: auto; }
