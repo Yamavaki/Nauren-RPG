@@ -7,7 +7,8 @@
  * Os jogadores pegam o escrito no baú (ou leem lá mesmo), e no inventário clicam em "Ler".
  * Um escrito também pode ser mágico: as Ações do item aparecem no rodapé do leitor.
  */
-import { naurenMensagensNormalizar, naurenMensagensHtml, naurenMensagensEditorHtml, naurenMsgNova, naurenMsgTotal, naurenMsgVisiveis, naurenMensagensDoJson, naurenMensagensParaJson } from "./escritos-formatos.mjs";
+import { naurenMensagensNormalizar, naurenMensagensHtml, naurenMensagensEditorHtml, naurenMsgNova, naurenMsgTotal, naurenMsgVisiveis, naurenMensagensDoJson, naurenMensagensParaJson,
+  naurenTerminalNormalizar, naurenTerminalTrancadoHtml, naurenTerminalDoJson, naurenTerminalParaJson, naurenCifrar, naurenDecifrar } from "./escritos-formatos.mjs";
 
 const SIS = "nauren";
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[c]));
@@ -21,7 +22,8 @@ export const NAUREN_ESCRITO_FORMATOS = {
   livro: { rot: "Livro", ic: "fa-book", dica: "Capa e páginas lado a lado, como um livro aberto." },
   diario: { rot: "Diário", ic: "fa-book-bookmark", dica: "Livro com fita marcadora. Por padrão, o dono escreve nele." },
   // 0.112: formatos que só existem em algumas eras (soEras)
-  mensagens: { rot: "Mensagens", ic: "fa-mobile-screen", dica: "Uma conversa de celular. Só o Mestre escreve e pode revelar uma mensagem por vez.", soEras: ["moderno", "cyberpunk"] }
+  mensagens: { rot: "Mensagens", ic: "fa-mobile-screen", dica: "Uma conversa de celular. Só o Mestre escreve e pode revelar uma mensagem por vez.", soEras: ["moderno", "cyberpunk"] },
+  terminal: { rot: "Terminal", ic: "fa-terminal", dica: "Tela de computador com o texto sendo digitado. Pode ser criptografado com senha.", soEras: ["moderno", "cyberpunk"] }
 };
 /** O formato existe nesta era? */
 export function naurenEscritoFormatoNaEra(formato, era) { const f = NAUREN_ESCRITO_FORMATOS[formato]; return !!f && (!f.soEras || f.soEras.includes(era)); }
@@ -79,7 +81,8 @@ const SUGESTAO_DA_ERA = {
     pergaminho: { papel: "cartao", fonte: "maquina" },
     livro: { papel: "a4", fonte: "sans" },
     diario: { papel: "pautado", fonte: "manuscrita", quemEscreve: "dono" },
-    mensagens: { papel: "tela", fonte: "sans", quemEscreve: "mestre" }
+    mensagens: { papel: "tela", fonte: "sans", quemEscreve: "mestre" },
+    terminal: { papel: "tela", fonte: "mono" }
   },
   cyberpunk: {
     nota: { papel: "holograma", fonte: "mono" },
@@ -87,7 +90,8 @@ const SUGESTAO_DA_ERA = {
     pergaminho: { papel: "ambar", fonte: "mono" },
     livro: { papel: "terminal", fonte: "mono" },
     diario: { papel: "holograma", fonte: "mono", quemEscreve: "dono" },
-    mensagens: { papel: "neon", fonte: "mono", quemEscreve: "mestre" }
+    mensagens: { papel: "neon", fonte: "mono", quemEscreve: "mestre" },
+    terminal: { papel: "terminal", fonte: "mono" }
   }
 };
 const sugestao = (era, formato) => (SUGESTAO_DA_ERA[era] ?? SUGESTAO_DA_ERA.classico)[formato] ?? {};
@@ -98,6 +102,7 @@ const CAPA_DA_ERA = { classico: { cor: "#5b2a1d", detalhe: "#d6b25e" }, moderno:
 function aplicarSugestao(e) {
   Object.assign(e, sugestao(e.era, e.formato));
   if (e.era !== "classico") e.efeitos.varredura = PAPEL_COM_VARREDURA.has(e.papel);
+  if (e.formato === "terminal") e.efeitos.digitacao = true;
 }
 /** Nome, ícone e dica do formato na era do escrito (o pergaminho vira Ficha/Painel fora do Clássico). */
 export function naurenEscritoFormatoRot(formato, era = "classico") {
@@ -120,6 +125,7 @@ export const NAUREN_ESCRITO_PADRAO = () => ({
   lacre: { ativo: false, cor: "#8c1c1c", simbolo: "", rompido: false },
   quemEscreve: "mestre", lerNoBau: true, gastaAoUsar: false,
   mensagens: naurenMensagensNormalizar({}),
+  terminal: naurenTerminalNormalizar({}),
   paginas: [pagina()]
 });
 const hex = (v, d) => /^#[0-9a-f]{6}$/i.test(String(v ?? "")) ? String(v) : d;
@@ -141,6 +147,7 @@ export function naurenEscritoNormalizar(e) {
     paginas: (Array.isArray(e.paginas) ? e.paginas : []).map(pagina)
   };
   out.mensagens = naurenMensagensNormalizar(e.mensagens, out.era);
+  out.terminal = naurenTerminalNormalizar(e.terminal);
   if (!naurenEscritoFormatoNaEra(out.formato, out.era)) out.formato = "nota";
   if (!out.paginas.length) out.paginas.push(pagina());
   return out;
@@ -159,6 +166,8 @@ export function naurenEscritoPodeEscrever(item) {
 }
 /** Tinta usada (a escolhida, ou a padrão do papel). */
 function tintaDe(e) { return e.tinta || TINTA_DO_PAPEL[e.papel] || "#2b1d10"; }
+/** 0.113: terminal trancado com senha (o texto está cifrado). */
+export function naurenEscritoTrancado(e) { return e?.formato === "terminal" && !!e.terminal?.cripto?.ativo; }
 function ehLivro(e) { return e.formato === "livro" || e.formato === "diario"; }
 function semTexto(p) { return p.tipo === "texto" ? !String(p.texto ?? "").replace(/<[^>]*>/g, "").trim() : !p.src; }
 
@@ -225,12 +234,66 @@ export function naurenEscritoEstiloHtml(e, { compacto = false } = {}) {
     ${e.formato === "carta" ? `<div class="nl-sub"><span class="nl-rot">Lacre</span>
       <div class="nl-linha-cores">${chk("lacre.ativo", e.lacre.ativo, "Lacrada", "Quem abre vê o envelope e rompe o lacre para ler")}${e.lacre.ativo ? `${cor("lacre.cor", e.lacre.cor, "Cera")}<input type="text" class="nl-in nl-in-curto" data-esc="lacre.simbolo" maxlength="2" value="${esc(e.lacre.simbolo)}" placeholder="✦" title="Letra ou símbolo no selo (até 2)">` : ""}</div>
       ${e.lacre.ativo && e.lacre.rompido ? `<button type="button" class="nl-btn nt-ch nl-btn-p" data-esc-acao="relacrar"><i class="fas fa-stamp"></i> Lacrar de novo</button>` : ""}</div>` : ""}
+    ${e.formato === "terminal" ? terminalEstiloHtml(e) : ""}
     <div class="nl-sub"><span class="nl-rot">Quem pode</span>
       ${e.formato === "mensagens" ? `<p class="nl-dica"><i class="fas fa-lock"></i> A conversa do celular só o Mestre escreve.</p>` : `<div class="nl-seg">${[["mestre", "Só o Mestre escreve"], ["dono", "O dono também escreve"]].map(([k, r]) => `<button type="button" class="${e.quemEscreve === k ? "on" : ""}" data-esc-quem="${k}">${r}</button>`).join("")}</div>`}
       ${chk("lerNoBau", e.lerNoBau, "Dá para ler no baú, sem pegar")}
       ${chk("gastaAoUsar", e.gastaAoUsar, "Some ao usar uma Ação (pergaminho de magia)", "Cada uso de uma Ação deste item gasta 1 da quantidade")}
     </div>
   </div>`;
+}
+/** 0.113: caminho, comando e a tranca do terminal. */
+function terminalEstiloHtml(e) {
+  const t = e.terminal, c = t.cripto;
+  const comuns = `<div class="nl-grade2">
+      <label class="nl-campo"><span class="nl-rot-p">Dica (o jogador vê)</span><input type="text" class="nl-in" data-esc="terminal.cripto.dica" value="${esc(c.dica)}" placeholder="o nome da filha do capitão"></label>
+      <label class="nl-campo"><span class="nl-rot-p">Tentativas (0 = sem limite)</span><input type="number" class="nl-in" min="0" max="99" data-esc="terminal.cripto.tentativas" value="${c.tentativas}"></label>
+    </div>
+    <label class="nl-check" title="O Mestre recebe um sussurro a cada senha errada"><input type="checkbox" data-esc="terminal.cripto.avisarMestre" ${c.avisarMestre ? "checked" : ""}> Avisar o Mestre quando errarem a senha</label>`;
+  return `<div class="nl-sub"><span class="nl-rot">Terminal</span>
+    <input type="text" class="nl-in" data-esc="terminal.caminho" value="${esc(t.caminho)}" placeholder="//terminal/docas-9 — mensagem.dat (barra do topo)">
+    <input type="text" class="nl-in" data-esc="terminal.comando" value="${esc(t.comando)}" placeholder="abrir mensagem.dat (primeira linha, depois do >)">
+    <div class="nt-cripto ${c.ativo ? "on" : ""}">
+      <div class="nt-cripto-cab"><i class="fas ${c.ativo ? "fa-lock" : "fa-lock-open"}"></i><div><b>${c.ativo ? "Trancado com senha" : "Criptografar"}</b>
+        <small>${c.ativo ? "O texto está cifrado no item: ninguém lê sem a senha, nem o Mestre. Para editar, destranque." : "O jogador vê ACESSO NEGADO e precisa digitar a senha. Maiúsculas não importam."}</small></div></div>
+      ${comuns}
+      ${c.ativo ? "" : `<input type="password" class="nl-in" data-nt-nova-senha autocomplete="new-password" placeholder="Senha (preencha por último e clique em Trancar)">`}
+      <div class="nl-aba-bts">${c.ativo
+        ? `<button type="button" class="nl-btn nt-ch" data-esc-acao="destrancar"><i class="fas fa-key"></i> Destrancar para editar</button>
+           <button type="button" class="nl-btn nt-ch" data-esc-acao="zerarTentativas" title="Todos voltam a ter as tentativas (e precisam digitar a senha de novo)"><i class="fas fa-rotate-left"></i> Zerar tentativas</button>
+           <button type="button" class="nl-link" data-esc-acao="esqueciSenha"><i class="fas fa-triangle-exclamation"></i> Esqueci a senha</button>`
+        : `<button type="button" class="nl-btn nt-ch nl-btn-p" data-esc-acao="trancar"><i class="fas fa-lock"></i> Trancar com a senha</button>`}</div>
+    </div>
+  </div>`;
+}
+async function terminalAcao(acao, raiz, item) {
+  const DV = foundry.applications.api.DialogV2;
+  const e = naurenEscritoDe(item); const c = e.terminal.cripto;
+  if (acao === "trancar") {
+    const senha = raiz.querySelector("[data-nt-nova-senha]")?.value ?? "";
+    if (!senha.trim()) return ui.notifications?.warn("Digite a senha antes de trancar.");
+    const ok = await DV.confirm({ window: { title: "Trancar o terminal?" }, content: `<p>O texto será cifrado com a senha <b>${esc(senha.trim())}</b>.</p><p>Anote a senha: sem ela, nem o Mestre consegue ler ou editar o texto.</p>`, rejectClose: false }).catch(() => false);
+    if (!ok) return;
+    e.terminal.cripto = { ...c, ativo: true, versao: c.versao + 1, ...naurenCifrar(e.paginas, senha) };
+    e.paginas = [pagina()];
+    return gravar(item, e);
+  }
+  if (acao === "destrancar") {
+    const senha = await DV.prompt({ window: { title: "Destrancar o terminal" }, content: `<p>Digite a senha para voltar o texto ao normal e editar.</p><input type="password" name="senha" autofocus autocomplete="off">`,
+      ok: { label: "Destrancar", callback: (ev, bt) => bt.form.elements.senha.value }, rejectClose: false }).catch(() => null);
+    if (senha == null) return;
+    const pags = naurenDecifrar(c, senha);
+    if (!pags) return ui.notifications?.error("Senha incorreta.");
+    e.paginas = pags; e.terminal.cripto = { ...c, ativo: false, sal: "", verif: "", dados: "" };
+    return gravar(item, e);
+  }
+  if (acao === "zerarTentativas") { e.terminal.cripto.versao = c.versao + 1; await gravar(item, e); return ui.notifications?.info("Tentativas zeradas para todos."); }
+  if (acao === "esqueciSenha") {
+    const ok = await DV.confirm({ window: { title: "Apagar o texto trancado?" }, content: "<p>Sem a senha não dá para recuperar o texto. Apagar o texto cifrado e destrancar o terminal (vazio)?</p>", rejectClose: false }).catch(() => false);
+    if (!ok) return;
+    e.paginas = [pagina()]; e.terminal.cripto = { ...c, ativo: false, sal: "", verif: "", dados: "" };
+    return gravar(item, e);
+  }
 }
 /** Liga os controles de estilo: cada mudança grava no item. */
 export function naurenEscritoLigarEstilo(raiz, item, depois = null) {
@@ -261,6 +324,7 @@ export function naurenEscritoLigarEstilo(raiz, item, depois = null) {
     e.papel = b.dataset.escPapel; e.tinta = "";
   }); }));
   raiz.querySelectorAll("[data-esc-quem]").forEach(b => b.addEventListener("click", ev => { ev.preventDefault(); mudar(e => { e.quemEscreve = b.dataset.escQuem; }); }));
+  raiz.querySelectorAll("[data-esc-acao]:not([data-esc-acao=relacrar])").forEach(b => b.addEventListener("click", async ev => { ev.preventDefault(); await terminalAcao(b.dataset.escAcao, raiz, item); depois?.(); }));
   raiz.querySelectorAll("[data-esc-acao=relacrar]").forEach(b => b.addEventListener("click", ev => { ev.preventDefault(); mudar(e => { e.lacre.rompido = false; }); }));
   raiz.querySelectorAll("input[type=range][data-esc]").forEach(inp => inp.addEventListener("input", () => { const v = raiz.querySelector(`[data-esc-ver="${inp.dataset.esc}"]`); if (v) v.textContent = `${inp.value}%`; }));
   raiz.querySelectorAll("[data-esc]").forEach(inp => inp.addEventListener("change", () => mudar(e => {
@@ -280,14 +344,14 @@ export function naurenEscritoAbaHtml(item) {
   return `<div class="nl-aba">
     <div class="nl-aba-topo">
       <div class="nl-mini nl-era-${e.era} nl-fmt-${e.formato} nl-papel-${e.papel}" style="${esc(`--nl-tinta:${tintaDe(e)};--nl-capa:${e.capa.cor};--nl-detalhe:${e.capa.detalhe};--nl-lacre:${e.lacre.cor};--nl-fonte:${NAUREN_ESCRITO_FONTES[e.fonte].css}`)}">
-        ${e.formato === "mensagens" ? `<div class="nl-mini-cel nm-tema-${e.mensagens.tema}"><b>${esc(e.mensagens.contato || item.name)}</b><i></i><i class="eu"></i><i></i></div>` : ehLivro(e) ? `<div class="nl-mini-capa"><b>${esc(titulo)}</b></div>` : `<div class="nl-mini-folha"><b>${esc(e.paginas[0]?.nome || item.name)}</b><span></span><span></span><span></span>${e.formato === "carta" && e.lacre.ativo ? `<i class="nl-mini-lacre"></i>` : ""}</div>`}
+        ${e.formato === "terminal" ? `<div class="nl-mini-term"><span>&gt;_ ${esc(e.terminal.comando || item.name)}</span><i></i><i></i><i></i>${e.terminal.cripto.ativo ? `<b class="fas fa-lock"></b>` : ""}</div>` : e.formato === "mensagens" ? `<div class="nl-mini-cel nm-tema-${e.mensagens.tema}"><b>${esc(e.mensagens.contato || item.name)}</b><i></i><i class="eu"></i><i></i></div>` : ehLivro(e) ? `<div class="nl-mini-capa"><b>${esc(titulo)}</b></div>` : `<div class="nl-mini-folha"><b>${esc(e.paginas[0]?.nome || item.name)}</b><span></span><span></span><span></span>${e.formato === "carta" && e.lacre.ativo ? `<i class="nl-mini-lacre"></i>` : ""}</div>`}
       </div>
       <div class="nl-aba-info">
-        <div class="nl-aba-tit"><i class="fas ${f.ic}"></i> ${f.rot} · ${e.formato === "mensagens" ? (n => `${n} ${n === 1 ? "mensagem" : "mensagens"}${e.mensagens.aosPoucos ? ` <small>(${Math.min(e.mensagens.reveladas, n)} reveladas)</small>` : ""}`)(naurenMsgTotal(e.mensagens)) : `${e.paginas.length} ${e.paginas.length === 1 ? "página" : "páginas"}${cheias < e.paginas.length ? ` <small>(${e.paginas.length - cheias} em branco)</small>` : ""}`}</div>
+        <div class="nl-aba-tit"><i class="fas ${f.ic}"></i> ${f.rot} · ${naurenEscritoTrancado(e) ? `<span class="nt-trancado-rot"><i class="fas fa-lock"></i> trancado com senha</span>` : e.formato === "mensagens" ? (n => `${n} ${n === 1 ? "mensagem" : "mensagens"}${e.mensagens.aosPoucos ? ` <small>(${Math.min(e.mensagens.reveladas, n)} reveladas)</small>` : ""}`)(naurenMsgTotal(e.mensagens)) : `${e.paginas.length} ${e.paginas.length === 1 ? "página" : "páginas"}${cheias < e.paginas.length ? ` <small>(${e.paginas.length - cheias} em branco)</small>` : ""}`}</div>
         <p class="nl-dica">O texto fica guardado neste item. Os jogadores leem pelo botão <b>Ler</b> no inventário${e.lerNoBau ? " ou direto no baú" : ""}.</p>
         <div class="nl-aba-bts">
           <button type="button" class="nl-btn nt-ch nl-btn-p" data-escrito="ler"><i class="fas fa-book-open-reader"></i> Ler</button>
-          ${pode ? `<button type="button" class="nl-btn nt-ch" data-escrito="escrever"><i class="fas fa-feather-pointed"></i> ${e.formato === "mensagens" ? "Escrever a conversa" : "Escrever as páginas"}</button>` : ""}
+          ${pode && !naurenEscritoTrancado(e) ? `<button type="button" class="nl-btn nt-ch" data-escrito="escrever"><i class="fas fa-feather-pointed"></i> ${e.formato === "mensagens" ? "Escrever a conversa" : "Escrever as páginas"}</button>` : ""}
           ${game.user?.isGM ? `<button type="button" class="nl-btn nt-ch" data-escrito="mostrar" title="Abre o escrito na tela de todos os jogadores"><i class="fas fa-eye"></i> Mostrar aos jogadores</button>` : ""}
         </div>
         <div class="nl-aba-bts nl-aba-json">
@@ -424,7 +488,45 @@ export class NaurenLeitor extends foundry.applications.api.ApplicationV2 {
     if (!this.editando && this._naurenFormatoJanela && position?.width && position?.height) guardarTamJanela(this._naurenFormatoJanela, position);
   }
   get title() { return this.item?.name ?? "Escrito"; }
-  get e() { return naurenEscritoDe(this.item); }
+  get e() {
+    const e = naurenEscritoDe(this.item);
+    // 0.113: terminal destrancado nesta tela — as páginas decifradas valem só aqui
+    if (naurenEscritoTrancado(e)) {
+      if (this._abertas && this._abertasVerif === e.terminal.cripto.verif) e.paginas = this._abertas.map(pagina);
+      else this._abertas = null;
+    }
+    return e;
+  }
+  /** Chave das tentativas e da senha lembrada nesta tela (muda quando o Mestre zera as tentativas). */
+  criptoChave(c) { return `nauren.cripto.${this.item.uuid}.${c.verif}.${c.versao}`; }
+  criptoLocal(c) { try { return JSON.parse(localStorage.getItem(this.criptoChave(c)) ?? "null") ?? { erros: 0, senha: "" }; } catch (err) { return { erros: 0, senha: "" }; } }
+  criptoGuardar(c, v) { try { localStorage.setItem(this.criptoChave(c), JSON.stringify(v)); } catch (err) { /* sem armazenamento */ } }
+  async tentarSenha(senha) {
+    const e = naurenEscritoDe(this.item), c = e.terminal.cripto;
+    const est = this.criptoLocal(c);
+    if (c.tentativas && est.erros >= c.tentativas) return this.render();
+    const pags = naurenDecifrar(c, senha);
+    if (!pags) {
+      est.erros += 1; this.criptoGuardar(c, est); this._ntErro = true;
+      if (c.avisarMestre && !game.user?.isGM) {
+        const gms = (game.users?.filter?.(u => u.isGM) ?? []).map(u => u.id);
+        ChatMessage.create({ speaker: { alias: "Terminal" }, whisper: gms, content: `<div class="nt-chat-aviso"><i class="fas fa-lock"></i> <b>${esc(game.user?.name ?? "Alguém")}</b> errou a senha de <b>${esc(this.item.name)}</b> (${est.erros}${c.tentativas ? ` de ${c.tentativas}` : ""}).</div>` }).catch(() => null);
+      }
+      return this.render();
+    }
+    this.criptoGuardar(c, { erros: 0, senha });
+    this._abertas = pags; this._abertasVerif = c.verif; this._ntErro = false;
+    this._decodificar = efeitosAnimados(); this._jaDigitadas?.clear(); this.pag = 0; this.animar = "";
+    return this.render();
+  }
+  /** Se esta tela já acertou a senha antes, abre direto. */
+  lembrarSenha(e) {
+    if (!naurenEscritoTrancado(e) || this._abertas) return;
+    const c = e.terminal.cripto, est = this.criptoLocal(c);
+    if (!est.senha) return;
+    const pags = naurenDecifrar(c, est.senha);
+    if (pags) { this._abertas = pags; this._abertasVerif = c.verif; }
+  }
   /** Quantas páginas aparecem de uma vez (livro aberto = 2). */
   get porVez() { return ehLivro(this.e) && !this.editando ? 2 : 1; }
   irPara(i, render = true) {
@@ -458,14 +560,20 @@ export class NaurenLeitor extends foundry.applications.api.ApplicationV2 {
     if (p.tipo === "imagem") corpo = p.src ? `<figure class="nl-fig"><img src="${esc(p.src)}" alt=""><figcaption>${esc(p.legenda)}</figcaption></figure>` : `<p class="nl-vazio">(imagem não escolhida)</p>`;
     else corpo = semTexto(p) ? `<p class="nl-vazio">${e.quemEscreve === "dono" ? "Página em branco." : "…"}</p>` : await enriquecer(p.texto, this.item);
     const capitular = ehLivro(e) && n === 0 && p.tipo === "texto" ? "nl-capitular" : "";
+    let prompt = "";
+    if (e.formato === "terminal" && n === 0) {
+      if (this._decodificar) prompt += `<div class="nt-decod"><div>&gt; senha aceita</div><div>&gt; decodificando <span class="nt-barra-prog"><i></i></span></div></div>`;
+      if (e.terminal.comando) prompt += `<div class="nt-prompt">&gt; ${esc(e.terminal.comando)}</div>`;
+    }
     return `<article class="nl-folha" data-pag="${n}">
       ${p.nome ? `<h2 class="nl-folha-tit">${esc(p.nome)}</h2>` : ""}
-      <div class="nl-folha-corpo ${capitular}">${corpo}</div>
+      <div class="nl-folha-corpo ${capitular}">${prompt}${corpo}</div>
       ${total > 1 ? `<footer class="nl-folha-num">${n + 1}</footer>` : ""}
     </article>`;
   }
   async lerHtml(e) {
     if (e.formato === "mensagens") return this.mensagensLerHtml(e);
+    if (naurenEscritoTrancado(e) && !this._abertas) { this.lembrarSenha(e); if (this._abertas) e = this.e; }
     const n = e.paginas.length, livro = ehLivro(e), titulo = e.capa.titulo || this.item.name;
     let palco = "";
     const anim = this.animar ? `nl-vira-${this.animar}` : ""; this.animar = "";
@@ -477,6 +585,11 @@ export class NaurenLeitor extends foundry.applications.api.ApplicationV2 {
         ${e.formato === "diario" ? `<span class="nl-fita"></span>` : ""}
         <span class="nl-capa-abrir"><i class="fas fa-book-open"></i> Abrir</span>
       </button></div>`;
+    } else if (naurenEscritoTrancado(e) && !this._abertas) {
+      const c = e.terminal.cripto, est = this.criptoLocal(c);
+      const restam = c.tentativas ? Math.max(0, c.tentativas - est.erros) : null;
+      palco = naurenTerminalTrancadoHtml(e.terminal, { restam, bloqueado: restam === 0, erro: !!this._ntErro, caminho: e.terminal.caminho || `//terminal — ${this.item.name}` });
+      this._ntErro = false;
     } else if (e.formato === "carta" && e.lacre.ativo && !e.lacre.rompido && !this.lacreAberto) {
       palco = `<div class="nl-envelope">
         <div class="nl-env-corpo"><span class="nl-env-aba"></span><span class="nl-env-nome">${esc(this.item.name)}</span>
@@ -491,11 +604,12 @@ export class NaurenLeitor extends foundry.applications.api.ApplicationV2 {
     } else {
       const varetas = e.formato === "pergaminho" && e.era === "classico"; // fora do Clássico o pergaminho é uma ficha/painel, sem varetas
       palco = `<div class="nl-solta ${anim}">${varetas ? `<span class="nl-vareta nl-vareta-c"></span>` : ""}${await this.folhaHtml(e.paginas[this.pag], this.pag, n, e)}${varetas ? `<span class="nl-vareta nl-vareta-b"></span>` : ""}</div>`;
+      if (e.formato === "terminal") palco = `<div class="nt-monitor ${anim}"><div class="nt-barra"><span class="nt-led"></span><span class="nt-caminho">${esc(e.terminal.caminho || `//terminal — ${this.item.name}`)}</span></div><div class="nt-tela">${palco}</div></div>`;
     }
     // navegação
-    const fechado = (livro && this.pag === -1) || palco.includes("nl-envelope");
+    const fechado = (livro && this.pag === -1) || palco.includes("nl-envelope") || palco.includes("nt-trancado");
     const ultima = livro ? this.pag + 2 > n - 1 : this.pag >= n - 1;
-    const rotPag = livro ? (this.pag === -1 ? "Capa" : `Páginas ${this.pag + 1}${this.pag + 1 < n ? `–${this.pag + 2}` : ""} de ${n}`) : `Página ${this.pag + 1} de ${n}`;
+    const rotPag = palco.includes("nt-trancado") ? "Trancado" : livro ? (this.pag === -1 ? "Capa" : `Páginas ${this.pag + 1}${this.pag + 1 < n ? `–${this.pag + 2}` : ""} de ${n}`) : `Página ${this.pag + 1} de ${n}`;
     const sumario = n > 1 && !fechado ? `<select class="nl-in nl-sumario" data-sumario title="Ir para a página">${e.paginas.map((p, i) => `<option value="${i}" ${(i === this.pag || (livro && i === this.pag + 1)) ? "selected" : ""}>${i + 1}. ${esc(p.nome || (p.tipo === "imagem" ? "Imagem" : `Página ${i + 1}`))}</option>`).join("")}</select>` : "";
     const acoes = (this.item.system.acoes ?? []);
     const podeUsar = acoes.length && this.item.actor?.isOwner && this.item.actor?.sheet?._executarAcao;
@@ -519,6 +633,9 @@ export class NaurenLeitor extends foundry.applications.api.ApplicationV2 {
   }
   async editarHtml(e) {
     if (e.formato === "mensagens") return this.mensagensEditarHtml(e);
+    if (naurenEscritoTrancado(naurenEscritoDe(this.item))) return `<header class="nl-barra"><div class="nl-barra-esq"><span class="nl-barra-tit"><i class="fas fa-lock"></i> Terminal trancado</span></div><div class="nl-barra-dir"><button type="button" class="nl-btn nt-ch nl-btn-p" data-action="ler"><i class="fas fa-terminal"></i> Voltar</button></div></header>
+      <main class="nl-palco"><div class="nt-aviso-edicao"><i class="fas fa-lock"></i><p>O texto deste terminal está cifrado com a senha. Para editar, use <b>Destrancar para editar</b> na aba Escrito do item (ou abaixo).</p>
+      <div class="nl-ed-estilo">${naurenEscritoEstiloHtml(naurenEscritoDe(this.item), { compacto: true })}</div></div></main>`;
     const n = e.paginas.length; this.edPag = Math.min(this.edPag, n - 1);
     const p = e.paginas[this.edPag];
     const lista = e.paginas.map((pg, i) => `<div class="nl-ed-item ${i === this.edPag ? "on" : ""}">
@@ -578,6 +695,16 @@ export class NaurenLeitor extends foundry.applications.api.ApplicationV2 {
     }
     el.querySelector("[data-sumario]")?.addEventListener("change", ev => { this.irPara(Number(ev.target.value)); });
     if (e.formato === "mensagens") { if (this.editando) this.ligarMensagensEditor(); else this.ligarMensagens(); return; }
+    el.querySelector("[data-nt-form]")?.addEventListener("submit", ev => { ev.preventDefault(); this.tentarSenha(el.querySelector("[data-nt-senha]")?.value ?? ""); });
+    el.querySelector("[data-nt-senha]")?.focus();
+    if (this.editando && naurenEscritoTrancado(naurenEscritoDe(this.item))) { naurenEscritoLigarEstilo(el.querySelector(".nl-ed-estilo"), this.item, () => { this.editando = false; this.render(); }); return; }
+    if (!this.editando && this._decodificar) {
+      this._decodificar = false;
+      const raiz = el.querySelector(".nl-raiz"); raiz?.classList.add("nt-decodificando");
+      clearTimeout(this._tDecod);
+      this._tDecod = setTimeout(() => { raiz?.classList.remove("nt-decodificando"); this.digitarPagina(this.e); }, 1000);
+      return;
+    }
     if (!this.editando) { this.digitarPagina(e); return; }
     // escrever pede mais espaço (lista de páginas + editor)
     try { if ((this.position?.width ?? 0) < 900) this.setPosition({ width: 940, height: Math.max(this.position?.height ?? 0, 760) }); } catch (err) { /* ok */ }
@@ -713,7 +840,7 @@ export class NaurenLeitor extends foundry.applications.api.ApplicationV2 {
   }
   marcarSalvo(ok) { const s = this.element?.querySelector("[data-salvo]"); if (s) { s.textContent = ok ? "Salvo" : "Não salvo"; s.classList.toggle("pendente", !ok); } }
   async _preClose(op) { try { await this.salvarTexto(); } catch (err) { /* segue */ } return super._preClose?.(op); }
-  _onClose(op) { this._pararDigitacao?.(); abertos.delete(this.item?.uuid); super._onClose?.(op); }
+  _onClose(op) { clearTimeout(this._tDecod); this._pararDigitacao?.(); abertos.delete(this.item?.uuid); super._onClose?.(op); }
 
   /* ---------- ações ---------- */
   async mudarPagina(fn, i = this.edPag) {
@@ -901,7 +1028,7 @@ export function naurenEscritoDoJson(o) {
   const letraNome = String(o.letra ?? o.fonte ?? "").toLowerCase().trim();
   const fonte = LETRA_POR_NOME[letraNome] ?? LETRA_POR_NOME[sem(o.letra ?? o.fonte)] ?? sug.fonte;
   const fxEntrada = o.efeitos && typeof o.efeitos === "object" ? o.efeitos : null;
-  const efeitos = { varredura: fxEntrada ? !!fxEntrada.varredura : (era !== "classico" && PAPEL_COM_VARREDURA.has(papel)), falha: !!fxEntrada?.falha, digitacao: !!(fxEntrada?.digitacao ?? fxEntrada?.["digitação"]) };
+  const efeitos = { varredura: fxEntrada ? !!fxEntrada.varredura : (era !== "classico" && PAPEL_COM_VARREDURA.has(papel)), falha: !!fxEntrada?.falha, digitacao: fxEntrada ? !!(fxEntrada.digitacao ?? fxEntrada["digitação"]) : formato === "terminal" };
   const pags = (Array.isArray(o.paginas) ? o.paginas : o.texto !== undefined ? [{ texto: o.texto }] : []).map(p => {
     if (typeof p === "string") return pagina({ texto: naurenEscritoTextoParaHtml(p) });
     const img = p.imagem ?? p.src;
@@ -914,8 +1041,15 @@ export function naurenEscritoDoJson(o) {
     lacre: { ativo: o.lacre?.ativo ?? (formato === "carta" && era === "classico" && o.lacre !== false), cor: o.lacre?.cor, simbolo: o.lacre?.simbolo ?? "", rompido: false },
     quemEscreve: sem(o.quemEscreve) === "dono" ? "dono" : (o.quemEscreve ? "mestre" : (sug.quemEscreve ?? "mestre")),
     lerNoBau: o.lerNoBau !== false, gastaAoUsar: !!(o.someAoUsar ?? o.gastaAoUsar), paginas: pags,
+    terminal: naurenTerminalDoJson(o.terminal),
     mensagens: naurenMensagensDoJson(o.mensagens && !Array.isArray(o.mensagens) ? o.mensagens : { ...(o.conversa ?? {}), lista: Array.isArray(o.mensagens) ? o.mensagens : o.conversa?.lista }, era)
   });
+  // 0.113: terminal com "senha" no JSON já entra trancado (a senha em si não fica guardada)
+  if (formato === "terminal" && String(o.terminal?.senha ?? "").trim()) {
+    escrito.terminal.cripto = { ...escrito.terminal.cripto, ativo: true, versao: 1, ...naurenCifrar(escrito.paginas, o.terminal.senha) };
+    escrito.paginas = [pagina()];
+    Object.assign(escrito, naurenEscritoNormalizar(escrito));
+  }
   const nome = String(o.nome ?? o.name ?? "").trim() || (escrito.paginas[0]?.nome || NAUREN_ESCRITO_FORMATOS[formato].rot);
   const sys = { categoria: "escrito", quantidade: Math.max(1, Number(o.quantidade) || 1), quantidadeMax: 1, efeito: "", equipado: false, escrito,
     descricao: o.descricao ? naurenEscritoTextoParaHtml(o.descricao) : "" };
@@ -958,9 +1092,10 @@ export function naurenEscritoParaJson(item) {
     quemEscreve: e.quemEscreve, lerNoBau: e.lerNoBau, someAoUsar: e.gastaAoUsar || undefined, descricao: item.system.descricao || undefined };
   if (e.efeitos.varredura || e.efeitos.falha || e.efeitos.digitacao) o.efeitos = { ...e.efeitos };
   if (e.formato === "mensagens") o.mensagens = naurenMensagensParaJson(e.mensagens);
+  if (e.formato === "terminal") o.terminal = naurenTerminalParaJson(e.terminal);
   if (ehLivro(e)) o.capa = { ...e.capa };
   if (e.formato === "carta") o.lacre = { ativo: e.lacre.ativo, cor: e.lacre.cor, simbolo: e.lacre.simbolo };
-  o.paginas = e.paginas.map(p => p.tipo === "imagem" ? { titulo: p.nome || undefined, imagem: p.src, legenda: p.legenda || undefined } : { titulo: p.nome || undefined, texto: p.texto });
+  if (!naurenEscritoTrancado(e)) o.paginas = e.paginas.map(p => p.tipo === "imagem" ? { titulo: p.nome || undefined, imagem: p.src, legenda: p.legenda || undefined } : { titulo: p.nome || undefined, texto: p.texto });
   if ((item.system.acoes ?? []).length) o.acoes = foundry.utils.deepClone(item.system.acoes);
   return JSON.parse(JSON.stringify(o));
 }
@@ -983,6 +1118,7 @@ export async function naurenEscritosJanelaImportar({ item = null, ator = null } 
       <p><b>era</b> (opcional): classico, moderno ou cyberpunk · <b>formato</b>: nota, carta, pergaminho (ficha/painel fora do Clássico), livro ou diario.</p>
       <p><b>papel</b> — clássico: envelhecido, pergaminho, creme, branco, noturno, arcano · moderno: a4, postit, pautado, cartao, tela · cyberpunk: terminal, neon, holograma, ambar.</p>
       <p><b>Mensagens</b> (celular, era moderno ou cyberpunk): <code>"formato": "mensagens", "mensagens": { "contato": "Kael", "status": "online", "tema": "claro|escuro|neon", "aosPoucos": true, "lista": [ { "data": "ontem" }, { "lado": "outro", "hora": "22:41", "texto": "…" }, { "lado": "eu", "texto": "…" }, { "lado": "outro", "quem": "Mira", "imagem": "caminho" } ] }</code>.</p>
+      <p><b>Terminal</b> (moderno ou cyberpunk): <code>"formato": "terminal", "terminal": { "caminho": "//terminal/docas-9", "comando": "abrir mensagem.dat", "senha": "aurora", "dica": "…", "tentativas": 3 }</code> — com <b>senha</b>, o texto já entra cifrado.</p>
       <p><b>letra</b> — caligrafia, livro, classica, antiga, letreiro, simples · moderno: sans, manuscrita, maquina · cyberpunk: mono, tecno. <b>efeitos</b> (opcional): <code>{ "varredura": true, "falha": false, "digitacao": true }</code>.</p>
       <p>Cada página: <code>{ "titulo": "…", "texto": "…" }</code> ou <code>{ "titulo": "…", "imagem": "caminho", "legenda": "…" }</code>.</p>
       <p>No <b>texto</b>: linha em branco = parágrafo novo · <code>**negrito**</code> · <code>*itálico*</code> · <code># Título</code> · <code>- item</code> · <code>&gt; citação</code> · <code>-&gt; alinhado à direita</code> · <code>---</code> linha · <code>[segredo] … [/segredo]</code> só o Mestre vê. HTML também vale.</p>

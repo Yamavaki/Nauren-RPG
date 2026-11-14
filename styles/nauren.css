@@ -1,5 +1,5 @@
 /* Versão deste arquivo: o sistema confere no "ready" e, se o navegador/Forge tiver guardado um CSS antigo, carrega o novo. */
-:root { --nauren-css-versao: "0.112.0"; }
+:root { --nauren-css-versao: "0.113.0"; }
 /* 
 ===================================================
 1. FUNDO E FONTES GERAIS
@@ -9229,3 +9229,61 @@ li.directory-item.nauren-org-tem-dono > .entry-name > .nauren-org-nome { overflo
 @media (prefers-reduced-motion: reduce) { .nm-nova, .nm-digitando i { animation: none !important; } }
 /* 0.112: o leitor dos escritos pode passar de 600px (livro aberto, editor da conversa) */
 .application.nauren-kit.nauren-leitor:not(.minimized):not(.minimizing):not(.maximizing) { max-width: calc((100vw - 16px) / var(--nauren-escala, 1)) !important; }
+
+/* =====================================================================
+   0.113 — Escritos: formato Terminal (e a tranca com senha)
+   ===================================================================== */
+.nt-monitor { --nt-cor: var(--nl-acento, var(--nl-tinta)); position: relative; height: 100%; width: 100%; display: flex; flex-direction: column; box-sizing: border-box; overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--nt-cor) 35%, transparent); border-radius: 8px; background: var(--nl-p2, #040d07); box-shadow: 0 14px 34px rgba(0, 0, 0, .6), 0 0 24px color-mix(in srgb, var(--nt-cor) 15%, transparent); }
+.nt-barra { flex: 0 0 auto; height: 32px; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: color-mix(in srgb, var(--nt-cor) 10%, #05070a); border-bottom: 1px solid color-mix(in srgb, var(--nt-cor) 30%, transparent); font: 13px "Nauren Mono", monospace; color: var(--nt-cor); }
+.nt-caminho { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nt-led { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--nt-cor); box-shadow: 0 0 6px var(--nt-cor); }
+.nt-led-vermelho { background: #ff5d5d; box-shadow: 0 0 6px #ff5d5d; }
+.nt-tela { flex: 1 1 auto; min-height: 0; display: flex; }
+.nt-tela > .nl-solta { padding: 0; }
+.nl-fmt-terminal .nt-tela .nl-solta > .nl-folha { transform: none; clip-path: none !important; padding: 20px 24px 14px; box-shadow: inset 0 0 80px color-mix(in srgb, var(--nt-cor) 10%, transparent) !important; }
+.nl-fmt-terminal .nl-folha-corpo { line-height: 1.6; }
+.nl-fmt-terminal .nl-folha-corpo :is(p, li) { margin: 0 0 .45em; }
+.nl-fmt-terminal .nl-folha-tit { text-align: left; }
+.nt-prompt, .nt-decod { font-family: "Nauren Mono", monospace; color: color-mix(in srgb, var(--nl-tinta) 70%, #000); margin-bottom: .5em; }
+.nt-decod { color: color-mix(in srgb, var(--nl-tinta) 65%, #000); }
+.nt-barra-prog { display: inline-block; vertical-align: middle; width: 9em; height: .7em; border: 1px solid currentColor; padding: 1px; box-sizing: border-box; }
+.nt-barra-prog i { display: block; height: 100%; width: 100%; background: currentColor; }
+.nt-decodificando .nt-barra-prog i { animation: nt-prog .9s steps(16) forwards; }
+@keyframes nt-prog { from { width: 0; } to { width: 100%; } }
+.nt-decodificando .nl-folha-corpo > :not(.nt-decod):not(.nt-prompt), .nt-decodificando .nl-folha-tit { visibility: hidden; }
+/* tranca */
+.nt-trancado .nt-tela-tranca { flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 24px; text-align: center; font-family: "Nauren Mono", monospace; color: var(--nt-cor);
+  background-image: repeating-linear-gradient(0deg, rgba(0, 0, 0, .35) 0 1px, transparent 1px 3px); box-shadow: inset 0 0 80px color-mix(in srgb, var(--nt-cor) 10%, transparent); }
+.nt-cadeado { font-size: 46px; color: #ff6b6b; filter: drop-shadow(0 0 8px rgba(255, 107, 107, .6)); }
+.nt-negado { font: 700 clamp(20px, 5vw, 30px) "Nauren Tecno", "Nauren Mono", sans-serif; letter-spacing: .14em; color: #ff6b6b; text-shadow: 0 0 12px rgba(255, 107, 107, .6), 2px 0 rgba(80, 200, 255, .6), -2px 0 rgba(255, 60, 190, .5); }
+.nt-sub, .nt-dica { font-size: 13px; color: color-mix(in srgb, var(--nt-cor) 70%, #000); }
+.nt-dica { font-style: italic; }
+.nt-form { display: flex; flex-direction: column; gap: 10px; width: min(280px, 100%); }
+.nt-rot { display: flex; flex-direction: column; gap: 6px; text-align: left; font-size: 12px; color: color-mix(in srgb, var(--nt-cor) 70%, #000); }
+.nl-raiz input.nt-senha { height: 38px; box-sizing: border-box; background: rgba(0, 0, 0, .55); border: 1px solid var(--nt-cor); border-radius: 4px; color: var(--nt-cor); padding: 0 10px; font: 16px "Nauren Mono", monospace; letter-spacing: .3em; outline: none; }
+.nl-raiz input.nt-senha:focus { box-shadow: 0 0 0 2px color-mix(in srgb, var(--nt-cor) 35%, transparent); }
+.nl-raiz button.nt-entrar { all: unset; box-sizing: border-box; height: 38px; text-align: center; cursor: pointer; border: 1px solid var(--nt-cor); background: color-mix(in srgb, var(--nt-cor) 12%, transparent); color: var(--nt-cor); font: 14px "Nauren Mono", monospace; letter-spacing: .12em; border-radius: 4px; }
+.nl-raiz button.nt-entrar:hover { background: color-mix(in srgb, var(--nt-cor) 22%, transparent); }
+.nt-msg-erro { color: #ff6b6b; font-size: 13px; letter-spacing: .08em; }
+.nt-erro .nt-form { animation: nt-tremer .4s; }
+@keyframes nt-tremer { 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
+.nt-aviso-edicao { max-width: 520px; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; color: #e8d6ae; }
+.nt-aviso-edicao > i { font-size: 34px; color: #e0b257; }
+.nt-aviso-edicao .nl-ed-estilo { width: 100%; text-align: left; }
+/* painel do terminal na ficha */
+.nt-cripto { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; border: 1px dashed rgba(214, 178, 94, .35); background: rgba(0, 0, 0, .2); }
+.nt-cripto.on { border-style: solid; border-color: rgba(255, 107, 107, .55); background: rgba(80, 10, 10, .18); }
+.nt-cripto-cab { display: flex; gap: 10px; align-items: flex-start; }
+.nt-cripto-cab > i { font-size: 18px; color: #e0b257; margin-top: 2px; } .nt-cripto.on .nt-cripto-cab > i { color: #ff8a8a; }
+.nt-cripto-cab b { display: block; font-size: 13px; color: #f1e5cc; } .nt-cripto-cab small { color: #b3a6c9; font-size: 11.5px; line-height: 1.35; }
+.nl-rot-p { font-size: 11.5px; color: #c9b893; }
+.nt-trancado-rot { color: #ff9a9a; font-weight: 400; font-size: 13px; }
+.nt-chat-aviso { padding: 6px 8px; border: 1px solid rgba(255, 107, 107, .55); background: rgba(80, 10, 10, .2); border-radius: 4px; }
+.nt-chat-aviso i { color: #ff8a8a; margin-right: 4px; }
+/* miniatura */
+.nl-mini-term { position: relative; width: 112px; height: 84px; box-sizing: border-box; padding: 10px 9px; display: flex; flex-direction: column; gap: 6px; border-radius: 5px; background: var(--nl-p2, #040d07); border: 1px solid color-mix(in srgb, var(--nl-tinta) 45%, transparent); box-shadow: 0 0 0 4px #1b1d22, 0 8px 16px rgba(0, 0, 0, .55), inset 0 0 18px color-mix(in srgb, var(--nl-tinta) 18%, transparent); }
+.nl-mini-term span { font: 8.5px/1.2 "Nauren Mono", monospace; color: var(--nl-tinta); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.nl-mini-term i { height: 3px; width: 85%; background: color-mix(in srgb, var(--nl-tinta) 55%, transparent); } .nl-mini-term i:nth-of-type(2) { width: 60%; } .nl-mini-term i:nth-of-type(3) { width: 72%; }
+.nl-mini-term b { position: absolute; right: 7px; bottom: 6px; font-size: 14px; color: #ff6b6b; }
+@media (prefers-reduced-motion: reduce) { .nt-erro .nt-form, .nt-decodificando .nt-barra-prog i { animation: none !important; } }

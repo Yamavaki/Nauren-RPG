@@ -149,3 +149,104 @@ export function naurenMensagensParaJson(m) {
     lista: m.lista.map(x => x.tipo === "data" ? { data: x.texto } : { lado: x.lado, quem: x.quem || undefined, hora: x.hora || undefined, texto: x.texto || undefined, imagem: x.src || undefined })
   };
 }
+
+/* ============================== TERMINAL (0.113) ============================== */
+/*
+ * Criptografado: o texto das páginas é cifrado com a senha e só a versão cifrada fica no item. Assim nenhum jogador
+ * lê o texto nos dados do item sem saber a senha, e a conferência funciona sem o Mestre estar online.
+ * A cifra é feita aqui mesmo (SHA-256 em JavaScript puro), porque o Foundry muitas vezes roda em http na rede local,
+ * onde o crypto.subtle do navegador não existe. É uma tranca de jogo, não um cofre de banco.
+ */
+const K256 = new Uint32Array([0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da, 0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967, 0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85, 0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070, 0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2]);
+export function naurenSha256(bytes) {
+  const l = bytes.length, nb = ((l + 9 + 63) >> 6) << 6, m = new Uint8Array(nb);
+  m.set(bytes); m[l] = 0x80;
+  const dv = new DataView(m.buffer); dv.setUint32(nb - 4, (l * 8) >>> 0); dv.setUint32(nb - 8, Math.floor(l / 0x20000000));
+  const h = new Uint32Array([0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19]), w = new Uint32Array(64);
+  const r = (x, n) => (x >>> n) | (x << (32 - n));
+  for (let o = 0; o < nb; o += 64) {
+    for (let i = 0; i < 16; i++) w[i] = dv.getUint32(o + i * 4);
+    for (let i = 16; i < 64; i++) { const s0 = r(w[i - 15], 7) ^ r(w[i - 15], 18) ^ (w[i - 15] >>> 3), s1 = r(w[i - 2], 17) ^ r(w[i - 2], 19) ^ (w[i - 2] >>> 10); w[i] = (w[i - 16] + s0 + w[i - 7] + s1) >>> 0; }
+    let [a, b, c, d, e, f, g, hh] = h;
+    for (let i = 0; i < 64; i++) {
+      const t1 = (hh + (r(e, 6) ^ r(e, 11) ^ r(e, 25)) + ((e & f) ^ (~e & g)) + K256[i] + w[i]) >>> 0;
+      const t2 = ((r(a, 2) ^ r(a, 13) ^ r(a, 22)) + ((a & b) ^ (a & c) ^ (b & c))) >>> 0;
+      hh = g; g = f; f = e; e = (d + t1) >>> 0; d = c; c = b; b = a; a = (t1 + t2) >>> 0;
+    }
+    h[0] += a; h[1] += b; h[2] += c; h[3] += d; h[4] += e; h[5] += f; h[6] += g; h[7] += hh;
+  }
+  const out = new Uint8Array(32); const ov = new DataView(out.buffer); h.forEach((x, i) => ov.setUint32(i * 4, x)); return out;
+}
+const utf8 = s => new TextEncoder().encode(String(s));
+const junta = (...ps) => { const t = ps.reduce((n, p) => n + p.length, 0), o = new Uint8Array(t); let k = 0; for (const p of ps) { o.set(p, k); k += p.length; } return o; };
+const hexDe = b => [...b].map(x => x.toString(16).padStart(2, "0")).join("");
+const b64De = b => { let s = ""; for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode(...b.subarray(i, i + 0x8000)); return btoa(s); };
+const deB64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+/** A senha vale sem diferença de maiúsculas e sem espaços nas pontas. */
+export const naurenSenhaLimpa = s => String(s ?? "").trim().toLowerCase();
+function chave(senha, sal) {
+  const s = utf8(sal); let k = naurenSha256(junta(s, utf8(naurenSenhaLimpa(senha))));
+  for (let i = 0; i < 4000; i++) k = naurenSha256(junta(k, s));
+  return k;
+}
+function xorFluxo(dados, k) {
+  const out = new Uint8Array(dados.length);
+  for (let bloco = 0; bloco * 32 < dados.length; bloco++) {
+    const ks = naurenSha256(junta(k, Uint8Array.of(bloco >>> 24, (bloco >>> 16) & 255, (bloco >>> 8) & 255, bloco & 255)));
+    for (let i = 0; i < 32 && bloco * 32 + i < dados.length; i++) out[bloco * 32 + i] = dados[bloco * 32 + i] ^ ks[i];
+  }
+  return out;
+}
+/** Cifra as páginas com a senha. */
+export function naurenCifrar(paginas, senha) {
+  const sal = hexDe(naurenSha256(utf8(`${Math.random()}:${Date.now()}`))).slice(0, 16);
+  const k = chave(senha, sal);
+  return { sal, verif: hexDe(naurenSha256(junta(k, utf8("nauren-verif")))).slice(0, 20), dados: b64De(xorFluxo(utf8(JSON.stringify(paginas ?? [])), k)) };
+}
+/** Decifra; devolve as páginas ou null se a senha estiver errada. */
+export function naurenDecifrar(cripto, senha) {
+  if (!cripto?.sal || !cripto?.dados) return null;
+  const k = chave(senha, cripto.sal);
+  if (hexDe(naurenSha256(junta(k, utf8("nauren-verif")))).slice(0, 20) !== cripto.verif) return null;
+  try { return JSON.parse(new TextDecoder().decode(xorFluxo(deB64(cripto.dados), k))); } catch (err) { return null; }
+}
+export function naurenTerminalNormalizar(t) {
+  t = t && typeof t === "object" ? t : {};
+  const c = t.cripto && typeof t.cripto === "object" ? t.cripto : {};
+  const trancado = !!(c.ativo && c.sal && c.verif && typeof c.dados === "string");
+  return {
+    caminho: str(t.caminho, 120),
+    comando: str(t.comando, 120),
+    cripto: {
+      ativo: trancado, dica: str(c.dica, 200), tentativas: Math.max(0, Math.min(99, Math.round(Number(c.tentativas) || 0))),
+      avisarMestre: c.avisarMestre !== false, versao: Math.max(0, Math.round(Number(c.versao) || 0)),
+      sal: trancado ? str(c.sal, 64) : "", verif: trancado ? str(c.verif, 64) : "", dados: trancado ? c.dados : ""
+    }
+  };
+}
+/** Tela de "ACESSO NEGADO" com o campo da senha. */
+export function naurenTerminalTrancadoHtml(t, { restam = null, bloqueado = false, erro = false, caminho = "" } = {}) {
+  return `<div class="nt-monitor nt-trancado ${erro ? "nt-erro" : ""}">
+    <div class="nt-barra"><span class="nt-led nt-led-vermelho"></span><span class="nt-caminho">${esc(caminho)}</span></div>
+    <div class="nt-tela nt-tela-tranca">
+      <i class="fas fa-lock nt-cadeado"></i>
+      <div class="nt-negado">${bloqueado ? "TERMINAL BLOQUEADO" : "ACESSO NEGADO"}</div>
+      <div class="nt-sub">${bloqueado ? "tentativas esgotadas · fale com o Mestre" : `arquivo protegido${restam !== null ? ` · ${restam} ${restam === 1 ? "tentativa restante" : "tentativas restantes"}` : ""}`}</div>
+      ${t.cripto.dica ? `<div class="nt-dica">dica: ${esc(t.cripto.dica)}</div>` : ""}
+      ${bloqueado ? "" : `<form class="nt-form" data-nt-form autocomplete="off">
+        <label class="nt-rot">SENHA<input type="password" class="nt-senha" data-nt-senha autocomplete="off" spellcheck="false"></label>
+        <button type="submit" class="nt-entrar">&gt; DESBLOQUEAR</button>
+        ${erro ? `<div class="nt-msg-erro">senha incorreta</div>` : ""}
+      </form>`}
+    </div>
+  </div>`;
+}
+export function naurenTerminalDoJson(o) {
+  if (!o || typeof o !== "object") return naurenTerminalNormalizar({});
+  return naurenTerminalNormalizar({ caminho: o.caminho, comando: o.comando, cripto: { ...(o.cripto ?? {}), dica: o.dica ?? o.cripto?.dica, tentativas: o.tentativas ?? o.cripto?.tentativas, avisarMestre: o.avisarMestre ?? o.cripto?.avisarMestre } });
+}
+export function naurenTerminalParaJson(t) {
+  const o = { caminho: t.caminho || undefined, comando: t.comando || undefined };
+  if (t.cripto.ativo) o.cripto = { ativo: true, dica: t.cripto.dica || undefined, tentativas: t.cripto.tentativas || undefined, avisarMestre: t.cripto.avisarMestre ? undefined : false, sal: t.cripto.sal, verif: t.cripto.verif, dados: t.cripto.dados };
+  return o;
+}
