@@ -250,3 +250,102 @@ export function naurenTerminalParaJson(t) {
   if (t.cripto.ativo) o.cripto = { ativo: true, dica: t.cripto.dica || undefined, tentativas: t.cripto.tentativas || undefined, avisarMestre: t.cripto.avisarMestre ? undefined : false, sal: t.cripto.sal, verif: t.cripto.verif, dados: t.cripto.dados };
   return o;
 }
+
+/* ============================== CARTAZ (0.114) ============================== */
+/** Tipos de cartaz. `cat` é a categoria no Quadro de avisos. */
+export const NAUREN_CARTAZ_TIPOS = {
+  procurado: { rot: "Procurado", cat: "procurados", ic: "fa-user-secret", cyber: "ALVO", cor: "#d7262f", rec: "Recompensa", retrato: true },
+  desaparecido: { rot: "Desaparecido", cat: "procurados", ic: "fa-person-circle-question", cyber: "PESSOA DESAPARECIDA", cor: "#121216", rec: "Recompensa", retrato: true },
+  missao: { rot: "Missão", cat: "missoes", ic: "fa-scroll", cyber: "CONTRATO", cor: "#1d5bb5", rec: "Paga", retrato: false },
+  aviso: { rot: "Aviso", cat: "avisos", ic: "fa-bullhorn", cyber: "AVISO", cor: "#2b2b33", rec: "Multa", retrato: false },
+  recompensa: { rot: "Recompensa", cat: "recompensas", ic: "fa-sack-dollar", cyber: "RECOMPENSA", cor: "#1c8a2e", rec: "Recompensa", retrato: false },
+  evento: { rot: "Evento", cat: "eventos", ic: "fa-champagne-glasses", cyber: "EVENTO", cor: "#e07a1f", rec: "Entrada", retrato: false }
+};
+const corHex = (v, d) => /^#[0-9a-f]{6}$/i.test(String(v ?? "")) ? String(v) : d;
+export function naurenCartazNormalizar(c) {
+  c = c && typeof c === "object" ? c : {};
+  const tipo = NAUREN_CARTAZ_TIPOS[c.tipo] ? c.tipo : "procurado";
+  return {
+    tipo,
+    titulo: str(c.titulo, 40), subtitulo: str(c.subtitulo, 80), retrato: str(c.retrato, 500), nome: str(c.nome, 80),
+    texto: str(c.texto, 600), recompensa: str(c.recompensa, 40), recRotulo: str(c.recRotulo, 24), contratante: str(c.contratante, 80), prazo: str(c.prazo, 60),
+    detalhes: (Array.isArray(c.detalhes) ? c.detalhes : []).slice(0, 6).map(d => ({ rot: str(d?.rot, 24), val: str(d?.val, 80) })).filter(d => d.rot || d.val),
+    ameaca: Math.max(0, Math.min(100, Math.round(Number(c.ameaca) || 0))),
+    codigo: str(c.codigo, 16), cor: corHex(c.cor, "")
+  };
+}
+const SILHUETA = cor => `<svg class="ncz-silhueta" viewBox="0 0 130 150" aria-hidden="true"><circle cx="65" cy="52" r="30" fill="${cor}"></circle><path d="M8 150c4-38 28-58 57-58s53 20 57 58z" fill="${cor}"></path></svg>`;
+const QR = `<svg class="ncz-qr" viewBox="0 0 7 7" aria-hidden="true" shape-rendering="crispEdges"><rect width="7" height="7" fill="#f5f3ee"></rect><path d="M0 0h3v3H0zM4 0h3v3H4zM0 4h3v3H0zM4 4h1v1H4zM6 4h1v1H6zM5 5h1v1H5zM4 6h1v1H4zM6 6h1v1H6z" fill="#121216"></path><path d="M1 1h1v1H1zM5 1h1v1H5zM1 5h1v1H1z" fill="#f5f3ee"></path></svg>`;
+/** O cartaz na era do escrito. Tudo em "em": o mesmo HTML serve para o leitor, a ficha e a miniatura no quadro (só muda o font-size). */
+export function naurenCartazHtml(c, era = "classico", { nomeItem = "" } = {}) {
+  const t = NAUREN_CARTAZ_TIPOS[c.tipo];
+  const titulo = c.titulo || t.rot;
+  const rec = c.recompensa ? { rot: c.recRotulo || t.rec, val: c.recompensa } : null;
+  const nome = c.nome || (t.retrato ? "" : nomeItem);
+  const cor = c.cor || t.cor;
+  const temRetrato = !!c.retrato || t.retrato;
+  const img = cor2 => c.retrato ? `<img src="${esc(c.retrato)}" alt="">` : SILHUETA(cor2);
+  const det = c.detalhes.length ? `<dl class="ncz-det">${c.detalhes.map(d => `<div><dt>${esc(d.rot)}</dt><dd>${esc(d.val)}</dd></div>`).join("")}</dl>` : "";
+  const texto = c.texto ? `<div class="ncz-texto">${naurenTextoCurtoHtml(c.texto)}</div>` : "";
+  const rodape = [c.contratante, c.prazo].filter(Boolean).map(esc).join(" · ");
+  const base = `ncz-cartaz ncz-${era} ncz-tipo-${c.tipo}`;
+  if (era === "moderno") {
+    return `<div class="${base}" style="--ncz-cor:${esc(cor)}">
+      <div class="ncz-faixa">${esc(titulo)}</div>
+      ${c.subtitulo ? `<div class="ncz-subt">${esc(c.subtitulo)}</div>` : ""}
+      <div class="ncz-corpo ${temRetrato ? "ncz-com-retrato" : ""}">
+        ${temRetrato ? `<div class="ncz-retrato">${img("#6d6b66")}</div>` : ""}
+        <div class="ncz-info">${nome ? `<b class="ncz-nome">${esc(nome)}</b>` : ""}${det}${texto}</div>
+      </div>
+      ${rec ? `<div class="ncz-rec"><div><span>${esc(rec.rot)}</span><b>${esc(rec.val)}</b></div>${QR}</div>` : ""}
+      ${rodape ? `<div class="ncz-rodape">${rodape}</div>` : ""}
+    </div>`;
+  }
+  if (era === "cyberpunk") {
+    return `<div class="${base}">
+      <div class="ncz-cab"><span>${esc(t.cyber)}</span><span>${esc(c.codigo || "")}</span></div>
+      <div class="ncz-tit">${esc(titulo)}</div>
+      ${c.subtitulo ? `<div class="ncz-subt">${esc(c.subtitulo)}</div>` : ""}
+      <div class="ncz-corpo ${temRetrato ? "ncz-com-retrato" : ""}">
+        ${temRetrato ? `<div class="ncz-retrato">${img("#6fe6ff")}</div>` : ""}
+        <div class="ncz-info">${nome ? `<b class="ncz-nome">${esc(nome)}</b>` : ""}${det}${texto}
+          ${c.ameaca ? `<span class="ncz-ameaca-rot">AMEAÇA</span><span class="ncz-ameaca"><i style="width:${c.ameaca}%"></i></span>` : ""}</div>
+      </div>
+      ${rec ? `<div class="ncz-rec"><span>${esc(rec.rot.toUpperCase())}</span><b>${esc(rec.val)}</b></div>` : ""}
+      ${rodape ? `<div class="ncz-rodape">${rodape}</div>` : ""}
+    </div>`;
+  }
+  return `<div class="${base}">
+    <div class="ncz-tit">${esc(titulo)}</div>
+    ${c.subtitulo ? `<div class="ncz-subt">${esc(c.subtitulo)}</div>` : ""}
+    ${temRetrato ? `<div class="ncz-retrato">${img("#5a3d1c")}</div>` : ""}
+    ${nome ? `<div class="ncz-nome">${esc(nome)}</div>` : ""}
+    ${texto}${det}
+    ${rec ? `<div class="ncz-rec-rot">${esc(rec.rot)}</div><div class="ncz-rec">${esc(rec.val)}</div>` : ""}
+    ${rodape ? `<div class="ncz-rodape">${rodape}</div>` : ""}
+  </div>`;
+}
+/** Formulário do cartaz (editor). Campos: data-cz="caminho"; detalhes: data-cz-det="i" + data-cz-campo. */
+export function naurenCartazEditorHtml(c, era) {
+  const tipos = Object.entries(NAUREN_CARTAZ_TIPOS).map(([k, t]) => `<button type="button" class="nl-fmt ${c.tipo === k ? "on" : ""}" data-cz-tipo="${k}"><i class="fas ${t.ic}"></i><span>${esc(t.rot)}</span></button>`).join("");
+  const t = NAUREN_CARTAZ_TIPOS[c.tipo];
+  const campo = (k, rot, ph, extra = "") => `<label class="nl-campo"><span class="nl-rot-p">${rot}</span><input type="text" class="nl-in" data-cz="${k}" value="${esc(c[k])}" placeholder="${esc(ph)}" ${extra}></label>`;
+  const det = c.detalhes.map((d, i) => `<div class="ncz-ed-det"><input type="text" class="nl-in" data-cz-det="${i}" data-cz-campo="rot" value="${esc(d.rot)}" placeholder="Altura"><input type="text" class="nl-in" data-cz-det="${i}" data-cz-campo="val" value="${esc(d.val)}" placeholder="1,78 m"><button type="button" class="nl-mini-bt nl-mini-x" data-cz-acao="tirarDet" data-cz-i="${i}" title="Tirar"><i class="fas fa-trash"></i></button></div>`).join("");
+  return `<div class="ncz-editor">
+    <div class="nl-campo"><span class="nl-rot">Tipo</span><div class="nl-fmts">${tipos}</div></div>
+    <div class="nl-grade2">${campo("titulo", "Título grande", t.rot)}${campo("subtitulo", "Linha de baixo", c.tipo === "procurado" ? "vivo ou morto" : "")}</div>
+    <div class="nl-grade2">${campo("nome", "Nome", c.tipo === "procurado" ? "Dorian \"Mão Leve\"" : "Ratos no porão")}${era === "cyberpunk" ? campo("codigo", "Código", "#7731-K", 'maxlength="16"') : campo("contratante", "Quem pede", "Guilda do Porto")}</div>
+    <label class="nl-campo"><span class="nl-rot-p">Texto curto (**negrito**, *itálico*)</span><textarea class="nl-in ncz-ed-txt" rows="3" data-cz="texto" placeholder="Roubo ao tesouro do Barão e fuga das masmorras.">${esc(c.texto)}</textarea></label>
+    <div class="nl-grade2">${campo("recompensa", "Valor", "500 Florins")}${campo("recRotulo", "Nome do valor", t.rec)}</div>
+    <div class="nl-grade2">${era === "cyberpunk" ? campo("contratante", "Quem pede", "NCPD") : ""}${campo("prazo", "Prazo", "até a lua cheia")}</div>
+    ${era === "cyberpunk" ? `<label class="nl-faixa"><span>Ameaça <b data-cz-ver>${c.ameaca ? `${c.ameaca}%` : "escondida"}</b></span><input type="range" min="0" max="100" step="5" data-cz="ameaca" value="${c.ameaca}"></label>` : ""}
+    ${era === "moderno" ? `<label class="nl-cor"><input type="color" data-cz="cor" value="${esc(c.cor || t.cor)}"><span>Cor da faixa</span></label>` : ""}
+    <div class="nl-campo"><span class="nl-rot-p">Retrato</span><div class="nl-linha-cores">${c.retrato ? `<img class="ncz-ed-retrato" src="${esc(c.retrato)}" alt="">` : ""}<button type="button" class="nl-btn nt-ch" data-cz-acao="retrato"><i class="fas fa-image-portrait"></i> ${c.retrato ? "Trocar" : "Escolher"}</button>${c.retrato ? `<button type="button" class="nl-link" data-cz-acao="semRetrato"><i class="fas fa-xmark"></i> tirar</button>` : `<span class="nl-dica">${t.retrato ? "Sem imagem, aparece uma silhueta." : "Opcional."}</span>`}</div></div>
+    <div class="nl-campo"><span class="nl-rot-p">Detalhes (altura, visto em, crimes…)</span>${det}<button type="button" class="nl-link" data-cz-acao="novoDet" ${c.detalhes.length >= 6 ? "disabled" : ""}><i class="fas fa-plus"></i> detalhe</button></div>
+  </div>`;
+}
+export function naurenCartazDoJson(o) { return naurenCartazNormalizar(o); }
+export function naurenCartazParaJson(c) {
+  const o = {}; for (const [k, v] of Object.entries(c)) { if (Array.isArray(v) ? v.length : v) o[k] = v; }
+  o.tipo = c.tipo; return o;
+}

@@ -1,5 +1,5 @@
 /* Versão deste arquivo: o sistema confere no "ready" e, se o navegador/Forge tiver guardado um CSS antigo, carrega o novo. */
-:root { --nauren-css-versao: "0.113.0"; }
+:root { --nauren-css-versao: "0.114.0"; }
 /* 
 ===================================================
 1. FUNDO E FONTES GERAIS
@@ -9287,3 +9287,79 @@ li.directory-item.nauren-org-tem-dono > .entry-name > .nauren-org-nome { overflo
 .nl-mini-term i { height: 3px; width: 85%; background: color-mix(in srgb, var(--nl-tinta) 55%, transparent); } .nl-mini-term i:nth-of-type(2) { width: 60%; } .nl-mini-term i:nth-of-type(3) { width: 72%; }
 .nl-mini-term b { position: absolute; right: 7px; bottom: 6px; font-size: 14px; color: #ff6b6b; }
 @media (prefers-reduced-motion: reduce) { .nt-erro .nt-form, .nt-decodificando .nt-barra-prog i { animation: none !important; } }
+
+/* =====================================================================
+   0.114 — Escritos: formato Cartaz (em "em": o mesmo desenho no leitor, na ficha e no quadro)
+   ===================================================================== */
+.ncz-palco { overflow: auto; align-items: center; }
+.ncz-escala { font-size: var(--nl-tam, 15px); display: flex; justify-content: center; max-height: 100%; }
+.ncz-cartaz { --nc-l: 22em; position: relative; width: var(--nc-l); max-width: 100%; box-sizing: border-box; text-align: center; line-height: 1.25; }
+.ncz-cartaz img { border: 0; }
+.ncz-silhueta { width: 72%; height: auto; display: block; }
+.ncz-retrato { display: grid; place-items: end center; overflow: hidden; }
+.ncz-retrato img { width: 100%; height: 100%; object-fit: cover; }
+.ncz-texto { overflow-wrap: anywhere; }
+.ncz-det { margin: 0; display: flex; flex-direction: column; gap: .25em; text-align: left; }
+.ncz-det div { display: flex; gap: .4em; } .ncz-det dt { font-weight: 700; } .ncz-det dd { margin: 0; }
+/* clássico: papel rasgado */
+.ncz-classico { padding: 1.5em 1.6em 1.6em; background: linear-gradient(170deg, #ead6a6, #d5b77f 55%, #b48c55); color: #2b1a0c; box-shadow: 0 1em 2em rgba(0, 0, 0, .6);
+  clip-path: polygon(0 2%, 6% 0, 40% 1.5%, 70% 0, 100% 1%, 99% 30%, 100% 62%, 98.5% 100%, 60% 98.5%, 22% 100%, 0 98%, 1.5% 60%); font-family: "Nauren Classica", Georgia, serif; }
+.ncz-classico .ncz-tit { font: 3.05em/1 "Nauren Antiga", "Nauren Classica", serif; letter-spacing: .04em; font-variant: small-caps; }
+.ncz-classico .ncz-subt { font-style: italic; font-size: 1em; margin: .25em 0 .8em; }
+.ncz-classico .ncz-retrato { height: 11.3em; margin: 0 1.2em; background: #c9a56a; border: .2em double #5a3d1c; }
+.ncz-classico .ncz-nome { font: 2em/1.1 "Nauren Antiga", serif; font-variant: small-caps; margin-top: .4em; }
+.ncz-classico .ncz-texto { font-style: italic; font-size: .95em; line-height: 1.4; margin: .4em 0 .7em; }
+.ncz-classico .ncz-det { font-size: .85em; margin: .3em 1em .6em; }
+.ncz-classico .ncz-rec-rot { font: .87em "Nauren Antiga", serif; letter-spacing: .1em; font-variant: small-caps; margin-top: .4em; }
+.ncz-classico .ncz-rec { font: 2.3em/1 "Nauren Antiga", serif; font-variant: small-caps; }
+.ncz-classico .ncz-rodape { margin-top: .8em; font-size: .8em; font-style: italic; opacity: .8; }
+.ncz-classico.ncz-tipo-missao, .ncz-classico.ncz-tipo-aviso, .ncz-classico.ncz-tipo-evento, .ncz-classico.ncz-tipo-recompensa { background: linear-gradient(175deg, #efe0bb, #d8bf88); }
+.ncz-classico:is(.ncz-tipo-missao, .ncz-tipo-aviso, .ncz-tipo-evento) .ncz-tit { font-size: 2.4em; }
+/* moderno: pôster impresso */
+.ncz-moderno { background: #f5f3ee; color: #121216; font-family: "Nauren Moderna", "Segoe UI", sans-serif; text-align: left; box-shadow: 0 1em 2em rgba(0, 0, 0, .6); }
+.ncz-moderno .ncz-faixa { background: var(--ncz-cor); color: #fff; padding: .3em .55em; font: 800 2.9em/1 "Nauren Moderna", sans-serif; font-stretch: 75%; letter-spacing: .01em; text-transform: uppercase; }
+.ncz-moderno.ncz-tipo-evento .ncz-faixa { color: #1a1206; }
+.ncz-moderno .ncz-subt { padding: .5em 1.1em 0; font-weight: 600; font-size: .95em; }
+.ncz-moderno .ncz-corpo { display: grid; gap: .8em; padding: .9em 1.1em; }
+.ncz-moderno .ncz-corpo.ncz-com-retrato { grid-template-columns: 8em minmax(0, 1fr); }
+.ncz-moderno .ncz-retrato { height: 10em; background: #c9c7c0; }
+.ncz-moderno .ncz-info { display: flex; flex-direction: column; gap: .4em; font-size: .82em; line-height: 1.35; }
+.ncz-moderno .ncz-nome { font-size: 1.4em; line-height: 1.15; }
+.ncz-moderno .ncz-rec { display: flex; align-items: center; justify-content: space-between; padding: .8em 1.1em; border-top: .13em solid #121216; }
+.ncz-moderno .ncz-rec > div { display: flex; flex-direction: column; } .ncz-moderno .ncz-rec span { font: 600 .73em "Nauren Moderna", sans-serif; letter-spacing: .08em; text-transform: uppercase; } .ncz-moderno .ncz-rec b { font: 800 1.75em "Nauren Moderna", sans-serif; }
+.ncz-moderno .ncz-qr { width: 3em; height: 3em; }
+.ncz-moderno .ncz-rodape { background: #121216; color: #f5f3ee; font-size: .73em; padding: .5em 1.4em; }
+/* cyberpunk: ficha holográfica */
+.ncz-cyberpunk { padding: 1.1em 1.2em 1.2em; background: linear-gradient(180deg, rgba(255, 40, 140, .16), rgba(40, 200, 255, .07)), #0b0814; border: .07em solid rgba(255, 80, 170, .85); color: #ffd6ee; font-family: "Nauren Mono", monospace; text-align: left;
+  clip-path: polygon(1.05em 0, 100% 0, 100% calc(100% - 1.05em), calc(100% - 1.05em) 100%, 0 100%, 0 1.05em); box-shadow: 0 0 2.2em rgba(255, 40, 140, .35); }
+.ncz-cyberpunk .ncz-cab { display: flex; justify-content: space-between; font: 600 .73em "Nauren Tecno", sans-serif; letter-spacing: .14em; color: #6fe6ff; }
+.ncz-cyberpunk .ncz-tit { font: 800 2.25em/1.1 "Nauren Tecno", sans-serif; letter-spacing: .06em; margin: .3em 0; color: #ff4fae; text-transform: uppercase; text-shadow: .06em 0 rgba(80, 220, 255, .7), -.06em 0 rgba(255, 255, 255, .25); overflow-wrap: anywhere; }
+.ncz-cyberpunk .ncz-subt { font-size: .85em; color: #9fe9ff; margin-bottom: .5em; }
+.ncz-cyberpunk .ncz-corpo { display: grid; gap: .8em; }
+.ncz-cyberpunk .ncz-corpo.ncz-com-retrato { grid-template-columns: 7.3em minmax(0, 1fr); }
+.ncz-cyberpunk .ncz-retrato { height: 9.3em; border: .07em solid rgba(80, 220, 255, .7); background: rgba(80, 220, 255, .08); position: relative; }
+.ncz-cyberpunk .ncz-retrato::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, rgba(120, 230, 255, .12) 0 1px, transparent 1px 4px); }
+.ncz-cyberpunk .ncz-retrato .ncz-silhueta { opacity: .55; }
+.ncz-cyberpunk .ncz-info { display: flex; flex-direction: column; gap: .4em; font-size: .8em; line-height: 1.35; }
+.ncz-cyberpunk .ncz-nome { font-size: 1.3em; color: #fff; }
+.ncz-cyberpunk .ncz-det dt { color: #6fe6ff; font-weight: 400; }
+.ncz-ameaca-rot { color: #6fe6ff; margin-top: .2em; }
+.ncz-ameaca { height: .55em; background: rgba(255, 255, 255, .12); position: relative; display: block; }
+.ncz-ameaca i { position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(90deg, #ffc23d, #ff4fae); }
+.ncz-cyberpunk .ncz-rec { margin-top: .95em; padding-top: .65em; border-top: .07em dashed rgba(255, 80, 170, .6); display: flex; justify-content: space-between; align-items: baseline; }
+.ncz-cyberpunk .ncz-rec span { font-size: .73em; color: #6fe6ff; } .ncz-cyberpunk .ncz-rec b { font: 800 1.6em "Nauren Tecno", sans-serif; color: #fff; }
+.ncz-cyberpunk .ncz-rodape { margin-top: .6em; font-size: .72em; color: #9fe9ff; }
+.ncz-cyberpunk:is(.ncz-tipo-missao, .ncz-tipo-recompensa) { border-color: rgba(80, 220, 255, .7); background: rgba(40, 200, 255, .08), #07101a; box-shadow: 0 0 2em rgba(40, 200, 255, .25); color: #bdf3ff; }
+.ncz-cyberpunk:is(.ncz-tipo-missao, .ncz-tipo-recompensa) .ncz-tit { color: #6fe6ff; text-shadow: 0 0 .5em rgba(40, 200, 255, .5); }
+.ncz-cyberpunk:is(.ncz-tipo-aviso, .ncz-tipo-evento) { border-color: rgba(255, 190, 60, .7); background: rgba(255, 176, 40, .08), #120d05; box-shadow: 0 0 2em rgba(255, 176, 40, .22); color: #ffe2a8; }
+.ncz-cyberpunk:is(.ncz-tipo-aviso, .ncz-tipo-evento) .ncz-tit { color: #ffc23d; text-shadow: 0 0 .5em rgba(255, 176, 40, .45); }
+.ncz-cyberpunk:is(.ncz-tipo-aviso, .ncz-tipo-evento) .ncz-cab { color: #ffc23d; }
+/* editor e miniatura */
+.ncz-editor { display: flex; flex-direction: column; gap: 10px; }
+.ncz-editor .nl-fmts { grid-template-columns: repeat(auto-fill, minmax(86px, 1fr)); }
+.nl-raiz textarea.ncz-ed-txt { height: auto; min-height: 60px; padding: 6px 8px; resize: vertical; font: 13px/1.4 Signika, sans-serif; }
+.ncz-ed-det { display: grid; grid-template-columns: 110px minmax(0, 1fr) 24px; gap: 6px; align-items: center; margin-bottom: 4px; }
+.ncz-ed-retrato { width: 44px; height: 54px; object-fit: cover; }
+.ncz-previa { font-size: 13px; width: 100%; display: flex; justify-content: center; overflow: auto; padding: 8px 0 16px; }
+.nl-mini-cartaz { font-size: 4.3px; display: flex; justify-content: center; }
+.ncz-editor .nl-faixa { flex: 0 0 auto; }
