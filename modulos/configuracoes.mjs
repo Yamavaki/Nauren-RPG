@@ -14,7 +14,7 @@ const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": 
 
 /** Assuntos do painel, na ordem. Chaves que não estiverem aqui vão para "Outras". */
 export const NAUREN_CONFIG_SECOES = [
-  { id: "interface", rotulo: "Interface", icone: "fa-display", chaves: ["escalaInterfacePadrao", "escalaInterface", "chatNauren", "hudCombate", "hudCombateEscondeMacros", "animacoesHud", "descricaoChatAbertaV2", "selosAnimados"] },
+  { id: "interface", rotulo: "Interface", icone: "fa-display", chaves: ["escalaInterfacePadrao", "escalaInterface", "chatNauren", "hudCombate", "hudCombateEscondeMacros", "animacoesHud", "descricaoChatAbertaV2", "selosAnimados", "escritosEfeitos"] },
   { id: "chat", rotulo: "Chat e cards", icone: "fa-comment-dots", chaves: ["descricaoNoChat", "cardsDeGatilho", "ocultarDescricaoNpc", "mostrarVidaNosCards"] },
   { id: "combate", rotulo: "Combate", icone: "fa-bolt", chaves: ["tempoReacaoSegundos", "destinoPerguntar", "derrotadoAutomatico", "prioridadeAoAproximar", "limitePrioridadePorAliado", "prioridadeOpcionalNoCard", "modoMovimentoPadrao", "areasInstantaneasSomem", "limparAlvosFimTurno"] },
   { id: "tokens", rotulo: "Tokens e Vida", icone: "fa-heart-pulse", chaves: ["estadoVidaHover", "estadoVidaFixoNpc", "estadosVidaTermos", "estadosVidaFaixas", "jogadoresVeemCondicoes", "jogadoresEditamBarras", "bordaEncaixeBarras"] },

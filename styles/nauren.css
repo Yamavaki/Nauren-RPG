@@ -1,5 +1,5 @@
 /* Versão deste arquivo: o sistema confere no "ready" e, se o navegador/Forge tiver guardado um CSS antigo, carrega o novo. */
-:root { --nauren-css-versao: "0.110.1"; }
+:root { --nauren-css-versao: "0.111.0"; }
 /* 
 ===================================================
 1. FUNDO E FONTES GERAIS
@@ -8996,3 +8996,144 @@ li.directory-item.nauren-org-tem-dono > .entry-name > .nauren-org-nome { overflo
 .nauren-rpg.sheet.item .nauren-sheet .apr-painel button.apr-seg2:hover { color: var(--apr-txt); }
 .nauren-rpg.sheet.item .nauren-sheet .apr-painel button.apr-seg2.on { color: var(--apr-txt); border-color: var(--apr-ouro); background: color-mix(in srgb, var(--apr-ouro) 14%, #17111f); }
 .apr-rot-nota { margin-left: 6px; font: 400 10.5px Signika, sans-serif; letter-spacing: 0; text-transform: none; color: var(--apr-suave); }
+
+/* =====================================================================
+   0.111 — Escritos modernos e cyberpunk: era, papéis/telas, letras e efeitos
+   ===================================================================== */
+@font-face { font-family: "Nauren Moderna"; src: url("../assets/fontes/IBMPlexSans-Variable.woff") format("woff"); font-weight: 100 700; font-stretch: 75% 100%; font-display: swap; }
+@font-face { font-family: "Nauren Manuscrita"; src: url("../assets/fontes/Caveat-Variable.woff") format("woff"); font-weight: 400 700; font-display: swap; }
+@font-face { font-family: "Nauren Maquina"; src: url("../assets/fontes/MaquinaEscrever.woff") format("woff"); font-display: swap; }
+@font-face { font-family: "Nauren Mono"; src: url("../assets/fontes/ShareTechMono.woff") format("woff"); font-display: swap; }
+@font-face { font-family: "Nauren Tecno"; src: url("../assets/fontes/Orbitron-Variable.woff") format("woff"); font-weight: 400 900; font-display: swap; }
+
+/* ---------- papéis modernos ---------- */
+.nl-papel-a4 { --nl-p1: #ffffff; --nl-p2: #f3f3f6; --nl-mancha: rgba(0, 0, 0, 0); --nl-borda-p: rgba(0, 0, 0, .10); }
+.nl-papel-postit { --nl-p1: #fff07f; --nl-p2: #ffe35c; --nl-mancha: rgba(0, 0, 0, 0); --nl-borda-p: rgba(120, 100, 0, .16); }
+.nl-papel-pautado { --nl-p1: #fbfbf7; --nl-p2: #f1f0e9; --nl-mancha: rgba(0, 0, 0, 0); --nl-borda-p: rgba(0, 0, 0, .12); }
+.nl-papel-cartao { --nl-p1: #f4efe5; --nl-p2: #e4dbc8; --nl-mancha: rgba(90, 70, 30, .05); --nl-borda-p: rgba(80, 60, 30, .25); }
+.nl-papel-tela { --nl-p1: #23242c; --nl-p2: #17181e; --nl-mancha: rgba(0, 0, 0, 0); --nl-borda-p: rgba(255, 255, 255, .10); }
+/* ---------- telas cyberpunk ---------- */
+.nl-papel-terminal { --nl-p1: #06150c; --nl-p2: #020905; --nl-mancha: rgba(109, 255, 158, .03); --nl-borda-p: rgba(109, 255, 158, .38); --nl-brilho: rgba(109, 255, 158, .45); --nl-acento: #6dff9e; }
+.nl-papel-neon { --nl-p1: #1d0719; --nl-p2: #0b0410; --nl-mancha: rgba(255, 79, 174, .05); --nl-borda-p: rgba(255, 80, 170, .8); --nl-brilho: rgba(255, 40, 140, .55); --nl-acento: #ff4fae; }
+.nl-papel-holograma { --nl-p1: #0b2a3a; --nl-p2: #061521; --nl-mancha: rgba(80, 220, 255, .06); --nl-borda-p: rgba(80, 220, 255, .7); --nl-brilho: rgba(40, 200, 255, .45); --nl-acento: #6fe6ff; }
+.nl-papel-ambar { --nl-p1: #1b1306; --nl-p2: #0c0802; --nl-mancha: rgba(255, 194, 61, .04); --nl-borda-p: rgba(255, 190, 60, .6); --nl-brilho: rgba(255, 176, 40, .4); --nl-acento: #ffc23d; }
+
+/* palco: o fundo da janela acompanha a era */
+.nl-raiz.nl-era-moderno { background: radial-gradient(ellipse at 50% 30%, #34363f 0%, #22232a 55%, #15161a 100%); }
+.nl-raiz.nl-era-cyberpunk { background-color: #07050f; background-image: linear-gradient(rgba(80, 220, 255, .05) 1px, transparent 1px), linear-gradient(90deg, rgba(80, 220, 255, .05) 1px, transparent 1px), radial-gradient(ellipse at 50% 20%, rgba(255, 40, 140, .12), transparent 60%); background-size: 32px 32px, 32px 32px, 100% 100%; }
+.nl-raiz:is(.nl-era-moderno, .nl-era-cyberpunk) :is(.nl-barra, .nl-nav) { background: rgba(0, 0, 0, .35); border-color: rgba(255, 255, 255, .08); }
+.nl-raiz.nl-era-cyberpunk :is(.nl-barra, .nl-nav) { border-color: rgba(80, 220, 255, .22); }
+.nl-raiz.nl-era-cyberpunk .nl-nav-txt { font: 13px "Nauren Mono", monospace; letter-spacing: .08em; color: #9fe9ff; text-transform: uppercase; }
+.nl-raiz.nl-era-moderno .nl-nav-txt { font: 600 13px "Nauren Moderna", Signika, sans-serif; color: #d8d9e2; }
+.nl-raiz.nl-era-cyberpunk button.nl-seta { border-color: rgba(80, 220, 255, .5); color: #9fe9ff; border-radius: 0; clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px); }
+.nl-raiz.nl-era-moderno button.nl-seta { border-color: rgba(255, 255, 255, .25); color: #e6e7ee; }
+
+/* folha moderna: limpa, sem manchas de papel velho; o pergaminho vira ficha, sem varetas */
+.nl-era-moderno .nl-folha { box-shadow: 0 12px 28px rgba(0, 0, 0, .5), inset 0 0 0 1px var(--nl-borda-p); }
+.nl-era-moderno .nl-folha-tit { font-weight: 700; letter-spacing: .01em; }
+.nl-era-moderno.nl-fmt-nota .nl-solta > .nl-folha { clip-path: none; transform: rotate(-.8deg); }
+.nl-era-moderno.nl-fmt-pergaminho .nl-solta { padding: 0; }
+.nl-era-moderno.nl-fmt-pergaminho .nl-solta > .nl-folha { width: 100%; border-radius: 10px; padding: 28px 32px 18px; }
+.nl-era-moderno .nl-papel-tela .nl-folha, .nl-era-moderno.nl-papel-tela .nl-folha { border-radius: 12px; }
+/* post-it: fita adesiva no topo */
+.nl-papel-postit .nl-solta > .nl-folha { padding-top: 40px; box-shadow: 0 14px 22px rgba(0, 0, 0, .45), inset 0 -18px 30px -24px rgba(120, 90, 0, .35); }
+.nl-papel-postit .nl-solta::before { content: ""; position: absolute; top: -8px; left: 50%; z-index: 4; width: 110px; height: 26px; margin-left: -55px; background: rgba(255, 255, 255, .5); box-shadow: 0 1px 3px rgba(0, 0, 0, .15); transform: rotate(-3deg); pointer-events: none; }
+/* caderno pautado: linhas que rolam com o texto e a margem vermelha */
+.nl-papel-pautado .nl-folha { background-image: linear-gradient(90deg, transparent 38px, rgba(220, 70, 70, .45) 38px, rgba(220, 70, 70, .45) 40px, transparent 40px), radial-gradient(ellipse at center, var(--nl-p1) 55%, var(--nl-p2) 100%); padding-left: 54px !important; }
+.nl-papel-pautado .nl-folha-corpo { line-height: 1.6; background: repeating-linear-gradient(180deg, transparent 0 calc(var(--nl-tam) * 1.6 - 1px), rgba(70, 110, 200, .3) calc(var(--nl-tam) * 1.6 - 1px) calc(var(--nl-tam) * 1.6)); background-attachment: local; }
+.nl-papel-pautado .nl-folha-corpo :is(p, li) { margin: 0 0 calc(var(--nl-tam) * 1.6); }
+.nl-papel-pautado .nl-folha-corpo > :is(ul, ol) { margin: 0; }
+/* tela escura (celular, tablet): cantos arredondados e brilho suave */
+.nl-papel-tela .nl-folha { box-shadow: 0 14px 30px rgba(0, 0, 0, .6), inset 0 0 0 1px var(--nl-borda-p), inset 0 1px 0 rgba(255, 255, 255, .06) !important; }
+.nl-papel-tela .nl-folha-corpo a.content-link { background: rgba(255, 255, 255, .08); }
+
+/* telas cyberpunk: cantos cortados, brilho na cor da tela e texto aceso */
+.nl-era-cyberpunk .nl-folha, .nl-folha:is(.nl-papel-terminal, .nl-papel-neon, .nl-papel-holograma, .nl-papel-ambar),
+:is(.nl-papel-terminal, .nl-papel-neon, .nl-papel-holograma, .nl-papel-ambar) .nl-folha { --nl-corte: 16px;
+  box-shadow: inset 0 0 0 1px var(--nl-borda-p), inset 0 0 40px color-mix(in srgb, var(--nl-brilho, transparent) 35%, transparent), 0 0 30px var(--nl-brilho, transparent) !important; }
+:is(.nl-papel-terminal, .nl-papel-neon, .nl-papel-holograma, .nl-papel-ambar) .nl-solta > .nl-folha,
+:is(.nl-papel-terminal, .nl-papel-neon, .nl-papel-holograma, .nl-papel-ambar).nl-fmt-nota .nl-solta > .nl-folha {
+  transform: none; clip-path: polygon(var(--nl-corte) 0, 100% 0, 100% calc(100% - var(--nl-corte)), calc(100% - var(--nl-corte)) 100%, 0 100%, 0 var(--nl-corte)); }
+:is(.nl-papel-terminal, .nl-papel-neon, .nl-papel-holograma, .nl-papel-ambar) .nl-folha-corpo { text-shadow: 0 0 6px color-mix(in srgb, var(--nl-tinta) 45%, transparent); }
+:is(.nl-papel-terminal, .nl-papel-neon, .nl-papel-holograma, .nl-papel-ambar) .nl-folha-tit { color: var(--nl-acento); text-transform: uppercase; letter-spacing: .08em; border-bottom-color: color-mix(in srgb, var(--nl-acento) 45%, transparent); text-shadow: 0 0 10px var(--nl-brilho); }
+:is(.nl-papel-terminal, .nl-papel-neon, .nl-papel-holograma, .nl-papel-ambar) .nl-folha-num { font: 12px "Nauren Mono", monospace; letter-spacing: .1em; }
+.nl-papel-holograma .nl-folha { background-image: repeating-linear-gradient(0deg, rgba(120, 230, 255, .07) 0 1px, transparent 1px 4px), linear-gradient(180deg, rgba(40, 200, 255, .14), rgba(40, 200, 255, .04)), radial-gradient(ellipse at center, var(--nl-p1) 40%, var(--nl-p2) 100%); }
+.nl-papel-terminal .nl-folha-corpo :is(p, li) { margin-bottom: .5em; }
+.nl-papel-terminal .nl-folha-corpo > p:last-child::after { content: "_"; margin-left: .15em; animation: nl-cursor 1.05s steps(1) infinite; }
+.nl-era-cyberpunk.nl-fmt-pergaminho .nl-solta { padding: 0; }
+.nl-era-cyberpunk.nl-fmt-pergaminho .nl-solta > .nl-folha { width: 100%; padding: 26px 30px 18px; }
+.nl-era-cyberpunk .nl-folha-corpo a.content-link, .nl-era-cyberpunk .nl-folha-corpo a.inline-roll { border-radius: 0; }
+/* livros fora do Clássico: capa lisa (o "couro" vira a cor da capa) */
+.nl-era-moderno button.nl-capa { border-radius: 3px 8px 8px 3px; }
+.nl-era-cyberpunk button.nl-capa { border-radius: 0; clip-path: polygon(18px 0, 100% 0, 100% calc(100% - 18px), calc(100% - 18px) 100%, 0 100%, 0 18px); }
+.nl-era-cyberpunk .nl-livro-capa { border-radius: 0; }
+
+/* ---------- efeitos ---------- */
+@keyframes nl-cursor { 50% { opacity: 0; } }
+@keyframes nl-varre { from { transform: translateY(-120%); } to { transform: translateY(620%); } }
+@keyframes nl-falha {
+  0%, 89%, 100% { text-shadow: none; transform: none; clip-path: none; }
+  90% { text-shadow: 2px 0 #ff4fae, -2px 0 #6fe6ff; transform: translateX(2px); }
+  92% { text-shadow: -3px 0 #ff4fae, 3px 0 #6fe6ff; transform: translateX(-2px) skewX(-6deg); clip-path: inset(10% 0 35% 0); }
+  94% { text-shadow: 1px 0 #ff4fae, -1px 0 #6fe6ff; transform: translateX(1px); clip-path: none; }
+  96% { text-shadow: none; transform: none; }
+}
+@keyframes nl-falha-folha { 0%, 93%, 100% { filter: none; } 94% { filter: hue-rotate(40deg) brightness(1.2); } 95% { filter: none; } 96% { filter: brightness(.85); } }
+.nl-fx-varredura .nl-folha { overflow: hidden; }
+.nl-fx-varredura .nl-folha::after { content: ""; position: absolute; inset: 0; z-index: 3; pointer-events: none; background: repeating-linear-gradient(0deg, rgba(0, 0, 0, .22) 0 1px, transparent 1px 3px); }
+.nl-fx-varredura .nl-folha::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 16%; z-index: 3; pointer-events: none;
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--nl-tinta) 12%, transparent), transparent); animation: nl-varre 7s linear infinite; }
+.nl-fx-varredura.nl-fx-parado .nl-folha::before { display: none; }
+.nl-fx-falha .nl-folha-tit, .nl-fx-falha .nl-folha-corpo > :is(h1, h2):first-child { animation: nl-falha 6s steps(1) infinite; }
+.nl-fx-falha .nl-folha { animation: nl-falha-folha 9s steps(1) infinite; }
+.nl-digitando > :last-child::after { content: "▌"; margin-left: .1em; animation: nl-cursor .8s steps(1) infinite; }
+/* quem prefere menos movimento: nada se mexe nos escritos */
+@media (prefers-reduced-motion: reduce) {
+  .nl-raiz *, .nl-raiz *::before, .nl-raiz *::after { animation: none !important; }
+  .nl-fx-varredura .nl-folha::before { display: none; }
+}
+
+/* ---------- controles: era, papéis e efeitos ---------- */
+.nl-eras { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+:is(.nl-raiz, .nl-aba) button.nl-era { all: unset; box-sizing: border-box; display: grid; grid-template-columns: 22px minmax(0, 1fr); grid-template-rows: auto auto; column-gap: 8px; align-items: center; padding: 8px 10px; cursor: pointer;
+  border: 1px solid rgba(214, 178, 94, .3); background: rgba(0, 0, 0, .25); color: #d8c8a6; clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px); }
+:is(.nl-raiz, .nl-aba) button.nl-era i { grid-row: 1 / 3; font-size: 16px; color: #cfa96a; text-align: center; }
+:is(.nl-raiz, .nl-aba) button.nl-era b { font: 600 13px Signika, sans-serif; color: inherit; }
+:is(.nl-raiz, .nl-aba) button.nl-era small { font-size: 11px; color: #a99c86; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+:is(.nl-raiz, .nl-aba) button.nl-era:hover { border-color: rgba(224, 178, 87, .7); color: #fff1d0; }
+:is(.nl-raiz, .nl-aba) button.nl-era.on { background: #4a3418; border-color: #e0b257; color: #fff3d6; }
+:is(.nl-raiz, .nl-aba) button.nl-era.on i { color: #ffd98a; } :is(.nl-raiz, .nl-aba) button.nl-era.on small { color: #e4cfa0; }
+.nl-estilo-compacto .nl-eras { grid-template-columns: 1fr; }
+.nl-papeis { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 6px; }
+:is(.nl-raiz, .nl-aba) button.nl-papel-bt { all: unset; box-sizing: border-box; display: flex; flex-direction: column; align-items: stretch; gap: 5px; padding: 5px; cursor: pointer; border: 1px solid rgba(214, 178, 94, .25); background: rgba(0, 0, 0, .2); font-size: 11.5px; color: #d8c8a6; text-align: center; }
+:is(.nl-raiz, .nl-aba) button.nl-papel-bt:hover { border-color: rgba(224, 178, 87, .7); color: #fff1d0; }
+:is(.nl-raiz, .nl-aba) button.nl-papel-bt.on { border-color: #e0b257; background: #3a2a16; color: #fff3d6; box-shadow: inset 0 0 0 1px #e0b257; }
+.nl-papel-amostra { height: 34px; display: grid; place-items: center; background: var(--a-fundo); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .25); }
+.nl-papel-amostra i { font: 600 15px Signika, sans-serif; font-style: normal; color: var(--a-tinta); }
+.nl-fxs { display: flex; gap: 6px; flex-wrap: wrap; }
+.nl-fx { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 10px; box-sizing: border-box; cursor: pointer; border: 1px solid rgba(214, 178, 94, .3); background: rgba(0, 0, 0, .25); font-size: 12px; color: #cdbb94; user-select: none; }
+.nl-fx input { position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none; }
+.nl-fx i { font-size: 11px; color: #a99c86; }
+.nl-fx:hover { border-color: rgba(224, 178, 87, .7); }
+.nl-fx.on, .nl-fx:has(input:checked) { background: #4a3418; border-color: #e0b257; color: #fff3d6; }
+.nl-fx.on i, .nl-fx:has(input:checked) i { color: #ffd98a; }
+.nl-fx:has(input:focus-visible) { outline: 2px solid #e0b257; outline-offset: 1px; }
+
+/* ---------- miniatura da ficha ---------- */
+.nl-mini.nl-era-moderno .nl-mini-folha { transform: rotate(-2deg); }
+.nl-mini.nl-papel-postit .nl-mini-folha { width: 104px; height: 104px; }
+.nl-mini.nl-papel-postit .nl-mini-folha::before { content: ""; position: absolute; top: -6px; left: 50%; width: 44px; height: 13px; margin-left: -22px; background: rgba(255, 255, 255, .55); transform: rotate(-4deg); }
+.nl-mini.nl-papel-pautado .nl-mini-folha { background-image: linear-gradient(90deg, transparent 14px, rgba(220, 70, 70, .5) 14px, rgba(220, 70, 70, .5) 15px, transparent 15px), repeating-linear-gradient(180deg, transparent 0 9px, rgba(70, 110, 200, .3) 9px 10px), radial-gradient(ellipse at center, var(--nl-p1) 55%, var(--nl-p2) 100%); }
+.nl-mini.nl-era-moderno.nl-fmt-pergaminho .nl-mini-folha { width: 116px; height: 78px; border-radius: 6px; box-shadow: 0 6px 14px rgba(0, 0, 0, .5), inset 0 0 0 1px var(--nl-borda-p); transform: rotate(-2deg); }
+.nl-mini.nl-era-cyberpunk .nl-mini-folha { transform: none; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); box-shadow: inset 0 0 0 1px var(--nl-borda-p), inset 0 0 18px var(--nl-brilho, transparent); }
+.nl-mini.nl-era-cyberpunk.nl-fmt-pergaminho .nl-mini-folha { width: 116px; height: 82px; }
+.nl-mini.nl-era-cyberpunk .nl-mini-folha b { color: var(--nl-acento, var(--nl-tinta)); text-transform: uppercase; letter-spacing: .06em; text-shadow: 0 0 6px var(--nl-brilho, transparent); }
+.nl-mini.nl-era-cyberpunk .nl-mini-capa { border-radius: 0; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); }
+
+/* ---------- card no chat (moderno e cyberpunk) ---------- */
+.nl-chat.nl-chat-era-moderno .nl-chat-ic { background: linear-gradient(160deg, #ffffff, #e6e7ee); transform: rotate(-2deg); }
+.nl-chat.nl-chat-era-moderno .nl-chat-ic i { color: #2d3a5a; }
+.nl-chat.nl-chat-era-cyberpunk { border-color: rgba(80, 220, 255, .55); background: linear-gradient(135deg, rgba(40, 200, 255, .10), rgba(255, 40, 140, .08)); }
+.nl-chat.nl-chat-era-cyberpunk .nl-chat-ic { background: #07131c; border-radius: 0; transform: none; box-shadow: inset 0 0 0 1px rgba(80, 220, 255, .7), 0 0 10px rgba(40, 200, 255, .35); }
+.nl-chat.nl-chat-era-cyberpunk .nl-chat-ic i { color: #6fe6ff; }
+.nl-chat.nl-chat-era-cyberpunk .nl-chat-txt b { font-family: "Nauren Mono", monospace; letter-spacing: .04em; }

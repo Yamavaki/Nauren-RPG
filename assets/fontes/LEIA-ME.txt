@@ -5,3 +5,12 @@ Todas são livres para redistribuir; as licenças estão nesta pasta ou dentro d
   SIL Open Font License 1.1 (https://scripts.sil.org/OFL). O texto da licença está nos próprios arquivos (tabela "name").
 - TeX Gyre Chorus e TeX Gyre Pagella (TexGyre*.otf) — GUST e-foundry. GUST Font License (GUST-FONT-LICENSE.txt).
 - GFS Baskerville (GFSBaskerville.otf) — Greek Font Society. SIL Open Font License 1.1 (GFSBaskerville-LICENSE.txt).
+
+0.111 — letras dos escritos modernos e cyberpunk (só os caracteres latinos, em WOFF; licenças em licencas/):
+- IBM Plex Sans (IBMPlexSans-Variable.woff) — "Nauren Moderna". Copyright IBM Corp. SIL Open Font License 1.1 (licencas/IBMPlexSans-OFL.txt).
+- Caveat (Caveat-Variable.woff) — "Nauren Manuscrita". Copyright The Caveat Project Authors. SIL Open Font License 1.1 (licencas/Caveat-OFL.txt).
+- Special Elite (MaquinaEscrever.woff) — "Nauren Maquina". Copyright Astigmatic. Apache License 2.0 (licencas/SpecialElite-Apache-2.0.txt).
+- Share Tech Mono (ShareTechMono.woff) — "Nauren Mono". Copyright Carrois Type Design. SIL Open Font License 1.1 (licencas/ShareTechMono-OFL.txt).
+- Orbitron (Orbitron-Variable.woff) — "Nauren Tecno". Copyright The Orbitron Project Authors. SIL Open Font License 1.1 (licencas/Orbitron-OFL.txt).
+  Os arquivos foram reduzidos aos caracteres latinos. Como IBM Plex ("Plex"), Orbitron e Share Tech Mono ("Share") têm Nome de Fonte Reservado
+  na OFL, as versões reduzidas foram renomeadas por dentro para "Nauren Moderna", "Nauren Tecno" e "Nauren Mono".

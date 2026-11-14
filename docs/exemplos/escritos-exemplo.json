@@ -45,5 +45,8 @@
     "quemEscreve": "dono",
     "capa": { "titulo": "Caderno de Campo", "cor": "#4a2f1d", "detalhe": "#c9a46a" },
     "paginas": [ { "titulo": "Dia 1", "texto": "" }, { "texto": "" }, { "texto": "" } ]
-  }
+  },
+  {"nome": "Post-it na Geladeira", "era": "moderno", "formato": "nota", "papel": "postit", "letra": "manuscrita", "paginas": [{"texto": "Senha do wi-fi do bar: **remo1987**\n\nnão conta pro chefe!!"}]},
+  {"nome": "Memorando Interno", "era": "moderno", "formato": "carta", "papel": "a4", "letra": "sans", "paginas": [{"titulo": "Acesso ao arquivo 3", "texto": "A partir de hoje, o arquivo 3 só abre com o crachá da diretoria.\n\n-> — Marta, Coordenação"}]},
+  {"nome": "Registro 0x4F", "era": "cyberpunk", "formato": "livro", "papel": "terminal", "letra": "mono", "efeitos": {"varredura": true, "digitacao": true}, "capa": {"titulo": "NAUREN-OS // LOG"}, "paginas": [{"texto": "> abrir mensagem.dat\n\nO carregamento sai do porto às 3h. Doca 9. Não confie no capitão."}]}
 ]
