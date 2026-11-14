@@ -1,5 +1,5 @@
 /* Versão deste arquivo: o sistema confere no "ready" e, se o navegador/Forge tiver guardado um CSS antigo, carrega o novo. */
-:root { --nauren-css-versao: "0.116.0"; }
+:root { --nauren-css-versao: "0.116.1"; }
 /* 
 ===================================================
 1. FUNDO E FONTES GERAIS
@@ -9468,3 +9468,44 @@ li.directory-item.nauren-org-tem-dono > .entry-name > .nauren-org-nome { overflo
 .ncz-classico .ncz-tit.ncz-tit-xl { font-size: 2.2em; }
 .ncz-cyberpunk .ncz-tit, .ncz-moderno .ncz-faixa { overflow-wrap: normal; word-break: normal; }
 .nl-som-in { flex: 1 1 auto; }
+
+/* =====================================================================
+   0.116.1 — Cartaz legível dentro do Foundry e zoom (leitor e quadro)
+   ===================================================================== */
+/* o tema do Foundry pinta dl/dt/dd (cor clara, sombra): o cartaz usa as cores dele */
+.ncz-cartaz, .ncz-cartaz * { text-shadow: none; }
+.ncz-cartaz :is(div, span, b, small, p) { color: inherit; }
+.ncz-det { display: grid !important; grid-template-columns: max-content minmax(0, 1fr); gap: .3em .7em; margin: 0; padding: 0; border: 0; background: none; }
+.ncz-det > div { display: contents !important; }
+.ncz-det :is(dt, dd) { margin: 0 !important; padding: 0 !important; border: 0 !important; background: none !important; color: inherit !important; text-shadow: none !important; text-decoration: none !important;
+  font: inherit; letter-spacing: normal; text-transform: none; line-height: 1.35; overflow-wrap: anywhere; }
+.ncz-det dt { font-weight: 700 !important; }
+.ncz-cyberpunk .ncz-det dt { color: #6fe6ff !important; font-weight: 400 !important; }
+.ncz-cyberpunk .ncz-det dd { color: #ffd6ee !important; }
+.ncz-moderno .ncz-det dt { color: #121216 !important; } .ncz-moderno .ncz-det dd { color: #33333b !important; }
+.ncz-classico .ncz-det :is(dt, dd) { color: #2b1a0c !important; }
+.ncz-moderno .ncz-texto { color: #1d1d24; }
+/* letras um pouco maiores no pôster moderno e na ficha cyberpunk */
+.ncz-moderno .ncz-info { font-size: .9em; line-height: 1.4; }
+.ncz-cyberpunk .ncz-info { font-size: .86em; line-height: 1.4; }
+.ncz-moderno .ncz-subt { font-size: 1em; }
+/* leitor: o cartaz grande rola (e dá para arrastar) em vez de cortar */
+.nl-palco.ncz-palco { justify-content: flex-start; align-items: flex-start; overflow: auto; }
+.ncz-palco .ncz-escala { margin: auto; max-height: none; flex: 0 0 auto; padding: 4px 0; }
+.ncz-palco .ncz-cartaz { max-width: none; }
+.nl-palco.nl-arrastando { cursor: grabbing; user-select: none; }
+.nl-raiz button.nl-ic.nl-zoom { min-width: 44px; font: 600 11.5px Signika, sans-serif; color: #cdbb94; }
+/* quadro: zoom e andar */
+.nq-zoom { display: inline-flex; align-items: center; border: 1px solid #3b3154; border-radius: 999px; overflow: hidden; }
+.nq-zoom button { all: unset; cursor: pointer; height: 26px; min-width: 30px; padding: 0 8px; display: grid; place-items: center; color: #b3a6c9; font: 12px Signika, sans-serif; }
+.nq-zoom button:hover { color: #ffe2a8; background: rgba(224, 178, 87, .12); }
+.nq-zoom [data-nq-zoom-rot] { min-width: 44px; border-left: 1px solid #3b3154; border-right: 1px solid #3b3154; }
+.nq-area { display: flex; overflow: auto; scrollbar-width: thin; }
+.nq-moldura { flex: 0 0 auto; margin: auto; width: calc(min(100cqw, calc(100cqh * 1.6)) * var(--nq-zoom, 1)); }
+.nq-area.nq-arrastando { cursor: grabbing; user-select: none; }
+.nq-area:has(.nq-com-placa) { padding-top: 34px; }
+/* valores compridos ("80 ƒ cada · 120 ƒ se limpar") encolhem e não encostam no rótulo */
+.ncz-moderno .ncz-rec.ncz-rec-longo b { font-size: 1.3em; line-height: 1.2; }
+.ncz-classico .ncz-rec.ncz-rec-longo { font-size: 1.55em; line-height: 1.15; }
+.ncz-cyberpunk .ncz-rec.ncz-rec-longo { flex-direction: column; align-items: flex-start; gap: .25em; }
+.ncz-cyberpunk .ncz-rec.ncz-rec-longo b { font-size: 1.2em; }

@@ -283,6 +283,7 @@ export function naurenCartazHtml(c, era = "classico", { nomeItem = "" } = {}) {
   const titulo = c.titulo || t.rot;
   const rec = c.recompensa ? { rot: c.recRotulo || t.rec, val: c.recompensa } : null;
   const nome = c.nome; void nomeItem;
+  const recLongo = rec && rec.val.length > 14 ? "ncz-rec-longo" : "";
   const longo = titulo.length > 12 ? "ncz-tit-xl" : titulo.length > 9 ? "ncz-tit-l" : ""; // títulos compridos encolhem (não quebram no meio da palavra)
   const cor = c.cor || t.cor;
   const temRetrato = !!c.retrato || t.retrato;
@@ -299,7 +300,7 @@ export function naurenCartazHtml(c, era = "classico", { nomeItem = "" } = {}) {
         ${temRetrato ? `<div class="ncz-retrato">${img("#6d6b66")}</div>` : ""}
         <div class="ncz-info">${nome ? `<b class="ncz-nome">${esc(nome)}</b>` : ""}${det}${texto}</div>
       </div>
-      ${rec ? `<div class="ncz-rec"><div><span>${esc(rec.rot)}</span><b>${esc(rec.val)}</b></div>${QR}</div>` : ""}
+      ${rec ? `<div class="ncz-rec ${recLongo}"><div><span>${esc(rec.rot)}</span><b>${esc(rec.val)}</b></div>${QR}</div>` : ""}
       ${rodape ? `<div class="ncz-rodape">${rodape}</div>` : ""}
     </div>`;
   }
@@ -313,7 +314,7 @@ export function naurenCartazHtml(c, era = "classico", { nomeItem = "" } = {}) {
         <div class="ncz-info">${nome ? `<b class="ncz-nome">${esc(nome)}</b>` : ""}${det}${texto}
           ${c.ameaca ? `<span class="ncz-ameaca-rot">AMEAÇA</span><span class="ncz-ameaca"><i style="width:${c.ameaca}%"></i></span>` : ""}</div>
       </div>
-      ${rec ? `<div class="ncz-rec"><span>${esc(rec.rot.toUpperCase())}</span><b>${esc(rec.val)}</b></div>` : ""}
+      ${rec ? `<div class="ncz-rec ${recLongo}"><span>${esc(rec.rot.toUpperCase())}</span><b>${esc(rec.val)}</b></div>` : ""}
       ${rodape ? `<div class="ncz-rodape">${rodape}</div>` : ""}
     </div>`;
   }
@@ -323,7 +324,7 @@ export function naurenCartazHtml(c, era = "classico", { nomeItem = "" } = {}) {
     ${temRetrato ? `<div class="ncz-retrato">${img("#5a3d1c")}</div>` : ""}
     ${nome ? `<div class="ncz-nome">${esc(nome)}</div>` : ""}
     ${texto}${det}
-    ${rec ? `<div class="ncz-rec-rot">${esc(rec.rot)}</div><div class="ncz-rec">${esc(rec.val)}</div>` : ""}
+    ${rec ? `<div class="ncz-rec-rot">${esc(rec.rot)}</div><div class="ncz-rec ${recLongo}">${esc(rec.val)}</div>` : ""}
     ${rodape ? `<div class="ncz-rodape">${rodape}</div>` : ""}
   </div>`;
 }

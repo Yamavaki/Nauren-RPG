@@ -505,8 +505,9 @@ export class NaurenLeitor extends foundry.applications.api.ApplicationV2 {
       abrirCapa: function () { this.pag = 0; this.animar = "dir"; this.render(); },
       fecharCapa: function () { this.pag = -1; this.animar = "esq"; this.render(); },
       romperLacre: function () { this.romperLacre(); },
-      letraMenos: function () { this.tam = Math.max(70, this.tam - 10); guardarTam(this.tam); this.render(); },
-      letraMais: function () { this.tam = Math.min(170, this.tam + 10); guardarTam(this.tam); this.render(); },
+      letraMenos: function () { this.zoom(-10); },
+      letraMais: function () { this.zoom(10); },
+      zoomPadrao: function () { this.zoom(0, 100); },
       editar: async function () { this.editando = true; this.render(); },
       ler: async function () { await this.salvarTexto(); this.editando = false; this.render(); },
       mostrar: function () { naurenEscritoMostrar(this.item); },
@@ -676,8 +677,8 @@ export class NaurenLeitor extends foundry.applications.api.ApplicationV2 {
     return `<header class="nl-barra">
         <div class="nl-barra-esq">${sumario}</div>
         <div class="nl-barra-dir">
-          <button type="button" class="nl-ic" data-action="letraMenos" title="Letra menor"><i class="fas fa-minus"></i><span>A</span></button>
-          <button type="button" class="nl-ic nl-ic-grande" data-action="letraMais" title="Letra maior"><i class="fas fa-plus"></i><span>A</span></button>
+          <button type="button" class="nl-ic" data-action="letraMenos" title="Diminuir (ou Ctrl + roda do mouse)"><i class="fas fa-minus"></i><span>A</span></button>
+          <button type="button" class="nl-ic nl-ic-grande" data-action="letraMais" title="Aumentar (ou Ctrl + roda do mouse)"><i class="fas fa-plus"></i><span>A</span></button>
           ${livro && this.pag >= 0 ? `<button type="button" class="nl-ic" data-action="fecharCapa" title="Fechar o livro"><i class="fas fa-book"></i></button>` : ""}
           ${game.user?.isGM ? `<button type="button" class="nl-ic" data-action="mostrar" title="Mostrar aos jogadores"><i class="fas fa-eye"></i></button>` : ""}
           ${naurenEscritoPodeEscrever(this.item) ? `<button type="button" class="nl-btn nt-ch" data-action="editar"><i class="fas fa-feather-pointed"></i> Escrever</button>` : ""}
@@ -757,6 +758,7 @@ export class NaurenLeitor extends foundry.applications.api.ApplicationV2 {
       el.addEventListener("keydown", this._teclas);
     }
     el.querySelector("[data-sumario]")?.addEventListener("change", ev => { this.irPara(Number(ev.target.value)); });
+    this.ligarZoom();
     if (e.formato === "mensagens") { if (this.editando) this.ligarMensagensEditor(); else this.ligarMensagens(); return; }
     if (e.formato === "cartaz") { if (this.editando) this.ligarCartazEditor(); return; }
     el.querySelector("[data-nt-form]")?.addEventListener("submit", ev => { ev.preventDefault(); this.tentarSenha(el.querySelector("[data-nt-senha]")?.value ?? ""); });
@@ -791,8 +793,8 @@ export class NaurenLeitor extends foundry.applications.api.ApplicationV2 {
     return `<header class="nl-barra">
         <div class="nl-barra-esq"><span class="nl-barra-tit"><i class="fas ${ic}"></i> ${esc(this.item.name)}</span></div>
         <div class="nl-barra-dir">
-          <button type="button" class="nl-ic" data-action="letraMenos" title="Letra menor"><i class="fas fa-minus"></i><span>A</span></button>
-          <button type="button" class="nl-ic nl-ic-grande" data-action="letraMais" title="Letra maior"><i class="fas fa-plus"></i><span>A</span></button>
+          <button type="button" class="nl-ic" data-action="letraMenos" title="Diminuir (ou Ctrl + roda do mouse)"><i class="fas fa-minus"></i><span>A</span></button>
+          <button type="button" class="nl-ic nl-ic-grande" data-action="letraMais" title="Aumentar (ou Ctrl + roda do mouse)"><i class="fas fa-plus"></i><span>A</span></button>
           ${game.user?.isGM ? `<button type="button" class="nl-ic" data-action="mostrar" title="Mostrar aos jogadores"><i class="fas fa-eye"></i></button>` : ""}
           ${naurenEscritoPodeEscrever(this.item) ? `<button type="button" class="nl-btn nt-ch" data-action="editar"><i class="fas fa-pen"></i> Preencher</button>` : ""}
         </div>
@@ -875,8 +877,8 @@ export class NaurenLeitor extends foundry.applications.api.ApplicationV2 {
     return `<header class="nl-barra">
         <div class="nl-barra-esq"><span class="nl-barra-tit"><i class="fas fa-mobile-screen"></i> ${esc(this.item.name)}</span></div>
         <div class="nl-barra-dir">
-          <button type="button" class="nl-ic" data-action="letraMenos" title="Letra menor"><i class="fas fa-minus"></i><span>A</span></button>
-          <button type="button" class="nl-ic nl-ic-grande" data-action="letraMais" title="Letra maior"><i class="fas fa-plus"></i><span>A</span></button>
+          <button type="button" class="nl-ic" data-action="letraMenos" title="Diminuir (ou Ctrl + roda do mouse)"><i class="fas fa-minus"></i><span>A</span></button>
+          <button type="button" class="nl-ic nl-ic-grande" data-action="letraMais" title="Aumentar (ou Ctrl + roda do mouse)"><i class="fas fa-plus"></i><span>A</span></button>
           ${mestre ? `<button type="button" class="nl-ic" data-action="mostrar" title="Mostrar aos jogadores"><i class="fas fa-eye"></i></button>` : ""}
           ${naurenEscritoPodeEscrever(this.item) ? `<button type="button" class="nl-btn nt-ch" data-action="editar"><i class="fas fa-pen"></i> Escrever</button>` : ""}
         </div>
@@ -972,6 +974,34 @@ export class NaurenLeitor extends foundry.applications.api.ApplicationV2 {
     const palco = this.element.querySelector(".nl-palco");
     const pular = () => { parar(); palco?.removeEventListener("click", pular); };
     palco?.addEventListener("click", pular);
+  }
+  /** 0.116.1: zoom do leitor (A−/A+, Ctrl + roda do mouse, clique no % volta a 100%). Vale para todos os escritos nesta tela. */
+  zoom(d, fixo = null) {
+    const novo = Math.max(50, Math.min(300, fixo ?? (this.tam + d)));
+    if (novo === this.tam) return;
+    this.tam = novo; guardarTam(novo);
+    const raiz = this.element?.querySelector(".nl-raiz");
+    if (raiz && !this.editando) { raiz.style.setProperty("--nl-tam", `${(15 * NAUREN_ESCRITO_FONTES[this.e.fonte].escala * (this.e.tamanho / 100) * (novo / 100)).toFixed(2)}px`); const z = raiz.querySelector("[data-zoom]"); if (z) z.textContent = `${novo}%`; }
+    else this.render();
+  }
+  ligarZoom() {
+    const el = this.element; if (!el || this.editando) return;
+    const mais = el.querySelector('.nl-barra [data-action="letraMais"]');
+    if (mais && !el.querySelector("[data-zoom]")) mais.insertAdjacentHTML("beforebegin", `<button type="button" class="nl-ic nl-zoom" data-zoom data-action="zoomPadrao" title="Voltar a 100%">${this.tam}%</button>`);
+    const palco = el.querySelector(".nl-palco"); if (!palco) return;
+    palco.addEventListener("wheel", ev => { if (!(ev.ctrlKey || ev.metaKey)) return; ev.preventDefault(); this.zoom(ev.deltaY < 0 ? 10 : -10); }, { passive: false });
+    // arrastar para ver o resto quando o cartaz passa do tamanho da janela
+    if (palco.classList.contains("ncz-palco")) {
+      palco.addEventListener("pointerdown", ev => {
+        if (ev.button !== 0 || ev.target.closest("button, a, input, select")) return;
+        if (palco.scrollWidth <= palco.clientWidth && palco.scrollHeight <= palco.clientHeight) return;
+        const x0 = ev.clientX, y0 = ev.clientY, l0 = palco.scrollLeft, t0 = palco.scrollTop;
+        palco.classList.add("nl-arrastando");
+        const mover = e2 => { palco.scrollLeft = l0 - (e2.clientX - x0); palco.scrollTop = t0 - (e2.clientY - y0); };
+        const soltar = () => { palco.classList.remove("nl-arrastando"); window.removeEventListener("pointermove", mover); window.removeEventListener("pointerup", soltar); };
+        window.addEventListener("pointermove", mover); window.addEventListener("pointerup", soltar);
+      });
+    }
   }
   marcarSalvo(ok) { const s = this.element?.querySelector("[data-salvo]"); if (s) { s.textContent = ok ? "Salvo" : "Não salvo"; s.classList.toggle("pendente", !ok); } }
   async _preClose(op) { try { await this.salvarTexto(); } catch (err) { /* segue */ } return super._preClose?.(op); }

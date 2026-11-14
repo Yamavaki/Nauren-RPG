@@ -131,8 +131,9 @@ export function naurenQuadroHtml(armazem, estado = {}, { mestre = false, podePre
   const letreiro = estilo === "cyberpunk" && q.letreiro ? `<div class="nq-letreiro"><div class="nq-letreiro-txt">${q.letreiro.split("|").map(t => `<span>▸ ${esc(t.trim())}</span>`).join("")}${q.letreiro.split("|").map(t => `<span aria-hidden="true">▸ ${esc(t.trim())}</span>`).join("")}</div></div>` : "";
   const dica = mestre ? `<div class="nq-dica-solta"><i class="fas fa-plus"></i> Arraste um Escrito para pregar aqui</div>` : podePregar ? `<div class="nq-dica-solta"><i class="fas fa-plus"></i> Arraste um escrito seu para pregar aqui</div>` : "";
   return `<div class="nq ${mestre ? "nq-mestre" : ""}">
-    <div class="nq-filtros">${chips}<span class="nq-esp"></span>${!mestre && novas ? `<span class="nq-novas">${novas} ${novas === 1 ? "nova" : "novas"} para você</span>` : ""}</div>
-    <div class="nq-area"><div class="nq-moldura nq-estilo-${estilo} ${placa ? "nq-com-placa" : ""} ${letreiro ? "nq-com-letreiro" : ""}" ${fundo}>${placa}
+    <div class="nq-filtros">${chips}<span class="nq-esp"></span>${!mestre && novas ? `<span class="nq-novas">${novas} ${novas === 1 ? "nova" : "novas"} para você</span>` : ""}
+      <span class="nq-zoom" title="Zoom: Ctrl + roda do mouse · arraste o fundo para andar pelo quadro"><button type="button" data-nq-zoom="-1" title="Afastar"><i class="fas fa-magnifying-glass-minus"></i></button><button type="button" data-nq-zoom="0" data-nq-zoom-rot title="Voltar a 100%">${Math.round((estado.zoom ?? 1) * 100)}%</button><button type="button" data-nq-zoom="1" title="Aproximar"><i class="fas fa-magnifying-glass-plus"></i></button></span></div>
+    <div class="nq-area" data-rola="quadro" style="--nq-zoom:${estado.zoom ?? 1}"><div class="nq-moldura nq-estilo-${estilo} ${placa ? "nq-com-placa" : ""} ${letreiro ? "nq-com-letreiro" : ""}" ${fundo}>${placa}
       <div class="nq-quadro" data-nq-quadro>${letreiro}${notasHtml || `<p class="nq-vazio">${mestre ? "Quadro vazio. Arraste Escritos (notas, cartazes…) para cá." : "Nada pregado no quadro."}</p>`}${dica}</div>
     </div></div>
   </div>`;
@@ -155,6 +156,29 @@ export function naurenQuadroLigar(el, op) {
   const { armazem, estado, mestre } = op;
   el.querySelectorAll("[data-nq-cat]").forEach(b => b.addEventListener("click", ev => { ev.preventDefault(); estado.cat = b.dataset.nqCat; op.render(); }));
   const quadro = el.querySelector("[data-nq-quadro]"); if (!quadro) return;
+  // 0.116.1: zoom (botões ou Ctrl + roda do mouse, no ponto do mouse) e arrastar o fundo para andar
+  const area = el.querySelector(".nq-area");
+  const zoom = (z, foco = null) => {
+    const antes = estado.zoom ?? 1, novo = Math.round(Math.max(1, Math.min(3, z)) * 100) / 100;
+    if (!area || novo === antes) return;
+    const r = area.getBoundingClientRect();
+    const fx = foco ? foco.x - r.left : r.width / 2, fy = foco ? foco.y - r.top : r.height / 2;
+    const px = (area.scrollLeft + fx) / antes, py = (area.scrollTop + fy) / antes;
+    estado.zoom = novo; area.style.setProperty("--nq-zoom", novo);
+    const rot = el.querySelector("[data-nq-zoom-rot]"); if (rot) rot.textContent = `${Math.round(novo * 100)}%`;
+    area.scrollLeft = px * novo - fx; area.scrollTop = py * novo - fy;
+  };
+  el.querySelectorAll("[data-nq-zoom]").forEach(b => b.addEventListener("click", ev => { ev.preventDefault(); const d = Number(b.dataset.nqZoom); zoom(d === 0 ? 1 : (estado.zoom ?? 1) + d * 0.25); }));
+  area?.addEventListener("wheel", ev => { if (!(ev.ctrlKey || ev.metaKey)) return; ev.preventDefault(); zoom((estado.zoom ?? 1) * (ev.deltaY < 0 ? 1.15 : 1 / 1.15), { x: ev.clientX, y: ev.clientY }); }, { passive: false });
+  area?.addEventListener("pointerdown", ev => {
+    if (ev.button !== 0 || ev.target.closest("[data-nq-nota], button, select, a")) return;
+    if (area.scrollWidth <= area.clientWidth && area.scrollHeight <= area.clientHeight) return;
+    const x0 = ev.clientX, y0 = ev.clientY, l0 = area.scrollLeft, t0 = area.scrollTop;
+    area.classList.add("nq-arrastando");
+    const mover = e2 => { area.scrollLeft = l0 - (e2.clientX - x0); area.scrollTop = t0 - (e2.clientY - y0); };
+    const soltar = () => { area.classList.remove("nq-arrastando"); window.removeEventListener("pointermove", mover); window.removeEventListener("pointerup", soltar); };
+    window.addEventListener("pointermove", mover); window.addEventListener("pointerup", soltar);
+  });
   for (const nota of quadro.querySelectorAll("[data-nq-nota]")) {
     const item = armazem.items.get(nota.dataset.nqNota); if (!item) continue;
     const abrir = () => { naurenQuadroMarcarLida(armazem, item.id); nota.classList.remove("nq-nova"); nota.querySelector(".nq-selo-nova")?.remove(); op.abrir(item); };
