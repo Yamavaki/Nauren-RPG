@@ -195,16 +195,48 @@ async function gravar(item, e) {
 /* ------------------------------ abrir ------------------------------ */
 const abertos = new Map();
 /** Abre o escrito para ler (ou para escrever, se puder). Uma janela por item. */
-export async function naurenAbrirEscrito(item, { editar = false, pagina = null } = {}) {
+export async function naurenAbrirEscrito(item, { editar = false, pagina = null, quadro = undefined } = {}) {
   if (typeof item === "string") item = await fromUuid(item);
   if (!naurenEhEscrito(item)) return null;
   let ap = abertos.get(item.uuid);
   if (!ap || ap.closed) { ap = new NaurenLeitor({ item }); abertos.set(item.uuid, ap); }
+  // 0.115: aberto a partir do Quadro de avisos → barra "Arrancar do quadro" ({ aoArrancar, pode, dica })
+  if (quadro !== undefined) ap.quadro = quadro;
   if (editar && naurenEscritoPodeEscrever(item)) ap.editando = true;
   if (pagina !== null) ap.irPara(Number(pagina) || 0, false);
   await ap.render(true);
   ap.bringToFront?.();
   return ap;
+}
+
+/* ------------------------------ 0.115: miniatura (Quadro de avisos) ------------------------------ */
+const semSegredos = html => String(html ?? "").replace(/<section[^>]*class="[^"]*secret[^"]*"[^>]*>[\s\S]*?<\/section>/gi, "");
+const textoPuro = html => semSegredos(html).replace(/<\/(p|h[1-6]|li|div|blockquote)>/gi, "\n").replace(/<br\s*\/?>/gi, "\n").replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, "\"").replace(/&#39;/g, "'").replace(/\n{3,}/g, "\n\n").trim();
+/**
+ * O escrito desenhado pequeno, como fica pregado no quadro. Tudo em "em" (o quadro decide o tamanho).
+ * Usa o mesmo papel, letra e tinta do leitor; segredos e mensagens ainda não reveladas não aparecem.
+ */
+export function naurenEscritoMiniHtml(item) {
+  const e = naurenEscritoDe(item); if (!e) return "";
+  const vars = esc(`--nl-tinta:${tintaDe(e)};--nl-fonte:${NAUREN_ESCRITO_FONTES[e.fonte].css};--nl-capa:${e.capa.cor};--nl-detalhe:${e.capa.detalhe};--nl-lacre:${e.lacre.cor}`);
+  const cls = `nl-era-${e.era} nl-fmt-${e.formato} nl-papel-${e.papel}`;
+  if (e.formato === "cartaz") return `<div class="nqm nqm-cartaz ${cls}">${naurenCartazHtml(e.cartaz, e.era, { nomeItem: item.name })}</div>`;
+  if (e.formato === "mensagens") {
+    const vis = naurenMsgVisiveis(e.mensagens).filter(x => x.visivel && x.tipo === "msg").slice(-4);
+    return `<div class="nqm nqm-cel nm-tema-${e.mensagens.tema} ${cls}" style="${vars}"><b class="nqm-cel-cab">${esc(e.mensagens.contato || item.name)}</b>${vis.map(x => `<span class="nqm-bal nqm-${x.lado}">${esc(x.texto || (x.src ? "📷" : ""))}</span>`).join("") || `<span class="nqm-bal nqm-outro">…</span>`}</div>`;
+  }
+  const titulo = ehLivro(e) ? (e.capa.titulo || item.name) : (e.paginas[0]?.nome || item.name);
+  if (ehLivro(e)) return `<div class="nqm nqm-livro ${cls}" style="${vars}"><b>${esc(titulo)}</b>${e.capa.subtitulo ? `<small>${esc(e.capa.subtitulo)}</small>` : ""}</div>`;
+  if (naurenEscritoTrancado(e)) return `<div class="nqm nqm-folha nqm-trancado ${cls}" style="${vars}"><b>${esc(e.terminal.caminho || titulo)}</b><span class="nqm-negado"><i class="fas fa-lock"></i> ACESSO NEGADO</span></div>`;
+  const p = e.paginas.find(x => x.tipo === "texto" && !semTexto(x)) ?? e.paginas[0];
+  const txt = p?.tipo === "imagem" ? "" : textoPuro(p?.texto).slice(0, 320);
+  const img = e.paginas.find(x => x.tipo === "imagem" && x.src);
+  const lacre = e.formato === "carta" && e.lacre.ativo && !e.lacre.rompido;
+  return `<div class="nqm nqm-folha ${cls}" style="${vars}">
+    <b class="nqm-tit">${esc(titulo)}</b>
+    ${img && !txt ? `<img class="nqm-img" src="${esc(img.src)}" alt="">` : `<span class="nqm-txt">${esc(e.formato === "terminal" && e.terminal.comando ? `> ${e.terminal.comando}\n${txt}` : txt)}</span>`}
+    ${lacre ? `<i class="nqm-lacre">${esc(e.lacre.simbolo || "✦")}</i>` : ""}
+  </div>`;
 }
 
 /* ------------------------------ estilo (ficha e leitor) ------------------------------ */
@@ -471,7 +503,9 @@ export class NaurenLeitor extends foundry.applications.api.ApplicationV2 {
       // 0.112: Mensagens — o Mestre revela a conversa aos poucos
       msgProxima: async function () { await this.revelar(r => r + 1); },
       msgTodas: async function () { await this.revelar(() => Infinity); },
-      msgEsconder: async function () { await this.revelar(() => 0); }
+      msgEsconder: async function () { await this.revelar(() => 0); },
+      // 0.115: Quadro de avisos
+      arrancar: async function (ev, bt) { if (!this.quadro?.aoArrancar) return; bt.disabled = true; const r = await this.quadro.aoArrancar(); if (r?.ok) { this.quadro = null; this.close(); } else bt.disabled = false; }
     }
   };
   constructor({ item, ...op } = {}) {
@@ -685,7 +719,9 @@ export class NaurenLeitor extends foundry.applications.api.ApplicationV2 {
     const e = this.e;
     const corpo = this.editando ? await this.editarHtml(e) : await this.lerHtml(e);
     const fx = efeitosAnimados() ? ["varredura", "falha"].filter(k => e.efeitos[k]).map(k => `nl-fx-${k}`).join(" ") : (e.efeitos.varredura ? "nl-fx-varredura nl-fx-parado" : "");
-    return `<div class="nl-raiz nl-era-${e.era} nl-fmt-${e.formato} nl-papel-${e.papel} ${fx} ${this.editando ? "nl-modo-edicao" : "nl-modo-leitura"}" style="${esc(this.estiloVars(e))}">${corpo}</div>`;
+    const q = this.quadro && !this.editando ? `<div class="nl-quadro-barra"><i class="fas fa-thumbtack"></i><span>${esc(this.quadro.dica || "Pregado no quadro. Quem arrancar leva a nota; ela sai do quadro para todos.")}</span>
+      ${this.quadro.pode ? `<button type="button" class="nl-btn nt-ch nl-btn-p" data-action="arrancar"><i class="fas fa-hand"></i> Arrancar do quadro</button>` : ""}</div>` : "";
+    return `<div class="nl-raiz nl-era-${e.era} nl-fmt-${e.formato} nl-papel-${e.papel} ${fx} ${this.editando ? "nl-modo-edicao" : "nl-modo-leitura"}" style="${esc(this.estiloVars(e))}">${corpo}${q}</div>`;
   }
   _replaceHTML(html, content) {
     const corpo = content.querySelector(".nl-folha-corpo"); const top = corpo?.scrollTop ?? 0; const mesmaPag = this._ultimaPag === this.pag;

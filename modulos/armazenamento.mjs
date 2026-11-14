@@ -13,6 +13,7 @@
 import { naurenCatalogoDoItem, naurenSeloDoItem } from "./itens-catalogo.mjs";
 import { naurenAndarParaRegiao, naurenCenaTemAndares } from "./andares.mjs";
 import { naurenAbrirEscrito, naurenEhEscrito, naurenEscritoDe } from "./escritos.mjs";
+import { NAUREN_QUADRO_ESTILOS, naurenQuadroHtml, naurenQuadroLigar, naurenQuadroNovaNota, naurenQuadroPosDoEvento } from "./quadro-avisos.mjs";
 import { NAUREN_CATEGORIAS_EQUIPAMENTO, NAUREN_QUANTIDADE_MAXIMA, naurenEhMoeda, naurenFormatarNumero, naurenFormatarNumeroCurto, naurenLerNumero, naurenPostarCard } from "../nauren.mjs";
 
 const QUERY = "nauren.armazem";
@@ -40,7 +41,15 @@ class NaurenArmazenamentoData extends foundry.abstract.TypeDataModel {
     const { StringField, NumberField, BooleanField, ArrayField, ObjectField, SchemaField } = F();
     const num = (initial, extra = {}) => new NumberField({ initial, nullable: false, ...extra });
     return {
-      modo: new StringField({ initial: "bau", choices: ["bau", "loja"] }),
+      modo: new StringField({ initial: "bau", choices: ["bau", "loja", "quadro"] }), // 0.115: quadro de avisos
+      // 0.115: Quadro de avisos (só Escritos). podePegar = jogadores podem arrancar; podeGuardar = jogadores podem pregar.
+      quadro: new SchemaField({
+        estilo: new StringField({ initial: "medieval", choices: ["medieval", "moderno", "cyberpunk", "imagem"] }),
+        imagem: new StringField({ initial: "" }),
+        placa: new StringField({ initial: "AVISOS" }),
+        letreiro: new StringField({ initial: "" }),
+        categorias: new ArrayField(new StringField())
+      }),
       frase: new StringField({ initial: "" }),
       // Espaços (um item ou uma pilha ocupa 1).
       espacos: num(12, { min: 1, max: 500, integer: true }),
@@ -212,6 +221,8 @@ async function executar(p, user) {
     case "guardar": return s.modo === "bau" ? guardar(armazem, ator, p.itemId, qtd, user) : { ok: false, msg: "Isto é uma loja." };
     case "comprar": return s.modo === "loja" ? comprar(armazem, ator, p.itemId, qtd, user) : { ok: false, msg: "Isto é um baú." };
     case "vender": return s.modo === "loja" ? vender(armazem, ator, p.itemId, qtd, user) : { ok: false, msg: "Isto é um baú." };
+    case "arrancar": return s.modo === "quadro" ? arrancar(armazem, ator, p.itemId, user) : { ok: false, msg: "Isto não é um quadro de avisos." };
+    case "pregar": return s.modo === "quadro" ? pregar(armazem, ator, p.itemId, p.pos, user) : { ok: false, msg: "Isto não é um quadro de avisos." };
   }
   return { ok: false, msg: "Pedido desconhecido." };
 }
@@ -221,6 +232,7 @@ function dadosCopia(item, qtd) {
   const d = item.toObject();
   delete d._id; delete d.folder; delete d.sort; delete d.ownership;
   if (d.flags?.nauren?.armazem) delete d.flags.nauren.armazem;
+  if (d.flags?.nauren?.quadro) delete d.flags.nauren.quadro; // 0.115: a posição no quadro não vai junto
   if (d.system && "equipado" in d.system) d.system.equipado = false;
   if (ehPilha(item)) d.system.quantidade = qtd;
   return d;
@@ -359,6 +371,38 @@ async function guardar(armazem, ator, itemId, qtd, user) {
   return { ok: true, msg: `Você guardou ${rot(qtd, nome)}.` };
 }
 
+/* 0.115: Quadro de avisos — arrancar (leva o original) e pregar (um escrito seu) */
+async function arrancar(armazem, ator, itemId, user) {
+  const s = armazem.system;
+  if (!user?.isGM && !s.podePegar) return { ok: false, msg: "Neste quadro não dá para arrancar as notas." };
+  const item = armazem.items.get(itemId);
+  if (!item || (cfgItem(item).oculto && !user?.isGM)) return { ok: false, codigo: "acabou", msg: "Alguém já arrancou esta nota." };
+  const qtd = qtdDe(item) || 1;
+  const dados = dadosCopia(item, qtd), nome = item.name, img = item.img;
+  const desfazTirar = await retirar(item, qtd);
+  try { await entregar(ator, dados, qtd); }
+  catch (err) { await desfazTirar(); return { ok: false, msg: "Não deu para entregar a nota. Nada mudou." }; }
+  await registrar(armazem, { op: "arrancar", user: user?.id, ator: ator.uuid, atorNome: ator.name, item: nome, img, qtd, dados });
+  await card(ator, armazem, `${ator.name} arrancou ${nome}`, [["Do quadro", armazem.name]], img);
+  return { ok: true, msg: `Você arrancou ${nome} do quadro.` };
+}
+async function pregar(armazem, ator, itemId, pos, user) {
+  const s = armazem.system;
+  if (!user?.isGM && !s.podeGuardar) return { ok: false, msg: "Só o Mestre prega neste quadro." };
+  const item = ator.items.get(itemId);
+  if (!item) return { ok: false, msg: "Você não tem mais este escrito." };
+  if (!naurenEhEscrito(item)) return { ok: false, msg: "O quadro só aceita Escritos (notas, cartas, cartazes…)." };
+  const qtd = qtdDe(item) || 1;
+  const dados = dadosCopia(item, qtd), nome = item.name, img = item.img;
+  foundry.utils.setProperty(dados, "flags.nauren.quadro", naurenQuadroNovaNota(armazem, pos && Number.isFinite(pos.x) ? { x: Number(pos.x), y: Number(pos.y) } : null, item));
+  const desfazTirar = await retirar(item, qtd);
+  try { await armazem.createEmbeddedDocuments("Item", [dados], { naurenSemJuntar: true }); }
+  catch (err) { await desfazTirar(); return { ok: false, msg: "Não deu para pregar. Nada mudou." }; }
+  await registrar(armazem, { op: "pregar", user: user?.id, ator: ator.uuid, atorNome: ator.name, item: nome, img, qtd, dados });
+  await card(ator, armazem, `${ator.name} pregou ${nome}`, [["No quadro", armazem.name]], img);
+  return { ok: true, msg: `Você pregou ${nome} no quadro.` };
+}
+
 async function comprar(armazem, ator, itemId, qtd, user) {
   const s = armazem.system;
   if (!user?.isGM && !s.podePegar) return { ok: false, msg: "Esta loja não está vendendo." };
@@ -433,7 +477,8 @@ async function desfazer(armazem, indice) {
   const reg = foundry.utils.deepClone(armazem.system.registro ?? []);
   const e = reg[indice];
   if (!e || e.desfeito) return { ok: false, msg: "Nada para desfazer aqui." };
-  if (!e.dados && ["pegar", "guardar", "vender"].includes(e.op)) return { ok: false, msg: "Esta troca é antiga demais para desfazer (só as 30 mais novas guardam o item)." };
+  const opD = e.op === "arrancar" ? "pegar" : e.op === "pregar" ? "guardar" : e.op; // 0.115: quadro desfaz como baú
+  if (!e.dados && ["pegar", "guardar", "vender"].includes(opD)) return { ok: false, msg: "Esta troca é antiga demais para desfazer (só as 30 mais novas guardam o item)." };
   const ator = e.ator ? await fromUuid(e.ator) : null;
   const tirarDoAtor = async (nome, qtd) => {
     if (!ator) return false;
@@ -445,8 +490,8 @@ async function desfazer(armazem, indice) {
     return resto <= 0;
   };
   let ok = true;
-  if (e.op === "pegar") { ok = await tirarDoAtor(e.item, e.qtd); if (ok) await entregar(armazem, e.dados, e.qtd, { maxPilha: armazem.system.maxPilha }); }
-  else if (e.op === "guardar") {
+  if (opD === "pegar") { ok = await tirarDoAtor(e.item, e.qtd); if (ok) await entregar(armazem, e.dados, e.qtd, { maxPilha: armazem.system.maxPilha }); }
+  else if (opD === "guardar") {
     let resto = e.qtd;
     for (const it of armazem.items.filter(i => i.name === e.item)) { if (resto <= 0) break; const v = Math.min(resto, qtdDe(it)); await retirar(it, v); resto -= v; }
     ok = resto <= 0; if (ok && ator) await entregar(ator, e.dados, e.qtd);
@@ -545,12 +590,14 @@ class NaurenArmazemJanela extends foundry.applications.api.ApplicationV2 {
   }
 
   async _prepareContext() { return {}; }
-  async _renderHTML() { return this.armazem?.system?.modo === "loja" ? this.#htmlLoja() : this.#htmlBau(); }
+  async _renderHTML() { const m = this.armazem?.system?.modo; return m === "loja" ? this.#htmlLoja() : m === "quadro" ? this.#htmlQuadro() : this.#htmlBau(); }
   _replaceHTML(html, content) { trocarHtml(content, html); }
   _onFirstRender() { janelasAbertas.add(this); }
   _onClose() { janelasAbertas.delete(this); }
   _onRender() {
     const el = this.element;
+    el.classList.toggle("nauren-armazem-quadro", this.armazem?.system?.modo === "quadro");
+    if (this.armazem?.system?.modo === "quadro") return this.#ligarQuadro(el);
     el.querySelectorAll(".na-busca-in").forEach(inp => inp.addEventListener("input", foundry.utils.debounce(() => { this.estado.busca = inp.value; this.render(); }, 180)));
     el.querySelectorAll(".na-qtd-in").forEach(inp => inp.addEventListener("change", () => { this.estado.qtd[inp.dataset.id] = Math.max(1, naurenLerNumero(inp.value) || 1); this.render(); }));
     el.querySelectorAll("select.na-ator").forEach(sel => sel.addEventListener("change", () => { this.ator = game.actors.get(sel.value) ?? this.ator; this._naurenAtorUuid = this.ator?.uuid ?? null; this.render(); }));
@@ -569,6 +616,55 @@ class NaurenArmazemJanela extends foundry.applications.api.ApplicationV2 {
     }
   }
 
+  /* ---------- 0.115: Quadro de avisos ---------- */
+  #htmlQuadro() {
+    const a = this.armazem, s = a.system, gm = game.user.isGM;
+    this.estado.quadro ??= { cat: "todas" };
+    const podePregar = !gm && s.podeGuardar && !!this.ator;
+    const meus = podePregar ? (this.ator?.items ?? []).filter(i => naurenEhEscrito(i)) : [];
+    const pregar = podePregar ? `<span class="nq-pregar">${meus.length ? `<select class="nq-pregar-sel" data-foco="pregar">${meus.map(i => `<option value="${i.id}">${ESC(i.name)}</option>`).join("")}</select>
+        <button type="button" class="na-btn na-principal" data-nq-pregar ${this.estado.processando || !game.users.activeGM ? "disabled" : ""}><i class="fas fa-thumbtack"></i> Pregar</button>` : `<span class="na-dica">Você não tem escritos para pregar.</span>`}</span>` : "";
+    const corpo = s.trancado && !gm ? this.#trancado() : naurenQuadroHtml(a, this.estado.quadro, { mestre: false, podePregar });
+    return `<div class="na-janela na-modo-quadro">
+      ${this.#cabecalho()}
+      ${this.#avisos()}
+      <div class="na-corpo">${corpo}</div>
+      <footer class="na-rodape"><span class="na-rodape-txt">${s.podePegar ? "Clique numa nota para ler. Quem arrancar leva a nota; ela sai do quadro para todos." : "Clique numa nota para ler."}</span>${pregar}<button type="button" class="na-btn" data-action="fechar">Fechar</button></footer>
+    </div>`;
+  }
+  #ligarQuadro(el) {
+    const a = this.armazem, s = a.system, gm = game.user.isGM;
+    try { if ((this.position?.width ?? 0) < 900) this.setPosition({ width: Math.min(1180, window.innerWidth - 40), height: Math.min(820, window.innerHeight - 40) }); } catch (err) { /* ok */ }
+    el.querySelectorAll("select.na-ator").forEach(sel => sel.addEventListener("change", () => { this.ator = game.actors.get(sel.value) ?? this.ator; this._naurenAtorUuid = this.ator?.uuid ?? null; this.render(); }));
+    naurenQuadroLigar(el, {
+      armazem: a, estado: this.estado.quadro, mestre: false, render: () => this.render(),
+      abrir: item => naurenAbrirEscrito(item, { quadro: {
+        pode: (gm || s.podePegar) && !!this.ator && !!game.users.activeGM,
+        dica: !this.ator ? "Pregado no quadro. Escolha um personagem seu para poder arrancar." : (gm || s.podePegar) ? `Pregado no quadro. Quem arrancar leva a nota (vai para ${this.ator.name}); ela sai do quadro para todos.` : "Pregado no quadro. Neste quadro só dá para ler.",
+        aoArrancar: () => this.#trocar("arrancar", item.id, 1)
+      } })
+    });
+    el.querySelector("[data-nq-pregar]")?.addEventListener("click", ev => { ev.preventDefault(); const id = el.querySelector(".nq-pregar-sel")?.value; if (id) this.#trocar("pregar", id, 1); });
+    // arrastar um escrito (da ficha do personagem) para pregar onde soltar
+    const area = el.querySelector("[data-nq-quadro]");
+    if (area && (gm || s.podeGuardar)) {
+      area.addEventListener("dragover", ev => { ev.preventDefault(); area.classList.add("nq-alvo"); });
+      area.addEventListener("dragleave", () => area.classList.remove("nq-alvo"));
+      area.addEventListener("drop", async ev => {
+        ev.preventDefault(); area.classList.remove("nq-alvo");
+        let d = null; try { d = JSON.parse(ev.dataTransfer.getData("text/plain")); } catch (err) { d = null; }
+        if (d?.type !== "Item" || !d.uuid) return;
+        const item = await fromUuid(d.uuid).catch(() => null);
+        if (!item || item.parent === a) return;
+        if (!naurenEhEscrito(item)) return ui.notifications.warn("O quadro só aceita Escritos (notas, cartas, cartazes…).");
+        const pos = naurenQuadroPosDoEvento(ev, el);
+        if (gm) { const dados = item.toObject(); delete dados._id; foundry.utils.setProperty(dados, "flags.nauren.quadro", naurenQuadroNovaNota(a, pos, item)); await a.createEmbeddedDocuments("Item", [dados]); return; }
+        if (item.parent?.documentName !== "Actor" || !ehDono(item.parent, game.user)) return ui.notifications.warn("Arraste um escrito de um personagem seu.");
+        this.ator = item.parent; this._pregarPos = pos;
+        this.#trocar("pregar", item.id, 1);
+      });
+    }
+  }
   #qtdPara(id, item) { return Math.max(1, Math.min(this.estado.qtd[id] ?? 1, qtdDe(item) || 1)); }
 
   #cabecalho(extraDir = "") {
@@ -724,10 +820,12 @@ class NaurenArmazemJanela extends foundry.applications.api.ApplicationV2 {
     if (!this.ator && !game.user.isGM) { ui.notifications.warn("Selecione um token seu (ou defina seu personagem) para trocar itens."); return; }
     if (!this.ator) { ui.notifications.warn("Mestre: selecione o token de um personagem para trocar por ele."); return; }
     this.estado.processando = itemId; this.estado.aviso = null; this.render();
-    const r = await naurenArmazemPedir({ op, armazemUuid: this.armazem.uuid, atorUuid: this.ator.uuid, itemId, qtd, regiaoUuid: this.regiaoUuid, userId: game.user.id });
+    const pos = op === "pregar" ? this._pregarPos ?? null : null; this._pregarPos = null;
+    const r = await naurenArmazemPedir({ op, armazemUuid: this.armazem.uuid, atorUuid: this.ator.uuid, itemId, qtd, pos, regiaoUuid: this.regiaoUuid, userId: game.user.id });
     this.estado.processando = null;
     this.estado.aviso = r;
     if (r?.ok) { this.estado.qtd[itemId] = 1; if (op === "guardar") this.estado.mochilaSel = null; }
+    if (op === "arrancar" || op === "pregar") { this.estado.aviso = null; if (r?.ok) ui.notifications.info(r.msg); else if (r?.msg) ui.notifications.warn(r.msg); if (this.rendered) this.render(); return r; }
     if (!this.armazem.items.get(this.estado.sel)) this.estado.sel = null;
     if (r?.ok) ui.notifications.info(r.msg); else if (r?.msg) ui.notifications.warn(r.msg);
     if (this.rendered) this.render();
@@ -808,6 +906,13 @@ class NaurenArmazemSheet extends foundry.applications.sheets.ActorSheetV2 {
   _onRender(context, options) {
     super._onRender?.(context, options);
     const el = this.element;
+    // 0.115: quadro de avisos na aba Quadro
+    el.classList.toggle("nauren-armazem-quadro", this.actor.system.modo === "quadro");
+    if (this.actor.system.modo === "quadro" && this.estado.aba === "itens") {
+      try { if ((this.position?.width ?? 0) < 1000) this.setPosition({ width: Math.min(1180, window.innerWidth - 40), height: Math.min(840, window.innerHeight - 40) }); } catch (err) { /* ok */ }
+      naurenQuadroLigar(el, { armazem: this.actor, estado: this.estado.quadro, mestre: true, render: () => this.render(),
+        abrir: item => naurenAbrirEscrito(item, { quadro: { pode: false, dica: "Você está vendo como Mestre. Os jogadores veem aqui o botão Arrancar do quadro." } }) });
+    }
     el.querySelectorAll(".na-busca-in").forEach(inp => inp.addEventListener("input", foundry.utils.debounce(() => { this.estado.busca = inp.value; this.render(); }, 180)));
     el.querySelectorAll(".na-busca-quem").forEach(inp => inp.addEventListener("input", foundry.utils.debounce(() => { this.estado.buscaQuem = inp.value; this.render(); }, 180)));
     // Preço e estoque de cada item.
@@ -821,6 +926,8 @@ class NaurenArmazemSheet extends foundry.applications.sheets.ActorSheetV2 {
       else v = naurenLerNumero(inp.value);
       await it.update({ [`flags.nauren.armazem.${k}`]: v });
     }));
+    // 0.115: categorias a mais do quadro (texto separado por vírgula)
+    el.querySelectorAll(".na-cats-in").forEach(inp => inp.addEventListener("change", ev => { ev.stopPropagation(); this.actor.update({ "system.quadro.categorias": inp.value.split(",").map(x => x.trim()).filter(Boolean).slice(0, 12) }); }));
     // 0.109.5: arrastar a chave (qualquer item) para "Abre com o item" grava o nome dela.
     el.querySelectorAll(".na-chave-in").forEach(inp => {
       inp.addEventListener("dragover", ev => { ev.preventDefault(); ev.stopPropagation(); inp.classList.add("na-alvo"); });
@@ -851,6 +958,10 @@ class NaurenArmazemSheet extends foundry.applications.sheets.ActorSheetV2 {
     if (!item || item.parent === this.actor) return;
     const dados = item.toObject(); delete dados._id;
     if (dados.system && "equipado" in dados.system) dados.system.equipado = false;
+    if (this.actor.system.modo === "quadro") {
+      if (!naurenEhEscrito(item)) return ui.notifications.warn("O quadro só aceita Escritos (notas, cartas, cartazes…).");
+      foundry.utils.setProperty(dados, "flags.nauren.quadro", naurenQuadroNovaNota(this.actor, naurenQuadroPosDoEvento(ev, this.element), item));
+    }
     await this.actor.createEmbeddedDocuments("Item", [dados]);
   }
   /** O formulário só tem campos de system/name: grava direto. */
@@ -858,8 +969,8 @@ class NaurenArmazemSheet extends foundry.applications.sheets.ActorSheetV2 {
 
   #html() {
     const a = this.actor, s = a.system;
-    const abas = [["itens", "Itens"], ["configurar", "Configurar"], ["registro", "Registro"]];
-    const seg = `<div class="na-seg"><button type="button" class="${s.modo === "bau" ? "on" : ""}" data-action="modo" data-modo="bau">Baú</button><button type="button" class="${s.modo === "loja" ? "on" : ""}" data-action="modo" data-modo="loja">Loja</button></div>`;
+    const abas = [["itens", s.modo === "quadro" ? "Quadro" : "Itens"], ["configurar", "Configurar"], ["registro", "Registro"]];
+    const seg = `<div class="na-seg">${[["bau", "Baú"], ["loja", "Loja"], ["quadro", "Quadro"]].map(([k, r]) => `<button type="button" class="${s.modo === k ? "on" : ""}" data-action="modo" data-modo="${k}">${r}</button>`).join("")}</div>`;
     const cab = `<header class="na-cab na-cab-mestre">
       <a class="na-retrato" data-action="editarImagem" title="Trocar imagem"><img src="${ESC(a.img)}" alt=""></a>
       <div class="na-cab-txt"><input type="text" name="name" class="na-nome" value="${ESC(a.name)}"><span class="na-sub">Armazenamento · só o Mestre edita</span></div>
@@ -868,9 +979,10 @@ class NaurenArmazemSheet extends foundry.applications.sheets.ActorSheetV2 {
     <nav class="na-abas">${abas.map(([k, r]) => `<a class="${this.estado.aba === k ? "on" : ""}" data-action="aba" data-aba="${k}">${r}${k === "registro" && (s.registro ?? []).length ? ` <small>${(s.registro ?? []).length}</small>` : ""}</a>`).join("")}
       <span class="na-abas-dir"><a class="na-link" data-action="verComoJogador" title="Abrir a janela que os jogadores veem"><i class="fas fa-eye"></i> Ver como jogador</a><a class="na-link" data-action="mostrar" title="Abrir esta janela na tela dos jogadores que podem abrir"><i class="fas fa-share"></i> Mostrar aos jogadores</a></span>
     </nav>`;
-    const corpo = this.estado.aba === "configurar" ? this.#configurar() : this.estado.aba === "registro" ? this.#registro() : this.#itens();
-    return `<div class="na-janela na-mestre">${cab}<div class="na-corpo" data-rola="corpo">${corpo}</div>
-      <footer class="na-rodape"><span class="na-rodape-txt">As mudanças valem na hora para quem estiver com ${s.modo === "loja" ? "a loja aberta" : "o baú aberto"}.</span></footer></div>`;
+    this.estado.quadro ??= { cat: "todas" };
+    const corpo = this.estado.aba === "configurar" ? this.#configurar() : this.estado.aba === "registro" ? this.#registro() : s.modo === "quadro" ? naurenQuadroHtml(a, this.estado.quadro, { mestre: true }) : this.#itens();
+    return `<div class="na-janela na-mestre ${s.modo === "quadro" ? "na-mestre-quadro" : ""}">${cab}<div class="na-corpo" data-rola="corpo">${corpo}</div>
+      <footer class="na-rodape"><span class="na-rodape-txt">${s.modo === "quadro" && this.estado.aba === "itens" ? "Arraste as notas para mover · passe o mouse para girar, trocar o alfinete e a categoria · clique para ler." : `As mudanças valem na hora para quem estiver com ${s.modo === "loja" ? "a loja aberta" : s.modo === "quadro" ? "o quadro aberto" : "o baú aberto"}.`}</span></footer></div>`;
   }
 
   #itens() {
@@ -943,6 +1055,18 @@ class NaurenArmazemSheet extends foundry.applications.sheets.ActorSheetV2 {
         ${op("Exigir distância", "desligado: abre de qualquer lugar", sw("system.exigirDistancia", s.exigirDistancia))}
         ${op("Distância máxima", "de um token do jogador até o ponto", num("system.distancia", s.distancia, `min="0" step="0.5" ${s.exigirDistancia ? "" : "disabled"}`, "m"), s.exigirDistancia ? "" : "na-op-off")}
       </section>
+      ${s.modo === "quadro" ? `<section class="na-caixa na-larga"><h3>Quadro de avisos</h3>
+        <div class="na-mapa"><div class="na-mapa-op">
+          ${op("Estilo", "", sel("system.quadro.estilo", Object.entries(NAUREN_QUADRO_ESTILOS).map(([k, v]) => [k, v.rot]), s.quadro?.estilo ?? "medieval"))}
+          ${s.quadro?.estilo === "imagem" ? op("Imagem de fundo", "caminho do arquivo", `<input type="text" name="system.quadro.imagem" value="${ESC(s.quadro?.imagem ?? "")}" placeholder="worlds/.../quadro.webp">`, "na-op-largo") : ""}
+          ${s.quadro?.estilo === "medieval" ? op("Placa no topo", "vazio = sem placa", `<input type="text" name="system.quadro.placa" value="${ESC(s.quadro?.placa ?? "")}" placeholder="AVISOS">`, "na-op-largo") : ""}
+          ${s.quadro?.estilo === "cyberpunk" ? op("Letreiro rolando", "separe os avisos com |", `<input type="text" name="system.quadro.letreiro" value="${ESC(s.quadro?.letreiro ?? "")}" placeholder="TOQUE DE RECOLHER 02H–05H | ZONA 4 SEM SINAL">`, "na-op-largo") : ""}
+        </div><div class="na-mapa-op">
+          ${op("Jogadores podem arrancar", "levam a nota; ela sai do quadro", sw("system.podePegar", s.podePegar))}
+          ${op("Jogadores podem pregar", "um escrito deles", sw("system.podeGuardar", s.podeGuardar))}
+          ${op("Categorias a mais", "além de Procurados, Missões, Avisos, Recompensas e Eventos · separe com vírgula", `<input type="text" class="na-cats-in" value="${ESC((s.quadro?.categorias ?? []).join(", "))}" placeholder="Rumores, Vagas de emprego">`, "na-op-largo")}
+        </div></div>
+      </section>` : ""}
       <section class="na-caixa ${loja ? "" : "na-apagada"}"><h3>Loja ${loja ? "" : "<small>· só no modo Loja</small>"}</h3>
         ${op("Moeda", "", sel("system.moeda", moedas.map(x => [x, x]), s.moeda))}
         ${op("Ajuste dos preços", "promoção ou inflação", num("system.ajustePreco", s.ajustePreco, `min="0" max="10000"`, "%"))}
@@ -977,7 +1101,7 @@ class NaurenArmazemSheet extends foundry.applications.sheets.ActorSheetV2 {
 
   #registro() {
     const reg = (this.actor.system.registro ?? []).map((e, i) => ({ ...e, i })).reverse();
-    const verbo = { pegar: "pegou", guardar: "guardou", comprar: "comprou", vender: "vendeu", destrancar: "abriu com" };
+    const verbo = { pegar: "pegou", guardar: "guardou", comprar: "comprou", vender: "vendeu", destrancar: "abriu com", arrancar: "arrancou", pregar: "pregou" };
     const hora = t => { try { return new Date(t).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }); } catch (err) { return ""; } };
     const linhas = reg.map(e => `<div class="na-reg ${e.desfeito ? "desfeito" : ""}">
       <span class="na-reg-hora" title="${ESC(new Date(e.t).toLocaleString("pt-BR"))}">${hora(e.t)}</span>
@@ -988,7 +1112,12 @@ class NaurenArmazemSheet extends foundry.applications.sheets.ActorSheetV2 {
     return `<div class="na-registro">${linhas || `<p class="na-vazio">Nenhuma troca ainda.</p>`}</div><p class="na-dica">Guarda as últimas ${REGISTRO_MAX} trocas. Desfazer devolve itens e moedas quando ainda dá.</p>`;
   }
 
-  static #onModo(ev, el) { this.actor.update({ "system.modo": el.dataset.modo }); }
+  static #onModo(ev, el) {
+    const m = el.dataset.modo;
+    // 0.115: virar quadro — sem limite de espaços, jogadores arrancam mas não pregam (dá para mudar em Configurar)
+    if (m === "quadro" && this.actor.system.modo !== "quadro") return this.actor.update({ "system.modo": m, "system.semLimite": true, "system.podePegar": true, "system.podeGuardar": false });
+    this.actor.update({ "system.modo": m });
+  }
   static #onAba(ev, el) { this.estado.aba = el.dataset.aba; this.render(); }
   static #onFiltro(ev, el) { this.estado.filtro = el.dataset.filtro; this.render(); }
   static async #onOculto(ev, el) { const it = this.actor.items.get(el.dataset.id); if (it) await it.update({ "flags.nauren.armazem.oculto": !cfgItem(it).oculto }); }
