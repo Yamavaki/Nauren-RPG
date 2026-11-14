@@ -7,6 +7,8 @@
  * Os jogadores pegam o escrito no baú (ou leem lá mesmo), e no inventário clicam em "Ler".
  * Um escrito também pode ser mágico: as Ações do item aparecem no rodapé do leitor.
  */
+import { naurenMensagensNormalizar, naurenMensagensHtml, naurenMensagensEditorHtml, naurenMsgNova, naurenMsgTotal, naurenMsgVisiveis, naurenMensagensDoJson, naurenMensagensParaJson } from "./escritos-formatos.mjs";
+
 const SIS = "nauren";
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[c]));
 const novoId = () => foundry.utils.randomID(10);
@@ -17,8 +19,12 @@ export const NAUREN_ESCRITO_FORMATOS = {
   pergaminho: { rot: "Pergaminho", ic: "fa-scroll", dica: "Rolo com varetas. Bom para magias e decretos.",
     eras: { moderno: { rot: "Ficha", ic: "fa-id-card", dica: "Um cartão ou ficha: documento, crachá, cartão de visita." }, cyberpunk: { rot: "Painel", ic: "fa-tablet-screen-button", dica: "Um painel de dados: ficha de alvo, crachá digital, aviso de sistema." } } },
   livro: { rot: "Livro", ic: "fa-book", dica: "Capa e páginas lado a lado, como um livro aberto." },
-  diario: { rot: "Diário", ic: "fa-book-bookmark", dica: "Livro com fita marcadora. Por padrão, o dono escreve nele." }
+  diario: { rot: "Diário", ic: "fa-book-bookmark", dica: "Livro com fita marcadora. Por padrão, o dono escreve nele." },
+  // 0.112: formatos que só existem em algumas eras (soEras)
+  mensagens: { rot: "Mensagens", ic: "fa-mobile-screen", dica: "Uma conversa de celular. Só o Mestre escreve e pode revelar uma mensagem por vez.", soEras: ["moderno", "cyberpunk"] }
 };
+/** O formato existe nesta era? */
+export function naurenEscritoFormatoNaEra(formato, era) { const f = NAUREN_ESCRITO_FORMATOS[formato]; return !!f && (!f.soEras || f.soEras.includes(era)); }
 /** 0.111: a época do escrito. Muda os papéis e letras sugeridos (tudo continua editável). */
 export const NAUREN_ESCRITO_ERAS = {
   classico: { rot: "Clássico", dica: "pergaminho, cera, livro", ic: "fa-feather-pointed" },
@@ -72,14 +78,16 @@ const SUGESTAO_DA_ERA = {
     carta: { papel: "a4", fonte: "sans" },
     pergaminho: { papel: "cartao", fonte: "maquina" },
     livro: { papel: "a4", fonte: "sans" },
-    diario: { papel: "pautado", fonte: "manuscrita", quemEscreve: "dono" }
+    diario: { papel: "pautado", fonte: "manuscrita", quemEscreve: "dono" },
+    mensagens: { papel: "tela", fonte: "sans", quemEscreve: "mestre" }
   },
   cyberpunk: {
     nota: { papel: "holograma", fonte: "mono" },
     carta: { papel: "neon", fonte: "mono" },
     pergaminho: { papel: "ambar", fonte: "mono" },
     livro: { papel: "terminal", fonte: "mono" },
-    diario: { papel: "holograma", fonte: "mono", quemEscreve: "dono" }
+    diario: { papel: "holograma", fonte: "mono", quemEscreve: "dono" },
+    mensagens: { papel: "neon", fonte: "mono", quemEscreve: "mestre" }
   }
 };
 const sugestao = (era, formato) => (SUGESTAO_DA_ERA[era] ?? SUGESTAO_DA_ERA.classico)[formato] ?? {};
@@ -111,6 +119,7 @@ export const NAUREN_ESCRITO_PADRAO = () => ({
   capa: { cor: "#5b2a1d", detalhe: "#d6b25e", titulo: "", subtitulo: "" },
   lacre: { ativo: false, cor: "#8c1c1c", simbolo: "", rompido: false },
   quemEscreve: "mestre", lerNoBau: true, gastaAoUsar: false,
+  mensagens: naurenMensagensNormalizar({}),
   paginas: [pagina()]
 });
 const hex = (v, d) => /^#[0-9a-f]{6}$/i.test(String(v ?? "")) ? String(v) : d;
@@ -131,6 +140,8 @@ export function naurenEscritoNormalizar(e) {
     gastaAoUsar: !!e.gastaAoUsar,
     paginas: (Array.isArray(e.paginas) ? e.paginas : []).map(pagina)
   };
+  out.mensagens = naurenMensagensNormalizar(e.mensagens, out.era);
+  if (!naurenEscritoFormatoNaEra(out.formato, out.era)) out.formato = "nota";
   if (!out.paginas.length) out.paginas.push(pagina());
   return out;
 }
@@ -142,7 +153,9 @@ export function naurenEscritoDe(item) { return naurenEhEscrito(item) ? naurenEsc
 export function naurenEscritoPodeEscrever(item) {
   if (!item) return false;
   if (game.user?.isGM) return true;
-  return naurenEscritoDe(item)?.quemEscreve === "dono" && !!item.isOwner;
+  const e = naurenEscritoDe(item);
+  if (e?.formato === "mensagens") return false; // 0.112: a conversa do celular só o Mestre escreve
+  return e?.quemEscreve === "dono" && !!item.isOwner;
 }
 /** Tinta usada (a escolhida, ou a padrão do papel). */
 function tintaDe(e) { return e.tinta || TINTA_DO_PAPEL[e.papel] || "#2b1d10"; }
@@ -181,7 +194,7 @@ export async function naurenAbrirEscrito(item, { editar = false, pagina = null }
 /** Controles de formato/papel/fonte/capa/lacre. Os campos usam data-esc="caminho" (ver naurenEscritoLigarEstilo). */
 export function naurenEscritoEstiloHtml(e, { compacto = false } = {}) {
   const eras = Object.entries(NAUREN_ESCRITO_ERAS).map(([k, r]) => `<button type="button" class="nl-era ${e.era === k ? "on" : ""}" data-esc-era="${k}" title="${esc(`${r.rot}: ${r.dica}`)}"><i class="fas ${r.ic}"></i><b>${r.rot}</b><small>${esc(r.dica)}</small></button>`).join("");
-  const fmt = Object.keys(NAUREN_ESCRITO_FORMATOS).map(k => { const f = naurenEscritoFormatoRot(k, e.era); return `<button type="button" class="nl-fmt ${e.formato === k ? "on" : ""}" data-esc-formato="${k}" title="${esc(f.dica)}"><i class="fas ${f.ic}"></i><span>${f.rot}</span></button>`; }).join("");
+  const fmt = Object.keys(NAUREN_ESCRITO_FORMATOS).filter(k => naurenEscritoFormatoNaEra(k, e.era)).map(k => { const f = naurenEscritoFormatoRot(k, e.era); return `<button type="button" class="nl-fmt ${e.formato === k ? "on" : ""}" data-esc-formato="${k}" title="${esc(f.dica)}"><i class="fas ${f.ic}"></i><span>${f.rot}</span></button>`; }).join("");
   // papéis: as amostras da era do escrito (e o papel atual, se for de outra era — escritos antigos ou importados)
   const papeis = Object.keys(NAUREN_ESCRITO_PAPEIS).filter(k => NAUREN_ESCRITO_PAPEL_ERA[k] === e.era || k === e.papel);
   const amostras = papeis.map(k => `<button type="button" class="nl-papel-bt ${e.papel === k ? "on" : ""}" data-esc-papel="${k}" title="${esc(NAUREN_ESCRITO_PAPEIS[k])}"><span class="nl-papel-amostra" style="--a-fundo:${AMOSTRA_DO_PAPEL[k]};--a-tinta:${TINTA_DO_PAPEL[k]}"><i>Aa</i></span><span>${esc(NAUREN_ESCRITO_PAPEIS[k])}</span></button>`).join("");
@@ -213,7 +226,7 @@ export function naurenEscritoEstiloHtml(e, { compacto = false } = {}) {
       <div class="nl-linha-cores">${chk("lacre.ativo", e.lacre.ativo, "Lacrada", "Quem abre vê o envelope e rompe o lacre para ler")}${e.lacre.ativo ? `${cor("lacre.cor", e.lacre.cor, "Cera")}<input type="text" class="nl-in nl-in-curto" data-esc="lacre.simbolo" maxlength="2" value="${esc(e.lacre.simbolo)}" placeholder="✦" title="Letra ou símbolo no selo (até 2)">` : ""}</div>
       ${e.lacre.ativo && e.lacre.rompido ? `<button type="button" class="nl-btn nt-ch nl-btn-p" data-esc-acao="relacrar"><i class="fas fa-stamp"></i> Lacrar de novo</button>` : ""}</div>` : ""}
     <div class="nl-sub"><span class="nl-rot">Quem pode</span>
-      <div class="nl-seg">${[["mestre", "Só o Mestre escreve"], ["dono", "O dono também escreve"]].map(([k, r]) => `<button type="button" class="${e.quemEscreve === k ? "on" : ""}" data-esc-quem="${k}">${r}</button>`).join("")}</div>
+      ${e.formato === "mensagens" ? `<p class="nl-dica"><i class="fas fa-lock"></i> A conversa do celular só o Mestre escreve.</p>` : `<div class="nl-seg">${[["mestre", "Só o Mestre escreve"], ["dono", "O dono também escreve"]].map(([k, r]) => `<button type="button" class="${e.quemEscreve === k ? "on" : ""}" data-esc-quem="${k}">${r}</button>`).join("")}</div>`}
       ${chk("lerNoBau", e.lerNoBau, "Dá para ler no baú, sem pegar")}
       ${chk("gastaAoUsar", e.gastaAoUsar, "Some ao usar uma Ação (pergaminho de magia)", "Cada uso de uma Ação deste item gasta 1 da quantidade")}
     </div>
@@ -231,12 +244,15 @@ export function naurenEscritoLigarEstilo(raiz, item, depois = null) {
   raiz.querySelectorAll("[data-esc-era]").forEach(b => b.addEventListener("click", ev => { ev.preventDefault(); mudar(e => {
     const era = b.dataset.escEra; if (e.era === era) return;
     e.era = era;
+    if (!naurenEscritoFormatoNaEra(e.formato, era)) e.formato = "nota";
     // papel e letra de outra era são trocados pela sugestão desta era (a letra fica se ainda servir)
     const s = sugestao(era, e.formato);
     if (NAUREN_ESCRITO_PAPEL_ERA[e.papel] !== era) { e.papel = s.papel; e.tinta = ""; }
     if (NAUREN_ESCRITO_FONTES[e.fonte]?.era !== era) e.fonte = s.fonte;
     e.efeitos.varredura = PAPEL_COM_VARREDURA.has(e.papel);
     if (era === "classico") e.efeitos.falha = false;
+    if (era === "cyberpunk" && e.mensagens.tema === "claro") e.mensagens.tema = "neon";
+    else if (era !== "cyberpunk" && e.mensagens.tema === "neon") e.mensagens.tema = "claro";
     // capa: se ainda está nas cores sugeridas de alguma era, passa para as desta
     if (Object.values(CAPA_DA_ERA).some(c => c.cor === e.capa.cor && c.detalhe === e.capa.detalhe)) Object.assign(e.capa, CAPA_DA_ERA[era]);
   }); }));
@@ -264,14 +280,14 @@ export function naurenEscritoAbaHtml(item) {
   return `<div class="nl-aba">
     <div class="nl-aba-topo">
       <div class="nl-mini nl-era-${e.era} nl-fmt-${e.formato} nl-papel-${e.papel}" style="${esc(`--nl-tinta:${tintaDe(e)};--nl-capa:${e.capa.cor};--nl-detalhe:${e.capa.detalhe};--nl-lacre:${e.lacre.cor};--nl-fonte:${NAUREN_ESCRITO_FONTES[e.fonte].css}`)}">
-        ${ehLivro(e) ? `<div class="nl-mini-capa"><b>${esc(titulo)}</b></div>` : `<div class="nl-mini-folha"><b>${esc(e.paginas[0]?.nome || item.name)}</b><span></span><span></span><span></span>${e.formato === "carta" && e.lacre.ativo ? `<i class="nl-mini-lacre"></i>` : ""}</div>`}
+        ${e.formato === "mensagens" ? `<div class="nl-mini-cel nm-tema-${e.mensagens.tema}"><b>${esc(e.mensagens.contato || item.name)}</b><i></i><i class="eu"></i><i></i></div>` : ehLivro(e) ? `<div class="nl-mini-capa"><b>${esc(titulo)}</b></div>` : `<div class="nl-mini-folha"><b>${esc(e.paginas[0]?.nome || item.name)}</b><span></span><span></span><span></span>${e.formato === "carta" && e.lacre.ativo ? `<i class="nl-mini-lacre"></i>` : ""}</div>`}
       </div>
       <div class="nl-aba-info">
-        <div class="nl-aba-tit"><i class="fas ${f.ic}"></i> ${f.rot} · ${e.paginas.length} ${e.paginas.length === 1 ? "página" : "páginas"}${cheias < e.paginas.length ? ` <small>(${e.paginas.length - cheias} em branco)</small>` : ""}</div>
+        <div class="nl-aba-tit"><i class="fas ${f.ic}"></i> ${f.rot} · ${e.formato === "mensagens" ? (n => `${n} ${n === 1 ? "mensagem" : "mensagens"}${e.mensagens.aosPoucos ? ` <small>(${Math.min(e.mensagens.reveladas, n)} reveladas)</small>` : ""}`)(naurenMsgTotal(e.mensagens)) : `${e.paginas.length} ${e.paginas.length === 1 ? "página" : "páginas"}${cheias < e.paginas.length ? ` <small>(${e.paginas.length - cheias} em branco)</small>` : ""}`}</div>
         <p class="nl-dica">O texto fica guardado neste item. Os jogadores leem pelo botão <b>Ler</b> no inventário${e.lerNoBau ? " ou direto no baú" : ""}.</p>
         <div class="nl-aba-bts">
           <button type="button" class="nl-btn nt-ch nl-btn-p" data-escrito="ler"><i class="fas fa-book-open-reader"></i> Ler</button>
-          ${pode ? `<button type="button" class="nl-btn nt-ch" data-escrito="escrever"><i class="fas fa-feather-pointed"></i> Escrever as páginas</button>` : ""}
+          ${pode ? `<button type="button" class="nl-btn nt-ch" data-escrito="escrever"><i class="fas fa-feather-pointed"></i> ${e.formato === "mensagens" ? "Escrever a conversa" : "Escrever as páginas"}</button>` : ""}
           ${game.user?.isGM ? `<button type="button" class="nl-btn nt-ch" data-escrito="mostrar" title="Abre o escrito na tela de todos os jogadores"><i class="fas fa-eye"></i> Mostrar aos jogadores</button>` : ""}
         </div>
         <div class="nl-aba-bts nl-aba-json">
@@ -379,15 +395,19 @@ export class NaurenLeitor extends foundry.applications.api.ApplicationV2 {
       apagarPagina: async function (ev, el) { await this.apagarPagina(Number(el.dataset.i)); },
       moverPagina: async function (ev, el) { await this.moverPagina(Number(el.dataset.i), Number(el.dataset.d)); },
       escolherImagem: function () { this.escolherImagem(); },
-      salvar: async function () { await this.salvarTexto(true); }
+      salvar: async function () { await this.salvarTexto(true); },
+      // 0.112: Mensagens — o Mestre revela a conversa aos poucos
+      msgProxima: async function () { await this.revelar(r => r + 1); },
+      msgTodas: async function () { await this.revelar(() => Infinity); },
+      msgEsconder: async function () { await this.revelar(() => 0); }
     }
   };
   constructor({ item, ...op } = {}) {
     const e0 = naurenEscritoDe(item), f0 = naurenEscritoFormatoRot(e0.formato, e0.era);
-    const largura = ehLivro(e0) ? 980 : e0.formato === "pergaminho" ? 600 : 580;
+    const largura = ehLivro(e0) ? 980 : e0.formato === "mensagens" ? 430 : e0.formato === "pergaminho" ? 600 : 580;
     // 0.109.9: lembra o tamanho que cada pessoa deixou a janela (por formato: nota, carta, livro...).
     const salvo = tamJanelaLocal(e0.formato);
-    const w = salvo ? Math.min(salvo.width, window.innerWidth - 20) : largura, h = salvo ? Math.min(salvo.height, window.innerHeight - 20) : (ehLivro(e0) ? 720 : 760);
+    const w = salvo ? Math.min(salvo.width, window.innerWidth - 20) : largura, h = salvo ? Math.min(salvo.height, window.innerHeight - 20) : (ehLivro(e0) ? 720 : e0.formato === "mensagens" ? 780 : 760);
     super({ ...op, id: `nauren-leitor-${item.id}-${(item.parent?.id ?? "w")}`, window: { title: item.name, icon: `fas ${f0.ic}`, resizable: true }, position: { width: w, height: h } });
     this._naurenFormatoJanela = e0.formato;
     this.item = item;
@@ -445,6 +465,7 @@ export class NaurenLeitor extends foundry.applications.api.ApplicationV2 {
     </article>`;
   }
   async lerHtml(e) {
+    if (e.formato === "mensagens") return this.mensagensLerHtml(e);
     const n = e.paginas.length, livro = ehLivro(e), titulo = e.capa.titulo || this.item.name;
     let palco = "";
     const anim = this.animar ? `nl-vira-${this.animar}` : ""; this.animar = "";
@@ -497,6 +518,7 @@ export class NaurenLeitor extends foundry.applications.api.ApplicationV2 {
       </footer>`;
   }
   async editarHtml(e) {
+    if (e.formato === "mensagens") return this.mensagensEditarHtml(e);
     const n = e.paginas.length; this.edPag = Math.min(this.edPag, n - 1);
     const p = e.paginas[this.edPag];
     const lista = e.paginas.map((pg, i) => `<div class="nl-ed-item ${i === this.edPag ? "on" : ""}">
@@ -555,6 +577,7 @@ export class NaurenLeitor extends foundry.applications.api.ApplicationV2 {
       el.addEventListener("keydown", this._teclas);
     }
     el.querySelector("[data-sumario]")?.addEventListener("change", ev => { this.irPara(Number(ev.target.value)); });
+    if (e.formato === "mensagens") { if (this.editando) this.ligarMensagensEditor(); else this.ligarMensagens(); return; }
     if (!this.editando) { this.digitarPagina(e); return; }
     // escrever pede mais espaço (lista de páginas + editor)
     try { if ((this.position?.width ?? 0) < 900) this.setPosition({ width: 940, height: Math.max(this.position?.height ?? 0, 760) }); } catch (err) { /* ok */ }
@@ -571,6 +594,105 @@ export class NaurenLeitor extends foundry.applications.api.ApplicationV2 {
     alvo?.addEventListener("dragover", ev => { ev.preventDefault(); alvo.classList.add("nl-soltar"); });
     alvo?.addEventListener("dragleave", () => alvo.classList.remove("nl-soltar"));
     alvo?.addEventListener("drop", ev => { ev.preventDefault(); alvo.classList.remove("nl-soltar"); this.soltarJornal(ev); });
+  }
+  /* ---------- 0.112: Mensagens (celular) ---------- */
+  mensagensLerHtml(e) {
+    const m = e.mensagens, mestre = !!game.user?.isGM, total = naurenMsgTotal(m);
+    const visIds = naurenMsgVisiveis(m).filter(x => x.visivel && x.tipo === "msg").map(x => x.id);
+    const novas = new Set(this._msgIds ? visIds.filter(id => !this._msgIds.has(id)) : []);
+    this._msgNovas = novas.size; this._msgIds = new Set(visIds);
+    const vistas = visIds.length;
+    const controles = !mestre ? "" : m.aosPoucos ? `<span class="nm-cont" title="Quantas os jogadores já veem"><i class="fas fa-eye"></i> ${vistas} de ${total}</span>
+        <button type="button" class="nl-btn nt-ch nl-btn-p" data-action="msgProxima" ${vistas >= total ? "disabled" : ""}><i class="fas fa-paper-plane"></i> Mandar a próxima</button>
+        <button type="button" class="nl-btn nt-ch" data-action="msgTodas" ${vistas >= total ? "disabled" : ""}>Mostrar todas</button>
+        <button type="button" class="nl-ic" data-action="msgEsconder" ${vistas === 0 ? "disabled" : ""} title="Esconder todas de novo"><i class="fas fa-eye-slash"></i></button>`
+      : `<span class="nl-dica">Os jogadores veem a conversa inteira. Para revelar aos poucos, ligue a opção em <b>Escrever</b>.</span>`;
+    const acoes = (this.item.system.acoes ?? []);
+    const podeUsar = acoes.length && this.item.actor?.isOwner && this.item.actor?.sheet?._executarAcao;
+    const rodape = controles || podeUsar ? `<footer class="nl-nav nm-nav">${controles}${podeUsar ? `<span class="nl-acoes">${acoes.map((a, i) => `<button type="button" class="nl-btn nt-ch nl-btn-magia" data-action="usarAcao" data-i="${i}"><i class="fas fa-wand-sparkles"></i> ${esc(a.nome || `Ação ${i + 1}`)}</button>`).join("")}</span>` : ""}</footer>` : "";
+    return `<header class="nl-barra">
+        <div class="nl-barra-esq"><span class="nl-barra-tit"><i class="fas fa-mobile-screen"></i> ${esc(this.item.name)}</span></div>
+        <div class="nl-barra-dir">
+          <button type="button" class="nl-ic" data-action="letraMenos" title="Letra menor"><i class="fas fa-minus"></i><span>A</span></button>
+          <button type="button" class="nl-ic nl-ic-grande" data-action="letraMais" title="Letra maior"><i class="fas fa-plus"></i><span>A</span></button>
+          ${mestre ? `<button type="button" class="nl-ic" data-action="mostrar" title="Mostrar aos jogadores"><i class="fas fa-eye"></i></button>` : ""}
+          ${naurenEscritoPodeEscrever(this.item) ? `<button type="button" class="nl-btn nt-ch" data-action="editar"><i class="fas fa-pen"></i> Escrever</button>` : ""}
+        </div>
+      </header>
+      <main class="nl-palco nm-palco" tabindex="0">${naurenMensagensHtml(m, { mestre, novas, titulo: this.item.name })}</main>
+      ${rodape}`;
+  }
+  mensagensEditarHtml(e) {
+    return `<header class="nl-barra">
+        <div class="nl-barra-esq"><span class="nl-barra-tit"><i class="fas fa-mobile-screen"></i> Escrevendo a conversa</span></div>
+        <div class="nl-barra-dir">
+          ${game.user?.isGM ? `<button type="button" class="nl-ic" data-action="mostrar" title="Mostrar aos jogadores"><i class="fas fa-eye"></i></button>` : ""}
+          <button type="button" class="nl-btn nt-ch nl-btn-p" data-action="ler"><i class="fas fa-mobile-screen"></i> Ver como fica</button>
+        </div>
+      </header>
+      <div class="nm-edicao">
+        <section class="nm-ed-col">${naurenMensagensEditorHtml(e.mensagens)}
+          <details class="nl-ed-sec nl-ed-estilo" ${this.estiloAberto ? "open" : ""}><summary><span class="nl-rot">Aparência</span></summary>${naurenEscritoEstiloHtml(e, { compacto: true })}</details>
+        </section>
+        <aside class="nm-ed-previa"><span class="nl-rot">Prévia (o Mestre vê as escondidas apagadas)</span><div class="nm-previa" data-msg-previa>${naurenMensagensHtml(e.mensagens, { mestre: true, titulo: this.item.name })}</div></aside>
+      </div>`;
+  }
+  /** Muda as mensagens em fila (um clique logo depois de digitar não apaga o que acabou de ser escrito). */
+  mudarMsgs(fn, { redesenhar = true } = {}) {
+    this._filaMsgs = (this._filaMsgs ?? Promise.resolve()).then(async () => {
+      const e = this.e; fn(e.mensagens, e); await gravar(this.item, e);
+      if (redesenhar) this.render();
+      else { const pv = this.element?.querySelector("[data-msg-previa]"); if (pv) { pv.innerHTML = naurenMensagensHtml(this.e.mensagens, { mestre: true, titulo: this.item.name }); pv.querySelector(".nm-lista")?.scrollTo?.(0, 1e6); } }
+    }).catch(err => console.error("Nauren RPG | Mensagens", err));
+    return this._filaMsgs;
+  }
+  async revelar(fn) {
+    if (!game.user?.isGM) return;
+    const e = this.e, total = naurenMsgTotal(e.mensagens);
+    e.mensagens.reveladas = Math.max(0, Math.min(total, fn(Math.min(e.mensagens.reveladas, total))));
+    await gravar(this.item, e);
+  }
+  ligarMensagens() {
+    const el = this.element; const lista = el?.querySelector(".nm-lista"); if (!lista) return;
+    lista.scrollTop = lista.scrollHeight;
+    if (this._msgNovas > 0) {
+      const som = this.e.mensagens.som;
+      if (som) { try { foundry.audio.AudioHelper.play({ src: som, volume: 0.6, autoplay: true, loop: false }, false); } catch (err) { /* sem som */ } }
+    }
+  }
+  ligarMensagensEditor() {
+    const el = this.element; if (!el) return;
+    try { if ((this.position?.width ?? 0) < 900) this.setPosition({ width: 960, height: Math.max(this.position?.height ?? 0, 780) }); } catch (err) { /* ok */ }
+    el.querySelector("[data-msg-previa] .nm-lista")?.scrollTo?.(0, 1e6);
+    el.querySelectorAll("[data-msg-geral]").forEach(inp => inp.addEventListener("change", () => {
+      const k = inp.dataset.msgGeral, v = inp.type === "checkbox" ? inp.checked : inp.value;
+      this.mudarMsgs(m => { m[k] = v; if (k === "aosPoucos" && v) m.reveladas = 0; }, { redesenhar: inp.type === "checkbox" });
+    }));
+    el.querySelectorAll("[data-msg-tema]").forEach(b => b.addEventListener("click", ev => { ev.preventDefault(); this.mudarMsgs(m => { m.tema = b.dataset.msgTema; }); }));
+    el.querySelectorAll("[data-msg-campo]").forEach(inp => {
+      inp.addEventListener("change", () => this.mudarMsgs(m => { const x = m.lista[Number(inp.dataset.msgI)]; if (x) x[inp.dataset.msgCampo] = inp.value; }, { redesenhar: false }));
+      inp.addEventListener("input", () => {
+        const pv = el.querySelector("[data-msg-previa]"); if (!pv) return;
+        const m = this.e.mensagens; const x = m.lista[Number(inp.dataset.msgI)]; if (!x) return;
+        x[inp.dataset.msgCampo] = inp.value; pv.innerHTML = naurenMensagensHtml(m, { mestre: true, titulo: this.item.name });
+      });
+    });
+    const FP = () => foundry.applications?.apps?.FilePicker?.implementation ?? globalThis.FilePicker;
+    const escolher = (atual, cb) => new (FP())({ type: "image", current: atual ?? "", callback: cb }).render(true);
+    el.querySelectorAll("[data-msg-acao]").forEach(b => b.addEventListener("click", ev => {
+      ev.preventDefault();
+      const a = b.dataset.msgAcao, i = Number(b.dataset.msgI);
+      if (a === "nova") return this.mudarMsgs(m => { const lado = b.dataset.msgLado; const ult = [...m.lista].reverse().find(x => x.tipo === "msg"); m.lista.push(naurenMsgNova(lado === "data" ? { tipo: "data" } : { lado, hora: ult?.hora ?? "" })); });
+      if (a === "subir" || a === "descer") return this.mudarMsgs(m => { const j = i + (a === "subir" ? -1 : 1); if (j < 0 || j >= m.lista.length) return; [m.lista[i], m.lista[j]] = [m.lista[j], m.lista[i]]; });
+      if (a === "apagar") return this.mudarMsgs(m => { m.lista.splice(i, 1); });
+      if (a === "lado") return this.mudarMsgs(m => { if (m.lista[i]) m.lista[i].lado = b.dataset.msgLado; });
+      if (a === "semImagem") return this.mudarMsgs(m => { if (m.lista[i]) m.lista[i].src = ""; });
+      if (a === "semFoto") return this.mudarMsgs(m => { m.foto = ""; });
+      if (a === "imagem") return escolher(this.e.mensagens.lista[i]?.src, src => this.mudarMsgs(m => { if (m.lista[i]) m.lista[i].src = src; }));
+      if (a === "foto") return escolher(this.e.mensagens.foto, src => this.mudarMsgs(m => { m.foto = src; }));
+    }));
+    const det = el.querySelector(".nl-ed-estilo"); det?.addEventListener("toggle", () => { this.estiloAberto = det.open; });
+    naurenEscritoLigarEstilo(det, this.item, () => this.render());
   }
   /** 0.111: efeito "Digitação" — o texto da página aparece letra por letra, só na primeira vez que ela é aberta. */
   digitarPagina(e) {
@@ -771,7 +893,8 @@ export function naurenEscritoDoJson(o) {
   if (!o || typeof o !== "object") throw new Error("escrito vazio");
   const FMT_POR_NOME = { "diário": "diario", ficha: "pergaminho", painel: "pergaminho" };
   const formato = NAUREN_ESCRITO_FORMATOS[sem(o.formato)] ? sem(o.formato) : FMT_POR_NOME[String(o.formato ?? "").toLowerCase().trim()] ?? FMT_POR_NOME[sem(o.formato)] ?? "nota";
-  const era = NAUREN_ESCRITO_ERAS[sem(o.era)] ? sem(o.era) : sem(o.era) === "classica" ? "classico" : "classico";
+  let era = NAUREN_ESCRITO_ERAS[sem(o.era)] ? sem(o.era) : "classico";
+  if (!naurenEscritoFormatoNaEra(formato, era)) era = NAUREN_ESCRITO_FORMATOS[formato].soEras[0]; // ex.: Mensagens sem era → Moderno
   const sug = sugestao(era, formato);
   const papelNome = String(o.papel ?? "").toLowerCase().trim();
   const papel = NAUREN_ESCRITO_PAPEIS[sem(o.papel)] ? sem(o.papel) : PAPEL_POR_NOME[papelNome] ?? PAPEL_POR_NOME[sem(o.papel)] ?? sug.papel;
@@ -790,7 +913,8 @@ export function naurenEscritoDoJson(o) {
     capa: { titulo: o.capa?.titulo ?? "", subtitulo: o.capa?.subtitulo ?? "", cor: o.capa?.cor ?? CAPA_DA_ERA[era].cor, detalhe: o.capa?.detalhe ?? CAPA_DA_ERA[era].detalhe },
     lacre: { ativo: o.lacre?.ativo ?? (formato === "carta" && era === "classico" && o.lacre !== false), cor: o.lacre?.cor, simbolo: o.lacre?.simbolo ?? "", rompido: false },
     quemEscreve: sem(o.quemEscreve) === "dono" ? "dono" : (o.quemEscreve ? "mestre" : (sug.quemEscreve ?? "mestre")),
-    lerNoBau: o.lerNoBau !== false, gastaAoUsar: !!(o.someAoUsar ?? o.gastaAoUsar), paginas: pags
+    lerNoBau: o.lerNoBau !== false, gastaAoUsar: !!(o.someAoUsar ?? o.gastaAoUsar), paginas: pags,
+    mensagens: naurenMensagensDoJson(o.mensagens && !Array.isArray(o.mensagens) ? o.mensagens : { ...(o.conversa ?? {}), lista: Array.isArray(o.mensagens) ? o.mensagens : o.conversa?.lista }, era)
   });
   const nome = String(o.nome ?? o.name ?? "").trim() || (escrito.paginas[0]?.nome || NAUREN_ESCRITO_FORMATOS[formato].rot);
   const sys = { categoria: "escrito", quantidade: Math.max(1, Number(o.quantidade) || 1), quantidadeMax: 1, efeito: "", equipado: false, escrito,
@@ -833,6 +957,7 @@ export function naurenEscritoParaJson(item) {
   const o = { nome: item.name, icone: item.img, era: e.era !== "classico" ? e.era : undefined, formato: e.formato, papel: e.papel, letra, tinta: e.tinta || undefined, tamanhoLetra: e.tamanho !== 100 ? e.tamanho : undefined,
     quemEscreve: e.quemEscreve, lerNoBau: e.lerNoBau, someAoUsar: e.gastaAoUsar || undefined, descricao: item.system.descricao || undefined };
   if (e.efeitos.varredura || e.efeitos.falha || e.efeitos.digitacao) o.efeitos = { ...e.efeitos };
+  if (e.formato === "mensagens") o.mensagens = naurenMensagensParaJson(e.mensagens);
   if (ehLivro(e)) o.capa = { ...e.capa };
   if (e.formato === "carta") o.lacre = { ativo: e.lacre.ativo, cor: e.lacre.cor, simbolo: e.lacre.simbolo };
   o.paginas = e.paginas.map(p => p.tipo === "imagem" ? { titulo: p.nome || undefined, imagem: p.src, legenda: p.legenda || undefined } : { titulo: p.nome || undefined, texto: p.texto });
@@ -857,6 +982,7 @@ export async function naurenEscritosJanelaImportar({ item = null, ator = null } 
     <details class="nl-imp-ajuda"><summary>Como escrever o JSON</summary><div class="nl-dica">
       <p><b>era</b> (opcional): classico, moderno ou cyberpunk · <b>formato</b>: nota, carta, pergaminho (ficha/painel fora do Clássico), livro ou diario.</p>
       <p><b>papel</b> — clássico: envelhecido, pergaminho, creme, branco, noturno, arcano · moderno: a4, postit, pautado, cartao, tela · cyberpunk: terminal, neon, holograma, ambar.</p>
+      <p><b>Mensagens</b> (celular, era moderno ou cyberpunk): <code>"formato": "mensagens", "mensagens": { "contato": "Kael", "status": "online", "tema": "claro|escuro|neon", "aosPoucos": true, "lista": [ { "data": "ontem" }, { "lado": "outro", "hora": "22:41", "texto": "…" }, { "lado": "eu", "texto": "…" }, { "lado": "outro", "quem": "Mira", "imagem": "caminho" } ] }</code>.</p>
       <p><b>letra</b> — caligrafia, livro, classica, antiga, letreiro, simples · moderno: sans, manuscrita, maquina · cyberpunk: mono, tecno. <b>efeitos</b> (opcional): <code>{ "varredura": true, "falha": false, "digitacao": true }</code>.</p>
       <p>Cada página: <code>{ "titulo": "…", "texto": "…" }</code> ou <code>{ "titulo": "…", "imagem": "caminho", "legenda": "…" }</code>.</p>
       <p>No <b>texto</b>: linha em branco = parágrafo novo · <code>**negrito**</code> · <code>*itálico*</code> · <code># Título</code> · <code>- item</code> · <code>&gt; citação</code> · <code>-&gt; alinhado à direita</code> · <code>---</code> linha · <code>[segredo] … [/segredo]</code> só o Mestre vê. HTML também vale.</p>
