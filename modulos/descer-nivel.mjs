@@ -1,6 +1,7 @@
 /* Nauren RPG — Descer de nível. Separado do nauren.mjs na 0.104 (tools/dividir.mjs). */
 import { NaurenConcessaoHelper, NaurenProgressaoHelper, NaurenSubclasseHelper } from "./relogio-condicoes.mjs";
 import { naurenProcessarGatilhos, naurenSincronizarNivelDosMascotes, naurenSincronizarRecursosCustom } from "./icone-condicao-token.mjs";
+import { naurenNivelPeloXp } from "./ficha-ator.mjs";
 
 
 // 0.94.31: Relógio de combate (turnos e rodadas) foi para modulos/relogio-combate.mjs.
@@ -96,7 +97,13 @@ async function naurenAjustarRecursosAoMudarNivel(actor, maximosAntes) {
 export function __naurenIniciar_descer_nivel() {
 
 
-Hooks.on("preUpdateActor", (actor, changes) => {
+Hooks.on("preUpdateActor", (actor, changes, options) => {
+  // 0.116.4: tirar XP abaixo do mínimo do nível atual desce o nível junto (e o resto deste gancho desfaz o que a Classe deu)
+  const novoXp = foundry.utils.getProperty(changes, "system.xp");
+  if (novoXp !== undefined && !foundry.utils.hasProperty(changes, "system.nivel") && actor.type === "personagem" && !options?.naurenMigracaoXp) {
+    const nivelDoXp = naurenNivelPeloXp(novoXp);
+    if (nivelDoXp < (Number(actor.system?.nivel) || 1)) foundry.utils.setProperty(changes, "system.nivel", nivelDoXp);
+  }
   const novoNivel = foundry.utils.getProperty(changes, "system.nivel");
   if (novoNivel === undefined) return;
   naurenNivelAntigoPorAtor.set(actor.uuid, actor.system.nivel);
