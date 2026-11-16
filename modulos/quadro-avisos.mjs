@@ -97,7 +97,10 @@ function pinoHtml(n) {
 /**
  * O quadro. estado: { cat } (filtro). mestre: mostra as ocultas, a barrinha de cada nota e a dica de arrastar.
  */
+/** 0.116.6: zoom e rolagem de cada quadro nesta tela, para não voltar ao começo quando alguém arranca ou prega uma nota. */
+const vistaQuadro = new Map();
 export function naurenQuadroHtml(armazem, estado = {}, { mestre = false, podePregar = false } = {}) {
+  estado.zoom ??= vistaQuadro.get(armazem.id)?.zoom ?? 1;
   const q = armazem.system?.quadro ?? {};
   const estilo = NAUREN_QUADRO_ESTILOS[q.estilo] ? q.estilo : "medieval";
   const notas = naurenQuadroNotas(armazem, { mestre });
@@ -165,10 +168,17 @@ export function naurenQuadroLigar(el, op) {
     const fx = foco ? foco.x - r.left : r.width / 2, fy = foco ? foco.y - r.top : r.height / 2;
     const px = (area.scrollLeft + fx) / antes, py = (area.scrollTop + fy) / antes;
     estado.zoom = novo; area.style.setProperty("--nq-zoom", novo);
+    vistaQuadro.set(armazem.id, { ...(vistaQuadro.get(armazem.id) ?? {}), zoom: novo });
     const rot = el.querySelector("[data-nq-zoom-rot]"); if (rot) rot.textContent = `${Math.round(novo * 100)}%`;
     area.scrollLeft = px * novo - fx; area.scrollTop = py * novo - fy;
   };
   el.querySelectorAll("[data-nq-zoom]").forEach(b => b.addEventListener("click", ev => { ev.preventDefault(); const d = Number(b.dataset.nqZoom); zoom(d === 0 ? 1 : (estado.zoom ?? 1) + d * 0.25); }));
+  if (area) {
+    const v = vistaQuadro.get(armazem.id);
+    // a troca de HTML já devolve a rolagem; numa janela nova, volta para onde a pessoa estava
+    if (v && !area.scrollLeft && !area.scrollTop && (v.l || v.t)) { area.scrollLeft = v.l ?? 0; area.scrollTop = v.t ?? 0; }
+    area.addEventListener("scroll", () => vistaQuadro.set(armazem.id, { ...(vistaQuadro.get(armazem.id) ?? {}), l: area.scrollLeft, t: area.scrollTop }), { passive: true });
+  }
   area?.addEventListener("wheel", ev => { if (!(ev.ctrlKey || ev.metaKey)) return; ev.preventDefault(); zoom((estado.zoom ?? 1) * (ev.deltaY < 0 ? 1.15 : 1 / 1.15), { x: ev.clientX, y: ev.clientY }); }, { passive: false });
   area?.addEventListener("pointerdown", ev => {
     if (ev.button !== 0 || ev.target.closest("[data-nq-nota], button, select, a")) return;

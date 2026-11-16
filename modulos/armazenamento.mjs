@@ -525,10 +525,10 @@ async function desfazer(armazem, indice) {
 /* ============================ JANELAS: peças comuns ============================ */
 function trocarHtml(alvo, html) {
   // Mantém a rolagem das listas ao redesenhar.
-  const rol = [...alvo.querySelectorAll("[data-rola]")].map(e => [e.dataset.rola, e.scrollTop]);
+  const rol = [...alvo.querySelectorAll("[data-rola]")].map(e => [e.dataset.rola, e.scrollTop, e.scrollLeft]); // 0.116.6: e a horizontal (quadro com zoom)
   const foco = document.activeElement && alvo.contains(document.activeElement) && document.activeElement.dataset?.foco ? { k: document.activeElement.dataset.foco, ini: document.activeElement.selectionStart, fim: document.activeElement.selectionEnd } : null;
   alvo.innerHTML = html;
-  for (const [k, t] of rol) { const e = alvo.querySelector(`[data-rola="${k}"]`); if (e) e.scrollTop = t; }
+  for (const [k, t, l] of rol) { const e = alvo.querySelector(`[data-rola="${k}"]`); if (e) { e.scrollTop = t; e.scrollLeft = l; } }
   if (foco) { const e = alvo.querySelector(`[data-foco="${foco.k}"]`); if (e) { e.focus(); try { e.setSelectionRange(foco.ini, foco.fim); } catch (err) { /* segue */ } } }
 }
 function icone(item) { return `<img src="${ESC(item.img)}" alt="" loading="lazy">`; }
@@ -639,7 +639,8 @@ class NaurenArmazemJanela extends foundry.applications.api.ApplicationV2 {
   }
   #ligarQuadro(el) {
     const a = this.armazem, s = a.system, gm = game.user.isGM;
-    try { if ((this.position?.width ?? 0) < 900) this.setPosition({ width: Math.min(1180, window.innerWidth - 40), height: Math.min(820, window.innerHeight - 40) }); } catch (err) { /* ok */ }
+    // só na primeira vez: depois a pessoa pode deixar a janela do tamanho que quiser (redesenhar não muda mais)
+    if (!this._quadroDimensionado) { this._quadroDimensionado = true; try { if ((this.position?.width ?? 0) < 900) this.setPosition({ width: Math.min(1180, window.innerWidth - 40), height: Math.min(820, window.innerHeight - 40) }); } catch (err) { /* ok */ } }
     el.querySelectorAll("select.na-ator").forEach(sel => sel.addEventListener("change", () => { this.ator = game.actors.get(sel.value) ?? this.ator; this._naurenAtorUuid = this.ator?.uuid ?? null; this.render(); }));
     naurenQuadroLigar(el, {
       armazem: a, estado: this.estado.quadro, mestre: false, render: () => this.render(),
@@ -914,7 +915,7 @@ class NaurenArmazemSheet extends foundry.applications.sheets.ActorSheetV2 {
     // 0.115: quadro de avisos na aba Quadro
     el.classList.toggle("nauren-armazem-quadro", this.actor.system.modo === "quadro");
     if (this.actor.system.modo === "quadro" && this.estado.aba === "itens") {
-      try { if ((this.position?.width ?? 0) < 1000) this.setPosition({ width: Math.min(1180, window.innerWidth - 40), height: Math.min(840, window.innerHeight - 40) }); } catch (err) { /* ok */ }
+      if (!this._quadroDimensionado) { this._quadroDimensionado = true; try { if ((this.position?.width ?? 0) < 1000) this.setPosition({ width: Math.min(1180, window.innerWidth - 40), height: Math.min(840, window.innerHeight - 40) }); } catch (err) { /* ok */ } }
       naurenQuadroLigar(el, { armazem: this.actor, estado: this.estado.quadro, mestre: true, render: () => this.render(),
         abrir: item => naurenAbrirEscrito(item, { quadro: { pode: false, dica: "Você está vendo como Mestre. Os jogadores veem aqui o botão Arrancar do quadro." } }) });
     }
