@@ -1,5 +1,5 @@
 /* Versão deste arquivo: o sistema confere no "ready" e, se o navegador/Forge tiver guardado um CSS antigo, carrega o novo. */
-:root { --nauren-css-versao: "0.116.4"; }
+:root { --nauren-css-versao: "0.116.5"; }
 /* 
 ===================================================
 1. FUNDO E FONTES GERAIS
@@ -9517,3 +9517,12 @@ li.directory-item.nauren-org-tem-dono > .entry-name > .nauren-org-nome { overflo
 .nauren-armazem-jogador.na-livre .na-bau { flex: 1 1 0; min-height: 220px; grid-template-rows: minmax(0, 1fr); }
 .nauren-armazem-jogador.na-livre .na-grade { max-height: none; min-height: 0; height: 100%; }
 .nauren-armazem-jogador.na-livre .na-bau .na-detalhe { overflow-y: auto; }
+
+/* 0.116.5: card do "Importar em massa" no chat (antes herdava o h3 gigante do tema e quebrava letra por letra) */
+.chat-message .nauren-card-import, .nauren-card-import { padding: 8px 10px; border: 1px solid #3b3154; border-left: 3px solid #e0b257; border-radius: 4px; background: rgba(36, 30, 54, .55); color: #ece6f5; font: 13px/1.45 Signika, sans-serif; overflow-wrap: anywhere; }
+.chat-message .nauren-card-import h3 { display: flex; align-items: center; gap: 6px; margin: 0 0 6px !important; padding: 0 0 5px !important; border: 0 !important; border-bottom: 1px solid rgba(224, 178, 87, .35) !important;
+  font: 600 12.5px/1.2 Signika, sans-serif !important; letter-spacing: .06em !important; text-transform: uppercase; color: #e0b257 !important; text-shadow: none !important; white-space: normal; word-break: normal !important; overflow-wrap: normal !important; }
+.chat-message .nauren-card-import h3 i { font-size: 12px; }
+.chat-message .nauren-card-import p { margin: 4px 0 !important; color: #ece6f5; }
+.chat-message .nauren-card-import ul { margin: 4px 0 4px 16px !important; padding: 0 !important; color: #c9bfdb; font-size: 12px; }
+.chat-message .nauren-card-import b { color: #fff1d0; }

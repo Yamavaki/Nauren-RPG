@@ -186,7 +186,7 @@ export async function naurenImportarMassa(lido, destino = {}, { aoProgresso = nu
   if (res.falhas.length) linhas.push(`<p><b>Não criei:</b></p><ul>${res.falhas.map(f => `<li>${esc(f.nome)} — ${esc(f.erro)}</li>`).join("")}</ul>`);
   if (perdidos.length) linhas.push(`<p><b>Referências que não achei neste mundo</b> (ficam sem efeito até escolher de novo na ficha):</p><ul>${perdidos.slice(0, 30).map(p => `<li>${esc(p)}</li>`).join("")}</ul>`);
   const gms = game.users?.filter?.(u => u.isGM).map(u => u.id) ?? [];
-  await ChatMessage.create({ content: `<div class="nauren-card-import"><h3>Importar em massa</h3>${linhas.join("")}</div>`, whisper: gms, speaker: { alias: "Nauren" } }).catch(() => null);
+  await ChatMessage.create({ content: `<div class="nauren-card-import"><h3><i class="fas fa-file-import"></i> Importar em massa</h3>${linhas.join("")}</div>`, whisper: gms, speaker: { alias: "Nauren" } }).catch(() => null);
   return res;
 }
 
