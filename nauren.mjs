@@ -32,6 +32,7 @@ import { __naurenIniciar_desfazer_acao, naurenDiferencaDesfazer, naurenFotoCenaD
 import { NaurenHudCombate, __naurenIniciar_hud_combate, naurenAlvosSaoVelhos, naurenHud, naurenHudAlvos, naurenLimparMeusAlvos, naurenMarcarAlvosAgora } from "./modulos/hud-combate.mjs";
 import { __naurenIniciar_discord_resumo, naurenConcederPrioridadePeloCard } from "./modulos/discord-resumo.mjs";
 import { __naurenIniciar_descer_nivel } from "./modulos/descer-nivel.mjs";
+import { __naurenIniciar_poesiaGhurua } from "./modulos/poesia-ghurua.mjs";
 import { NAUREN_QUERY_MANTIS, naurenHandleQueryMantis } from "./modulos/cacador-espirito.mjs";
 import { __naurenIniciar_movimento, naurenCardMovimento, naurenDepoisDoMovimento, naurenGastarRecursoSimples, naurenJanelaMovimento, naurenModoMovimento, naurenMoverSemMovimento, naurenMovimentoSaldo, naurenRecursosCustomConhecidos } from "./modulos/movimento.mjs";
 import { __naurenIniciar_monstros_regras, naurenCasasLivresEmVolta, naurenCompensacoesContraOrigem, naurenCondicoesAtivas, naurenCondicoesLigadasA, naurenCriarInvocacoes, naurenMovSemPrioridadeUsado, naurenTravaDaAcao, naurenTravaPrioridade, naurenUuidEhEsteToken } from "./modulos/monstros-regras.mjs";
@@ -1220,6 +1221,7 @@ function campoAcao() {
     condicaoEmMimExtraUuid: new StringField({ initial: "" }),      // uma 2ª Condição em você (1 acúmulo), junto da primeira
     escolherBeneficioMarca: new BooleanField({ initial: false }),  // Marca do Caçador: escolher Foco Mortal / Tiro Letal / Reflexos e gravar na marca
     rolarBrinde: new BooleanField({ initial: false }),             // Brinde ao Destino: rola 1d6 (1 = Estresse; Dança/Inundação)
+    beberCabacaGhurua: new BooleanField({ initial: false }),       // 0.121: Aroma de Licor - bebe uma cabaça sua a até 1 casa (a cabaça some)
     exigirCondicaoAlvo: new BooleanField({ initial: false }),      // com "Verificar Condição no Alvo": sem ela no alvo, não deixa usar
     exigirCondicaoAlvoMinimo: new NumberField({ initial: 1, min: 1, integer: true }),
     // Recupera um recurso por INIMIGO atingido por esta Ação (Gruhua, Senhor das Brumas: 1 Energia por inimigo,
@@ -3202,6 +3204,10 @@ class NaurenCondicaoData extends foundry.abstract.TypeDataModel {
     return {
       luzVisao: campoLuzVisao(), // 0.99: luz e visão do item no token
       custoEstaminaExtraAcoes: new NumberField({ initial: 0, min: 0, integer: true }), // Amedrontado/Pânico/Pavor: +N de Estamina em ações e movimentos
+      // 0.121 (Poesia Ghurua): efeitos de área gerais, usados por Condições de presença.
+      custoEstaminaExtraAtaques: new NumberField({ initial: 0, min: 0, integer: true }), // +N de Estamina para realizar ataques (Chuva Infinita)
+      dadosDanoAMenos: new NumberField({ initial: 0, min: 0, integer: true }),           // seus ataques causam N dado(s) de dano a menos (Chuva Infinita)
+      bloqueiaPrimeiraPrioridadeTurno: new BooleanField({ initial: false }),              // não pode realizar a 1ª Prioridade de cada turno (Véu das Brumas)
       vooCusto: new StringField({ initial: "" }), // "" | estamina | mana - manter o voo custa 1 por turno
       // 0.94.16: aparência do token enquanto a Condição durar (Sequencer Motion) - ver NAUREN_MOTION_CONDICAO_OPCOES.
       motion: new StringField({ initial: "auto" }),
@@ -7500,6 +7506,7 @@ Hooks.once("init", () => {
   game.settings.register("nauren", "migracaoLivro09CacadorV1", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoLivro09ClassesV1", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoLivro09MisticoSetasV1", { scope: "world", config: false, type: Boolean, default: false });
+  game.settings.register("nauren", "migracaoLivro09PoesiaV1", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoMisticoRevisaoV2", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoLadinoRevisaoV1", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoAtaqueAgilidadeV1", { scope: "world", config: false, type: Boolean, default: false });
@@ -8158,6 +8165,7 @@ __naurenIniciar_descer_nivel();
 
 /* → Movimento em combate: modulos/movimento.mjs */
 __naurenIniciar_movimento();
+__naurenIniciar_poesiaGhurua();
 
 
 /* ===== 0.92.46: Espada Lunar Leve pode ser arremessada (fichas e itens que já existiam) ===== */

@@ -1091,6 +1091,7 @@ Hooks.once("ready", async () => {
     await passo("Livro 0.9: Caçador (Espírito do Caçador, Marca +2 … +7)", () => import("./cacador-espirito.mjs").then(m => m.naurenMigrarLivro09CacadorV1()));
     await passo("Livro 0.9: Sacerdote (Estigmas), Mago (Mísseis Arcanos), Ladino (Análise Paciente) e Druida (Druidismo)", () => import("./livro-09.mjs").then(m => m.naurenMigrarLivro09ClassesV1()));
     await passo("Livro 0.9: Místico (setas da árvore da Poesia)", () => import("./livro-09.mjs").then(m => m.naurenMigrarLivro09MisticoSetasV1()));
+    await passo("Livro 0.9: Poesia Ghurua (Brinde, Dança) e Páginas em Chamas", () => import("./livro-09.mjs").then(m => m.naurenMigrarLivro09PoesiaV1()));
     await passo("Eu estou acima: só contra o alvo analisado", () => naurenMigrarAcimaSoContraAlvoV1());
     await passo("Místico: correções da revisão (Caligrafia, Brinde, Restauração, Arte Divina, Estrela)", () => naurenMigrarMisticoRevisaoV1());
     await passo("Ladino: correções da revisão (Invisível no Caos, Marcar o Alvo, usos por nível)", () => naurenMigrarLadinoRevisaoV1());

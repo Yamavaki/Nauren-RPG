@@ -3331,7 +3331,7 @@ async function naurenSemearSubclasseMagoNova(pack, packHabilidades, packCondicoe
     const it = await naurenGarantirHabilidadeDeSubclasse(packHabilidades, "habilidade-mago-paginas-em-chamas", {
       name: "Páginas em Chamas", type: "habilidade", img: "icons/magic/fire/flame-burning-eye.webp",
       system: { rankMax: 1, prioridadeIndicador: "", 
-        descricao: naurenMontarDescricao({ regra: "Sua primeira magia conjurada durante uma cena de combate não tem custo de estamina para ser Condensada. Você pode remover uma das páginas de seu grimório, à sua escolha, para recuperar o uso dessa habilidade assim que usá-la; a página fica indisponível para você até o final da cena de combate.", automatico: "vale para a Conjuração Poderosa: a 1ª de cada combate não cobra o PdE; depois de usar, o índice do Grimório mostra uma chama em cada página: queimando uma, ela some até o fim do combate e a próxima Conjuração Poderosa volta a sair sem PdE.", manual: "" }) }
+        descricao: naurenMontarDescricao({ regra: "Sua primeira magia conjurada durante uma cena de combate não tem custo de estamina para ter Conjuração Poderosa. Você pode remover uma das páginas de seu grimório, à sua escolha, para recuperar o uso dessa habilidade assim que usá-la; a página fica indisponível para você até o final da cena de combate.", automatico: "vale para a Conjuração Poderosa: a 1ª de cada combate não cobra o PdE; depois de usar, o índice do Grimório mostra uma chama em cada página: queimando uma, ela some até o fim do combate e a próxima Conjuração Poderosa volta a sair sem PdE.", manual: "" }) }
     });
     nos.push({ id: "paginas-em-chamas", x: 37.6, y: 1.07, largura: 7.1, altura: 5.0, nome: "Páginas em Chamas", tipo: "Habilidade Passiva", rankMax: 1, itemUuid: it.uuid, prerequisitos: [{ id: "combustao", linhaVisivel: false }] });
   }
@@ -6530,6 +6530,26 @@ async function naurenSemearSubclasseMisticoPoesia(pack, packHabilidades, packCon
     }
   });
 
+  // Livro 0.9 (0.121) - Poesia Ghurua: Condição-fonte no Místico (1 rodada) + Condições de presença por lado,
+  // ligadas e desligadas pelo módulo poesia-ghurua.mjs conforme a distância (20 m).
+  const textoPG = "Origem: Poesia Ghurua (Místico, Dança do Espírito Bêbado). As Poesias Ghurua não ocorrem ao mesmo tempo: escolher uma nova encerra a anterior.";
+  const condPG = async (seed, dados) => (await naurenGarantirItemNoPack(packCondicoes, seed, { type: "condicao", ...dados })).uuid;
+  await condPG("condicao-poesia-ghurua-chuva", { name: "Poesia Ghurua: Chuva Infinita", img: "icons/magic/water/water-drop-swirl-blue.webp", flags: { nauren: { poesiaGhurua: "chuva" } },
+    system: { negativa: "nao", duracaoRodadas: 1, descricao: naurenMontarDescricao({ regra: `${textoPG} <b>Poesia da Chuva Infinita (N/P).</b> Alcance: Pessoal (20 m). A Poesia da Chuva Infinita altera a realidade, fazendo surgir chuva e aromas de floresta na área. Inimigos gastam 1 Estamina adicional para realizar ataques, e seus ataques causam 1 dado de dano a menos. Aliados recuperam 1d6 Pontos de Vida no início de cada turno.`, automatico: "área de 20 m presa ao seu token; quem está dentro recebe \"Sob a Chuva Infinita\" do seu lado (inimigo: +1 Estamina por ataque e 1 dado de dano a menos; aliado: 1d6 de Vida no início do turno dele) e perde ao sair. Dura 1 rodada.", manual: "" }) } });
+  await condPG("condicao-sob-chuva-infinita-inimigo", { name: "Sob a Chuva Infinita", img: "icons/magic/water/water-drop-swirl-blue.webp",
+    system: { negativa: "sim", custoEstaminaExtraAtaques: 1, dadosDanoAMenos: 1, descricao: naurenMontarDescricao({ regra: "Origem: Poesia da Chuva Infinita (Místico). Enquanto estiver na área, você gasta 1 Estamina adicional para realizar ataques, e seus ataques causam 1 dado de dano a menos.", automatico: "o custo e o dado a menos aparecem no card do ataque; sai quando você deixa a área ou a Poesia acaba.", manual: "" }) } });
+  await condPG("condicao-sob-chuva-infinita-aliado", { name: "Chuva Infinita (aliado)", img: "icons/magic/water/heart-ice-freeze.webp",
+    system: { negativa: "nao", efeitosPeriodicos: [{ recurso: "cura", formula: "1d6", aumentaPorAcumulo: false, quando: "inicioTurnoPortador" }], descricao: naurenMontarDescricao({ regra: "Origem: Poesia da Chuva Infinita (Místico). Enquanto estiver na área, recupere 1d6 Pontos de Vida no início de cada turno.", automatico: "1d6 de Vida no início do seu turno, com card; sai quando você deixa a área ou a Poesia acaba.", manual: "" }) } });
+  await condPG("condicao-poesia-ghurua-aroma", { name: "Poesia Ghurua: Aroma de Licor", img: "icons/consumables/drinks/tea-jug-gourd-brown.webp", flags: { nauren: { poesiaGhurua: "aroma" } },
+    system: { negativa: "nao", duracaoRodadas: 1, efeitosPeriodicos: [{ recurso: "recursoCustom:energia", formula: "1", aumentaPorAcumulo: false, quando: "inicioTurnoPortador" }],
+      descricao: naurenMontarDescricao({ regra: `${textoPG} <b>Poesia do Aroma de Licor (N/P).</b> Alcance: Pessoal (20 m de raio). Duração: 1 rodada. Um aroma de bebida alcoólica adocicada surge na área, junto de 1d6 cabaças de bebida alcoólica, que aparecem aleatoriamente em espaços desocupados a até 4 m de você. Enquanto estiver na área, você recupera 1 Energia no início de cada turno. Além disso, sempre que gastar Pontos de Energia, recupera Pontos de Vida iguais à quantidade de Energia gasta. Ao beber uma das cabaças criadas por esta habilidade, você ativa Brinde ao Destino; para bebê-las você deve gastar 1 PdE (P/A). Caso, ao tomar de uma das cabaças, o dado de Brinde ao Destino ative uma nova Poesia Ghurua, as cabaças ainda permanecerão durante toda a cena de combate.`, automatico: "as cabaças (1d6) aparecem no mapa em casas livres a até 4 m; +1 Energia no início do seu turno; cada Energia gasta volta como Vida (card). \"Beber cabaça\" fica no Brinde ao Destino: 1 PdE, a até 1 casa de uma cabaça. As cabaças somem quando a Poesia acaba, salvo se o Brinde de uma cabaça trouxe outra Poesia (aí ficam até o fim do combate).", manual: "" }) } });
+  await condPG("condicao-poesia-ghurua-veu", { name: "Poesia Ghurua: Véu das Brumas", img: "icons/magic/air/fog-gas-smoke-swirling-gray.webp", flags: { nauren: { poesiaGhurua: "veu" } },
+    system: { negativa: "nao", duracaoRodadas: 1, descricao: naurenMontarDescricao({ regra: `${textoPG} <b>Poesia do Véu das Brumas (N/P).</b> Alcance: Pessoal (20 m de raio). Duração: 1 rodada. Uma névoa de tinta surge na área, enquanto o brilho da lua envolve todos os seus ocupantes. Inimigos não podem realizar a primeira Prioridade de cada turno, e aliados recebem Facilidade em seus ataques enquanto estiverem na área.`, automatico: "área de 20 m presa ao seu token; inimigos dentro: a 1ª Prioridade que tentarem usar em cada turno se perde (card); aliados dentro: Facilidade nos ataques. Dura 1 rodada.", manual: "reações (Bloquear/Esquivar/Contra-Atacar) não são barradas automaticamente." }) } });
+  await condPG("condicao-sob-veu-das-brumas-inimigo", { name: "Sob o Véu das Brumas", img: "icons/magic/air/fog-gas-smoke-swirling-gray.webp",
+    system: { negativa: "sim", bloqueiaPrimeiraPrioridadeTurno: true, descricao: naurenMontarDescricao({ regra: "Origem: Poesia do Véu das Brumas (Místico). Enquanto estiver na área, você não pode realizar a primeira Prioridade de cada turno.", automatico: "a 1ª Ação que você tentar fazer numa Prioridade em cada turno não acontece e a Prioridade se perde (card); as seguintes valem.", manual: "" }) } });
+  await condPG("condicao-sob-veu-das-brumas-aliado", { name: "Véu das Brumas (aliado)", img: "icons/magic/light/orb-lightbulb-gray.webp",
+    system: { negativa: "nao", modificadores: [{ campo: "vantagemAtaque", valor: "vantagem" }], descricao: naurenMontarDescricao({ regra: "Origem: Poesia do Véu das Brumas (Místico). Enquanto estiver na área, você recebe Facilidade em seus ataques.", automatico: "Facilidade nos seus testes de ataque; sai quando você deixa a área ou a Poesia acaba.", manual: "" }) } });
+
   const brindeAoDestino = await naurenGarantirHabilidadeDeSubclasse(packHabilidades, "habilidade-mistico-brinde-ao-destino", {
     name: "Brinde ao Destino", type: "habilidade", img: "icons/magic/symbols/star-rising-purple.webp",
     system: {
@@ -6537,6 +6557,14 @@ async function naurenSemearSubclasseMisticoPoesia(pack, packHabilidades, packCon
       acoes: [{
         nome: "Brinde ao Destino", categoria: "Subclasse", custoEstamina: 0, alcance: "pessoal", modoAlvo: "nenhum", rolarBrinde: true,
         usaUsos: true, usosAtual: 1, usosMax: 1, usosReset: "turno",
+        gastosRecurso: [{
+          recurso: "recursoCustom:energia", quantidade: "-2", ativo: true, soSeAcertar: false,
+          quantidadePorRank: [{ rank: 2, quantidade: "-3" }, { rank: 3, quantidade: "-4" }]
+        }]
+      }, {
+        // Livro 0.9: Poesia do Aroma de Licor - beber uma cabaça (1 PdE, P/A) ativa o Brinde ao Destino.
+        nome: "Beber cabaça (Aroma de Licor)", categoria: "Subclasse", custoEstamina: 1, alcance: "1m", modoAlvo: "nenhum", rolarBrinde: true, beberCabacaGhurua: true,
+        prioridadeIndicador: "PA",
         gastosRecurso: [{
           recurso: "recursoCustom:energia", quantidade: "-2", ativo: true, soSeAcertar: false,
           quantidadePorRank: [{ rank: 2, quantidade: "-3" }, { rank: 3, quantidade: "-4" }]
@@ -6549,7 +6577,7 @@ async function naurenSemearSubclasseMisticoPoesia(pack, packHabilidades, packCon
     name: "Dança do Espírito Bêbado", type: "habilidade", img: "icons/consumables/drinks/wine-bottle-glass-white.webp",
     system: {
       rankMax: 3,
-      descricao: naurenMontarDescricao({ regra: "Passiva. Ao tirar 6 no d6 de Brinde ao Destino, receba o efeito de uma Poesia (à sua escolha). Para cada ponto além do 1º, reduza em 1 o limiar necessário (5+ no rank 2, 4+ no rank 3).", automatico: "no Brinde, com o d6 no limiar, aparece a escolha entre Poesia Lunar e Poesia da Espada, aplicada em você.", manual: "" })
+      descricao: naurenMontarDescricao({ regra: "Passiva. Ao tirar 6 no d6 de Brinde ao Destino, receba o efeito de uma Poesia: você tem acesso às 3 Poesias Ghurua (Chuva Infinita, Aroma de Licor e Véu das Brumas), mas seus efeitos não podem ocorrer simultaneamente; escolher uma nova encerra a anterior. Para cada ponto além do 1º, reduza em 1 o limiar necessário (5+ no rank 2, 4+ no rank 3).", automatico: "no Brinde (ou ao beber uma cabaça do Aroma de Licor), com o d6 no limiar, aparece a escolha entre as 3 Poesias Ghurua; a escolhida vira uma área de 20 m em volta de você por 1 rodada, e a anterior se encerra.", manual: "" })
     }
   });
   const inundacaoEspiritual = await naurenGarantirHabilidadeDeSubclasse(packHabilidades, "habilidade-mistico-inundacao-espiritual", {

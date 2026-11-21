@@ -761,6 +761,11 @@ async function naurenAplicarEfeitosPeriodicos(actor, momento) {
       else if (ef.recurso === "cura") { const aj = NaurenAlvoHelper.ajustarCuraRecebida(actor, valor); deltaVida += aj.cura; secondaryLines.push({ label: cond.name, value: aj.cura, breakdown: aj.cortada ? `${breakdown} • cura reduzida −${aj.cortada} (${aj.fontes?.join(", ") || "Condição"})` : breakdown }); }
       else if (ef.recurso === "estamina") { deltaEstamina += valor; secondaryLines.push({ label: cond.name, value: valor, breakdown }); }
       else if (ef.recurso === "mana") { deltaMana += valor; secondaryLines.push({ label: cond.name, value: valor, breakdown }); }
+      // 0.121: recurso próprio (ex.: Poesia do Aroma de Licor, +1 Energia no início de cada turno).
+      else if (String(ef.recurso).startsWith("recursoCustom:")) {
+        const ganhoR = await naurenConcederRecurso(actor, ef.recurso, String(valor), cond).catch(() => 0);
+        if (ganhoR) secondaryLines.push({ label: cond.name, value: `+${ganhoR} ${(actor.system.recursosCustom ?? []).find(r => r.id === ef.recurso.slice(14))?.nome ?? "recurso"}`, breakdown });
+      }
       else if (ef.recurso === "acumuloProprio") {
         // Acúmulo Próprio (ex: Bomba Cronometrada - "1 acúmulo no
         // início de cada turno") - em vez de causar dano/cura/recurso,

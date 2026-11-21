@@ -1,5 +1,5 @@
 /* Versão deste arquivo: o sistema confere no "ready" e, se o navegador/Forge tiver guardado um CSS antigo, carrega o novo. */
-:root { --nauren-css-versao: "0.120.2"; }
+:root { --nauren-css-versao: "0.121.0"; }
 /* 
 ===================================================
 1. FUNDO E FONTES GERAIS
@@ -9585,3 +9585,11 @@ li.directory-item.nauren-org-tem-dono > .entry-name > .nauren-org-nome { overflo
 .nauren-aspectos .nauren-aspecto i { color: #d98b3a; }
 .nauren-aspectos-total { margin: 0; text-align: right; font-size: 12px; color: var(--n-suave, #a89bc4); }
 .nauren-aspectos-total b { color: var(--n-texto, #ece6f3); font-size: 14px; }
+
+/* 0.121 — Poesia Ghurua: escolha na Dança do Espírito Bêbado (cor de cada poesia) */
+.nauren-poesias .nauren-poesia-op { --np: #cca162; border-left: 3px solid var(--np) !important; }
+.nauren-poesias .nauren-poesia-op i { color: var(--np); }
+.nauren-poesias .nauren-poesia-op em { font-style: normal; font-size: 11px; color: var(--np); }
+.nauren-poesias .nauren-poesia-op:hover:not(:disabled) { background: color-mix(in srgb, var(--np) 12%, var(--n-painel, #241e36)); }
+.application.nauren-kit.nc2 .nauren-poesias .nauren-poesia-op:hover:not(:disabled) { --cbd: var(--np); }
+.application.nauren-kit.nc2 .nauren-poesias .nauren-poesia-op > i { color: var(--np); }

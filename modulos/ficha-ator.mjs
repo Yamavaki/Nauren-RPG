@@ -2,6 +2,7 @@
 import { NAUREN_ATRIBUTOS_CLASSE_LIVRO, naurenPerfisSugestaoClasse, naurenMelhorDistribuicao, naurenFormatarNumero, naurenLerNumero, naurenItemValeAgora, ARMA_TIPOS, ATRIBUTOS_BONUS, CALCULO_DADOS_DESTINO_OPCOES, CALCULO_ESTAMINA_COMBATE_OPCOES, CALCULO_MANA_OPCOES, CALCULO_VIDA_OPCOES, MODOS_ROLAGEM, NAUREN_CAMPOS_ACIMA_AUTOMATICOS, NAUREN_CAMPOS_ACIMA_GERAIS, NAUREN_CAMPOS_ANALISE_CRIATIVA, NAUREN_CAMPOS_MODIFICADOR_OPCOES, NAUREN_FASE_MODIFICADOR, NAUREN_NOMES_ATRIBUTO_CURTO, NAUREN_PODEROSA_EFEITOS, NAUREN_QUERY_APLICAR_CONDICAO, NAUREN_QUERY_APLICAR_CONDICAO_ECO, NAUREN_QUERY_AREA_AO_CRIAR, NAUREN_QUERY_BESTA_INICIAL, NAUREN_QUERY_CRIAR_ITEM, NAUREN_QUERY_DANO_COLISAO, NAUREN_QUERY_DOMAR, NAUREN_QUERY_ITEM_MESTRE, NAUREN_QUERY_MANIPULAR, NAUREN_QUERY_REACAO_PRE_ATAQUE, NAUREN_REACAO_RESISTIR_OPCOES, NAUREN_REFERENCIA_FORMULAS, NAUREN_ROTULO_FASE_MODIFICADOR, NaurenBarrasEditor, NaurenConcessaoHelper, NaurenCriadorMonstro, NaurenGrupoHelper, NaurenHudCombate, NaurenHudRecursosEditor, NaurenProgressaoHelper, RECURSOS_ALVO, USOS_RESET_LABEL, USOS_RESET_POR_COMBATE, naurenAbrirBorda, naurenAbrirConstrucaoPorAcao, naurenAbrirEnquadramento, naurenAcaoEhCura, naurenAcaoEhGolpe, naurenAcaoSemCustoEstaminaMana, naurenAgindoForaDoTurno, naurenAjusteCriticoDoGrupo, naurenAjusteCustoManaMagia, naurenAlcanceEmMetros, naurenAliadosAte, naurenAlvoDaRecarga, naurenAlvosSaoVelhos, naurenAncoraDuracaoAtual, naurenAnotarModsRecebidosNoCard, naurenAnotarNoRegistro, naurenApagarItensSeExistirem, naurenAplicarAcalanto, naurenAplicarEfeitoSimples, naurenAplicarPalavraComEscolha, naurenArmarPoderosa, naurenAtacouNoTurnoAtual, naurenAtualizarCondicaoPresenca, naurenAtualizarItemViaMestre, naurenAvaliarExpressaoSimples, naurenAvisarEstrelaDoArcoIris, naurenAvisarSeLinkBloqueado, naurenBandoCfg, naurenBandoChave, naurenBandoMembros, naurenBandoNoAlcance, naurenBeneficiosDoEstado, naurenBonusAcimaContra, naurenBordaPreviaDataUrl, naurenBordaPreviaDoAtor, naurenBotoesDeFormula, naurenBotoesDirecaoGrimorio, naurenBreakdownSimples, naurenBuscarMascotesDe, naurenCalcularEmpurrao, naurenCategoriaDaArma, naurenCategoriaEquipamento, naurenCelulasNaArea, naurenChaveEscopoRelogio, naurenChaveFlagSegura, naurenChecarCondicaoAoAtingirMax, naurenClamparRecursosAoMaximo, naurenCombatenteEhDoAtor, naurenCompensacoesContraOrigem, naurenConcederPrioridadePeloCard, naurenConcederRecurso, naurenConcederRecursoAoAtacante, naurenCondicaoNegativa, naurenCondicoesAtivas, naurenCondicoesLigadasA, naurenCongelarNoNivel, naurenConsumirUsoDaHabilidade, naurenContarAliadosProximos, naurenContextoInvencoes, naurenCriarFrascoEspecial, naurenCriarInvocacoes, naurenCriarItemNoAtor, naurenCronometroNoDialog, naurenDescricaoParaChat, naurenDeslocarToken, naurenDiferencaDesfazer, naurenDispararEventoNoDono, naurenDisposicaoDoAtor, naurenEfeitoComSubst, naurenEhCondicaoModelo, naurenEhGolpeEspiritual, naurenEhItem, naurenEquipamentoGasta, NAUREN_CATEGORIAS_EQUIPAMENTO, naurenEmpurrarToken, naurenEquipamentoRecomendado, naurenEscalaPorCategoria, naurenEscolherCorDaPintura, naurenEscolherEfeitoPoderosa, naurenEscolherFrasco, naurenEscolherPeculiaridade, naurenEscolherPontoNoMapa, naurenEstiloEnquadramento, naurenEstresseDosAliados, naurenEstudoNoAlvo, naurenExecutarRecarga, naurenFaceD20, naurenFontesDeModificadores, naurenFormulaComTokensDoAtor, naurenFormulaParaTexto, naurenFotoCenaDesfazer, naurenFotografarModsRecebidos, naurenFrascoParaPacote, naurenGastarRecursoSimples, naurenGrimorio, naurenGuardarD20Roubado, naurenHandleQueryAreaAoCriar, naurenHandleQueryBestaInicial, naurenHandleQueryDanoColisao, naurenHandleQueryDomar, naurenHandleQueryItemMestre, naurenHandleQueryManipular, naurenHandleQueryReacaoPreAtaque, naurenHudAlvos, naurenIdentificadorTurnoAtual, naurenInterpretarModificador, naurenInterpretarModificadorComDado, naurenItemCorrespondeAoAlvo, naurenItemEhDoProjeto, naurenItensDoProjetoPorNome, naurenLimiteOfensivoBase, naurenLimiteVagaDefesa, naurenLimparMeusAlvos, naurenMaisDadosPoderosa, naurenMapearStrings, naurenMarcarAlvosAgora, naurenMedirDistanciaBordas, naurenMestreDaMesa, naurenMetrosEmpurrao, naurenModsAcima, naurenMontarDescricao, naurenMontarSelecaoPrioridade, naurenMoverGrimorio, naurenMoverTokenPara, naurenMoverTokenViaMestre, naurenMovimentoSaldo, naurenMunicoesCompativeis, naurenNivelDeOrigemNaClasse, naurenNomeDeToken, naurenNomeDoRecurso, naurenNomeNormalizado, naurenNomeParaUuid, naurenNomeRecurso, naurenNotificarGanhoPerda, naurenOferecerAcovardar, naurenOferecerDestino, naurenOperarEntidade, naurenOperarEstudo, naurenOperarRecursoViaMestre, naurenOperarRegistroPrioridade, naurenOrdemListaMagias, naurenPersonagensEmCena, naurenPesoOfensivo, naurenPesoOfensivoEquipado, naurenPontoDentroDaRegiao, naurenPostarCard, naurenPostarDescricaoNoChat, naurenPreparacaoUsadas, naurenPrepararModificador, naurenPresosPorArmadilha, naurenPrioridadesGeradas, naurenProcessarFrascoNoAlvo, naurenProcessarGatilhos, naurenRaizDaEvolucao, naurenReacoesPagasDano, naurenReacoesPagasDefesa, naurenReaplicarUpgradesDeSubclasse, naurenRecarregarUsos, naurenReconciliarTodosOsItens, naurenReconjurarPendente, naurenRecursoDoAtor, naurenRecursoEstaTravado, naurenRegistrarAtaqueNoTurno, naurenRegistrarUsoTorre, naurenRegistroParaExport, naurenRegistroParaFicha, naurenRegraVagasDefesa, naurenRegrasExtras, naurenReordenarGrimorio, naurenResolverPorNivel, naurenResolverPorRank, naurenResolverPrioridade, naurenResolverSelf, naurenResolverSelfEmObjeto, naurenResolverTokenFormula, naurenResumoDaAcao, naurenRolagemAuditada, naurenRollToBreakdownText, naurenRotuloToken, naurenSincronizarCriativasDoLadino, naurenSincronizarGrimorio, naurenSincronizarRecursosCustom, naurenSomarEfeitoPermanente, naurenSubstituirTokensDeContexto, naurenTemEstado, naurenTempoReacao, naurenTextoFrascoEspecial, naurenTextoHistoricoDestino, naurenTextoModificador, naurenTextoRolagem, naurenTimeoutReacaoMs, naurenTipoAlcanceAdivinhado, naurenTipoAlcanceDaAcao, naurenTiposEstudoDoAtor, naurenTokenElegivelPorDisposicao, naurenTransferirRecursoDoAlvo, naurenTravaDaAcao, naurenUltimoAtacante, naurenUmaVezMarcar, naurenUmaVezRecusa, naurenUsoDisponivel, naurenUsosExtrasPara, naurenUsosPassivaMax, naurenUuidEhEsteToken, naurenUuidPorSeed, naurenVagaDefesa, naurenValorEstudo, resumoCondicao, resumoCor, resumoEfeito } from "../nauren.mjs";
 import { naurenDistanciasDosTipos } from "./movimento-tipos.mjs";
 import { naurenAspectosAntesDoAtaque, naurenOferecerMantis, naurenValorMarcaDoCacador } from "./cacador-espirito.mjs";
+import { naurenTirarDadosDaFormula } from "./poesia-ghurua.mjs";
 import { naurenOrigemComModsDeItens, naurenSistemaEfetivo, naurenRaioEmanacaoComItens, naurenBolinhasPigmentoHtml, naurenFontesDeItens, naurenChaveAlvoModificacao } from "./aprimoramentos.mjs";
 import { naurenLog } from "./depuracao.mjs";
 import { naurenAbrirEscrito, naurenEhEscrito } from "./escritos.mjs";
@@ -5905,6 +5906,16 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
       }
       this.#danoVerdadeiroExtrasAtual = [];
     }
+    // 0.121: "seus ataques causam N dado(s) de dano a menos" (Chuva Infinita) - tira dados do 1º termo de dado.
+    let dadosMenosLinha = null;
+    if (incluirGlobal && acao?.ehAtaque) {
+      const condMenos = this.actor.items.filter(i => i.type === "condicao" && i.system.ativo !== false && !naurenEhCondicaoModelo(i) && (i.system.dadosDanoAMenos || 0) > 0);
+      const nMenos = condMenos.reduce((t, i) => Math.max(t, i.system.dadosDanoAMenos || 0), 0);
+      if (nMenos) {
+        const r = naurenTirarDadosDaFormula(partes.join(" + "), nMenos);
+        if (r.tirados) { partes.length = 0; partes.push(r.formula); dadosMenosLinha = { label: condMenos.map(i => i.name).join(", "), value: `−${r.tirados} dado${r.tirados > 1 ? "s" : ""} de dano` }; }
+      }
+    }
     let formula = partes.join(" + ");
     if (ehCritico) formula = this._doubleDice(formula);
     // 0.94.3 (Tudo ou Nada): dados a mais no dano crítico, do mesmo tamanho do 1º dado da fórmula.
@@ -5924,6 +5935,7 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     }
 
     const breakdown = [{ label: overrideRank ? `Fórmula de dano (Rank ${rankAtual})` : "Fórmula de dano", value: partes.join(" + ") }];
+    if (dadosMenosLinha) breakdown.push(dadosMenosLinha);
     const totalBonus = (global.efeitoDanoBonus || 0) + (local.danoBonus || 0);
     const totalDados = [...danoDadosGlobalResolvidos, ...danoDadosLocalResolvidos];
     if (totalBonus || totalDados.length) breakdown.push({ label: "Bônus de dano (Efeitos)", value: [totalBonus || null, ...totalDados].filter(Boolean).join(" + ") });
@@ -6688,6 +6700,23 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
       }
     }
   }
+  /**
+   * 0.121 (Véu das Brumas): com uma Condição "bloqueiaPrimeiraPrioridadeTurno", a 1ª Prioridade que este
+   * personagem tentar realizar em cada turno se perde (a Ação não acontece). As seguintes do mesmo turno valem.
+   */
+  async _perdePrimeiraPrioridade(nomeAcao) {
+    const cond = this.actor.items.find(i => i.type === "condicao" && i.system.ativo !== false && !naurenEhCondicaoModelo(i) && i.system.bloqueiaPrimeiraPrioridadeTurno);
+    if (!cond || !game.combat?.started) return false;
+    const chave = `${game.combat.id}:${game.combat.round}:${game.combat.turn}`;
+    if (this.actor.getFlag("nauren", "primeiraPrioridadePerdida") === chave) return false;
+    const consumida = await naurenOperarRegistroPrioridade("consumir", { paraUuid: this.actor.uuid, paraBando: naurenBandoChave(this.actor) ?? "", acaoNome: nomeAcao }).catch(() => null);
+    if (!consumida) return false; // sem Prioridade registrada: segue o fluxo normal (que avisa)
+    await this.actor.setFlag("nauren", "primeiraPrioridadePerdida", chave).catch(() => null);
+    await naurenPostarCard({ ator: this.actor, titulo: cond.name, icone: cond.img, fonte: "Prioridade perdida",
+      linhas: [{ label: "Não realizou", value: nomeAcao, breakdown: `1ª Prioridade deste turno${consumida.deNome ? ` (de ${consumida.deNome})` : ""}: ${cond.name} impede` }] });
+    ui.notifications.warn(`${this.actor.name}: ${cond.name} — a 1ª Prioridade do turno se perde.`);
+    return true;
+  }
   /** Guarda no card da Ação o que ela mudou (para o botão Desfazer do Mestre). */
   async _gravarDesfazer(f) {
     if (!f?.foto) return;
@@ -6771,6 +6800,14 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
 
   /** Motivo simples para recusar a Ação antes de abrir qualquer janela (sem usos / sem recurso próprio fixo). */
   _motivoParaNaoUsarAgora(item, acao) {
+    if (acao.beberCabacaGhurua) {
+      const temCabaca = (canvas.scene?.regions ?? []).some(r => r.getFlag("nauren", "cabacaGhurua")?.donoUuid === this.actor.uuid);
+      if (!temCabaca) return `"${acao.nome || item.name}": não há cabaças suas no mapa (Poesia do Aroma de Licor).`;
+      const tok = this.actor.getActiveTokens?.(true)?.[0], g = canvas.scene?.grid?.size ?? 100;
+      const perto = tok && canvas.scene.regions.some(r => { const f = r.getFlag("nauren", "cabacaGhurua"); const sh = r.shapes?.[0]; if (f?.donoUuid !== this.actor.uuid || !sh) return false;
+        return Math.max(Math.abs(sh.x + sh.width / 2 - tok.center.x), Math.abs(sh.y + sh.height / 2 - tok.center.y)) / g <= 1.6; });
+      if (!perto) return `"${acao.nome || item.name}": chegue a 1 casa de uma cabaça para beber.`;
+    }
     // Invocação sem a ficha escolhida: avisa antes de cobrar (antes gastava Estamina/Mana/uso e não invocava nada).
     if (acao.usaInvocar && !acao.invocarCopiaDeMim && !acao.invocarAtorUuid)
       return `"${acao.nome || item.name}": falta a ficha a invocar. Abra a Habilidade, aba Ações, e arraste a ficha da criatura para o campo "Invocar ficha".`;
@@ -7026,6 +7063,8 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
     if (this._mantisAtual) {
       acao = { ...acao, naoGeraPrioridade: true, _semPrioridadeFonte: `Aspecto do Mantis: o alvo recebe só a Prioridade do ataque de ${this._mantisAtual.aliadoNome}` };
       this.#beneficiosAtual.push({ label: "Aspecto do Mantis", value: `atacou junto com ${this._mantisAtual.aliadoNome}`, breakdown: `−${this._mantisAtual.custo} Espírito do Caçador (${this._mantisAtual.resta} restante${this._mantisAtual.resta === 1 ? "" : "s"})` });
+    } else if ((naurenAgindoForaDoTurno(this.actor) || soAgePrioridade) && !this.actor._naurenContextoGatilho && await this._perdePrimeiraPrioridade(acao?.nome ?? item.name)) {
+      return; // 0.121 (Véu das Brumas): a 1ª Prioridade deste turno não pode ser realizada
     } else if ((naurenAgindoForaDoTurno(this.actor) || soAgePrioridade) && !this.actor._naurenContextoGatilho) {
       const consumida = await naurenOperarRegistroPrioridade("consumir", { paraUuid: this.actor.uuid, paraBando: naurenBandoChave(this.actor) ?? "", acaoNome: acao?.nome ?? item.name });
       if (soAgePrioridade && !consumida) {
@@ -8589,6 +8628,15 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
         this.#efeitosEmAtaquesAtual.push({ label: "Custo aumentado", value: `+${extra} Estamina`, breakdown: condExtra.map(i => i.name).join(", ") });
       }
     }
+    // 0.121: Condições que encarecem ataques (Chuva Infinita: inimigos gastam +1 Estamina para atacar).
+    if (acao.ehAtaque && !this._acaoGratis) {
+      const condAt = this.actor.items.filter(i => i.type === "condicao" && i.system.ativo !== false && !naurenEhCondicaoModelo(i) && (i.system.custoEstaminaExtraAtaques || 0) > 0);
+      const extraAt = condAt.reduce((t, i) => Math.max(t, i.system.custoEstaminaExtraAtaques || 0), 0);
+      if (extraAt) {
+        custoEstPagar += extraAt;
+        this.#efeitosEmAtaquesAtual.push({ label: "Custo do ataque", value: `+${extraAt} Estamina`, breakdown: condAt.map(i => i.name).join(", ") });
+      }
+    }
     // Cargas de área (ex.: Pintura da Alegria): aliados dentro dela podem pagar Estamina com as cargas.
     if (custoEstPagar > 0) {
       const meuTokC = this.actor.getActiveTokens?.(true)?.[0];
@@ -9599,6 +9647,11 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
         this.#beneficiosAtual.push({ label: "Grimório Selvagem", value: `1d${faces} = ${rollS.total}`, breakdown: `${r.texto}: ${r.nomes}` });
       }
     }
+    if (acao.beberCabacaGhurua) {
+      const pgC = await import("./poesia-ghurua.mjs");
+      const cabaca = await pgC.naurenPegarCabacaProxima(this.actor);
+      if (cabaca) { await cabaca.delete().catch(() => null); this.#beneficiosAtual.push({ label: "Bebeu", value: cabaca.name, breakdown: "Aroma de Licor: ativa o Brinde ao Destino" }); }
+    }
     if (acao.rolarBrinde) {
       const rollB = await new Roll("1d6").evaluate();
       if (game.dice3d) await game.dice3d.showForRoll(rollB, game.user, true).catch(() => {});
@@ -9610,13 +9663,13 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
         this.#beneficiosAtual.push({ label: "Ressaca", value: est >= max ? "Estresse já no máximo" : "+1 Estresse" });
       }
       const danca = this.actor.items.find(i => i.type === "habilidade" && naurenEhItem(i, "Dança do Espírito Bêbado") && i.system.ativo !== false);
+      // Livro 0.9: a Dança dá acesso às 3 Poesias Ghurua (uma de cada vez; a nova encerra a anterior).
       if (danca && faceB >= 7 - Math.max(1, Math.min(3, danca.system.rankAtual || 1))) {
-        const packCond = game.packs.find(pk => pk.metadata.label === "Nauren - Condições e Venenos");
-        const opcoesPoesia = [{ action: "condicao-poesia-lunar", label: "Poesia Lunar (dado no próximo ataque)" }, { action: "condicao-poesia-da-espada", label: "Poesia da Espada (próximo ataque mais barato)" }];
-        const esc = await foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA, window: { title: "Dança do Espírito Bêbado" }, content: "<p>A Poesia toma conta de você: receba o efeito de uma Poesia.</p>", buttons: opcoesPoesia, rejectClose: false }).catch(() => null);
-        if (esc) {
-          const nome = await NaurenAlvoHelper.aplicarCondicao(this.actor, await naurenUuidPorSeed(packCond, esc), 1, null, danca.system.rankAtual || 1).catch(() => null);
-          if (nome) this.#beneficiosAtual.push({ label: "Dança do Espírito Bêbado", value: nome });
+        const pg = await import("./poesia-ghurua.mjs");
+        const escP = await pg.naurenEscolherPoesiaGhurua(this.actor);
+        if (escP) {
+          this.#beneficiosAtual.push({ label: "Dança do Espírito Bêbado", value: `${faceB} no Brinde`, breakdown: `limiar ${7 - Math.max(1, Math.min(3, danca.system.rankAtual || 1))}+` });
+          for (const l of await pg.naurenAtivarPoesiaGhurua(this.actor, escP, { daCabaca: !!acao.beberCabacaGhurua })) this.#beneficiosAtual.push(l);
         }
       }
       if (faceB === 2 && this.actor.items.some(i => i.type === "habilidade" && naurenEhItem(i, "Inundação Espiritual") && i.system.ativo !== false)) {

@@ -71,3 +71,23 @@ export async function naurenMigrarLivro09MisticoSetasV1() {
       linhas: [{ label: "Setas removidas", value: "Postura Gruhua → Dança do Espírito Bêbado; Gruhua → Inundação Espiritual", breakdown: nomes.join(", ") }] }).catch(() => {});
   }
 }
+
+/** 0.121: Poesia Ghurua - Brinde ao Destino (ação "Beber cabaça"), Dança do Espírito Bêbado e Páginas em Chamas (texto). */
+export const NAUREN_LIVRO09_ITENS_0121 = Object.freeze(["Brinde ao Destino", "Dança do Espírito Bêbado", "Páginas em Chamas"]);
+export async function naurenMigrarLivro09PoesiaV1() {
+  if (!game.user.isGM || game.settings.get("nauren", "migracaoLivro09PoesiaV1")) return;
+  const ict = await import("./icone-condicao-token.mjs");
+  const atores = new Set(game.actors);
+  for (const cena of game.scenes) for (const t of cena.tokens) if (t.actor && !t.actorLink) atores.add(t.actor);
+  const nomes = [];
+  for (const a of atores) for (const it of Array.from(a.items)) {
+    if (it.type !== "habilidade" || !NAUREN_LIVRO09_ITENS_0121.includes(it.name)) continue;
+    if (await ict.naurenReconciliarItemComCompendio(it).catch(() => false)) nomes.push(`${a.name}: ${it.name}`);
+  }
+  await game.settings.set("nauren", "migracaoLivro09PoesiaV1", true);
+  if (nomes.length) {
+    const { naurenPostarCard } = await import("../nauren.mjs");
+    naurenPostarCard({ titulo: "Livro 0.9: Poesia Ghurua", icone: "icons/consumables/drinks/tea-jug-gourd-brown.webp", fonte: "Fichas ajustadas",
+      linhas: nomes.map(n => ({ label: "Atualizado", value: n })) }).catch(() => {});
+  }
+}
