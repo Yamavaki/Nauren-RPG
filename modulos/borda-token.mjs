@@ -1060,7 +1060,9 @@ Hooks.on("updateToken", async (tokenDoc, changes, options, userId) => {
   const modoMov = naurenModoMovimento(actor);
   // Pontos do caminho (V13+): o Traço da Aquarela segue o trajeto real, não só a reta.
   const caminhoMov = options?.movement?.[tokenDoc.id]?.passed?.waypoints ?? null;
-  if (userId === game.user.id) naurenDepoisDoMovimento(tokenDoc, origem, { x: changes.x ?? tokenDoc.x, y: changes.y ?? tokenDoc.y }, caminhoMov).catch(err => console.warn("Nauren RPG | depois do movimento", err));
+  const depois = () => naurenDepoisDoMovimento(tokenDoc, origem, { x: changes.x ?? tokenDoc.x, y: changes.y ?? tokenDoc.y }, caminhoMov).catch(err => console.warn("Nauren RPG | depois do movimento", err));
+  // Automático: o "depois" roda no fim, para saber se o card do pagamento já levou a Prioridade do tipo.
+  if (userId === game.user.id && modoMov !== "automatico") depois();
   if (modoMov === "manual") return;
   if (modoMov === "popup") {
     let dist = 0;
@@ -1087,14 +1089,24 @@ Hooks.on("updateToken", async (tokenDoc, changes, options, userId) => {
   }
   if (!distancia) return;
 
-  const estado = naurenMovimentoEmCombate.get(actor.uuid) ?? { distancia: 0, blocosPagos: 0 };
+  // 0.118 (livro 0.9): o modo automático usa o tipo escolhido no HUD (padrão Ofensivo). Trocar de tipo
+  // no meio do turno recomeça a conta (o que sobrou só vale para o mesmo tipo).
+  const movTipos = await import("./movimento.mjs");
+  const tiposMov = await import("./movimento-tipos.mjs");
+  const caidoA = actor.items.some(i => i.type === "condicao" && i.system.ativo !== false && naurenEhItem(i, "Caído"));
+  let tipoA = movTipos.naurenTipoPreferido(actor);
+  if (tiposMov.naurenMetrosDoTipo(actor.system.movimentoTotal || 1, tipoA, { caido: caidoA }) <= 0) tipoA = "ofensivo";
+  let estado = naurenMovimentoEmCombate.get(actor.uuid) ?? { distancia: 0, blocosPagos: 0, tipo: tipoA };
+  if ((estado.tipo ?? "ofensivo") !== tipoA) estado = { distancia: 0, blocosPagos: 0, tipo: tipoA };
   estado.distancia += distancia;
 
-  const caidoA = actor.items.some(i => i.type === "condicao" && i.system.ativo !== false && naurenEhItem(i, "Caído"));
-  const movimentoMax = Math.max(1, caidoA ? Math.floor((actor.system.movimentoTotal || 1) / 2) : (actor.system.movimentoTotal || 1));
+  const movimentoMax = Math.max(1, tiposMov.naurenMetrosDoTipo(actor.system.movimentoTotal || 1, tipoA, { caido: caidoA }));
   const extraA = actor.items.filter(i => i.type === "condicao" && i.system.ativo !== false && !naurenEhCondicaoModelo(i)).reduce((t, i) => Math.max(t, i.system.custoEstaminaExtraAcoes || 0), 0);
-  const blocosNecessarios = Math.ceil(estado.distancia / movimentoMax);
+  const custoAcaoA = tiposMov.naurenCustoDoTipo(tipoA, extraA);
+  const blocosNecessarios = tiposMov.naurenAcoesParaDistancia(estado.distancia, movimentoMax);
   const blocosNovos = blocosNecessarios - estado.blocosPagos;
+  const cfgTipoA = tiposMov.NAUREN_TIPOS_MOVIMENTO[tipoA];
+  let cardPagoA = false;
 
   // Impulso (Empíreo): em Profusão, o movimento sai de graça gastando um uso.
   const impulso = blocosNovos > 0 && naurenTemEstado(actor, "Profusão") ? actor.items.find(i => i.type === "habilidade" && naurenEhItem(i, "Impulso") && i.system.ativo !== false && naurenUsoDisponivel(i)) : null;
@@ -1104,20 +1116,37 @@ Hooks.on("updateToken", async (tokenDoc, changes, options, userId) => {
     ui.notifications.info(`${actor.name}: Impulso - movimento sem Estamina (1 uso gasto).`);
   } else if (blocosNovos > 0) {
     const estaminaAtual = actor.system.estaminaCombate.value;
-    const gasto = Math.min(blocosNovos * (1 + extraA), estaminaAtual);
+    const gasto = Math.min(blocosNovos * custoAcaoA, estaminaAtual);
+    const pagas = Math.floor(gasto / custoAcaoA);
     if (gasto > 0) {
       await actor.update({ "system.estaminaCombate.value": estaminaAtual - gasto });
-      if (userId === game.user.id) await naurenCardMovimento(actor, tokenDoc, [{ label: "Pagou", value: `${gasto} Estamina`, breakdown: "modo automático" }, { label: "No turno", value: `${Math.round(estado.distancia)}m` }]);
+      // Ofensivo: quem foi alcançado neste trecho já vem marcado no card do pagamento (salvo Passo Gatuno e afins).
+      let preA = [];
+      if (tipoA === "ofensivo" && userId === game.user.id) {
+        let ligadoA = true; try { ligadoA = game.settings.get("nauren", "prioridadeAoAproximar"); } catch (err) { /* padrão */ }
+        const novosA = ligadoA ? movTipos.naurenInimigosAlcancados(tokenDoc, origem, destino) : [];
+        if (novosA.length && !movTipos.naurenDispensaAproximacao(actor, origem, destino)) preA = novosA.map(t => t.document);
+      }
+      cardPagoA = true;
+      // Defensivo/Disparada: o card já leva a escolha de aliado ou o N/P; Ofensivo deixa a Prioridade para a aproximação.
+      if (userId === game.user.id) await naurenCardMovimento(actor, tokenDoc, [
+        { label: "Tipo", value: `${cfgTipoA.nome} (${cfgTipoA.sigla})`, breakdown: `${custoAcaoA} PdE por ação · ${movimentoMax}m` },
+        { label: "Pagou", value: `${gasto} Estamina`, breakdown: "modo automático" },
+        { label: "No turno", value: `${Math.round(estado.distancia)}m` }], preA, tipoA);
       // 0.109.8: cada ação de movimento paga aciona as Condições de "usei uma Ação" (Alvejado).
-      if (userId === game.user.id) import("./movimento.mjs").then(m => m.naurenMovimentoComoAcao(actor, Math.floor(gasto / (1 + extraA)))).catch(err => console.warn("Nauren RPG | Alvejado no movimento", err));
+      if (userId === game.user.id) movTipos.naurenMovimentoComoAcao(actor, pagas).catch(err => console.warn("Nauren RPG | Alvejado no movimento", err));
     }
-    if (gasto < blocosNovos * (1 + extraA)) {
+    if (gasto < blocosNovos * custoAcaoA) {
       ui.notifications.warn(`${actor.name} está sem Estamina suficiente pra continuar se movendo tão longe!`);
     }
-    estado.blocosPagos += Math.floor(gasto / (1 + extraA));
+    estado.blocosPagos += pagas;
   }
 
   naurenMovimentoEmCombate.set(actor.uuid, estado);
+  if (userId === game.user.id) {
+    movTipos.naurenMovimentoTipoAtual.set(actor.uuid, { tipo: tipoA, cardPostado: cardPagoA });
+    await depois();
+  }
 });
 
 

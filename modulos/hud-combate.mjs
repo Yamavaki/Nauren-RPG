@@ -6,7 +6,8 @@ import { naurenRegistroPrioridades } from "./prioridades.mjs";
 import { naurenAcaoEhGolpe, naurenAjusteCustoManaMagia, naurenEhCondicaoModelo, naurenEhItem, naurenGrimorio, naurenNomeDoRecurso, naurenOrdemListaMagias, naurenTipoAlcanceDaAcao } from "./entidades-campo.mjs";
 import { naurenBandoChave, naurenCombatenteEhDoAtor, naurenEstaminaGratisAgora } from "./bando.mjs";
 import { naurenTravaDaAcao } from "./monstros-regras.mjs";
-import { naurenMovimentoSaldo } from "./movimento.mjs";
+import { naurenDefinirTipoPreferido, naurenMovimentoSaldo, naurenMovimentoTipoSaldo, naurenTipoPreferido } from "./movimento.mjs";
+import { naurenDistanciasDosTipos } from "./movimento-tipos.mjs";
 import { naurenEscalaInterface } from "./borda-token.mjs";
 import { NaurenActorSheet } from "./ficha-ator.mjs";
 
@@ -172,6 +173,7 @@ function naurenHudHtml(c) {
         <div class="nauren-hud-bloco">
           <div class="nauren-hud-rotulo"><span>${e(c.movimento.rotulo)}</span><span class="valor">${e(c.movimento.texto)}</span></div>
           <div class="nauren-hud-barra"><div class="nauren-hud-barra-fill movimento" style="width:${c.movimento.pct}%"></div></div>
+          <div class="nauren-hud-mov-tipos" role="radiogroup" aria-label="Tipo de movimento">${(c.movimento.tipos ?? []).map(t => `<button type="button" class="nauren-hud-mov-tipo${t.ativo ? " ativo" : ""}${t.saldo ? " com-saldo" : ""}" data-action="tipoMovimento" data-tipo="${t.id}" aria-pressed="${t.ativo}" title="${e(`${t.nome} (${t.sigla}) · ${t.metros} m por ação · ${t.custo} PdE${t.ativo ? " · tipo preferido" : " · clique para preferir"}`)}"${t.metros > 0 ? "" : " disabled"}><i class="fas ${t.icone}"></i><b>${t.metros}</b><small>m</small></button>`).join("")}</div>
         </div>
         ${c.encerrarTurno ? `<button type="button" class="nauren-hud-botao-ouro" data-action="encerrarTurno"${c.proximoTexto ? ` title="${e(c.proximoTexto)}"` : ""}>Encerrar turno</button>` : `<span class="nauren-hud-turno-de"><span>${e(c.turnoTexto)}</span>${c.proximoTexto ? `<span class="nauren-hud-proximo${c.proximoEhVoce ? " voce" : ""}">${e(c.proximoTexto)}</span>` : ""}</span>`}
       </div>
@@ -212,7 +214,8 @@ class NaurenHudCombate extends foundry.applications.api.ApplicationV2 {
       limparAlvos: NaurenHudCombate.onLimparAlvos,
       recolher: NaurenHudCombate.onRecolher,
       expandir: NaurenHudCombate.onExpandir,
-      editarRecursos: NaurenHudCombate.onEditarRecursos
+      editarRecursos: NaurenHudCombate.onEditarRecursos,
+      tipoMovimento: NaurenHudCombate.onTipoMovimento
     }
   };
 
@@ -446,9 +449,19 @@ class NaurenHudCombate extends foundry.applications.api.ApplicationV2 {
     });
 
     // Movimento: o que sobrou do último movimento (Movimento Continuado) sobre o deslocamento de uma ação.
+    // 0.118 (livro 0.9): três tipos; o saldo é de um tipo só. Clicar num tipo deixa ele como o preferido
+    // (vem marcado na janela; é o que o modo automático cobra).
     const saldo = Math.max(0, Math.round(naurenMovimentoSaldo.get(actor.uuid) ?? 0));
-    const porAcao = Math.max(0, sys.movimentoTotal ?? 0);
-    c.movimento = { rotulo: "Movimento guardado", texto: `${saldo} de ${porAcao} m`, pct: pct(saldo, porAcao) };
+    const caidoH = actor.items.some(i => i.type === "condicao" && i.system.ativo !== false && naurenEhItem(i, "Caído"));
+    const tiposH = naurenDistanciasDosTipos(sys.movimentoTotal ?? 0, { caido: caidoH });
+    const tipoSaldo = saldo > 0 ? (naurenMovimentoTipoSaldo.get(actor.uuid) ?? "ofensivo") : null;
+    const preferido = naurenTipoPreferido(actor);
+    const tipoBarra = tiposH.find(t => t.id === (tipoSaldo ?? preferido)) ?? tiposH[0];
+    c.movimento = {
+      rotulo: tipoSaldo ? `Movimento guardado · ${tipoBarra.nome}` : "Movimento guardado",
+      texto: `${saldo} de ${tipoBarra.metros} m`, pct: pct(saldo, tipoBarra.metros),
+      tipos: tiposH.map(t => ({ id: t.id, nome: t.nome, sigla: t.sigla, metros: t.metros, custo: t.custo, icone: t.icone, ativo: t.id === preferido, saldo: t.id === tipoSaldo }))
+    };
     const combatente = combate?.started ? combate.combatants.find(k => k.tokenId === token?.id || (!naurenBandoChave(actor) && k.actorId === actor.id) || naurenCombatenteEhDoAtor(k, actor)) : null;
     c.encerrarTurno = !!(combatente && combate.combatant?.id === combatente.id);
     c.turnoTexto = combate?.started ? (combate.combatant ? `Turno de ${combate.combatant.name}` : "Combate sem turno") : "Fora de combate";
@@ -631,6 +644,13 @@ class NaurenHudCombate extends foundry.applications.api.ApplicationV2 {
     await game.settings.set("nauren", "hudCombateExpandido", !game.settings.get("nauren", "hudCombateExpandido"));
     this.render();
   }
+  /** 0.118: escolhe o tipo de movimento preferido (Ofensivo, Defensivo, Disparada). */
+  static onTipoMovimento(event, alvo) {
+    const actor = this.actor; if (!actor) return;
+    naurenDefinirTipoPreferido(actor, alvo.dataset.tipo);
+    this.render();
+  }
+
   static onEditarRecursos() { if (this.actor) NaurenHudRecursosEditor.abrir(this.actor); }
 }
 

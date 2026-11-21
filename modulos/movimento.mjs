@@ -7,6 +7,7 @@ import { NAUREN_KIT_JANELA } from "./janelas-kit.mjs";
 import { naurenConsumirUsoDaHabilidade, naurenUsoDisponivel } from "./prioridades.mjs";
 import { naurenPontoDentroDaRegiao, naurenProcessarGatilhos } from "./icone-condicao-token.mjs";
 import { NaurenAlvoHelper } from "./ficha-ator.mjs";
+import { NAUREN_ORDEM_TIPOS_MOVIMENTO, NAUREN_TIPOS_MOVIMENTO, naurenPlanoMovimento, naurenTipoMovimentoValido, naurenTipoSugerido } from "./movimento-tipos.mjs";
 
 
 
@@ -17,6 +18,20 @@ import { NaurenAlvoHelper } from "./ficha-ator.mjs";
  * ================================================================ */
 const naurenMovimentoSaldo = new Map();
    // actorId -> metros ainda pagos
+/* 0.118 (livro 0.9): o saldo é de um tipo de movimento e só vale para o mesmo tipo. */
+const naurenMovimentoTipoSaldo = new Map();     // actor.uuid -> "ofensivo" | "defensivo" | "disparada"
+const naurenMovimentoTipoAtual = new Map();     // actor.uuid -> { tipo, cardPostado } (janela -> depois do movimento)
+const naurenMovimentoTipoPreferido = new Map(); // actor.uuid -> tipo escolhido no HUD (modo automático/manual e sugestão da janela)
+
+function naurenTipoPreferido(actor) {
+  return naurenTipoMovimentoValido(naurenMovimentoTipoPreferido.get(actor?.uuid) ?? "ofensivo");
+}
+
+function naurenDefinirTipoPreferido(actor, tipo) {
+  if (!actor) return;
+  naurenMovimentoTipoPreferido.set(actor.uuid, naurenTipoMovimentoValido(tipo));
+  Hooks.callAll("naurenTipoMovimentoMudou", actor, tipo);
+}
 function naurenModoMovimento(actor) {
   const m = actor?.system?.modoMovimento;
   if (m) return m;
@@ -97,36 +112,48 @@ async function naurenDesenharTracoAquarela(tokenDoc, origem, destino, caminho = 
 
 async function naurenDepoisDoMovimento(tokenDoc, origem, destino, caminho = null) {
   const actor = tokenDoc.actor; if (!actor || !canvas?.scene) return;
-  const dMetros = canvas.scene.grid.distance || 1;
+  // 0.118 (livro 0.9): o tipo do movimento decide a Prioridade. Lido ANTES de qualquer await (o saldo é
+  // descontado logo depois). Se a janela já postou o card com a escolha, aqui não repete.
+  const info = naurenMovimentoTipoAtual.get(actor.uuid);
+  naurenMovimentoTipoAtual.delete(actor.uuid);
+  const tipo = info?.tipo ?? ((naurenMovimentoSaldo.get(actor.uuid) ?? 0) > 0 ? naurenMovimentoTipoSaldo.get(actor.uuid) : null) ?? naurenTipoPreferido(actor);
   // Traço da Aquarela: pinta os QUADRADOS do grid por onde o token passou
   // (dura a cena). Região visível para todos, alinhada ao grid.
   const traco = actor.items.find(i => i.type === "habilidade" && naurenEhItem(i, "Traço da Aquarela") && i.system.ativo !== false);
   if (traco) await naurenDesenharTracoAquarela(tokenDoc, origem, destino, caminho).catch(err => console.warn("Nauren RPG | Traço da Aquarela", err));
+  if (info?.cardPostado) return;
+  if (tipo !== "ofensivo") return; // Defensivo e Disparada não dão Prioridade a inimigo ao chegar perto
   // Prioridade ao chegar perto de um inimigo (regra do livro); o Passo Gatuno dispensa.
   let ligado = true; try { ligado = game.settings.get("nauren", "prioridadeAoAproximar"); } catch (err) { /* padrão */ }
   if (!ligado) return;
-  const naPosicao = pos => ({ document: { x: pos.x, y: pos.y, width: tokenDoc.width, height: tokenDoc.height } });
-  const novos = naurenTokensDoAndar(tokenDoc).filter(t => t.document !== tokenDoc && t.actor && t.document.disposition !== tokenDoc.disposition && t.document.disposition !== 0
-    && (t.actor.system?.vida?.value ?? 1) > 0).filter(t => {
-      const lado = dMetros + 0.01; // adjacente = 1 quadrado de borda a borda
-      return naurenMedirDistanciaBordas(naPosicao(destino), t) <= lado && naurenMedirDistanciaBordas(naPosicao(origem), t) > lado;
-    });
+  const novos = naurenInimigosAlcancados(tokenDoc, origem, destino);
   if (!novos.length) return;
+  const dispensa = naurenDispensaAproximacao(actor, origem, destino);
+  if (dispensa) {
+    await naurenPostarCard({ ator: actor, titulo: "Aproximação", icone: dispensa.item.img, fonte: "Movimento", linhas: [{ label: "Chegou perto de", value: novos.map(t => naurenNomeDeToken(t)).join(", "), breakdown: `${dispensa.item.name}: não gera Prioridade${dispensa.texto ? ` (${dispensa.texto})` : ""}` }] });
+    return;
+  }
+  // O card já vem com o(s) inimigo(s) marcado(s); o jogador confirma, desmarca ou escolhe outro.
+  await naurenCardMovimento(actor, tokenDoc, [{ label: "Chegou perto de", value: novos.map(t => naurenNomeDeToken(t)).join(", "), breakdown: "escolha abaixo quem recebe a Prioridade" }], novos.map(t => t.document), "ofensivo");
+}
+
+/** Inimigos vivos que ficaram adjacentes (1 quadrado de borda a borda) no destino e não estavam na origem. */
+function naurenInimigosAlcancados(tokenDoc, origem, destino) {
+  if (!canvas?.scene) return [];
+  const dMetros = canvas.scene.grid.distance || 1;
+  const naPosicao = pos => ({ document: { x: pos.x, y: pos.y, width: tokenDoc.width, height: tokenDoc.height } });
+  const lado = dMetros + 0.01;
+  return naurenTokensDoAndar(tokenDoc).filter(t => t.document !== tokenDoc && t.actor && t.document.disposition !== tokenDoc.disposition && t.document.disposition !== 0
+    && (t.actor.system?.vida?.value ?? 1) > 0)
+    .filter(t => naurenMedirDistanciaBordas(naPosicao(destino), t) <= lado && naurenMedirDistanciaBordas(naPosicao(origem), t) > lado);
+}
+
+/** Passo Gatuno ou "metros por turno sem gerar Prioridade" (Espreitador, Recuo Ágil...): chegar perto não marca ninguém. */
+function naurenDispensaAproximacao(actor, origem, destino) {
   const gatuno = actor.items.find(i => i.type === "habilidade" && naurenEhItem(i, "Passo Gatuno") && i.system.ativo !== false);
-  if (gatuno) {
-    await naurenPostarCard({ ator: actor, titulo: "Aproximação", icone: gatuno.img, fonte: "Movimento", linhas: [{ label: "Chegou perto de", value: novos.map(t => naurenNomeDeToken(t)).join(", "), breakdown: "Passo Gatuno: não gera Prioridade" }] });
-    return;
-  }
-  // Fase 4 (M02): Habilidade/Condição/Efeito com "metros por turno sem gerar Prioridade" (Espreitador,
-  // Recuo Ágil, Golpe e Fuga...). Se o trajeto cabe no que ainda resta neste turno, não há Prioridade.
+  if (gatuno) return { item: gatuno, texto: "" };
   const semPrio = naurenMovimentoSemPrioridade(actor, origem, destino);
-  if (semPrio) {
-    await naurenPostarCard({ ator: actor, titulo: "Aproximação", icone: semPrio.item.img, fonte: "Movimento",
-      linhas: [{ label: "Chegou perto de", value: novos.map(t => naurenNomeDeToken(t)).join(", "), breakdown: `${semPrio.item.name}: não gera Prioridade (${semPrio.texto})` }] });
-    return;
-  }
-  // Manual: o card já vem com o(s) inimigo(s) marcado(s); o jogador confirma, desmarca ou escolhe outro.
-  await naurenCardMovimento(actor, tokenDoc, [{ label: "Chegou perto de", value: novos.map(t => naurenNomeDeToken(t)).join(", "), breakdown: "escolha abaixo quem recebe a Prioridade" }], novos.map(t => t.document));
+  return semPrio ? { item: semPrio.item, texto: semPrio.texto } : null;
 }
 
 
@@ -138,12 +165,30 @@ function naurenMovimentoEmDirecaoAInimigo(tokenDoc, origem, destino) {
   return inimigos.some(t => d(destino, t.document) < d(origem, t.document));
 }
 
-async function naurenCardMovimento(actor, tokenDoc, linhas, preMarcados = []) {
+/**
+ * Card do movimento. Com tipo (0.118): Ofensivo abre a escolha de inimigo (P/I, os alcançados já
+ * marcados), Defensivo a de aliado (P/A), Disparada mostra N/P. Sem tipo (mover sem Movimento etc.):
+ * Prioridade opcional para qualquer um, como antes.
+ */
+async function naurenCardMovimento(actor, tokenDoc, linhas, preMarcados = [], tipo = null) {
   const tok = tokenDoc.object;
-  const selecao = tok ? naurenMontarSelecaoPrioridade(tok, "todos", 0, preMarcados.length > 0, preMarcados, actor.uuid, "") : null;
-  if (selecao) selecao.rotuloContador = "aliado ou inimigo";
-  const prioridade = selecao ? { indicador: "", sigla: "", rotulo: "", texto: "Conceder Prioridade", contexto: { origemAtorUuid: actor.uuid, itemNome: "Movimento", motivo: "movimento", indicador: "" }, selecao } : null;
-  return naurenPostarCard({ ator: actor, titulo: "Movimento", icone: tokenDoc.texture?.src || actor.img, fonte: "Movimento em combate", linhas, prioridade });
+  const contexto = { origemAtorUuid: actor.uuid, itemNome: "Movimento", motivo: "movimento", indicador: "" };
+  const cfg = tipo ? NAUREN_TIPOS_MOVIMENTO[tipo] : null;
+  let prioridade = null;
+  if (cfg?.indicador === "NP") {
+    prioridade = { indicador: "NP", sigla: "N/P", rotulo: "", contexto, texto: "Disparada: não gera Prioridade." };
+  } else if (cfg) {
+    const limite = Math.max(1, preMarcados.length);
+    const selecao = tok ? naurenMontarSelecaoPrioridade(tok, cfg.lado, limite, true, preMarcados, actor.uuid, cfg.indicador) : null;
+    const quem = cfg.lado === "inimigos" ? "inimigo" : "aliado";
+    if (selecao) prioridade = { indicador: cfg.indicador, sigla: cfg.sigla, rotulo: "Prioridade", contexto: { ...contexto, indicador: cfg.indicador },
+      texto: preMarcados.length ? `${cfg.nome}: confirme quem recebe a Prioridade` : `${cfg.nome}: escolha 1 ${quem} para receber a Prioridade`, selecao };
+  } else {
+    const selecao = tok ? naurenMontarSelecaoPrioridade(tok, "todos", 0, preMarcados.length > 0, preMarcados, actor.uuid, "") : null;
+    if (selecao) selecao.rotuloContador = "aliado ou inimigo";
+    if (selecao) prioridade = { indicador: "", sigla: "", rotulo: "", texto: "Conceder Prioridade", contexto, selecao };
+  }
+  return naurenPostarCard({ ator: actor, titulo: cfg ? `Movimento ${cfg.nome}` : "Movimento", icone: tokenDoc.texture?.src || actor.img, fonte: "Movimento em combate", linhas, prioridade });
 }
 
 /**
@@ -209,72 +254,114 @@ async function naurenMoverSemMovimento(tokenDoc, origem, destino, distancia, cai
 async function naurenJanelaMovimento(tokenDoc, origem, destino, distancia) {
   const actor = tokenDoc.actor; if (!actor) return;
   const caido = actor.items.find(i => i.type === "condicao" && i.system.ativo !== false && naurenEhItem(i, "Caído"));
-  const mov = Math.max(0, caido ? Math.floor((actor.system.movimentoTotal ?? 0) / 2) : (actor.system.movimentoTotal ?? 0));
+  const movTotal = Math.max(0, actor.system.movimentoTotal ?? 0);
   const condExtra = actor.items.filter(i => i.type === "condicao" && i.system.ativo !== false && !naurenEhCondicaoModelo(i) && (i.system.custoEstaminaExtraAcoes || 0) > 0);
   const extraPorMov = condExtra.reduce((t, i) => Math.max(t, i.system.custoEstaminaExtraAcoes || 0), 0) /* estágios do mesmo medo: vale o maior, não a soma */;
-  const custoPorMov = 1 + extraPorMov;
-  if (mov <= 0) { await naurenMoverSemMovimento(tokenDoc, origem, destino, distancia, caido); return; }
+  if ((caido ? Math.floor(movTotal / 2) : movTotal) <= 0) { await naurenMoverSemMovimento(tokenDoc, origem, destino, distancia, caido); return; }
   const saldo = naurenMovimentoSaldo.get(actor.uuid) ?? 0;
-  const movimentos = Math.max(1, Math.ceil((distancia - saldo) / mov));
+  const saldoTipo = saldo > 0 ? naurenTipoMovimentoValido(naurenMovimentoTipoSaldo.get(actor.uuid) ?? "ofensivo") : null;
+  const baseConta = { movTotal, caido: !!caido, distancia, saldo, saldoTipo, custoExtra: extraPorMov };
+  const planos = Object.fromEntries(NAUREN_ORDEM_TIPOS_MOVIMENTO.map(id => [id, naurenPlanoMovimento({ ...baseConta, tipo: id })]));
+  const pref = naurenMovimentoTipoPreferido.get(actor.uuid);
+  let tipo = saldoTipo ?? (pref && planos[pref]?.possivel ? pref : naurenTipoSugerido(baseConta));
+  if (!planos[tipo].possivel) tipo = "ofensivo";
   const est = actor.system.estaminaCombate?.value ?? 0;
-  // Fontes de pagamento: { id, icone, titulo, custoBase (por ajuste), tem (o que o personagem tem), unidade, nota }
-  const fontes = [{ id: "estamina", icone: "fa-bolt", titulo: "Estamina", custoBase: movimentos * custoPorMov, tem: est, unidade: "Estamina", nota: extraPorMov ? `+${extraPorMov} por movimento (${condExtra.map(i => i.name).join(", ")})` : "" }];
+
+  // Fontes de pagamento: { id, icone, titulo, custo(plano), tem, unidade, fixo, nota }
+  const fontes = [{ id: "estamina", icone: "fa-bolt", titulo: "Estamina", custo: p => p.custoTotal, tem: est, unidade: "Estamina", nota: extraPorMov ? `+${extraPorMov} por ação (${condExtra.map(i => i.name).join(", ")})` : "" }];
   const espInfo = actor.sheet?._espiritoDeBatalhaInfo?.() ?? null;
-  if (espInfo && espInfo.usosRestantes > 0) fontes.push({ id: "espirito", icone: "fa-shield-halved", titulo: "Espírito da Batalha", custoBase: movimentos * custoPorMov, tem: espInfo.valorAtual, unidade: "Espírito", nota: `gasta 1 troca (${espInfo.usosRestantes}/${espInfo.usosMax} nesta rodada)` });
+  if (espInfo && espInfo.usosRestantes > 0) fontes.push({ id: "espirito", icone: "fa-shield-halved", titulo: "Espírito da Batalha", custo: p => p.custoTotal, tem: espInfo.valorAtual, unidade: "Espírito", nota: `gasta 1 troca (${espInfo.usosRestantes}/${espInfo.usosMax} nesta rodada)` });
   const impulso = naurenTemEstado(actor, "Profusão") ? actor.items.find(i => i.type === "habilidade" && naurenEhItem(i, "Impulso") && i.system.ativo !== false && naurenUsoDisponivel(i)) : null;
-  if (impulso && naurenMovimentoEmDirecaoAInimigo(tokenDoc, origem, destino)) fontes.push({ id: "impulso", icone: "fa-fire", titulo: "Impulso", custoBase: movimentos, tem: null, unidade: movimentos > 1 ? "usos" : "uso", fixo: true, nota: "em Profusão, em direção a um inimigo" });
+  if (impulso && naurenMovimentoEmDirecaoAInimigo(tokenDoc, origem, destino)) fontes.push({ id: "impulso", icone: "fa-fire", titulo: "Impulso", custo: p => p.acoes, tem: null, unidade: p => p.acoes > 1 ? "usos" : "uso", fixo: true, nota: "em Profusão, em direção a um inimigo" });
   const meuTok = tokenDoc.object;
   const regioes = meuTok ? (canvas.scene?.regions ?? []).filter(r => { const c = r.getFlag("nauren", "templatePersistente"); return (c?.cargasEstamina ?? 0) > 0 && c.disposicaoOrigem === tokenDoc.disposition && naurenPontoDentroDaRegiao(meuTok.center, r, tokenDoc); }) : [];
-  for (const r of regioes) fontes.push({ id: `regiao:${r.id}`, icone: "fa-palette", titulo: r.name, custoBase: movimentos * custoPorMov, tem: r.getFlag("nauren", "templatePersistente").cargasEstamina, unidade: "carga(s)" });
+  for (const r of regioes) fontes.push({ id: `regiao:${r.id}`, icone: "fa-palette", titulo: r.name, custo: p => p.custoTotal, tem: r.getFlag("nauren", "templatePersistente").cargasEstamina, unidade: "carga(s)" });
   const fontesExtra = [];
   for (const it of actor.items) {
     if (!["habilidade", "condicao", "efeito"].includes(it.type) || it.system.ativo === false || naurenEhCondicaoModelo(it)) continue;
     (it.system.pagarMovimentoCom ?? []).forEach((f, k) => {
       const q = Math.max(0, Number(naurenInterpretarModificador(String(f.quantidade || "1"), actor)?.valor ?? f.quantidade) || 1);
       const id = `${it.id}:${k}`;
-      fontesExtra.push({ id, item: it, recurso: f.recurso, porMovimento: q });
+      // "q por movimento" = q no lugar de cada PdE (a Disparada custa 3 PdE por ação).
+      const custoF = p => q * p.acoes * NAUREN_TIPOS_MOVIMENTO[p.tipo].custo;
+      fontesExtra.push({ id, item: it, recurso: f.recurso, custo: custoF });
       const temR = String(f.recurso).startsWith("recursoCustom:") ? ((actor.system.recursosCustom ?? []).find(x => x.id === f.recurso.slice(14))?.valor ?? 0)
         : (actor.system[{ vida: "vida", mana: "mana", estamina: "estaminaCombate", destino: "dadosDestino" }[f.recurso]]?.value ?? null);
-      fontes.push({ id: `extra:${id}`, icone: "fa-star", titulo: it.name, custoBase: q * movimentos, tem: temR, unidade: naurenNomeRecursoMov(actor, f.recurso) });
+      fontes.push({ id: `extra:${id}`, icone: "fa-star", titulo: it.name, custo: custoF, tem: temR, unidade: naurenNomeRecursoMov(actor, f.recurso) });
     });
   }
-  fontes.push({ id: "gratis", icone: "fa-feather", titulo: "Mover sem gastar", custoBase: 0, tem: null, unidade: "", fixo: true, nota: "fica registrado no card" });
+  fontes.push({ id: "gratis", icone: "fa-feather", titulo: "Mover sem gastar", custo: () => 0, tem: null, unidade: "", fixo: true, nota: "fica registrado no card" });
+
   const esc = v => String(v ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+  const nomeTipo = id => NAUREN_TIPOS_MOVIMENTO[id].nome;
+  const cartaoTipo = id => {
+    const c = NAUREN_TIPOS_MOVIMENTO[id], p = planos[id];
+    return `<button type="button" class="nauren-mov-tipo nmt-${id}" data-tipo="${id}"${p.possivel ? "" : " disabled"} aria-pressed="false">
+      <span class="nmt-topo"><i class="fas ${c.icone}"></i><span class="nmt-sigla nmt-${c.indicador.toLowerCase()}">${c.sigla}</span></span>
+      <span class="nmt-nome">${c.nome}</span>
+      <span class="nmt-metros"><b>${p.metrosPorAcao}</b>m</span>
+      <span class="nmt-custo">${p.custoPorAcao} PdE por ação</span>
+      <span class="nmt-acoes"></span>
+    </button>`;
+  };
   const conteudo = `<div class="nauren-mov">
+    <div class="nauren-mov-tipos" role="radiogroup" aria-label="Tipo de movimento">${NAUREN_ORDEM_TIPOS_MOVIMENTO.map(cartaoTipo).join("")}</div>
+    <p class="nauren-mov-tipo-desc"></p>
     <div class="nauren-mov-resumo">
       <div><span>Trajeto</span><b>${Math.round(distancia)}m</b></div>
-      <div><span>Saldo</span><b>${Math.round(saldo)}m</b></div>
-      <div><span>Precisa</span><b>${movimentos} × ${mov}m</b></div>
-    </div>${caido ? `<p class="nauren-mov-aviso"><i class="fas fa-person-falling"></i> Caído: cada movimento vale metade (${mov}m).</p>` : ""}${extraPorMov ? `<p class="nauren-mov-aviso"><i class="fas fa-ghost"></i> ${esc(condExtra.filter(i => (i.system.custoEstaminaExtraAcoes || 0) === extraPorMov).map(i => i.name).join(", "))}: cada movimento custa <b>${custoPorMov}</b> (1 + ${extraPorMov}).</p>` : ""}
-    <div class="nauren-mov-opcoes">${fontes.map(f => `<button type="button" class="nauren-mov-opcao" data-escolha="${esc(f.id)}" data-base="${f.custoBase}" data-tem="${f.tem ?? ""}" data-fixo="${f.fixo ? 1 : 0}" data-unidade="${esc(f.unidade)}">
+      <div><span>Saldo</span><b class="nmr-saldo"></b></div>
+      <div><span>Precisa</span><b class="nmr-precisa"></b></div>
+    </div>${caido ? `<p class="nauren-mov-aviso"><i class="fas fa-person-falling"></i> Caído: o Movimento vale metade antes do tipo (${Math.floor(movTotal / 2)}m).</p>` : ""}${extraPorMov ? `<p class="nauren-mov-aviso"><i class="fas fa-ghost"></i> ${esc(condExtra.filter(i => (i.system.custoEstaminaExtraAcoes || 0) === extraPorMov).map(i => i.name).join(", "))}: cada ação de movimento custa <b>+${extraPorMov}</b>.</p>` : ""}
+    <div class="nauren-mov-opcoes">${fontes.map(f => `<button type="button" class="nauren-mov-opcao" data-escolha="${esc(f.id)}">
         <i class="fas ${f.icone}"></i><span class="nauren-mov-titulo">${esc(f.titulo)}</span><span class="nauren-mov-custo"></span>${f.nota ? `<span class="nauren-mov-nota">${esc(f.nota)}</span>` : ""}</button>`).join("")}</div>
     <div class="nauren-mov-ajuste"><span>Ajuste do custo</span><button type="button" data-delta="-1">−</button><b class="nauren-mov-ajuste-valor">0</b><button type="button" data-delta="1">+</button></div>
   </div>`;
+  const descricao = p => {
+    const c = NAUREN_TIPOS_MOVIMENTO[p.tipo];
+    const prio = p.tipo === "ofensivo" ? "Prioridade para 1 inimigo à sua escolha (quem você alcançar já vem marcado)."
+      : p.tipo === "defensivo" ? "Prioridade para 1 aliado à sua escolha." : "Não gera Prioridade, nem ao chegar perto de um inimigo.";
+    const descarte = p.saldoDescartado > 0 ? ` <em>O saldo de ${Math.round(p.saldoDescartado)}m (${nomeTipo(saldoTipo)}) não vale para ${c.nome} e será perdido.</em>` : "";
+    return `<b>${c.nome}</b> · ${prio}${descarte}`;
+  };
   let ajuste = 0, escolha = null;
   const atualizar = raiz => {
+    const p = planos[tipo];
+    raiz.querySelectorAll(".nauren-mov-tipo").forEach(b => {
+      const ativo = b.dataset.tipo === tipo, pb = planos[b.dataset.tipo];
+      b.classList.toggle("ativo", ativo); b.setAttribute("aria-pressed", ativo ? "true" : "false");
+      b.querySelector(".nmt-acoes").textContent = pb.possivel ? `${pb.acoes} ação${pb.acoes > 1 ? "ões" : ""} · ${pb.custoTotal} PdE` : "sem Movimento";
+    });
+    raiz.querySelector(".nauren-mov-tipo-desc").innerHTML = descricao(p);
+    raiz.querySelector(".nmr-saldo").textContent = saldo > 0 ? `${Math.round(saldo)}m ${nomeTipo(saldoTipo)}` : "0m";
+    raiz.querySelector(".nmr-precisa").textContent = `${p.acoes} × ${p.metrosPorAcao}m`;
     raiz.querySelector(".nauren-mov-ajuste-valor").textContent = (ajuste > 0 ? "+" : "") + ajuste;
     raiz.querySelectorAll(".nauren-mov-opcao").forEach(b => {
-      const fixo = b.dataset.fixo === "1", base = Number(b.dataset.base), tem = b.dataset.tem === "" ? null : Number(b.dataset.tem);
-      const custo = fixo ? base : Math.max(0, base + ajuste);
-      const falta = tem !== null && custo > tem;
+      const f = fontes.find(x => x.id === b.dataset.escolha); if (!f) return;
+      const base = f.custo(p), custo = f.fixo ? base : Math.max(0, base + ajuste);
+      const unidade = typeof f.unidade === "function" ? f.unidade(p) : f.unidade;
+      const falta = f.tem !== null && f.tem !== undefined && custo > f.tem;
       b.disabled = falta;
-      b.querySelector(".nauren-mov-custo").innerHTML = b.dataset.escolha === "gratis" ? "" : `custa <b>${custo}</b> ${b.dataset.unidade}${tem !== null ? ` · você tem ${tem}` : ""}${falta ? ' <em>insuficiente</em>' : ""}`;
+      b.querySelector(".nauren-mov-custo").innerHTML = f.id === "gratis" ? "" : `custa <b>${custo}</b> ${esc(unidade)}${f.tem !== null && f.tem !== undefined ? ` · você tem ${f.tem}` : ""}${falta ? " <em>insuficiente</em>" : ""}`;
     });
   };
   await foundry.applications.api.DialogV2.wait({ ...NAUREN_KIT_JANELA,
-    window: { title: `Movimento · ${actor.name}` }, classes: ["nauren-janela-movimento", "nauren-kit"], position: { width: 420 }, content: conteudo,
+    window: { title: `Movimento · ${actor.name}` }, classes: ["nauren-janela-movimento", "nauren-kit"], position: { width: 460 }, content: conteudo,
     buttons: [{ action: "cancelar", label: "Cancelar" }], rejectClose: false,
     render: (ev, dialog) => {
       const raiz = dialog?.element ?? document;
       atualizar(raiz);
+      raiz.querySelectorAll(".nauren-mov-tipo").forEach(b => b.addEventListener("click", () => { if (b.disabled) return; tipo = b.dataset.tipo; atualizar(raiz); }));
       raiz.querySelectorAll(".nauren-mov-ajuste button").forEach(b => b.addEventListener("click", () => { ajuste += Number(b.dataset.delta); atualizar(raiz); }));
       raiz.querySelectorAll(".nauren-mov-opcao").forEach(b => b.addEventListener("click", () => { if (b.disabled) return; escolha = b.dataset.escolha; dialog.close(); }));
     }
   }).catch(() => null);
   if (!escolha || escolha === "cancelar") return;
+  const plano = planos[tipo], cfg = NAUREN_TIPOS_MOVIMENTO[tipo];
+  const acoes = plano.acoes;
+  const custoPadrao = Math.max(0, plano.custoTotal + ajuste);
   const linhas = [];
   if (escolha === "espirito") {
-    const custo = Math.max(0, movimentos * custoPorMov + ajuste);
+    const custo = custoPadrao;
     const lista = foundry.utils.deepClone(actor.system.recursosCustom ?? []);
     const ent = lista.find(r => r.id === "espiritodabatalha");
     if (!ent || (ent.valor ?? 0) < custo) { ui.notifications.warn(`${actor.name}: Espírito da Batalha insuficiente.`); return; }
@@ -288,16 +375,16 @@ async function naurenJanelaMovimento(tokenDoc, origem, destino, distancia) {
       linhas.push({ label: "Espírito zerado", value: "+1 Estresse" });
     }
   } else if (escolha === "estamina") {
-    const custo = Math.max(0, movimentos * custoPorMov + ajuste);
+    const custo = custoPadrao;
     if (est < custo) { ui.notifications.warn(`${actor.name}: Estamina insuficiente (precisa de ${custo}, tem ${est}).`); return; }
     if (custo) await actor.update({ "system.estaminaCombate.value": est - custo });
-    linhas.push({ label: "Pagou", value: `${custo} Estamina`, breakdown: ajuste ? `${movimentos} movimento(s) ${ajuste > 0 ? "+" : ""}${ajuste} de ajuste` : "" });
+    linhas.push({ label: "Pagou", value: `${custo} Estamina`, breakdown: `${acoes} ação(ões) × ${plano.custoPorAcao} PdE${ajuste ? ` ${ajuste > 0 ? "+" : ""}${ajuste} de ajuste` : ""}` });
   } else if (escolha === "impulso") {
-    for (let k = 0; k < movimentos; k++) await naurenConsumirUsoDaHabilidade(impulso);
-    linhas.push({ label: "Pagou", value: `Impulso (${movimentos} uso${movimentos > 1 ? "s" : ""})`, breakdown: "em Profusão, em direção a um inimigo: sem Estamina" });
+    for (let k = 0; k < acoes; k++) await naurenConsumirUsoDaHabilidade(impulso);
+    linhas.push({ label: "Pagou", value: `Impulso (${acoes} uso${acoes > 1 ? "s" : ""})`, breakdown: "em Profusão, em direção a um inimigo: sem Estamina" });
   } else if (escolha.startsWith("regiao:")) {
     const reg = canvas.scene.regions.get(escolha.slice(7)); const cfgR = reg.getFlag("nauren", "templatePersistente");
-    const custo = Math.max(0, movimentos * custoPorMov + ajuste);
+    const custo = custoPadrao;
     if (cfgR.cargasEstamina < custo) { ui.notifications.warn(`${reg.name}: cargas insuficientes (${cfgR.cargasEstamina}).`); return; }
     const restam = cfgR.cargasEstamina - custo; const gm = game.users.activeGM;
     if (reg.isOwner) { if (restam <= 0) await reg.delete(); else await reg.setFlag("nauren", "templatePersistente", { ...cfgR, cargasEstamina: restam }); }
@@ -305,22 +392,36 @@ async function naurenJanelaMovimento(tokenDoc, origem, destino, distancia) {
     linhas.push({ label: "Pagou", value: `${custo} carga(s) de ${reg.name}`, breakdown: restam > 0 ? `restam ${restam}` : "cargas esgotadas" });
   } else if (escolha.startsWith("extra:")) {
     const f = fontesExtra.find(x => x.id === escolha.slice(6));
-    const custo = Math.max(0, f.porMovimento * movimentos + ajuste);
+    const custo = Math.max(0, f.custo(plano) + ajuste);
     if (!NaurenAlvoHelper._podePagar(actor, f.recurso, custo)) { ui.notifications.warn(`${actor.name}: ${naurenNomeRecursoMov(actor, f.recurso)} insuficiente.`); return; }
     await naurenGastarRecursoSimples(actor, f.recurso, custo);
     linhas.push({ label: "Pagou", value: `${custo} ${naurenNomeRecursoMov(actor, f.recurso)}`, breakdown: `por ${f.item.name}` });
   } else if (escolha === "gratis") {
     linhas.push({ label: "Pagou", value: "nada (moveu sem gastar)" });
   }
-  const novoSaldo = saldo + movimentos * mov;
-  naurenMovimentoSaldo.set(actor.uuid, novoSaldo);
-  const bonusMov = (actor.system.movimentoTotal ?? 0) - (actor.system.movimento ?? 0);
-  if (caido) linhas.push({ label: "Caído", value: "metade do movimento" });
-  linhas.push({ label: "Movimento", value: `${movimentos} × ${mov}m`, breakdown: bonusMov ? `seu Movimento ${actor.system.movimento}m ${bonusMov > 0 ? "+" : ""}${bonusMov}m de bônus e Condições` : "" });
-  linhas.push({ label: "Trajeto", value: `${Math.round(distancia)}m`, breakdown: `sobram ${Math.max(0, Math.round(novoSaldo - distancia))}m neste turno` });
-  await naurenCardMovimento(actor, tokenDoc, linhas);
-  await tokenDoc.update({ x: destino.x, y: destino.y }, { naurenMovimentoLiberado: true });
-  if (escolha !== "gratis") await naurenMovimentoComoAcao(actor, movimentos); // Alvejado etc. (movimento pago)
+  naurenMovimentoSaldo.set(actor.uuid, plano.novoSaldo);
+  naurenMovimentoTipoSaldo.set(actor.uuid, tipo);
+  const bonusMov = movTotal - (actor.system.movimento ?? 0);
+  linhas.unshift({ label: "Tipo", value: `${cfg.nome} (${cfg.sigla})`, breakdown: `${plano.custoPorAcao} PdE por ação · ${cfg.resumo}` });
+  if (caido) linhas.push({ label: "Caído", value: "metade do movimento", breakdown: "antes do tipo" });
+  linhas.push({ label: "Movimento", value: `${acoes} × ${plano.metrosPorAcao}m`, breakdown: bonusMov ? `seu Movimento ${actor.system.movimento}m ${bonusMov > 0 ? "+" : ""}${bonusMov}m de bônus e Condições` : "" });
+  if (plano.saldoUsado > 0) linhas.push({ label: "Saldo usado", value: `${Math.round(plano.saldoUsado)}m`, breakdown: cfg.nome });
+  if (plano.saldoDescartado > 0) linhas.push({ label: "Saldo perdido", value: `${Math.round(plano.saldoDescartado)}m`, breakdown: `era ${nomeTipo(saldoTipo)}; só vale para o mesmo tipo` });
+  linhas.push({ label: "Trajeto", value: `${Math.round(distancia)}m`, breakdown: `sobram ${Math.round(plano.sobra)}m de ${cfg.nome} neste turno` });
+  // Ofensivo: quem você alcançou já vem marcado (salvo Passo Gatuno e afins).
+  let preMarcados = [];
+  if (tipo === "ofensivo") {
+    let ligado = true; try { ligado = game.settings.get("nauren", "prioridadeAoAproximar"); } catch (err) { /* padrão */ }
+    const novos = ligado ? naurenInimigosAlcancados(tokenDoc, origem, destino) : [];
+    const dispensa = novos.length ? naurenDispensaAproximacao(actor, origem, destino) : null;
+    if (novos.length) linhas.push({ label: "Chegou perto de", value: novos.map(t => naurenNomeDeToken(t)).join(", "), breakdown: dispensa ? `${dispensa.item.name}: não vem marcado` : "já marcado abaixo" });
+    if (!dispensa) preMarcados = novos.map(t => t.document);
+  }
+  naurenMovimentoTipoAtual.set(actor.uuid, { tipo, cardPostado: true });
+  await naurenCardMovimento(actor, tokenDoc, linhas, preMarcados, tipo);
+  try { await tokenDoc.update({ x: destino.x, y: destino.y }, { naurenMovimentoLiberado: true }); }
+  finally { naurenMovimentoTipoAtual.delete(actor.uuid); }
+  if (escolha !== "gratis") await naurenMovimentoComoAcao(actor, acoes); // Alvejado etc. (movimento pago)
 }
 
 
@@ -357,4 +458,4 @@ Hooks.on("updateItem", (it, mud) => { if (foundry.utils.hasProperty(mud, "system
 Hooks.on("createItem", it => { if ((it.system?.recursosDeclarados ?? []).length) naurenCacheRecursosDeclarados = null; });
 }
 
-export { naurenMovimentoComoAcao, naurenCacheRecursosDeclarados, naurenCardMovimento, naurenDepoisDoMovimento, naurenDesenharTracoAquarela, naurenGastarRecursoSimples, naurenJanelaMovimento, naurenModoMovimento, naurenMotivosSemMovimento, naurenMoverSemMovimento, naurenMovimentoEmDirecaoAInimigo, naurenMovimentoSaldo, naurenNomeRecursoMov, naurenRecursosCustomConhecidos };
+export { naurenDefinirTipoPreferido, naurenDispensaAproximacao, naurenInimigosAlcancados, naurenMovimentoTipoAtual, naurenMovimentoTipoPreferido, naurenMovimentoTipoSaldo, naurenTipoPreferido, naurenMovimentoComoAcao, naurenCacheRecursosDeclarados, naurenCardMovimento, naurenDepoisDoMovimento, naurenDesenharTracoAquarela, naurenGastarRecursoSimples, naurenJanelaMovimento, naurenModoMovimento, naurenMotivosSemMovimento, naurenMoverSemMovimento, naurenMovimentoEmDirecaoAInimigo, naurenMovimentoSaldo, naurenNomeRecursoMov, naurenRecursosCustomConhecidos };

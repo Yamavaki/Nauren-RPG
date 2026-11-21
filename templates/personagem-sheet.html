@@ -109,6 +109,8 @@
             {{#if modoFichaEdicao}}<input type="number" name="system.movimento" value="{{system.movimento}}" aria-label="Movimento base">{{else}}<b>{{system.movimentoTotal}}</b><small>m</small>{{/if}}
           </div></div>
           <span class="ns-rotulo">Movimento</span>
+          {{#unless modoFichaEdicao}}<span class="ns-mov-tipos" title="Por ação de movimento
+{{ns.movTiposDica}}">{{#each ns.movTipos}}<span class="ns-mov-tipo ns-mov-{{id}}"><i class="fas {{icone}}"></i>{{metros}}</span>{{/each}}</span>{{/unless}}
           {{#if modoFichaEdicao}}{{#if system.movimentoExtra}}<span class="ns-extra">{{ns.movimentoExtraTexto}} = {{system.movimentoTotal}}</span>{{/if}}{{/if}}
         </div>
       </div>

@@ -1,5 +1,5 @@
 /* Versão deste arquivo: o sistema confere no "ready" e, se o navegador/Forge tiver guardado um CSS antigo, carrega o novo. */
-:root { --nauren-css-versao: "0.117.0"; }
+:root { --nauren-css-versao: "0.118.0"; }
 /* 
 ===================================================
 1. FUNDO E FONTES GERAIS
@@ -6334,7 +6334,7 @@ img.nauren-criador-token.com-borda { border: none; border-radius: 0; background:
    (inclusive nas diagonais): a borda é a camada de trás (border-box) e o fundo chanfrado vai
    por cima (padding-box). Variáveis: --cc chanfro · --cbg fundo · --cbd borda · --cbw espessura
    =================================================== */
-.application.nauren-kit.nc2 :is(.nk-cab, .nk-bloco, .nk-opcao, .nk-gasto, .nk-destino, .nk-faixa, .nk-vidadano, .nk-condicao, .nk-fontes-caixa, .nk-ajustes, .nk-escolha-card, .nauren-mov-opcao, .nauren-mov-resumo > div, label.nauren-popup-opt, .nauren-escolha-lista, .nauren-escolha-ver, .nauren-criador-escolha-btn, .form-footer button:not(.default):not([autofocus]):not(.nk-principal), .dialog-content > ul),
+.application.nauren-kit.nc2 :is(.nk-cab, .nk-bloco, .nk-opcao, .nk-gasto, .nk-destino, .nk-faixa, .nk-vidadano, .nk-condicao, .nk-fontes-caixa, .nk-ajustes, .nk-escolha-card, .nauren-mov-opcao, .nauren-mov-tipo, .nauren-mov-resumo > div, label.nauren-popup-opt, .nauren-escolha-lista, .nauren-escolha-ver, .nauren-criador-escolha-btn, .form-footer button:not(.default):not([autofocus]):not(.nk-principal), .dialog-content > ul),
 .application.nauren-kit.nc2 .form-footer button:is([data-action="cancelar"], [data-action="cancel"], [data-action="close"], [data-action="no"], [data-action="nao"], [data-action="n"]),
 .application.nauren-kit.nc2 :is(input[type="text"], input[type="number"], input:not([type]), select, textarea) {
   --cbw: 1px;
@@ -7279,7 +7279,7 @@ li.chat-message.ncc-card > .message-content { padding-top: 0 !important; }
 /* 0.100.4: abrir uma janela do kit "desenhava" as caixas devagar no navegador. Os botões do Foundry animam
    fundo/borda/sombra; como as cores do sistema entram logo depois de abrir, o navegador animava os 5 degradês
    do chanfro (e o recorte) a partir do botão padrão. Aqui só a cor do texto e o brilho animam. */
-.application.nc2 :is(button, a.button, input, select, textarea, label, .nk-cab, .nk-bloco, .nk-opcao, .nk-gasto, .nk-destino, .nk-faixa, .nk-vidadano, .nk-condicao, .nk-fontes-caixa, .nk-ajustes, .nk-escolha-card, .nauren-mov-opcao, .nauren-mov-resumo > div, .nauren-escolha-lista, .nauren-escolha-ver, .nauren-criador-escolha-btn),
+.application.nc2 :is(button, a.button, input, select, textarea, label, .nk-cab, .nk-bloco, .nk-opcao, .nk-gasto, .nk-destino, .nk-faixa, .nk-vidadano, .nk-condicao, .nk-fontes-caixa, .nk-ajustes, .nk-escolha-card, .nauren-mov-opcao, .nauren-mov-tipo, .nauren-mov-resumo > div, .nauren-escolha-lista, .nauren-escolha-ver, .nauren-criador-escolha-btn),
 .nauren-deflexao-card.nc2 :is(button, a), .nauren-roll-card.nc2 :is(button, a) {
   transition-property: color, opacity, filter !important; transition-duration: .12s !important;
 }
@@ -7490,7 +7490,7 @@ li.chat-message.ncc-card > .message-content { padding-top: 0 !important; }
   clip-path: polygon(7px 0, calc(100% - 7px) 0, 100% 7px, 100% calc(100% - 7px), calc(100% - 7px) 100%, 7px 100%, 0 calc(100% - 7px), 0 7px); }
 .nauren-criador .nc2 .nauren-criador-nome input:focus { border-color: var(--nc-s) !important; box-shadow: none !important; }
 /* janelas do kit: diagonais das caixas mais firmes (1 px ficava apagado no canto) */
-.application.nauren-kit.nc2 :is(.nk-cab, .nk-bloco, .nk-opcao, .nk-gasto, .nk-destino, .nk-faixa, .nk-vidadano, .nk-condicao, .nk-fontes-caixa, .nk-ajustes, .nk-escolha-card, .nauren-mov-opcao, .nauren-mov-resumo > div, label.nauren-popup-opt, .nauren-escolha-lista, .nauren-escolha-ver, .nauren-criador-escolha-btn) { --cbw: 1.5px; }
+.application.nauren-kit.nc2 :is(.nk-cab, .nk-bloco, .nk-opcao, .nk-gasto, .nk-destino, .nk-faixa, .nk-vidadano, .nk-condicao, .nk-fontes-caixa, .nk-ajustes, .nk-escolha-card, .nauren-mov-opcao, .nauren-mov-tipo, .nauren-mov-resumo > div, label.nauren-popup-opt, .nauren-escolha-lista, .nauren-escolha-ver, .nauren-criador-escolha-btn) { --cbw: 1.5px; }
 
 /* 0.101.2 — Borda do token: a janela não ficava presa em 600 px (cortava a coluna da direita e não deixava aumentar) */
 .application.nauren-kit.nauren-borda-janela:not(.minimized):not(.minimizing):not(.maximizing) { max-width: calc((100vw - 16px) / var(--nauren-escala, 1)) !important; max-height: calc((100vh - 16px) / var(--nauren-escala, 1)) !important; min-width: 420px; }
@@ -9526,3 +9526,52 @@ li.directory-item.nauren-org-tem-dono > .entry-name > .nauren-org-nome { overflo
 .chat-message .nauren-card-import p { margin: 4px 0 !important; color: #ece6f5; }
 .chat-message .nauren-card-import ul { margin: 4px 0 4px 16px !important; padding: 0 !important; color: #c9bfdb; font-size: 12px; }
 .chat-message .nauren-card-import b { color: #fff1d0; }
+
+/* ===================================================
+   0.118 — TIPOS DE MOVIMENTO (livro 0.9): Ofensivo P/I · Defensivo P/A · Disparada N/P
+   =================================================== */
+.nauren-mov-tipos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.nauren-mov-tipo { --mt: var(--n-ouro, #cca162); display: flex; flex-direction: column; align-items: center; gap: 3px; height: auto; min-height: 0; margin: 0; padding: 10px 6px 9px; line-height: 1.15;
+  border-radius: 10px; border: 1px solid var(--n-borda, #3b3154); background: var(--n-painel, #241e36); color: var(--n-texto, #ece6f3); cursor: pointer; transition: border-color .15s, background-color .15s, transform .15s; }
+.nauren-mov-tipo.nmt-ofensivo { --mt: #e0805a; }
+.nauren-mov-tipo.nmt-defensivo { --mt: #6fb3d9; }
+.nauren-mov-tipo.nmt-disparada { --mt: #cca162; }
+.nauren-mov-tipo:hover:not(:disabled) { border-color: color-mix(in srgb, var(--mt) 70%, #000); }
+.nauren-mov-tipo.ativo { border-color: var(--mt); background: color-mix(in srgb, var(--mt) 14%, var(--n-painel, #241e36)); box-shadow: 0 0 0 1px var(--mt) inset; }
+.nauren-mov-tipo:disabled { opacity: .4; cursor: not-allowed; }
+.nauren-mov-tipo .nmt-topo { display: flex; align-items: center; gap: 6px; }
+.nauren-mov-tipo .nmt-topo i { color: var(--mt); font-size: 15px; }
+.nauren-mov-tipo .nmt-sigla { font-size: 10px; font-weight: 700; letter-spacing: .04em; padding: 1px 5px; border-radius: 4px; color: #16111d; background: var(--mt); }
+.nauren-mov-tipo .nmt-nome { font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: .05em; }
+.nauren-mov-tipo .nmt-metros { font-size: 12px; color: var(--n-suave, #a89bc4); }
+.nauren-mov-tipo .nmt-metros b { font-family: var(--n-titulo, "Modesto Condensed", sans-serif); font-size: 24px; color: var(--n-texto, #ece6f3); margin-right: 1px; }
+.nauren-mov-tipo .nmt-custo { font-size: 11px; color: var(--n-suave, #a89bc4); }
+.nauren-mov-tipo .nmt-acoes { font-size: 11px; font-weight: 600; color: var(--mt); min-height: 1.2em; }
+.nauren-mov-tipo-desc { margin: 0; font-size: 12px; line-height: 1.45; color: var(--n-suave, #a89bc4); padding: 7px 10px; border-radius: 8px; background: rgba(255,255,255,.03); }
+.nauren-mov-tipo-desc b { color: var(--n-texto, #ece6f3); }
+.nauren-mov-tipo-desc em { display: block; margin-top: 3px; font-style: normal; color: #e0a15a; }
+.application.nauren-kit.nc2 .nauren-mov-tipo { --cc: 8px; }
+.application.nauren-kit.nc2 .nauren-mov-tipo:hover:not(:disabled) { --cbd: color-mix(in srgb, var(--mt) 70%, #000); }
+.application.nauren-kit.nc2 .nauren-mov-tipo.ativo { --cbd: var(--mt); --cbw: 2px; --cbg: color-mix(in srgb, var(--mt) 14%, var(--nk-cartao)); }
+@media (max-width: 520px) { .nauren-mov-tipo .nmt-metros b { font-size: 19px; } .nauren-mov-tipo .nmt-custo { display: none; } }
+
+/* HUD: os três tipos embaixo da barra de movimento (o marcado é o preferido; o pontinho indica o tipo do saldo) */
+#nauren-hud-combate .nauren-hud-mov-tipos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-top: 5px; }
+#nauren-hud-combate .nauren-hud-mov-tipo { --mt: var(--h-ouro); position: relative; display: flex; align-items: baseline; justify-content: center; gap: 3px; padding: 3px 4px; border-radius: 6px;
+  background: var(--h-painel2); border: 1px solid var(--h-borda); font-size: 11px; color: var(--h-suave); }
+#nauren-hud-combate .nauren-hud-mov-tipo[data-tipo="ofensivo"] { --mt: #e0805a; }
+#nauren-hud-combate .nauren-hud-mov-tipo[data-tipo="defensivo"] { --mt: #6fb3d9; }
+#nauren-hud-combate .nauren-hud-mov-tipo i { color: var(--mt); font-size: 10px; }
+#nauren-hud-combate .nauren-hud-mov-tipo b { color: var(--h-texto); font-size: 12px; font-weight: 700; }
+#nauren-hud-combate .nauren-hud-mov-tipo small { font-size: 9px; }
+#nauren-hud-combate .nauren-hud-mov-tipo:hover:not(:disabled) { border-color: color-mix(in srgb, var(--mt) 70%, #000); }
+#nauren-hud-combate .nauren-hud-mov-tipo.ativo { border-color: var(--mt); background: color-mix(in srgb, var(--mt) 16%, var(--h-painel2)); }
+#nauren-hud-combate .nauren-hud-mov-tipo.com-saldo::after { content: ""; position: absolute; top: 2px; right: 3px; width: 5px; height: 5px; border-radius: 50%; background: var(--h-ok); }
+#nauren-hud-combate .nauren-hud-mov-tipo:disabled { opacity: .4; cursor: not-allowed; }
+/* Ficha: três distâncias embaixo do hexágono do Movimento */
+.nauren-sheet.ns2 .ns-mov-tipos { display: flex; gap: 6px; justify-content: center; font-size: 10px; font-weight: 700; color: var(--ns-sub); white-space: nowrap; cursor: help; }
+.nauren-sheet.ns2 .ns-mov-tipo { display: inline-flex; align-items: center; gap: 2px; }
+.nauren-sheet.ns2 .ns-mov-tipo i { font-size: 8.5px; }
+.nauren-sheet.ns2 .ns-mov-ofensivo i { color: #e0805a; }
+.nauren-sheet.ns2 .ns-mov-defensivo i { color: #6fb3d9; }
+.nauren-sheet.ns2 .ns-mov-disparada i { color: #cca162; }
