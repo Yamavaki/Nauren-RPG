@@ -3263,6 +3263,10 @@
               <label>Limite de disparos (vazio = sem limite)</label>
               <input type="text" data-field="gatilhos.{{index}}.limiteUsos" value="{{g.limiteUsos}}" placeholder="ex.: 1 • @rank">
             </div>
+            <div class="field" title="Só para &quot;Condição em mim&quot;: o máximo de acúmulos que este gatilho deixa juntar (ex.: Estigmas do Milagre 2+@rank = 3/4/5).">
+              <label>Máximo de acúmulos (vazio = sem teto)</label>
+              <input type="text" data-field="gatilhos.{{index}}.acumulosMaxFormula" value="{{g.acumulosMaxFormula}}" placeholder="ex.: 3 • 2+@rank">
+            </div>
             <div class="field">
               <label>Escopo do limite</label>
               <select data-field="gatilhos.{{index}}.limiteEscopo">{{selectOptions ../gatilhoLimiteEscopoOpcoes selected=g.limiteEscopo}}</select>

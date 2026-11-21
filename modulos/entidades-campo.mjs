@@ -2524,12 +2524,13 @@ for (const ev of ["updateToken", "createToken", "deleteToken"]) Hooks.on(ev, () 
 
 /* ---- Druidismo (Fase 7): escolha ao subir de nível ---- */
 const NAUREN_QUERY_ESCOLHA_DRUIDISMO = "nauren.escolhaDruidismo";
+const NAUREN_DRUIDISMO_NIVEL_ADICIONAL = 17; // livro 0.9 (antes 16)
 async function naurenHandleQueryEscolhaDruidismo({ nome, nivel, druida, exceto = "", segunda = false }) {
   const todas = [{ action: "lagoa", label: "Lagoa" }, { action: "cachoeira", label: "Cachoeira" }, { action: "chuva", label: "Chuva" }].filter(b => b.action !== exceto);
   todas[todas.length - 1].default = true;
   return foundry.applications.api.DialogV2.wait({ ...NK.NAUREN_KIT_JANELA,
-    window: { title: `Druidismo — ${nome} (nível ${nivel})${segunda ? " · 2ª bênção" : ""}` },
-    content: `<p><b>${nome}</b> subiu para o nível ${nivel}. Pelo Druidismo de <b>${druida}</b>, escolha ${segunda ? "a <b>segunda</b> bênção (Druida no nível 16 ou mais)" : "uma bênção"}:</p>
+    window: { title: `Druidismo — ${nome} (nível ${nivel})${segunda ? " · efeito adicional" : ""}` },
+    content: `<p><b>${nome}</b> subiu para o nível ${nivel}. Pelo Druidismo de <b>${druida}</b>, escolha ${segunda ? "o <b>efeito adicional</b> (Druida no nível 17 ou mais)" : "uma bênção"}:</p>
       <ul>${todas.map(b => `<li>${{ lagoa: "<b>Lagoa:</b> +1 ponto para distribuir nas Subclasses.", cachoeira: "<b>Cachoeira:</b> pode mudar 2 pontos de Subclasse já investidos.", chuva: "<b>Chuva:</b> +3 Pontos de Vida adicionais." }[b.action]}</li>`).join("")}</ul>`,
     buttons: todas,
     rejectClose: false
@@ -2600,12 +2601,12 @@ Hooks.on("updateActor", async (actor, mudancas) => {
       linhas: [{ label: "Bênçãos", value: "não se aplicam", breakdown: "o Druidismo vale ao subir de nível em jogo, não na criação da ficha" }] });
     return;
   }
-  // Livro 0.8: com o Druida no nível 16 ou mais (Druidismo Melhoria), cada nível dá uma bênção adicional
-  // (diferente da primeira). A 2ª fica guardada como "<nível>b".
+  // Livro 0.9: com o Druida no nível 17 ou mais, cada nível dá a escolha de um efeito adicional
+  // (diferente do primeiro). Fica guardado como "<nível>b".
   const blocos = [];
   for (let nivel = antes + 1; nivel <= novo; nivel++) {
     blocos.push({ nivel, chave: String(nivel), segunda: false });
-    if ((druida.system.nivel ?? 0) >= 16) blocos.push({ nivel, chave: `${nivel}b`, segunda: true });
+    if ((druida.system.nivel ?? 0) >= NAUREN_DRUIDISMO_NIVEL_ADICIONAL) blocos.push({ nivel, chave: `${nivel}b`, segunda: true });
   }
   for (const { nivel, chave, segunda } of blocos) {
     if (escolhas[chave]) continue;
@@ -2630,7 +2631,7 @@ Hooks.on("updateActor", async (actor, mudancas) => {
     }
     escolhas[chave] = escolha;
     await actor.setFlag("nauren", "druidismoEscolhas", escolhas);
-    naurenPostarCard({ ator: actor, titulo: segunda ? "Druidismo (2ª bênção)" : "Druidismo", icone: "icons/sundries/misc/pipe-wooden-curved-oak.webp", fonte: `Nível ${nivel} • bênção de ${druida.name}${segunda ? " (Druidismo Melhoria, nível 16)" : ""}`, linhas });
+    naurenPostarCard({ ator: actor, titulo: segunda ? "Druidismo (efeito adicional)" : "Druidismo", icone: "icons/sundries/misc/pipe-wooden-curved-oak.webp", fonte: `Nível ${nivel} • bênção de ${druida.name}${segunda ? " (efeito adicional, Druida nível 17+)" : ""}`, linhas });
   }
 });
 

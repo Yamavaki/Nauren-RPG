@@ -1468,10 +1468,12 @@ async function naurenSemearMagias(pack, packCondicoes) {
         nome: "Mísseis Arcanos", custoMana: 1, alcance: "12m", ehAtaque: true, atributoAtaque: "poderMagia",
         usaMultiplosAtaques: true, quantidadeAtaques: "1",
         modoAlvo: "selecionado", modoAlvoTravado: true,
-        danos: [{ formula: "1d4+@poderMagia", aplicarNoAlvo: true }], repetirSeDanoMaximo: true
+        danos: [{ formula: "1d4+@poderMagia", aplicarNoAlvo: true }], repetirSeDanoMaximo: true,
+        // Livro 0.9: com Conjuração Poderosa, o 1º ataque causa dano máximo (e por isso já aciona a repetição).
+        danoMaximoEmPoderosa: true
       }],
-      regra: "Você dispara um fragmento de pura energia arcana. Faça um teste de ataque (1d20 + Poder de Magia) contra um alvo; em um acerto, ele sofre 1d4 + Poder de Magia de dano. Se o dano for máximo, repita a magia como parte da mesma ação.",
-      automatico: "teste de ataque e dano; acertando com todos os dados no máximo, aparece \"Repetir\": a magia sai de novo na mesma Ação, sem custo (pode trocar o alvo), e o card diz \"Sem custo\".",
+      regra: "Você dispara um fragmento de pura energia arcana. Faça um teste de ataque (1d20 + Poder de Magia) contra um alvo; em um acerto, ele sofre 1d4 + Poder de Magia de dano. Se o dano for máximo, repita a magia como parte da mesma ação; você pode escolher novos alvos para as repetições. Caso essa magia seja conjurada com Conjuração Poderosa, seu 1º ataque causará dano máximo.",
+      automatico: "teste de ataque e dano; acertando com todos os dados no máximo, aparece \"Repetir\": a magia sai de novo na mesma Ação, sem custo (marque o novo alvo antes de confirmar), e o card diz \"Sem custo\". Com Conjuração Poderosa armada, o 1º ataque rola o dano no máximo; se acertar, a repetição é oferecida na hora (as repetições não têm mais a Poderosa).",
       manual: ""
     },
     {
@@ -2118,11 +2120,11 @@ async function naurenSemearHabilidadesLadino(pack, packCondicoes, packEfeitos) {
         { id: "abaixo", nome: "Você está abaixo", criativa: "abaixo", dificuldadeExtra: "4", valor: "1", sobeComRank: false, porAnalisado: true, duracao: "cena", maxAcumulos: "99", contaComoInformacao: true }
       ],
       acoes: [
-        // 3 usos por cena; +1 no nível 6 e no 11 (livro 0.8, confirmado pelo Gustavo). Marcar o Alvo soma +rank.
+        // 3 usos por cena; +1 no nível 6 e no 10 (livro 0.9). Marcar o Alvo soma +rank.
         { nome: "Analisar", custoEstamina: 1, alcance: "campo de visão", ehAtaque: false, modoAlvo: "selecionado", modoAlvoTravado: true, usaEstudar: true,
-          usaUsos: true, usosAtual: 3, usosMax: 3, usosReset: "cena", usosMaxPorNivel: [{ nivel: 1, valor: 3 }, { nivel: 6, valor: 4 }, { nivel: 11, valor: 5 }] }
+          usaUsos: true, usosAtual: 3, usosMax: 3, usosReset: "cena", usosMaxPorNivel: [{ nivel: 1, valor: 3 }, { nivel: 6, valor: 4 }, { nivel: 10, valor: 5 }] }
       ],
-      descricao: naurenMontarDescricao({ regra: "<p><b>Análise Paciente (P/A).</b> Custo: 1 PdE. Duração: 1 cena. Usos: 3 por cena (+1 nos níveis 6 e 11, total 5).</p><p>Você analisa um oponente no seu campo de visão com um teste de Inteligência (S.I 8 + Inteligência do alvo) e adquire informações sobre ele (atributos, custos, dados de dano, habilidades...). No sucesso, o alvo recebe <b>1 acúmulo de Analisado</b> e você recebe um destes bônus contra ele, que não podem ser acumulados:</p><ul><li><b>Conheço seus movimentos:</b> +1 nas esquivas contra os ataques dele, por acúmulo.</li><li><b>Conheço onde dói:</b> +1 dado de dano da sua arma, por acúmulo.</li><li><b>Conheço sua estratégia:</b> um número de ataques contra ele sem gerar Prioridade igual aos acúmulos (declare antes de rolar).</li><li><b>Conheço sua defesa:</b> +1 nos seus testes de ataque contra ele, por acúmulo.</li></ul><p><b>Análise criativa</b> (S.I 12 + Inteligência do alvo): <b>Eu estou acima</b> (+1 em ___ por acúmulo contra ele até o fim da cena) ou <b>Você está abaixo</b> (ao atingir o alvo com o seu próximo ataque, ele recebe −1 em ___ por acúmulo até o fim da cena, ou até gastar 2 PdE). Complete com qualquer palavra-chave (ex.: Defesa, Poder de Ataque, Espírito, Movimento, Bônus de Bloqueio, Limiar de Deflexão); também não se acumula.</p>", automatico: "\"Analisar\": escolha o bônus (os já desbloqueados somem da lista; as criativas pedem o campo), o teste é rolado (com rerolagem por Destino) e, no sucesso, a SUA marca \"Analisado (por você)\" no alvo ganha o acúmulo. Os bônus valem a cena toda e crescem com os acúmulos; \"sua estratégia\" pergunta antes de cada ataque contra ele. \"Eu estou acima\" vira uma Condição em você que só vale contra esse alvo (Defesa, Esquiva, Bloqueio, Redução de Dano e Limiar de Deflexão quando ele ataca; Ataque, Poder de Ataque/Magia, Bônus de Dano, Alcance e Limiar de Deflexão quando você ataca; Movimento e Espírito valem em geral, +1 por acúmulo, com a Mana máxima acompanhando o Espírito; \"Outro\" fica como lembrete); \"Você está abaixo\" entra no alvo no seu próximo acerto. O painel \"Análises\" (aba Características) mostra e ajusta cada alvo. Dois Ladinos têm marcas separadas.", manual: "Campo \"Outro\" nas criativas: o bônus é narrativo (sem efeito automático)." })
+      descricao: naurenMontarDescricao({ regra: "<p><b>Análise Paciente (P/A).</b> Custo: 1 PdE. Duração: 1 cena. Usos: 3 por cena (+1 nos níveis 6 e 10, total 5).</p><p>Você analisa um oponente no seu campo de visão com um teste de Inteligência (S.I 8 + Inteligência do alvo) e adquire informações sobre ele (atributos, custos, dados de dano, habilidades...). No sucesso, o alvo recebe <b>1 acúmulo de Analisado</b> e você recebe um destes bônus contra ele, que não podem ser acumulados:</p><ul><li><b>Conheço seus movimentos:</b> +1 nas esquivas contra os ataques dele, por acúmulo.</li><li><b>Conheço onde dói:</b> +1 dado de dano da sua arma, por acúmulo.</li><li><b>Conheço sua estratégia:</b> um número de ataques contra ele sem gerar Prioridade igual aos acúmulos (declare antes de rolar).</li><li><b>Conheço sua defesa:</b> +1 nos seus testes de ataque contra ele, por acúmulo.</li></ul><p><b>Análise criativa</b> (S.I 12 + Inteligência do alvo): <b>Eu estou acima</b> (+1 em ___ por acúmulo contra ele até o fim da cena) ou <b>Você está abaixo</b> (ao atingir o alvo com o seu próximo ataque, ele recebe −1 em ___ por acúmulo até o fim da cena, ou até gastar 2 PdE). Complete com qualquer palavra-chave (ex.: Defesa, Poder de Ataque, Espírito, Movimento, Bônus de Bloqueio, Limiar de Deflexão); também não se acumula.</p>", automatico: "\"Analisar\": escolha o bônus (os já desbloqueados somem da lista; as criativas pedem o campo), o teste é rolado (com rerolagem por Destino) e, no sucesso, a SUA marca \"Analisado (por você)\" no alvo ganha o acúmulo. Os bônus valem a cena toda e crescem com os acúmulos; \"sua estratégia\" pergunta antes de cada ataque contra ele. \"Eu estou acima\" vira uma Condição em você que só vale contra esse alvo (Defesa, Esquiva, Bloqueio, Redução de Dano e Limiar de Deflexão quando ele ataca; Ataque, Poder de Ataque/Magia, Bônus de Dano, Alcance e Limiar de Deflexão quando você ataca; Movimento e Espírito valem em geral, +1 por acúmulo, com a Mana máxima acompanhando o Espírito; \"Outro\" fica como lembrete); \"Você está abaixo\" entra no alvo no seu próximo acerto. O painel \"Análises\" (aba Características) mostra e ajusta cada alvo. Dois Ladinos têm marcas separadas.", manual: "Campo \"Outro\" nas criativas: o bônus é narrativo (sem efeito automático)." })
     }
   });
 
@@ -2224,10 +2226,9 @@ async function naurenSemearClasseLadino(pack, h, uuidDarPrioridade) {
         { nivel: 7, itensConcedidos: [], upgradesDeRank: [] },
         { nivel: 8, itensConcedidos: [], upgradesDeRank: [] },
         { nivel: 9, itensConcedidos: [], upgradesDeRank: [] },
-        { nivel: 10, itensConcedidos: [{ uuid: h.falsificarSeuDestino }], upgradesDeRank: [] },
-        { nivel: 11, itensConcedidos: [], upgradesDeRank: [
-          { uuidOrigem: h.analisePaciente, novoRank: 3 }
-        ] },
+        // Livro 0.9: o 3º degrau da Análise Paciente veio para o nível 10 (antes 11).
+        { nivel: 10, itensConcedidos: [{ uuid: h.falsificarSeuDestino }], upgradesDeRank: [{ uuidOrigem: h.analisePaciente, novoRank: 3 }] },
+        { nivel: 11, itensConcedidos: [], upgradesDeRank: [] },
         { nivel: 12, itensConcedidos: [], upgradesDeRank: [] },
         { nivel: 13, itensConcedidos: [], upgradesDeRank: [] },
         { nivel: 14, itensConcedidos: [], upgradesDeRank: [] },
@@ -4030,7 +4031,7 @@ async function naurenSemearHabilidadesDruida(pack, packCondicoes) {
   const druidismo = await naurenGarantirHabilidadeDeClasse(pack, "habilidade-druida-druidismo", {
     name: "Druidismo", type: "habilidade", img: "icons/magic/nature/leaf-glow-maple-teal.webp",
     system: {
-      descricao: naurenMontarDescricao({ regra: "<p><b>Passiva, a partir do nível 13.</b> Estar ao seu lado é estar vinculado à vida da natureza. Quando um personagem do seu grupo (incluindo você) sobe de nível, ele escolhe: <b>Lagoa</b> (+1 ponto para distribuir nas Subclasses), <b>Cachoeira</b> (pode mudar 2 pontos de Subclasse já investidos) ou <b>Chuva</b> (+3 Pontos de Vida adicionais). Só se aplica 1 vez por nível, não importa quantos Druidas com esta Habilidade estejam no grupo.</p><p><b>Melhoria (nível 16):</b> você pode escolher um efeito adicional para esta habilidade.</p>", automatico: "ao subir de nível, o dono do personagem recebe a escolha; Lagoa e Chuva viram Condições permanentes (Druidismo: Lagoa / Chuva) que somam por acúmulo; 1 vez por nível. Com o Druida no nível 16 ou mais, aparece uma 2ª escolha (diferente da 1ª).", manual: "Cachoeira: remanejar os 2 pontos de Subclasse (resetar e reinvestir, com o Mestre)." })
+      descricao: naurenMontarDescricao({ regra: "<p><b>Passiva, a partir do nível 13.</b> Estar ao seu lado é estar vinculado à vida da natureza. Quando um personagem do seu grupo (incluindo você) sobe de nível, ele escolhe: <b>Lagoa</b> (+1 ponto para distribuir nas Subclasses), <b>Cachoeira</b> (pode mudar 2 pontos de Subclasse já investidos) ou <b>Chuva</b> (+3 Pontos de Vida adicionais). Só se aplica 1 vez por nível, não importa quantos Druidas com esta Habilidade estejam no grupo.</p><p>Em níveis mais altos, ao alcançar o <b>nível 17</b>, você pode escolher um efeito adicional para esta habilidade.</p>", automatico: "ao subir de nível, o dono do personagem recebe a escolha; Lagoa e Chuva viram Condições permanentes (Druidismo: Lagoa / Chuva) que somam por acúmulo; 1 vez por nível. Com o Druida no nível 17 ou mais, aparece a escolha do efeito adicional (diferente do 1º).", manual: "Cachoeira: remanejar os 2 pontos de Subclasse (resetar e reinvestir, com o Mestre)." })
     }
   });
 
@@ -4139,7 +4140,7 @@ async function naurenSemearClasseDruida(pack, h, uuidDarPrioridade) {
         { nivel: 13, itensConcedidos: [{ uuid: h.druidismo }], upgradesDeRank: [] },
         { nivel: 14, itensConcedidos: [{ uuid: h.sabedoriaDasCopas }], upgradesDeRank: [] },
         { nivel: 15, itensConcedidos: [{ uuid: h.bestiario }], upgradesDeRank: [] },
-        // Livro 0.8: Renascimento Verdejante saiu; o nível 16 é a Melhoria do Druidismo (2ª bênção, automática).
+        // Livro 0.8: Renascimento Verdejante saiu. Livro 0.9: o efeito adicional do Druidismo é escolhido a partir do nível 17.
         { nivel: 16, itensConcedidos: [], upgradesDeRank: [] },
         { nivel: 17, itensConcedidos: [], upgradesDeRank: [] },
         { nivel: 18, itensConcedidos: [], upgradesDeRank: [{ uuidOrigem: h.forcaDaNatureza, novoRank: 3 }] },
@@ -7101,7 +7102,7 @@ async function naurenSemearSubclasseSacerdoteAgraciado(pack, packHabilidades, pa
         { itemAlvoUuid: esferaPrismatica.uuid, campo: "acoes.0.entidadeAoEsgotarCura", modo: "substituir", valorPorRank: [{ rank: 1, valor: "10" }, { rank: 2, valor: "15" }, { rank: 3, valor: "20" }] },
         { itemAlvoUuid: esferaPrismatica.uuid, campo: "acoes.0.entidadeAoEsgotarRaio", modo: "substituir", valorPorRank: [{ rank: 1, valor: "9" }] }
       ],
-      rankMax: 3, itemUuid: erradiarLuzSagrada.uuid, prerequisitos: [{ id: "esfera-prismatica", linhaVisivel: false }, { id: "costurar-a-vida", linhaVisivel: false }]
+      rankMax: 3, itemUuid: erradiarLuzSagrada.uuid, prerequisitos: [{ id: "esfera-prismatica", linhaVisivel: false }] // livro 0.9: sem a seta de Costurar a Vida
     },
     {
       id: "guiar-o-destino", x: 5.21, y: 23.74, largura: 7.12, altura: 5.02, nome: "Guiar o Destino", tipo: "Habilidade Passiva",
@@ -7152,7 +7153,7 @@ async function naurenSemearSubclasseSacerdotePenitente(pack, packHabilidades, pa
       duracaoModo: "cena",
       acumulativel: true, acumulosMax: 99,
       modificadores: [{ campo: "poderMagia", valor: "1" }], negativa: "nao",
-      descricao: naurenMontarDescricao({ regra: "Origem: Estigmas do Milagre (Sacerdote, Penitente). +1 Poder de Magia por acúmulo: um por penitência realizada nesta cena de combate.", automatico: "sobe a cada penitência aceita e some no fim do combate.", manual: "" })
+      descricao: naurenMontarDescricao({ regra: "Origem: Estigmas do Milagre (Sacerdote, Penitente). +1 Poder de Magia por acúmulo: um por penitência realizada nesta cena de combate, até o limite dos Estigmas (3, +1 por ponto além do 1º).", automatico: "sobe a cada penitência aceita e some no fim do combate.", manual: "" })
     }
   })).uuid;
   // Os 3 Milagres da Canonização (escolhidos ao se santificar).
@@ -7202,8 +7203,10 @@ async function naurenSemearSubclasseSacerdotePenitente(pack, packHabilidades, pa
     name: "Estigmas do Milagre", type: "habilidade", img: "icons/magic/unholy/hand-light-green.webp",
     system: {
       usaGatilhos: true,
-      gatilhos: [{ evento: "penitenciaAceita", recurso: `condicaoEmMim:${uuidVontadeFortalecida}`, quantidade: "1" }],
-      descricao: naurenMontarDescricao({ regra: "Duração: cena. Sempre que você realizar uma Penitência, aumente seu Poder de Magia em 1.", automatico: "cada penitência aceita soma +1 Poder de Magia (Condição acumulável), que sai sozinha no fim do combate.", manual: "" })
+      rankMax: 3,
+      // Livro 0.9: limite de 3 (antes sem limite), +1 no limite por ponto (3 / 4 / 5).
+      gatilhos: [{ evento: "penitenciaAceita", recurso: `condicaoEmMim:${uuidVontadeFortalecida}`, quantidade: "1", acumulosMaxFormula: "2+@rank" }],
+      descricao: naurenMontarDescricao({ regra: "Duração: cena. Sempre que você realizar uma Penitência, aumente seu Poder de Magia em 1, até o limite de 3. Para cada ponto além do 1º nesta habilidade, o limite aumenta em 1.", automatico: "cada penitência aceita soma +1 Poder de Magia (Condição acumulável), até 3 / 4 / 5 conforme os pontos; no limite, o card avisa. Sai sozinha no fim do combate.", manual: "" })
     }
   });
   const canonizacao = await naurenGarantirHabilidadeDeSubclasse(packHabilidades, "habilidade-sacerdote-canonizacao", {
@@ -7273,7 +7276,7 @@ async function naurenSemearSubclasseSacerdotePenitente(pack, packHabilidades, pa
     },
     {
       id: "estigmas-do-milagre", x: 37.57, y: 34.57, largura: 7.20, altura: 5.06, nome: "Estigmas do Milagre", tipo: "Habilidade Passiva",
-      rankMax: 1, itemUuid: estigmasDoMilagre.uuid, prerequisitos: [{ id: "penitencia-desesperada", linhaVisivel: false }]
+      rankMax: 3, itemUuid: estigmasDoMilagre.uuid, prerequisitos: [{ id: "penitencia-desesperada", linhaVisivel: false }]
     },
     {
       id: "halo", x: 69.96, y: 34.62, largura: 7.19, altura: 5.01, nome: "Halo", tipo: "Habilidade Passiva",

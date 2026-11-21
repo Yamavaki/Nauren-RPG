@@ -478,6 +478,8 @@ function campoGatilho() {
     // Limite de disparos por escopo do Relógio de Combate ("" = sem limite).
     limiteUsos: new StringField({ initial: "" }),
     limiteEscopo: new StringField({ initial: "turno" }),
+    // 0.120: "condicaoEmMim" com teto de acúmulos (fórmula, aceita @rank). Ex.: Estigmas do Milagre "2+@rank" (3/4/5).
+    acumulosMaxFormula: new StringField({ initial: "" }),
     // Só reage quando a Ação do evento for um teste de ataque.
     apenasAtaque: new BooleanField({ initial: false }),
     // Só quando o ataque do evento acertou (eventos de ataque).
@@ -7496,6 +7498,7 @@ Hooks.once("init", () => {
   game.settings.register("nauren", "migracaoCardsGatilhoV1", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoLivro08PequenasV1", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoLivro09CacadorV1", { scope: "world", config: false, type: Boolean, default: false });
+  game.settings.register("nauren", "migracaoLivro09ClassesV1", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoMisticoRevisaoV2", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoLadinoRevisaoV1", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoAtaqueAgilidadeV1", { scope: "world", config: false, type: Boolean, default: false });

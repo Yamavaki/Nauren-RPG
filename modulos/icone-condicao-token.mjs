@@ -2721,6 +2721,19 @@ async function naurenProcessarGatilhosInterno(tipoEvento, atorEvento, contexto =
             textoAcumulos = rollAcumulos.dice?.length ? `${naurenFormulaParaTexto(formula, candidato)} → ${naurenTextoRolagem(rollAcumulos)}`
               : /@rank\b/i.test(String(g.quantidade ?? "")) ? `pelo rank ${rankAtualItem}` : "";
           } catch (err) { /* mantém 1 se a fórmula falhar */ }
+          // 0.120: teto de acúmulos pela fórmula do gatilho (ex.: Estigmas do Milagre, 3 + 1 por ponto).
+          if (String(g.acumulosMaxFormula ?? "").trim()) {
+            const tetoTxt = String(g.acumulosMaxFormula).replace(/@rank\b/gi, String(Math.max(1, item.system.rankAtual ?? 1)))
+              .replace(/@(\w+)/g, (m, nome) => String(naurenResolverTokenFormula(nome, candidato)));
+            let teto = 0; try { teto = Math.floor((await new Roll(tetoTxt).evaluate()).total); } catch (err) { teto = 0; }
+            if (teto > 0) {
+              const jaTem = candidato.items.find(i => (i.type === "condicao" || i.type === "efeito") && (i.getFlag("nauren", "origemUuid") === uuidCondicao || i.getFlag("core", "sourceId") === uuidCondicao || i._stats?.compendiumSource === uuidCondicao || i.getFlag("nauren", "cadeiaRaizUuid") === uuidCondicao));
+              const atual = jaTem ? (jaTem.system.acumulativel ? (jaTem.system.acumulos ?? 1) : 1) : 0;
+              const cabe = Math.max(0, teto - atual);
+              if (!cabe) { linhasCard.push({ label: item.name, value: `no limite (${teto})`, breakdown: "não acumula mais" }); continue; }
+              if (quantidadeAcumulos > cabe) { quantidadeAcumulos = cabe; textoAcumulos = `limite ${teto}`; }
+            }
+          }
           const flagsGatilho = g.gravarAlvoNaCondicao && contexto.alvoUuid ? { alvoUuidGravado: contexto.alvoUuid } : null;
           const nomeAplicado = await NaurenAlvoHelper.aplicarCondicao(candidato, uuidCondicao, quantidadeAcumulos, null, 0, 0, "", "1", "", "", 0, false, flagsGatilho);
           if (nomeAplicado) {
