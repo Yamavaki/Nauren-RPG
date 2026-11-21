@@ -5,6 +5,8 @@
 export const NAUREN_LIVRO09_ITENS_0120 = Object.freeze(["Estigmas do Milagre", "Mísseis Arcanos", "Análise Paciente", "Druidismo"]);
 /** Nós de árvore de Subclasse que mudaram (para achar a árvore certa). */
 export const NAUREN_LIVRO09_NOS_0120 = Object.freeze(["estigmas-do-milagre", "erradiar-luz-sagrada"]);
+/** 0.120.1: árvore do Místico (Poesia) sem as setas Postura Gruhua → Dança e Gruhua → Inundação. */
+export const NAUREN_LIVRO09_NOS_01201 = Object.freeze(["danca-do-espirito-bebado", "inundacao-espiritual"]);
 
 /** Precisa reconciliar este item? (função pura, testada) */
 export function naurenLivro09ItemMudou0120(it) {
@@ -41,5 +43,31 @@ export async function naurenMigrarLivro09ClassesV1() {
     const { naurenPostarCard } = await import("../nauren.mjs");
     naurenPostarCard({ titulo: "Livro 0.9: Sacerdote, Mago, Ladino e Druida", icone: "icons/sundries/books/book-backed-silver-red.webp", fonte: "Fichas ajustadas",
       linhas: relatorio.map(r => ({ label: "Ajuste", value: r })) }).catch(() => {});
+  }
+}
+
+/** 0.120.1: reconcilia as árvores do Místico (Poesia) que ainda têm as setas removidas no livro 0.9. */
+export function naurenLivro09ArvoreMisticoMudou(it) {
+  if (it?.type !== "subclasse") return false;
+  const nos = it.system?.nos ?? [];
+  const req = id => (nos.find(n => n.id === id)?.prerequisitos ?? []).map(p => p.id);
+  return req("danca-do-espirito-bebado").includes("postura-gruhua") || req("inundacao-espiritual").includes("gruhua-senhor-das-brumas");
+}
+
+export async function naurenMigrarLivro09MisticoSetasV1() {
+  if (!game.user.isGM || game.settings.get("nauren", "migracaoLivro09MisticoSetasV1")) return;
+  const ict = await import("./icone-condicao-token.mjs");
+  const atores = new Set(game.actors);
+  for (const cena of game.scenes) for (const t of cena.tokens) if (t.actor && !t.actorLink) atores.add(t.actor);
+  const nomes = [];
+  for (const a of atores) for (const it of Array.from(a.items)) {
+    if (!naurenLivro09ArvoreMisticoMudou(it)) continue;
+    if (await ict.naurenReconciliarItemComCompendio(it).catch(() => false)) nomes.push(a.name);
+  }
+  await game.settings.set("nauren", "migracaoLivro09MisticoSetasV1", true);
+  if (nomes.length) {
+    const { naurenPostarCard } = await import("../nauren.mjs");
+    naurenPostarCard({ titulo: "Livro 0.9: Místico", icone: "icons/consumables/drinks/wine-bottle-glass-white.webp", fonte: "Árvore da Poesia",
+      linhas: [{ label: "Setas removidas", value: "Postura Gruhua → Dança do Espírito Bêbado; Gruhua → Inundação Espiritual", breakdown: nomes.join(", ") }] }).catch(() => {});
   }
 }

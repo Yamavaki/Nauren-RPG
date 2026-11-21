@@ -6590,11 +6590,11 @@ async function naurenSemearSubclasseMisticoPoesia(pack, packHabilidades, packCon
     },
     {
       id: "danca-do-espirito-bebado", x: 37.54, y: 23.76, largura: 7.29, altura: 5.12, nome: "Dança do Espírito Bêbado", tipo: "Habilidade Passiva",
-      rankMax: 3, itemUuid: dancaDoEspiritoBebado.uuid, prerequisitos: [{ id: "brinde-ao-destino", linhaVisivel: false }, { id: "postura-gruhua", linhaVisivel: false }]
+      rankMax: 3, itemUuid: dancaDoEspiritoBebado.uuid, prerequisitos: [{ id: "brinde-ao-destino", linhaVisivel: false }] // livro 0.9: sem a seta de Postura Gruhua
     },
     {
       id: "inundacao-espiritual", x: 69.9, y: 23.73, largura: 7.34, altura: 5.05, nome: "Inundação Espiritual", tipo: "Habilidade Passiva",
-      rankMax: 1, itemUuid: inundacaoEspiritual.uuid, prerequisitos: [{ id: "danca-do-espirito-bebado", linhaVisivel: false }, { id: "gruhua-senhor-das-brumas", linhaVisivel: false }]
+      rankMax: 1, itemUuid: inundacaoEspiritual.uuid, prerequisitos: [{ id: "danca-do-espirito-bebado", linhaVisivel: false }] // livro 0.9: sem a seta de Gruhua, Senhor das Brumas
     }
   ];
 }
