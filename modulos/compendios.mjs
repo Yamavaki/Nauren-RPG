@@ -2957,7 +2957,7 @@ async function naurenSemearHabilidadesCacador(pack, packCondicoes, packEfeitos) 
     system: {
       ativo: false,
       bonusCondicionalAoAlvo: [{ ativo: true, condicaoUuid: uuidMarcado, campo: "alcance", valor: "2+@rank", filtroAtaque: "distancia" }],
-      descricao: naurenMontarDescricao({ regra: "Origem: Marca do Caçador. +3 metros no alcance dos seus ataques à distância contra o alvo marcado (+1 nos níveis 6, 9, 12, 15 e 18, até +8).", automatico: "liga ao escolher Foco Mortal na Marca do Caçador; o alcance extra só vale em ataques à distância contra o marcado. Marcar outro alvo ou escolher outro benefício desliga este.", manual: "" })
+      descricao: naurenMontarDescricao({ regra: "Origem: Marca do Caçador. +2 metros no alcance dos seus ataques à distância contra o alvo marcado (+1 nos níveis 6, 9, 12, 15 e 18, até +7).", automatico: "liga ao escolher Foco Mortal na Marca do Caçador; o alcance extra só vale em ataques à distância contra o marcado. Marcar outro alvo ou escolher outro benefício desliga este.", manual: "" })
     }
   });
   const efeitoTiroLetal = await naurenGarantirItemNoPack(packEfeitos, "efeito-cacador-tiro-letal", {
@@ -2965,7 +2965,7 @@ async function naurenSemearHabilidadesCacador(pack, packCondicoes, packEfeitos) 
     system: {
       ativo: false,
       bonusCondicionalAoAlvo: [{ ativo: true, condicaoUuid: uuidMarcado, campo: "dano", valor: "@rank", filtroAtaque: "arma" }],
-      descricao: naurenMontarDescricao({ regra: "Origem: Marca do Caçador. +1 no dano causado com armas contra o alvo marcado (+1 nos níveis 6, 9, 12, 15 e 18, até +6).", automatico: "liga ao escolher Tiro Letal na Marca do Caçador; o dano extra entra nos ataques com arma (incluindo habilidades em que se escolhe a arma) contra o marcado. Marcar outro alvo ou escolher outro benefício desliga este.", manual: "" })
+      descricao: naurenMontarDescricao({ regra: "Origem: Marca do Caçador. +2 no dano causado com armas contra o alvo marcado (+1 nos níveis 6, 9, 12, 15 e 18, até +7).", automatico: "liga ao escolher Tiro Letal na Marca do Caçador; o dano extra entra nos ataques com arma (incluindo habilidades em que se escolhe a arma) contra o marcado. Marcar outro alvo ou escolher outro benefício desliga este.", manual: "" })
     }
   });
   const efeitoReflexosDeCaca = await naurenGarantirItemNoPack(packEfeitos, "efeito-cacador-reflexos-de-caca", {
@@ -2982,7 +2982,7 @@ async function naurenSemearHabilidadesCacador(pack, packCondicoes, packEfeitos) 
         { ativo: true, condicaoUuid: uuidMarcado, campo: "bloqueio", valor: "@rank" },
         { ativo: true, condicaoUuid: uuidMarcado, campo: "esquiva", valor: "@rank" }
       ],
-      descricao: naurenMontarDescricao({ regra: "Origem: Marca do Caçador. +1 em Bloqueio e Esquiva contra os ataques do alvo marcado (+1 nos níveis 6, 9, 12, 15 e 18, até +6).", automatico: "liga ao escolher Reflexos de Caça na Marca do Caçador; o bônus aparece na janela de reação quando o marcado ataca você. Marcar outro alvo ou escolher outro benefício desliga este.", manual: "" })
+      descricao: naurenMontarDescricao({ regra: "Origem: Marca do Caçador. +2 em Bloqueio e Esquiva contra os ataques do alvo marcado (+1 nos níveis 6, 9, 12, 15 e 18, até +7).", automatico: "liga ao escolher Reflexos de Caça na Marca do Caçador; o bônus aparece na janela de reação quando o marcado ataca você. Marcar outro alvo ou escolher outro benefício desliga este.", manual: "" })
     }
   });
   const uuidEfeitoFocoMortal = efeitoFocoMortal.uuid;
@@ -2993,8 +2993,8 @@ async function naurenSemearHabilidadesCacador(pack, packCondicoes, packEfeitos) 
     name: "Marca do Caçador", type: "habilidade", img: "icons/skills/ranged/target-bullseye-arrow-yellow.webp",
     system: {
       efeitosEmAtaques: [
-        { ativo: true, tipoAtaque: "qualquer", tipoArma: "Distância", condicaoUuid: "", acumulos: "1", multiplicarPeloRank: false, alvoMarcadoPorMimNome: "Marcado pelo Caçador", soComBeneficioMarca: "focoMortal", alcanceExtra: "2+@rank" },
-        { ativo: true, tipoAtaque: "comArma", tipoArma: "", condicaoUuid: "", acumulos: "1", multiplicarPeloRank: false, alvoMarcadoPorMimNome: "Marcado pelo Caçador", soComBeneficioMarca: "tiroLetal", danoExtraFixoPor: "rank", danoExtraFixoValor: "1" }
+        { ativo: true, tipoAtaque: "qualquer", tipoArma: "Distância", condicaoUuid: "", acumulos: "1", multiplicarPeloRank: false, alvoMarcadoPorMimNome: "Marcado pelo Caçador", soComBeneficioMarca: "focoMortal", alcanceExtra: "1+@rank" }, // livro 0.9: +2 … +7
+        { ativo: true, tipoAtaque: "comArma", tipoArma: "", condicaoUuid: "", acumulos: "1", multiplicarPeloRank: false, alvoMarcadoPorMimNome: "Marcado pelo Caçador", soComBeneficioMarca: "tiroLetal", danoExtraFixoPor: "rank", danoExtraFixoValor: "1", danoExtraFixoSoma: "1" }
       ],
       prioridadeIndicador: "PA",
       rankMax: 6,
@@ -3008,7 +3008,7 @@ async function naurenSemearHabilidadesCacador(pack, packCondicoes, packEfeitos) 
         // lembrar de desativar o antigo manualmente.
         escolherBeneficioMarca: true
       }],
-      descricao: naurenMontarDescricao({ regra: "Ativa. Custo: 1 Estamina. Duração: 1 cena. Você pode marcar um inimigo que você possa ver. Enquanto ele estiver marcado, você recebe um dos seguintes benefícios contra ele: Foco Mortal (aumenta em +3 metros o alcance de seus ataques à distância), Tiro Letal (+1 no dano causado contra o alvo com armas) ou Reflexos de Caça (+1 em Bloqueio e Esquiva contra os ataques desse alvo). Marcar outro alvo encerra os benefícios contra o anterior. Em níveis mais altos, os bônus aumentam em 1 nos níveis 6, 9, 12, 15 e 18.", automatico: "a marca aparece no alvo como \"Marcado pelo Caçador (por Você)\", uma por Caçador; ao marcar, você escolhe o benefício (o botão mostra o valor do seu rank), e ele vale só contra esse alvo: Foco Mortal +3m (+1m por rank acima do 1º: +4m no rank 2, +5m no rank 3...), Tiro Letal +rank de dano, Reflexos de Caça +rank no Bloqueio e na Esquiva contra ele; o painel \"Marcas\" (aba Características) mostra quem você marcou, com o benefício, e permite trocar o benefício ou remover a marca.", manual: "" })
+      descricao: naurenMontarDescricao({ regra: "Ativa (P/A). Custo: 1 Estamina. Duração: 1 cena. Você pode marcar um inimigo que você possa ver. Enquanto ele estiver marcado, você recebe um dos seguintes benefícios contra ele: Foco Mortal (aumenta em +2 metros o alcance de seus ataques à distância), Tiro Letal (+2 no dano causado contra o alvo com armas) ou Reflexos de Caça (+2 em Bloqueio e Esquiva contra os ataques desse alvo). Marcar outro alvo encerra os benefícios contra o anterior. Em níveis mais altos, os bônus aumentam em 1 nos níveis 6, 9, 12, 15 e 18, totalizando +7.", automatico: "a marca aparece no alvo como \"Marcado pelo Caçador (por Você)\", uma por Caçador; ao marcar, você escolhe o benefício (o botão mostra o valor atual), e ele vale só contra esse alvo: +2 no nível 1, +3 no 6, +4 no 9, +5 no 12, +6 no 15 e +7 no 18, igual nos três benefícios (metros a mais no alcance à distância, dano com armas, ou Bloqueio e Esquiva contra ele); o painel \"Marcas\" (aba Características) mostra quem você marcou, com o benefício, e permite trocar o benefício ou remover a marca.", manual: "" })
     }
   });
 
@@ -3072,7 +3072,18 @@ async function naurenSemearHabilidadesCacador(pack, packCondicoes, packEfeitos) 
     }
   });
 
+  // Livro 0.9 (0.119) - Espírito do Caçador (nível 1): reserva declarada (máximo = Espírito, volta ao meditar 1 h).
+  // Os três aspectos são oferecidos quando o gatilho de cada um acontece (decisão do Gustavo).
+  const espiritoDoCacador = await naurenGarantirHabilidadeDeClasse(pack, "habilidade-cacador-espirito-do-cacador", {
+    name: "Espírito do Caçador", type: "habilidade", img: "icons/creatures/abilities/paw-print-orange.webp",
+    system: {
+      recursosDeclarados: [{ id: "espiritodocacador", nome: "Espírito do Caçador", maxFormula: "@espirito", icone: "fa-paw", cor1: "#2b2014", cor2: "#d98b3a", nasceCheio: true }],
+      descricao: naurenMontarDescricao({ regra: "Passiva, nível 1. Todo o seu meta atributo de Espírito é convertido em Espírito do Caçador. Você possui uma quantidade de pontos de Espírito do Caçador igual ao seu meta atributo de Espírito e recupera todos eles após meditar por 1 hora. Ao iniciar uma cena de combate, você pode gastar pontos de Espírito do Caçador para assumir um aspecto de predação: <b>Aspecto do Mantis</b> (quando um aliado realizar um ataque durante o turno dele, você pode gastar 3 pontos para realizar um ataque simultaneamente; o alvo recebe apenas 1 Prioridade e pode utilizá-la para responder a apenas um dos dois ataques), <b>Aspecto do Tubarão</b> (antes de realizar um teste de ataque, você pode gastar 1 ponto para que, em caso de acerto, aplique 1 acúmulo de Sangramento ao alvo) ou <b>Aspecto da Harpia</b> (antes de realizar um teste de ataque, você pode gastar 1 ponto para receber +2 no teste de acerto).", automatico: "a barra \"Espírito do Caçador\" (máximo = Espírito) aparece na ficha. Em combate, antes de cada teste de ataque com pontos na barra, uma janela oferece Harpia (+2 no acerto) e Tubarão (Sangramento 1 se acertar), 1 ponto cada, um, os dois ou nenhum. Quando um aliado ataca no turno dele, a tela do Caçador com 3 pontos pergunta se quer atacar junto (Mantis): escolhe a arma ou a habilidade, o ataque sai contra o mesmo alvo e não gera outra Prioridade. Os três podem ser usados na mesma cena enquanto houver pontos.", manual: "" })
+    }
+  });
+
   return {
+    espiritoDoCacador: espiritoDoCacador.uuid,
     marcaDoCacador: marcaDoCacador.uuid,
     efeitoFocoMortal: uuidEfeitoFocoMortal,
     efeitoTiroLetal: uuidEfeitoTiroLetal,
@@ -3090,6 +3101,7 @@ async function naurenSemearClasseCacador(pack, h, uuidDarPrioridade, armasDispar
     name: "Caçador", type: "classe", img: "icons/weapons/bows/bow-ornamental-silver-black.webp",
     system: {
       identifier: "cacador",
+      recursosDeclarados: [{ id: "espiritodocacador", nome: "Espírito do Caçador", maxFormula: "@espirito", icone: "fa-paw", cor1: "#2b2014", cor2: "#d98b3a", nasceCheio: true }],
       descricao: "<p>O Caçador é o mestre do terreno, o estrategista que transforma o campo de batalha em sua armadilha pessoal. Observa, espera e ataca no momento exato - vence pela leitura do inimigo, não pela pressa.</p>",
       niveis: [
         // Mesmo bug real corrigido acima (Disparo Carregado) - sem este
@@ -3097,7 +3109,7 @@ async function naurenSemearClasseCacador(pack, h, uuidDarPrioridade, armasDispar
         // desde o nível 1 (em vez de 1), então "Foco Mortal" (alcance
         // "2+@rank") só dava +2 em vez de +3, e "Tiro Letal"/"Reflexos
         // de Caça" (dano/defesa "@rank" puro) davam +0 em vez de +1.
-        { nivel: 1, itensConcedidos: [{ uuid: h.marcaDoCacador }, { uuid: uuidDarPrioridade }], upgradesDeRank: [
+        { nivel: 1, itensConcedidos: [{ uuid: h.marcaDoCacador }, ...(h.espiritoDoCacador ? [{ uuid: h.espiritoDoCacador }] : []), { uuid: uuidDarPrioridade }], upgradesDeRank: [
           { uuidOrigem: h.marcaDoCacador, novoRank: 1 }
         ] },
         { nivel: 2, itensConcedidos: [{ uuid: h.armadilhaDeCaca }], upgradesDeRank: [{ uuidOrigem: h.armadilhaDeCaca, novoRank: 1 }] },

@@ -32,6 +32,7 @@ import { __naurenIniciar_desfazer_acao, naurenDiferencaDesfazer, naurenFotoCenaD
 import { NaurenHudCombate, __naurenIniciar_hud_combate, naurenAlvosSaoVelhos, naurenHud, naurenHudAlvos, naurenLimparMeusAlvos, naurenMarcarAlvosAgora } from "./modulos/hud-combate.mjs";
 import { __naurenIniciar_discord_resumo, naurenConcederPrioridadePeloCard } from "./modulos/discord-resumo.mjs";
 import { __naurenIniciar_descer_nivel } from "./modulos/descer-nivel.mjs";
+import { NAUREN_QUERY_MANTIS, naurenHandleQueryMantis } from "./modulos/cacador-espirito.mjs";
 import { __naurenIniciar_movimento, naurenCardMovimento, naurenDepoisDoMovimento, naurenGastarRecursoSimples, naurenJanelaMovimento, naurenModoMovimento, naurenMoverSemMovimento, naurenMovimentoSaldo, naurenRecursosCustomConhecidos } from "./modulos/movimento.mjs";
 import { __naurenIniciar_monstros_regras, naurenCasasLivresEmVolta, naurenCompensacoesContraOrigem, naurenCondicoesAtivas, naurenCondicoesLigadasA, naurenCriarInvocacoes, naurenMovSemPrioridadeUsado, naurenTravaDaAcao, naurenTravaPrioridade, naurenUuidEhEsteToken } from "./modulos/monstros-regras.mjs";
 import { NAUREN_QUERY_OFERECER_ITEM, naurenHandleQueryOferecerItem } from "./modulos/entrega-itens.mjs";
@@ -2062,6 +2063,7 @@ class NaurenHabilidadeData extends foundry.abstract.TypeDataModel {
         soEmPrioridadeRoubada: new BooleanField({ initial: false }),     // só em ataques feitos numa Prioridade que você roubou
         danoExtraFixoPor: new StringField({ initial: "" }),              // "" | estresseAliados | prioridadesGeradas | informacoes
         danoExtraFixoValor: new StringField({ initial: "1" }),           // quanto por unidade (× rank se marcado)
+        danoExtraFixoSoma: new StringField({ initial: "" }),             // 0.119: soma fixa (ex.: Tiro Letal = rank + 1)
         soNoCritico: new BooleanField({ initial: false }),               // o dano extra só entra em acertos críticos
         soComFacilidade: new BooleanField({ initial: false }),           // o dano extra só entra se o ataque saiu com Facilidade (ex.: Euforia)
         danoExtraDadoPorRank: new BooleanField({ initial: false }),      // o "dano extra" (dado) sobe com o rank: 1d10, 2d10, 3d10 (ex.: Euforia)
@@ -2870,6 +2872,7 @@ class NaurenEfeitoData extends foundry.abstract.TypeDataModel {
         soEmPrioridadeRoubada: new BooleanField({ initial: false }),     // só em ataques feitos numa Prioridade que você roubou
         danoExtraFixoPor: new StringField({ initial: "" }),              // "" | estresseAliados | prioridadesGeradas | informacoes
         danoExtraFixoValor: new StringField({ initial: "1" }),           // quanto por unidade (× rank se marcado)
+        danoExtraFixoSoma: new StringField({ initial: "" }),             // 0.119: soma fixa (ex.: Tiro Letal = rank + 1)
         soNoCritico: new BooleanField({ initial: false }),               // o dano extra só entra em acertos críticos
         soComFacilidade: new BooleanField({ initial: false }),           // o dano extra só entra se o ataque saiu com Facilidade (ex.: Euforia)
         danoExtraDadoPorRank: new BooleanField({ initial: false }),      // o "dano extra" (dado) sobe com o rank: 1d10, 2d10, 3d10 (ex.: Euforia)
@@ -3245,6 +3248,7 @@ class NaurenCondicaoData extends foundry.abstract.TypeDataModel {
         soEmPrioridadeRoubada: new BooleanField({ initial: false }),     // só em ataques feitos numa Prioridade que você roubou
         danoExtraFixoPor: new StringField({ initial: "" }),              // "" | estresseAliados | prioridadesGeradas | informacoes
         danoExtraFixoValor: new StringField({ initial: "1" }),           // quanto por unidade (× rank se marcado)
+        danoExtraFixoSoma: new StringField({ initial: "" }),             // 0.119: soma fixa (ex.: Tiro Letal = rank + 1)
         soNoCritico: new BooleanField({ initial: false }),               // o dano extra só entra em acertos críticos
         soComFacilidade: new BooleanField({ initial: false }),           // o dano extra só entra se o ataque saiu com Facilidade (ex.: Euforia)
         danoExtraDadoPorRank: new BooleanField({ initial: false }),      // o "dano extra" (dado) sobe com o rank: 1d10, 2d10, 3d10 (ex.: Euforia)
@@ -7419,6 +7423,7 @@ Hooks.once("init", () => {
   CONFIG.queries[NAUREN_QUERY_APLICAR_CONDICAO] = naurenHandleQueryAplicarCondicao;
   CONFIG.queries[NAUREN_QUERY_REGISTRO_PRIORIDADE] = naurenHandleQueryRegistroPrioridade;
   CONFIG.queries[NAUREN_QUERY_REACAO_PRE_ATAQUE] = naurenHandleQueryReacaoPreAtaque;
+  CONFIG.queries[NAUREN_QUERY_MANTIS] = naurenHandleQueryMantis; // 0.119: Aspecto do Mantis (Caçador)
   CONFIG.queries[NAUREN_QUERY_DANO_COLISAO] = naurenHandleQueryDanoColisao;
   CONFIG.queries[NAUREN_QUERY_ENTIDADE] = naurenHandleQueryEntidade;
   CONFIG.queries[NAUREN_QUERY_MOVER_TOKEN] = naurenHandleQueryMoverToken;
@@ -7490,6 +7495,7 @@ Hooks.once("init", () => {
   Hooks.once("ready", () => { try { if (game.user.isGM && game.settings.get("nauren", "destinoPerguntar") === "erraria") game.settings.set("nauren", "destinoPerguntar", "sempre"); } catch (err) { /* ignora */ } });
   game.settings.register("nauren", "migracaoCardsGatilhoV1", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoLivro08PequenasV1", { scope: "world", config: false, type: Boolean, default: false });
+  game.settings.register("nauren", "migracaoLivro09CacadorV1", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoMisticoRevisaoV2", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoLadinoRevisaoV1", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoAtaqueAgilidadeV1", { scope: "world", config: false, type: Boolean, default: false });

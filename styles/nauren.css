@@ -1,5 +1,5 @@
 /* Versão deste arquivo: o sistema confere no "ready" e, se o navegador/Forge tiver guardado um CSS antigo, carrega o novo. */
-:root { --nauren-css-versao: "0.118.0"; }
+:root { --nauren-css-versao: "0.119.0"; }
 /* 
 ===================================================
 1. FUNDO E FONTES GERAIS
@@ -9575,3 +9575,13 @@ li.directory-item.nauren-org-tem-dono > .entry-name > .nauren-org-nome { overflo
 .nauren-sheet.ns2 .ns-mov-ofensivo i { color: #e0805a; }
 .nauren-sheet.ns2 .ns-mov-defensivo i { color: #6fb3d9; }
 .nauren-sheet.ns2 .ns-mov-disparada i { color: #cca162; }
+
+/* 0.119 — Espírito do Caçador: aspectos antes do ataque (marcar um, os dois ou nenhum) */
+.nauren-aspectos .nauren-aspecto { position: relative; padding-right: 34px; }
+.nauren-aspectos .nauren-aspecto::after { content: ""; position: absolute; right: 12px; top: 50%; width: 14px; height: 14px; margin-top: -7px; border-radius: 4px; border: 1px solid var(--n-borda, #3b3154); background: rgba(0,0,0,.25); }
+.nauren-aspectos .nauren-aspecto.ativo { border-color: #d98b3a; background: color-mix(in srgb, #d98b3a 12%, var(--n-painel, #241e36)); }
+.nauren-aspectos .nauren-aspecto.ativo::after { background: #d98b3a; border-color: #d98b3a; box-shadow: inset 0 0 0 3px rgba(0,0,0,.35); }
+.application.nauren-kit.nc2 .nauren-aspectos .nauren-aspecto.ativo { --cbd: #d98b3a; --cbg: color-mix(in srgb, #d98b3a 12%, var(--nk-cartao)); }
+.nauren-aspectos .nauren-aspecto i { color: #d98b3a; }
+.nauren-aspectos-total { margin: 0; text-align: right; font-size: 12px; color: var(--n-suave, #a89bc4); }
+.nauren-aspectos-total b { color: var(--n-texto, #ece6f3); font-size: 14px; }

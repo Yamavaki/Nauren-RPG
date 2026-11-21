@@ -1088,6 +1088,7 @@ Hooks.once("ready", async () => {
     await passo("Ladino: Estudos (Lerdeza/Desestabilizar pelo nível), Avaliar, Marcar o Alvo e Olhar da Morte", () => naurenMigrarLadinoEstudosV1());
     await passo("Livro 0.8: habilidades que mudaram de regra nas fichas", () => naurenMigrarLivro08ItensV1());
     await passo("Livro 0.8: Combustão (4 pontos), Baderna, Espírito Ardiloso e Aureum", () => naurenMigrarLivro08PequenasV1());
+    await passo("Livro 0.9: Caçador (Espírito do Caçador, Marca +2 … +7)", () => import("./cacador-espirito.mjs").then(m => m.naurenMigrarLivro09CacadorV1()));
     await passo("Eu estou acima: só contra o alvo analisado", () => naurenMigrarAcimaSoContraAlvoV1());
     await passo("Místico: correções da revisão (Caligrafia, Brinde, Restauração, Arte Divina, Estrela)", () => naurenMigrarMisticoRevisaoV1());
     await passo("Ladino: correções da revisão (Invisível no Caos, Marcar o Alvo, usos por nível)", () => naurenMigrarLadinoRevisaoV1());
