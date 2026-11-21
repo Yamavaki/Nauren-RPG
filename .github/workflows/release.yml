@@ -22,6 +22,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
       - name: Ler a versão
         id: versao
         run: echo "v=$(jq -r .version system.json)" >> "$GITHUB_OUTPUT"
@@ -39,6 +43,10 @@ jobs:
           esperado="https://github.com/${{ github.repository }}/releases/download/v${{ steps.versao.outputs.v }}/nauren.zip"
           atual=$(jq -r .download system.json)
           [ "$atual" = "$esperado" ] || { echo "O download do system.json é $atual, mas devia ser $esperado"; exit 1; }
+
+      - name: Testes automáticos (tools/testes)
+        if: steps.existe.outputs.sim == '0'
+        run: node tools/testes/rodar.mjs
 
       - name: Montar o zip
         if: steps.existe.outputs.sim == '0'

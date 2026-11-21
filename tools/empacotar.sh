@@ -11,6 +11,9 @@ grep -q "vers%C3%A3o-$versao-" README.md || echo "AVISO: o selo de versão do RE
 dl=$(grep -m1 '"download"' system.json | sed 's/.*"download": *"\([^"]*\)".*/\1/')
 case "$dl" in */releases/download/v$versao/nauren.zip) ;; *) echo "ERRO: o download do system.json ($dl) não aponta para a Release v$versao."; exit 1;; esac
 for f in nauren.mjs modulos/*.mjs data/*.mjs; do node --check "$f"; done
+# 0.117: testes automáticos — se algum falhar, não monta o zip (e a Release não sai)
+if ! saida=$(node tools/testes/rodar.mjs 2>&1); then echo "$saida"; echo "ERRO: testes falharam, o zip não foi montado."; exit 1; fi
+echo "$saida" | tail -1
 tmp=$(mktemp)
 git ls-files -co --exclude-standard | grep -v -e '^dist/' -e '^tools/' -e '^\.github/' -e '^\.gitignore$' -e '^README\.md$' | sort > "$tmp"
 mkdir -p dist; rm -f dist/nauren.zip
