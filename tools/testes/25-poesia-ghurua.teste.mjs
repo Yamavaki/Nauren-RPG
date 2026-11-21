@@ -20,8 +20,8 @@ export default async function (t) {
   for (const seed of ["condicao-poesia-ghurua-chuva", "condicao-sob-chuva-infinita-inimigo", "condicao-sob-chuva-infinita-aliado", "condicao-poesia-ghurua-aroma", "condicao-poesia-ghurua-veu", "condicao-sob-veu-das-brumas-inimigo", "condicao-sob-veu-das-brumas-aliado"])
     t(src.includes(`"${seed}"`), `semente ${seed}`);
   t(/custoEstaminaExtraAtaques: 1, dadosDanoAMenos: 1/.test(src), "Chuva (inimigo): +1 Estamina e 1 dado a menos");
-  t(/recurso: "cura", formula: "1d6", aumentaPorAcumulo: false, quando: "inicioTurnoPortador"/.test(src), "Chuva (aliado): 1d6 de Vida no início do turno");
-  t(/recurso: "recursoCustom:energia", formula: "1", aumentaPorAcumulo: false, quando: "inicioTurnoPortador"/.test(src), "Aroma: +1 Energia no início do turno");
+  t(/recurso: "cura", formula: "1d6", aumentaPorAcumulo: false, quando: "inicioTurnoQualquer"/.test(src), "Chuva (aliado): 1d6 de Vida no início de cada turno (de qualquer um)");
+  t(/recurso: "recursoCustom:energia", formula: "1", aumentaPorAcumulo: false, quando: "inicioTurnoQualquer"/.test(src), "Aroma: +1 Energia no início de cada turno (de qualquer um)");
   t(/bloqueiaPrimeiraPrioridadeTurno: true/.test(src) && /campo: "vantagemAtaque", valor: "vantagem"/.test(src), "Véu: sem 1ª Prioridade (inimigo) e Facilidade (aliado)");
   t(/rolarBrinde: true, beberCabacaGhurua: true,\s*\n\s*prioridadeIndicador: "PA"/.test(src) && /nome: "Beber cabaça \(Aroma de Licor\)", categoria: "Subclasse", custoEstamina: 1/.test(src), "Beber cabaça: 1 PdE, P/A, ativa o Brinde");
   t(/para ter Conjuração Poderosa/.test(src), "Páginas em Chamas: texto novo");

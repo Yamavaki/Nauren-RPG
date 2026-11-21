@@ -19,10 +19,10 @@
 export const NAUREN_POESIAS_GHURUA = Object.freeze({
   chuva: Object.freeze({ id: "chuva", nome: "Poesia da Chuva Infinita", curto: "Chuva Infinita", cor: "#4f8fd6", icone: "fa-cloud-showers-heavy",
     fonteSeed: "condicao-poesia-ghurua-chuva", inimigoSeed: "condicao-sob-chuva-infinita-inimigo", aliadoSeed: "condicao-sob-chuva-infinita-aliado",
-    resumo: "Inimigos: +1 Estamina para atacar e 1 dado de dano a menos. Aliados: 1d6 de Vida no início do turno." }),
+    resumo: "Inimigos: +1 Estamina para atacar e 1 dado de dano a menos. Aliados: 1d6 de Vida no início de cada turno." }),
   aroma: Object.freeze({ id: "aroma", nome: "Poesia do Aroma de Licor", curto: "Aroma de Licor", cor: "#c98a3a", icone: "fa-wine-bottle",
     fonteSeed: "condicao-poesia-ghurua-aroma", inimigoSeed: "", aliadoSeed: "",
-    resumo: "1d6 cabaças a até 4 m. Você: +1 Energia no início do turno e Vida igual à Energia que gastar." }),
+    resumo: "1d6 cabaças a até 4 m. Você: +1 Energia no início de cada turno e Vida igual à Energia que gastar." }),
   veu: Object.freeze({ id: "veu", nome: "Poesia do Véu das Brumas", curto: "Véu das Brumas", cor: "#8a7fc4", icone: "fa-smog",
     fonteSeed: "condicao-poesia-ghurua-veu", inimigoSeed: "condicao-sob-veu-das-brumas-inimigo", aliadoSeed: "condicao-sob-veu-das-brumas-aliado",
     resumo: "Inimigos: sem a 1ª Prioridade de cada turno. Aliados: Facilidade nos ataques." })
