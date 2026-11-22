@@ -1,5 +1,6 @@
 /* Nauren RPG — Borda do token (Dynamic Token Ring). Separado do nauren.mjs na 0.94.31. */
 import { naurenCardMovimento, naurenConsumirUsoDaHabilidade, naurenDepoisDoMovimento, naurenEhCondicaoModelo, naurenEhItem, naurenHud, naurenHudAnimacoesLigadas, naurenJanelaMovimento, naurenModoMovimento, naurenMoverSemMovimento, naurenMovimentoEmCombate, naurenMovimentoSaldo, naurenTemEstado, naurenTokensDeslocando, naurenUsoDisponivel } from "../nauren.mjs";
+import { naurenCaminhoDoMovimento, naurenLiberarMovimento, naurenMovimentoJaLiberado } from "./movimento.mjs";
 /* ======================================================================
  * Borda do token (Dynamic Token Ring do Foundry)
  * ----------------------------------------------------------------------
@@ -1021,27 +1022,34 @@ Hooks.on("preUpdateToken", (tokenDoc, changes, options, userId) => {
   if (changes.x === undefined && changes.y === undefined) return;
   tokenDoc._naurenMoveOrigin = { x: tokenDoc.x, y: tokenDoc.y };
   // Modo pop-up: sem saldo suficiente, segura o movimento e abre a janela (só para quem arrastou).
-  if (userId !== game.user.id || options?.naurenMovimentoLiberado || options?.naurenEmpurrado || naurenTokensDeslocando.has(tokenDoc.id)) return;
+  if (userId !== game.user.id || options?.naurenEmpurrado || naurenTokensDeslocando.has(tokenDoc.id)) return;
+  // 0.122.1: andar ponto a ponto (Ctrl + clique) vira VÁRIAS atualizações do mesmo movimento. Só a 1ª é conferida,
+  // pelo trajeto inteiro; as seguintes (mesmo id ou continuação dele) passam direto.
+  const movInfo = options?.movement?.[tokenDoc.id] ?? null;
+  if (options?.naurenMovimentoLiberado || naurenMovimentoJaLiberado(tokenDoc, movInfo)) return;
   const actor = tokenDoc.actor;
   if (!actor?.system?.bonus || !game.combat?.started) return;
   const modoMovPre = naurenModoMovimento(actor);
   if (modoMovPre === "manual") return;
   const origem = { x: tokenDoc.x, y: tokenDoc.y };
-  const destino = { x: changes.x ?? tokenDoc.x, y: changes.y ?? tokenDoc.y };
-  let distancia = 0;
-  try { distancia = canvas.grid.measurePath([origem, destino])?.distance ?? 0; } catch (err) { return; }
+  const caminho = naurenCaminhoDoMovimento(movInfo);
+  const fim = caminho.length ? caminho[caminho.length - 1] : null;
+  const destino = fim ? { x: fim.x, y: fim.y } : { x: changes.x ?? tokenDoc.x, y: changes.y ?? tokenDoc.y };
+  // Distância do trajeto INTEIRO (o que já vai andar nesta atualização + o que falta), não só do 1º trecho.
+  let distancia = movInfo ? (Number(movInfo.passed?.distance) || 0) + (Number(movInfo.pending?.distance) || 0) : 0;
+  if (!distancia) { try { distancia = canvas.grid.measurePath([origem, destino])?.distance ?? 0; } catch (err) { return; } }
   if (!distancia) return;
   // Movimento 0 (Preso, Paralisado...): em vez de travar, explica o motivo e pergunta se quer mover mesmo assim.
   const caidoPre = actor.items.find(i => i.type === "condicao" && i.system.ativo !== false && naurenEhItem(i, "Caído"));
   const movPre = Math.max(0, caidoPre ? Math.floor((actor.system.movimentoTotal ?? 0) / 2) : (actor.system.movimentoTotal ?? 0));
   if (movPre <= 0) {
-    setTimeout(() => naurenMoverSemMovimento(tokenDoc, origem, destino, distancia, caidoPre).catch(err => console.error("Nauren RPG | Movimento", err)), 0);
+    setTimeout(() => naurenMoverSemMovimento(tokenDoc, origem, destino, distancia, caidoPre, caminho).catch(err => console.error("Nauren RPG | Movimento", err)), 0);
     return false;
   }
   if (modoMovPre !== "popup") return;
   const saldo = naurenMovimentoSaldo.get(actor.uuid) ?? 0;
-  if (distancia <= saldo + 0.01) return; // o saldo cobre: anda (o saldo é descontado depois)
-  setTimeout(() => naurenJanelaMovimento(tokenDoc, origem, destino, distancia).catch(err => console.error("Nauren RPG | Movimento", err)), 0);
+  if (distancia <= saldo + 0.01) { naurenLiberarMovimento(tokenDoc, movInfo); return; } // o saldo cobre: anda (o saldo é descontado depois)
+  setTimeout(() => naurenJanelaMovimento(tokenDoc, origem, destino, distancia, caminho).catch(err => console.error("Nauren RPG | Movimento", err)), 0);
   return false;
 });
 
@@ -1065,8 +1073,8 @@ Hooks.on("updateToken", async (tokenDoc, changes, options, userId) => {
   if (userId === game.user.id && modoMov !== "automatico") depois();
   if (modoMov === "manual") return;
   if (modoMov === "popup") {
-    let dist = 0;
-    try { dist = canvas.grid.measurePath([origem, { x: changes.x ?? tokenDoc.x, y: changes.y ?? tokenDoc.y }])?.distance ?? 0; } catch (err) { return; }
+    let dist = Number(options?.movement?.[tokenDoc.id]?.passed?.distance) || 0; // trecho desta atualização (andar ponto a ponto)
+    if (!dist) { try { dist = canvas.grid.measurePath([origem, { x: changes.x ?? tokenDoc.x, y: changes.y ?? tokenDoc.y }])?.distance ?? 0; } catch (err) { return; } }
     naurenMovimentoSaldo.set(actor.uuid, Math.max(0, (naurenMovimentoSaldo.get(actor.uuid) ?? 0) - dist));
     return;
   }
@@ -1080,8 +1088,8 @@ Hooks.on("updateToken", async (tokenDoc, changes, options, userId) => {
     y: changes.y ?? tokenDoc.y
   };
 
-  let distancia = 0;
-  try {
+  let distancia = Number(options?.movement?.[tokenDoc.id]?.passed?.distance) || 0;
+  if (!distancia) try {
     distancia = canvas.grid.measurePath([origem, destino])?.distance ?? 0;
   } catch (err) {
     console.warn("Nauren RPG | Não foi possível medir a distância percorrida.", err);

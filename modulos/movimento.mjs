@@ -23,6 +23,64 @@ const naurenMovimentoTipoSaldo = new Map();     // actor.uuid -> "ofensivo" | "d
 const naurenMovimentoTipoAtual = new Map();     // actor.uuid -> { tipo, cardPostado } (janela -> depois do movimento)
 const naurenMovimentoTipoPreferido = new Map(); // actor.uuid -> tipo escolhido no HUD (modo automático/manual e sugestão da janela)
 
+
+/* ===================== ANDAR PONTO A PONTO (0.122.1) =====================
+ * No V13+/V14, andar com Ctrl + clique (vários pontos) vira VÁRIAS atualizações do mesmo movimento
+ * (options.movement[id]: passed = trecho desta atualização, pending = o que falta). O Nauren confere o
+ * trajeto inteiro na 1ª e deixa as seguintes passarem; depois de pagar na janela, refaz o caminho todo.
+ * ======================================================================= */
+const naurenMovimentosLiberados = new Map(); // id do movimento -> expira (ms)
+const naurenLiberarProximoMov = new Map();   // tokenId -> expira (ms): o próximo movimento deste token já foi pago
+function naurenLimparLiberados() {
+  const agora = Date.now();
+  for (const [k, v] of naurenMovimentosLiberados) if (v < agora) naurenMovimentosLiberados.delete(k);
+  for (const [k, v] of naurenLiberarProximoMov) if (v < agora) naurenLiberarProximoMov.delete(k);
+}
+function naurenLiberarMovimento(tokenDoc, mov) {
+  naurenLimparLiberados();
+  if (mov?.id) naurenMovimentosLiberados.set(mov.id, Date.now() + 120000);
+}
+/** Esta atualização é continuação de um movimento já conferido (ou o refeito depois de pagar)? */
+function naurenMovimentoJaLiberado(tokenDoc, mov) {
+  naurenLimparLiberados();
+  if (mov && (naurenMovimentosLiberados.has(mov.id) || (mov.chain ?? []).some(id => naurenMovimentosLiberados.has(id)))) {
+    if (mov.id) naurenMovimentosLiberados.set(mov.id, Date.now() + 120000);
+    return true;
+  }
+  if (naurenLiberarProximoMov.has(tokenDoc.id)) {
+    naurenLiberarProximoMov.delete(tokenDoc.id);
+    if (mov?.id) naurenMovimentosLiberados.set(mov.id, Date.now() + 120000);
+    return true;
+  }
+  return false;
+}
+/** Os pontos do trajeto inteiro (o que vai andar agora + o que falta), no formato aceito por TokenDocument#move. */
+function naurenCaminhoDoMovimento(mov) {
+  const todos = [...(mov?.passed?.waypoints ?? []), ...(mov?.pending?.waypoints ?? [])].filter(w => w && !w.intermediate);
+  return todos.map(w => {
+    const p = {};
+    for (const k of ["x", "y", "elevation", "width", "height", "shape", "action", "snapped", "explicit", "checkpoint"]) if (w[k] !== undefined) p[k] = w[k];
+    return p;
+  }).filter(p => Number.isFinite(p.x) && Number.isFinite(p.y));
+}
+/** Move pelo caminho todo (pontos) quando houver; senão, direto ao destino. Espera o fim do movimento. */
+async function naurenMoverPeloCaminho(tokenDoc, destino, caminho = []) {
+  naurenLiberarProximoMov.set(tokenDoc.id, Date.now() + 15000);
+  try {
+    let andou = false;
+    if (caminho.length > 1 && typeof tokenDoc.move === "function") {
+      try {
+        andou = (await tokenDoc.move(caminho, { method: "api" })) !== false;
+        const fim = tokenDoc.movement?.finished;
+        if (andou && fim?.then) await Promise.race([fim.catch(() => null), new Promise(r => setTimeout(r, 20000))]);
+      } catch (err) { console.warn("Nauren RPG | Movimento por pontos recusado; indo direto ao destino.", err); andou = false; }
+    }
+    if (!andou) {
+      await tokenDoc.update({ x: destino.x, y: destino.y }, { naurenMovimentoLiberado: true });
+    }
+  } finally { naurenLiberarProximoMov.delete(tokenDoc.id); }
+}
+
 function naurenTipoPreferido(actor) {
   return naurenTipoMovimentoValido(naurenMovimentoTipoPreferido.get(actor?.uuid) ?? "ofensivo");
 }
@@ -115,7 +173,8 @@ async function naurenDepoisDoMovimento(tokenDoc, origem, destino, caminho = null
   // 0.118 (livro 0.9): o tipo do movimento decide a Prioridade. Lido ANTES de qualquer await (o saldo é
   // descontado logo depois). Se a janela já postou o card com a escolha, aqui não repete.
   const info = naurenMovimentoTipoAtual.get(actor.uuid);
-  naurenMovimentoTipoAtual.delete(actor.uuid);
+  // Pago pela janela: vale para TODOS os trechos do caminho (a janela apaga ao fim do movimento).
+  if (!info?.cardPostado) naurenMovimentoTipoAtual.delete(actor.uuid);
   const tipo = info?.tipo ?? ((naurenMovimentoSaldo.get(actor.uuid) ?? 0) > 0 ? naurenMovimentoTipoSaldo.get(actor.uuid) : null) ?? naurenTipoPreferido(actor);
   // Traço da Aquarela: pinta os QUADRADOS do grid por onde o token passou
   // (dura a cena). Região visível para todos, alinhada ao grid.
@@ -229,7 +288,7 @@ async function naurenMovimentoComoAcao(actor, movimentos = 1) {
 }
 
 /** Movimento 0: explica o motivo e pergunta se quer mover mesmo assim (fica registrado no card). */
-async function naurenMoverSemMovimento(tokenDoc, origem, destino, distancia, caido) {
+async function naurenMoverSemMovimento(tokenDoc, origem, destino, distancia, caido, caminho = []) {
   const actor = tokenDoc.actor; if (!actor) return;
   const motivos = naurenMotivosSemMovimento(actor, caido);
   const esc = v => foundry.utils.escapeHTML(String(v ?? ""));
@@ -247,11 +306,11 @@ async function naurenMoverSemMovimento(tokenDoc, origem, destino, distancia, cai
     { label: "Movido sem Movimento", value: `${Math.round(distancia)}m`, breakdown: "decisão do jogador/Mestre" },
     ...motivos.map(m => ({ label: "Motivo", value: m.nome, breakdown: m.texto }))
   ]);
-  await tokenDoc.update({ x: destino.x, y: destino.y }, { naurenMovimentoLiberado: true });
+  await naurenMoverPeloCaminho(tokenDoc, destino, caminho);
 }
 
 
-async function naurenJanelaMovimento(tokenDoc, origem, destino, distancia) {
+async function naurenJanelaMovimento(tokenDoc, origem, destino, distancia, caminho = []) {
   const actor = tokenDoc.actor; if (!actor) return;
   const caido = actor.items.find(i => i.type === "condicao" && i.system.ativo !== false && naurenEhItem(i, "Caído"));
   const movTotal = Math.max(0, actor.system.movimentoTotal ?? 0);
@@ -419,7 +478,7 @@ async function naurenJanelaMovimento(tokenDoc, origem, destino, distancia) {
   }
   naurenMovimentoTipoAtual.set(actor.uuid, { tipo, cardPostado: true });
   await naurenCardMovimento(actor, tokenDoc, linhas, preMarcados, tipo);
-  try { await tokenDoc.update({ x: destino.x, y: destino.y }, { naurenMovimentoLiberado: true }); }
+  try { await naurenMoverPeloCaminho(tokenDoc, destino, caminho); }
   finally { naurenMovimentoTipoAtual.delete(actor.uuid); }
   if (escolha !== "gratis") await naurenMovimentoComoAcao(actor, acoes); // Alvejado etc. (movimento pago)
 }
@@ -458,4 +517,4 @@ Hooks.on("updateItem", (it, mud) => { if (foundry.utils.hasProperty(mud, "system
 Hooks.on("createItem", it => { if ((it.system?.recursosDeclarados ?? []).length) naurenCacheRecursosDeclarados = null; });
 }
 
-export { naurenDefinirTipoPreferido, naurenDispensaAproximacao, naurenInimigosAlcancados, naurenMovimentoTipoAtual, naurenMovimentoTipoPreferido, naurenMovimentoTipoSaldo, naurenTipoPreferido, naurenMovimentoComoAcao, naurenCacheRecursosDeclarados, naurenCardMovimento, naurenDepoisDoMovimento, naurenDesenharTracoAquarela, naurenGastarRecursoSimples, naurenJanelaMovimento, naurenModoMovimento, naurenMotivosSemMovimento, naurenMoverSemMovimento, naurenMovimentoEmDirecaoAInimigo, naurenMovimentoSaldo, naurenNomeRecursoMov, naurenRecursosCustomConhecidos };
+export { naurenCaminhoDoMovimento, naurenLiberarMovimento, naurenMovimentoJaLiberado, naurenMoverPeloCaminho, naurenDefinirTipoPreferido, naurenDispensaAproximacao, naurenInimigosAlcancados, naurenMovimentoTipoAtual, naurenMovimentoTipoPreferido, naurenMovimentoTipoSaldo, naurenTipoPreferido, naurenMovimentoComoAcao, naurenCacheRecursosDeclarados, naurenCardMovimento, naurenDepoisDoMovimento, naurenDesenharTracoAquarela, naurenGastarRecursoSimples, naurenJanelaMovimento, naurenModoMovimento, naurenMotivosSemMovimento, naurenMoverSemMovimento, naurenMovimentoEmDirecaoAInimigo, naurenMovimentoSaldo, naurenNomeRecursoMov, naurenRecursosCustomConhecidos };
