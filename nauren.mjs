@@ -32,6 +32,7 @@ import { __naurenIniciar_desfazer_acao, naurenDiferencaDesfazer, naurenFotoCenaD
 import { NaurenHudCombate, __naurenIniciar_hud_combate, naurenAlvosSaoVelhos, naurenHud, naurenHudAlvos, naurenLimparMeusAlvos, naurenMarcarAlvosAgora } from "./modulos/hud-combate.mjs";
 import { __naurenIniciar_discord_resumo, naurenConcederPrioridadePeloCard } from "./modulos/discord-resumo.mjs";
 import { __naurenIniciar_descer_nivel } from "./modulos/descer-nivel.mjs";
+import { __naurenIniciar_ataqueDesarmado } from "./modulos/ataque-desarmado.mjs";
 import { __naurenIniciar_poesiaGhurua } from "./modulos/poesia-ghurua.mjs";
 import { NAUREN_QUERY_MANTIS, naurenHandleQueryMantis } from "./modulos/cacador-espirito.mjs";
 import { __naurenIniciar_movimento, naurenCardMovimento, naurenDepoisDoMovimento, naurenGastarRecursoSimples, naurenJanelaMovimento, naurenModoMovimento, naurenMoverSemMovimento, naurenMovimentoSaldo, naurenRecursosCustomConhecidos } from "./modulos/movimento.mjs";
@@ -7507,6 +7508,7 @@ Hooks.once("init", () => {
   game.settings.register("nauren", "migracaoLivro09ClassesV1", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoLivro09MisticoSetasV1", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoLivro09PoesiaV1", { scope: "world", config: false, type: Boolean, default: false });
+  game.settings.register("nauren", "migracaoAtaqueDesarmadoV1", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoMisticoRevisaoV2", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoLadinoRevisaoV1", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoAtaqueAgilidadeV1", { scope: "world", config: false, type: Boolean, default: false });
@@ -8166,6 +8168,7 @@ __naurenIniciar_descer_nivel();
 /* → Movimento em combate: modulos/movimento.mjs */
 __naurenIniciar_movimento();
 __naurenIniciar_poesiaGhurua();
+__naurenIniciar_ataqueDesarmado();
 
 
 /* ===== 0.92.46: Espada Lunar Leve pode ser arremessada (fichas e itens que já existiam) ===== */
