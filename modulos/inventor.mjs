@@ -86,6 +86,8 @@ const NAUREN_INVENTOR_CONSTRUCAO = (() => {
       { id: "fumaca", categoria: "df", custo: 3, nome: "Fumaça", max: 1, efeito: "Ataques contra você feitos numa Prioridade têm Dificuldade", aplica: [mod("vantagemAtaqueRecebidoPrioridade", "desvantagem")] },
       { id: "faiscas", categoria: "df", custo: 3, nome: "Escudo de faíscas", max: 1, efeito: "Ao sofrer dano, gaste PdI para reduzir o dano no mesmo valor", aplica: [
         { modo: "adicionar", campo: "reacoesPagas", valor: { nome: "Escudo de Faíscas", tipo: "reduzirDano", formula: "1", recurso: "recursoCustom:pdi", custo: "1", custoVariavel: true, soEmPrioridade: false, usosPorTurno: 0 } }] },
+      // Livro 0.9.1: capa, botas e armadura equipadas dão +1 de Defesa extra (cada uma, uma vez por peça).
+      { id: "blindagem", categoria: "df", custo: 4, nome: "Blindagem", efeito: "Capa, botas e armadura equipadas dão +1 de Defesa extra cada", aplica: [mod("defesa", "min(1,@equipados_Tecido+@equipados_Couro+@equipados_Malha+@equipados_Placa)+min(1,@equipados_Capa)+min(1,@equipados_Bota)")] },
 
       { id: "tambor", loja: false, categoria: "sp", custo: 1, nome: "Tambor extra", efeito: "+2 usos máximos", aplica: [{ modo: "somar", campo: "usosMax", valor: 2 }] },
       { id: "carregador", loja: false, categoria: "sp", custo: 2, nome: "Carregador", efeito: "+1 no valor rolado da Recarga", aplica: [{ modo: "formula", campo: "acoes.1.recarregaBonus", valor: "1" }] },
@@ -137,7 +139,7 @@ async function naurenSemearClasseInventor(packs, uuidDarPrioridade) {
     system: {
       ativo: true, construcao: NAUREN_INVENTOR_CONSTRUCAO,
       acoes: [{ nome: "Abrir a Bancada", custoEstamina: 0, alcance: "pessoal", modoAlvo: "nenhum", naoGeraPrioridade: true, prioridadeIndicador: "NP", abrirConstrucao: "criar" }],
-      descricao: naurenMontarDescricao({ regra: "Escolha uma fórmula (Arma de Fogo ou Prótese) e gaste Pontos de Invenção nas características Ofensivas, Defensivas e de Suporte (cada uma até 2 vezes). A arma não pode ser alterada, exceto por habilidades que permitam. Só uma por vez; se perdê-la, gaste 500 Florins para recriá-la. Ação de Recarga (P/A, 1 PdE): restaura 1d6 usos, só sem usos.",
+      descricao: naurenMontarDescricao({ regra: "Escolha uma fórmula (Arma de Fogo ou Prótese) e gaste Pontos de Invenção nas características Ofensivas, Defensivas e de Suporte (cada uma até 2 vezes). A arma não pode ser alterada, exceto por habilidades que permitam. Só uma por fórmula que você possua; se perdê-la, gaste 500 Florins para recriá-la. Ação de Recarga (P/A, 1 PdE): restaura 1d6 usos, só sem usos.",
         automatico: "a Bancada de Invenção mostra o orçamento (todo o seu Espírito), cobra os PdI ao forjar e cria a arma pronta, com card no chat de cada escolha.",
         manual: "recriar a arma após perdê-la cobra os 500 Florins à parte." })
     }

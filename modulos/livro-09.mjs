@@ -91,3 +91,24 @@ export async function naurenMigrarLivro09PoesiaV1() {
       linhas: nomes.map(n => ({ label: "Atualizado", value: n })) }).catch(() => {});
   }
 }
+
+/** 0.122.3 (livro 0.9.1): Guarda Defensiva com Escudo (não reduz dano de Condição), Espada Lunar (Mana por ataque 1/2/3)
+ *  e Arma de Inventor (característica nova "Blindagem"). */
+export const NAUREN_LIVRO091_SEEDS = Object.freeze(["efeito-guarda-defensiva-escudo", "magia-pagina-21-conjurar-espada-lunar", "habilidade-inventor-arma-de-inventor"]);
+export async function naurenMigrarLivro091V1() {
+  if (!game.user.isGM || game.settings.get("nauren", "migracaoLivro091V1")) return;
+  const ict = await import("./icone-condicao-token.mjs");
+  const atores = new Set(game.actors);
+  for (const cena of game.scenes) for (const t of cena.tokens) if (t.actor && !t.actorLink) atores.add(t.actor);
+  const nomes = [];
+  for (const a of atores) for (const it of Array.from(a.items)) {
+    if (!NAUREN_LIVRO091_SEEDS.includes(it.getFlag("nauren", "seedId"))) continue;
+    if (await ict.naurenReconciliarItemComCompendio(it).catch(() => false)) nomes.push(`${a.name}: ${it.name}`);
+  }
+  await game.settings.set("nauren", "migracaoLivro091V1", true);
+  if (nomes.length) {
+    const { naurenPostarCard } = await import("../nauren.mjs");
+    naurenPostarCard({ titulo: "Livro 0.9.1", icone: "icons/sundries/books/book-backed-silver-red.webp", fonte: "Fichas ajustadas",
+      linhas: nomes.map(n => ({ label: "Atualizado", value: n })) }).catch(() => {});
+  }
+}

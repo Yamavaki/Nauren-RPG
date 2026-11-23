@@ -1104,6 +1104,7 @@ Hooks.on("updateToken", async (tokenDoc, changes, options, userId) => {
   const caidoA = actor.items.some(i => i.type === "condicao" && i.system.ativo !== false && naurenEhItem(i, "Caído"));
   let tipoA = movTipos.naurenTipoPreferido(actor);
   if (tiposMov.naurenMetrosDoTipo(actor.system.movimentoTotal || 1, tipoA, { caido: caidoA }) <= 0) tipoA = "ofensivo";
+  if (tipoA === "defensivo" && !movTipos.naurenTemAliadoParaPrioridade(tokenDoc)) tipoA = "ofensivo"; // livro 0.9.1: Defensivo só com aliado
   let estado = naurenMovimentoEmCombate.get(actor.uuid) ?? { distancia: 0, blocosPagos: 0, tipo: tipoA };
   if ((estado.tipo ?? "ofensivo") !== tipoA) estado = { distancia: 0, blocosPagos: 0, tipo: tipoA };
   estado.distancia += distancia;

@@ -1709,18 +1709,18 @@ async function naurenSemearMagias(pack, packCondicoes) {
           nome: "Conjurar Espada Lunar — Média", custoMana: 2, alcance: "pessoal", modoAlvo: "nenhum",
           usaConjurarArma: true, armaConjuradaNome: "Espada Lunar (Média)",
           armaConjuradaFormula: "1d6+@poderMagia", armaConjuradaAtributoAtaque: "poderMagia",
-          armaConjuradaAlcance: "1m", armaConjuradaCustoMana: 1,
+          armaConjuradaAlcance: "1m", armaConjuradaCustoMana: 2,
           condensarDobraDanoDado: true, condensarAlcanceExtraMetros: 1
         },
         {
           nome: "Conjurar Espada Lunar — Pesada", custoMana: 3, alcance: "pessoal", modoAlvo: "nenhum",
           usaConjurarArma: true, armaConjuradaNome: "Espada Lunar (Pesada)",
           armaConjuradaFormula: "1d10+@poderMagia", armaConjuradaAtributoAtaque: "poderMagia",
-          armaConjuradaAlcance: "1m", armaConjuradaCustoMana: 2,
+          armaConjuradaAlcance: "1m", armaConjuradaCustoMana: 3,
           condensarDobraDanoDado: true, condensarAlcanceExtraMetros: 1
         }
       ],
-      regra: "Conjura uma Espada Lunar do tamanho escolhido: Leve (1 Mana, 1d4 + Poder de Magia), Média (2 Mana, 1d6 + Poder de Magia) ou Pesada (3 Mana, 1d10 + Poder de Magia). Os ataques usam Poder de Magia e custam Mana em vez de Estamina (1 para Leve e Média, 2 para Pesada). A Leve pode ser arremessada até 4 metros, como toda Arma Leve. Dura 1 cena de combate. Com Conjuração Poderosa, a espada sai com o dado de dano dobrado e +1 metro de alcance.",
+      regra: "Conjura uma Espada Lunar do tamanho escolhido: Leve (1 Mana, 1d4 + Poder de Magia), Média (2 Mana, 1d6 + Poder de Magia) ou Pesada (3 Mana, 1d10 + Poder de Magia). Os ataques usam Poder de Magia e custam Mana em vez de Estamina (1 para Leve, 2 para Média e 3 para Pesada). A Leve pode ser arremessada até 4 metros, como toda Arma Leve. Dura 1 cena de combate. Com Conjuração Poderosa, a espada sai com o dado de dano dobrado e +1 metro de alcance.",
       automatico: "cria a arma equipada no inventário; conjurar de novo substitui a anterior; a espada some no fim do combate (card avisa).",
       manual: ""
     },
@@ -4199,9 +4199,10 @@ async function naurenSemearEfeitosGuardas(pack) {
       modificadores: [
         { campo: "danoBonus", valor: "-2" },
         { campo: "bloqueio", valor: "2" },
-        { campo: "reducaoDano", valor: "1", porRank: porRank(2, 3, 4, 5) }
+        // Livro 0.9.1: o Escudo reduz o dano sofrido "que não seja causado por condições".
+        { campo: "reducaoDanoAtaque", valor: "1", porRank: porRank(2, 3, 4, 5) }
       ],
-      descricao: naurenMontarDescricao({ regra: "Guerreiro, Guardas: Guarda Defensiva empunhando Escudo. −2 no dano causado, +2 no Bônus de Bloqueio e Redução de Dano igual ao rank (1 a 5).", automatico: "ative pela Ação \"Entrar em Guarda\" (Guardas), que só oferece as Guardas do que você empunha; o rank sobe junto com Guardas; só uma Guarda por vez (duas com Juramento da Guarda)." })
+      descricao: naurenMontarDescricao({ regra: "Guerreiro, Guardas: Guarda Defensiva empunhando Escudo. −2 no dano causado, +2 no Bônus de Bloqueio e Redução de Dano igual ao rank (1 a 5), exceto no dano causado por condições.", automatico: "a redução não vale no dano de Condições (Sangramento, Queimando...); ative pela Ação \"Entrar em Guarda\" (Guardas), que só oferece as Guardas do que você empunha; o rank sobe junto com Guardas; só uma Guarda por vez (duas com Juramento da Guarda)." })
     }
   });
   const defensivaArmaPesada = await naurenGarantirEfeitoDeClasse(pack, "efeito-guarda-defensiva-arma-pesada", {

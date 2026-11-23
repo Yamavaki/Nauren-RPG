@@ -7509,6 +7509,7 @@ Hooks.once("init", () => {
   game.settings.register("nauren", "migracaoLivro09MisticoSetasV1", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoLivro09PoesiaV1", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoAtaqueDesarmadoV1", { scope: "world", config: false, type: Boolean, default: false });
+  game.settings.register("nauren", "migracaoLivro091V1", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoMisticoRevisaoV2", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoLadinoRevisaoV1", { scope: "world", config: false, type: Boolean, default: false });
   game.settings.register("nauren", "migracaoAtaqueAgilidadeV1", { scope: "world", config: false, type: Boolean, default: false });

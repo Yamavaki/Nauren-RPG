@@ -81,6 +81,13 @@ async function naurenMoverPeloCaminho(tokenDoc, destino, caminho = []) {
   } finally { naurenLiberarProximoMov.delete(tokenDoc.id); }
 }
 
+/** Há algum aliado (vivo, visível, não o próprio) em cena para receber a Prioridade do Movimento Defensivo? */
+function naurenTemAliadoParaPrioridade(tokenDoc) {
+  const disp = tokenDoc?.disposition;
+  return !!canvas?.tokens?.placeables?.some(t => t.document !== tokenDoc && t.actor && !t.document.hidden && t.document.disposition === disp
+    && disp !== 0 && (t.actor.system?.vida?.value ?? 1) > 0 && !t.actor.getFlag?.("nauren", "entidade")?.ativa);
+}
+
 function naurenTipoPreferido(actor) {
   return naurenTipoMovimentoValido(naurenMovimentoTipoPreferido.get(actor?.uuid) ?? "ofensivo");
 }
@@ -321,6 +328,8 @@ async function naurenJanelaMovimento(tokenDoc, origem, destino, distancia, camin
   const saldoTipo = saldo > 0 ? naurenTipoMovimentoValido(naurenMovimentoTipoSaldo.get(actor.uuid) ?? "ofensivo") : null;
   const baseConta = { movTotal, caido: !!caido, distancia, saldo, saldoTipo, custoExtra: extraPorMov };
   const planos = Object.fromEntries(NAUREN_ORDEM_TIPOS_MOVIMENTO.map(id => [id, naurenPlanoMovimento({ ...baseConta, tipo: id })]));
+  // Livro 0.9.1: o Defensivo "somente pode ser usado quando há um aliado para receber a prioridade".
+  if (!naurenTemAliadoParaPrioridade(tokenDoc)) planos.defensivo = { ...planos.defensivo, possivel: false, semAliado: true };
   const pref = naurenMovimentoTipoPreferido.get(actor.uuid);
   let tipo = saldoTipo ?? (pref && planos[pref]?.possivel ? pref : naurenTipoSugerido(baseConta));
   if (!planos[tipo].possivel) tipo = "ofensivo";
@@ -388,7 +397,7 @@ async function naurenJanelaMovimento(tokenDoc, origem, destino, distancia, camin
     raiz.querySelectorAll(".nauren-mov-tipo").forEach(b => {
       const ativo = b.dataset.tipo === tipo, pb = planos[b.dataset.tipo];
       b.classList.toggle("ativo", ativo); b.setAttribute("aria-pressed", ativo ? "true" : "false");
-      b.querySelector(".nmt-acoes").textContent = pb.possivel ? `${pb.acoes} ação${pb.acoes > 1 ? "ões" : ""} · ${pb.custoTotal} PdE` : "sem Movimento";
+      b.querySelector(".nmt-acoes").textContent = pb.possivel ? `${pb.acoes} ação${pb.acoes > 1 ? "ões" : ""} · ${pb.custoTotal} PdE` : pb.semAliado ? "sem aliado em cena" : "sem Movimento";
     });
     raiz.querySelector(".nauren-mov-tipo-desc").innerHTML = descricao(p);
     raiz.querySelector(".nmr-saldo").textContent = saldo > 0 ? `${Math.round(saldo)}m ${nomeTipo(saldoTipo)}` : "0m";
@@ -517,4 +526,4 @@ Hooks.on("updateItem", (it, mud) => { if (foundry.utils.hasProperty(mud, "system
 Hooks.on("createItem", it => { if ((it.system?.recursosDeclarados ?? []).length) naurenCacheRecursosDeclarados = null; });
 }
 
-export { naurenCaminhoDoMovimento, naurenLiberarMovimento, naurenMovimentoJaLiberado, naurenMoverPeloCaminho, naurenDefinirTipoPreferido, naurenDispensaAproximacao, naurenInimigosAlcancados, naurenMovimentoTipoAtual, naurenMovimentoTipoPreferido, naurenMovimentoTipoSaldo, naurenTipoPreferido, naurenMovimentoComoAcao, naurenCacheRecursosDeclarados, naurenCardMovimento, naurenDepoisDoMovimento, naurenDesenharTracoAquarela, naurenGastarRecursoSimples, naurenJanelaMovimento, naurenModoMovimento, naurenMotivosSemMovimento, naurenMoverSemMovimento, naurenMovimentoEmDirecaoAInimigo, naurenMovimentoSaldo, naurenNomeRecursoMov, naurenRecursosCustomConhecidos };
+export { naurenTemAliadoParaPrioridade, naurenCaminhoDoMovimento, naurenLiberarMovimento, naurenMovimentoJaLiberado, naurenMoverPeloCaminho, naurenDefinirTipoPreferido, naurenDispensaAproximacao, naurenInimigosAlcancados, naurenMovimentoTipoAtual, naurenMovimentoTipoPreferido, naurenMovimentoTipoSaldo, naurenTipoPreferido, naurenMovimentoComoAcao, naurenCacheRecursosDeclarados, naurenCardMovimento, naurenDepoisDoMovimento, naurenDesenharTracoAquarela, naurenGastarRecursoSimples, naurenJanelaMovimento, naurenModoMovimento, naurenMotivosSemMovimento, naurenMoverSemMovimento, naurenMovimentoEmDirecaoAInimigo, naurenMovimentoSaldo, naurenNomeRecursoMov, naurenRecursosCustomConhecidos };
