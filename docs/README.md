@@ -17,6 +17,7 @@ Os arquivos estão separados em pastas pelo uso. Nenhum deles é lido pelo siste
 ## Para criar fichas e animações com IA — `criacao-ia/` e `animacoes-ia/`
 | Arquivo | O que é |
 |---|---|
+| [`criacao-ia/LEIA-PRIMEIRO-IA.md`](criacao-ia/LEIA-PRIMEIRO-IA.md) | **Comece aqui.** Ordem de leitura com links diretos, regras que mais erram (animação e som em toda Ação) e o que entregar. |
 | [`criacao-ia/guia-criacao-ia.md`](criacao-ia/guia-criacao-ia.md) | Guia completo do formato das fichas (JSON) para uma IA criar criaturas, itens e habilidades. |
 | [`criacao-ia/prompt-criacao-criatura.md`](criacao-ia/prompt-criacao-criatura.md) | Prompt pronto para criar uma criatura, com a tabela de valores por nível. |
 | [`criacao-ia/modelo-ficha-codex.xlsx`](criacao-ia/modelo-ficha-codex.xlsx) | Modelo da ficha em planilha (Códex), com exemplos e instruções para IA. |

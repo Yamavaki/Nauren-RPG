@@ -4,7 +4,7 @@
 
 Sistema completo do **Nauren RPG** para o Foundry VTT: fichas, combate automatizado e compêndios com todo o livro.
 
-![Foundry](https://img.shields.io/badge/Foundry-v14-orange) ![Versão](https://img.shields.io/badge/vers%C3%A3o-0.124.2-purple) ![Idioma](https://img.shields.io/badge/idioma-pt--BR-green)
+![Foundry](https://img.shields.io/badge/Foundry-v14-orange) ![Versão](https://img.shields.io/badge/vers%C3%A3o-0.124.3-purple) ![Idioma](https://img.shields.io/badge/idioma-pt--BR-green)
 
 ## Instalar
 
@@ -48,6 +48,10 @@ Para atualizar, use **Atualizar** na lista de sistemas: o Foundry compara a vers
 
 Sem esses módulos, o sistema funciona normalmente.
 
+## Criar fichas com IA
+
+Abra um chat com uma IA, mande o link deste repositório e peça para ela seguir o [`docs/criacao-ia/LEIA-PRIMEIRO-IA.md`](docs/criacao-ia/LEIA-PRIMEIRO-IA.md). Ele aponta os guias, as listas (ícones, JB2A, sons) e o exemplo, com links diretos.
+
 ## Documentação
 
 A pasta [`docs/`](docs/) tem:
@@ -56,7 +60,7 @@ A pasta [`docs/`](docs/) tem:
 |---|---|
 | `jogar/` | Guias de uso na mesa: HUD de combate e reação em dois passos |
 | `animacoes/` | Como ligar as animações, o menu do Automated Animations e a lista de sons |
-| `criacao-ia/` | Guia, prompt, planilha e lista de ícones para criar fichas com IA |
+| `criacao-ia/` | **Comece pelo `LEIA-PRIMEIRO-IA.md`.** Guia, prompt, planilha e lista de ícones para criar fichas com IA |
 | `animacoes-ia/` | Guia e listas do JB2A para a IA montar animações de criaturas |
 | `torre-infinita/` | Catálogo dos itens da Torre Infinita |
 | `exemplos/` | Arquivos de exemplo para o Importar em massa e os Escritos |
