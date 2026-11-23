@@ -4,7 +4,7 @@ Este prompt serve para três saídas. Escolha uma ou mais no pedido:
 
 | Saída | O que a IA entrega | O que anexar |
 |---|---|---|
-| **A. Foundry** | o JSON do Ator, pronto para importar | `guia-criacao-ia.md` e `icones-foundry.txt` |
+| **A. Foundry** | o JSON do Ator, pronto para importar, **com animação e som em toda Ação** | `guia-criacao-ia.md`, `icones-foundry.txt`, `guia-animacoes-ia.md`, `jb2a-caminhos.txt` e `sons-forge.txt` |
 | **B. Códex no Docs** | a ficha no estilo do Códex Bestiariun, em texto, para colar num Docs de duas colunas | este arquivo basta |
 | **C. Códex na planilha** | a ficha na planilha "Fichas" (Google Sheets ou Excel), igual ao modelo do Apêndice A | este arquivo e o `modelo-ficha-codex.xlsx` (Excel, pasta docs); ou, com o conector do Google Sheets, o link da planilha |
 
@@ -33,7 +33,7 @@ Você vai criar uma criatura para o Nauren RPG. Siga este arquivo à risca: a Pa
 Trabalhe nesta ordem:
 
 1. **Números.** Calcule tudo pela Parte 1 e mostre a conta numa tabela curta: Valor Base, pontos, tetos da Função, atributos finais, Pigmentos, Poder de Ataque, Poder de Magia, Vitalidade, Espírito, Vida, Defesa, Estamina de Combate, Estresse, Movimento, dado de dano. Numa conversão do Códex, use os números do livro e diga onde eles divergem da conta.
-2. **Habilidades.** Escolha a quantidade da Parte 1, coerente com a Função, e para cada uma diga como ela é automatizada (Parte 2). O que não for automatizável fica escrito na descrição, dizendo o que o Mestre faz à mão.
+2. **Habilidades.** Escolha a quantidade da Parte 1, coerente com a Função, e para cada uma diga como ela é automatizada (Parte 2) e qual animação e som ela tem (guia 16.4c: quantas camadas e quais caminhos). O que não for automatizável fica escrito na descrição, dizendo o que o Mestre faz à mão.
 3. **Saída pedida.** Monte a(s) saída(s) A, B e/ou C conforme as seções abaixo.
 4. **Conferência.** Rode o checklist da saída (A: seção 8 do guia, e 4.10 se for conversão; B e C: o checklist da Parte 4) e responda item por item.
 
@@ -245,7 +245,7 @@ Siga o `guia-criacao-ia.md` em 3 etapas separadas.
 
 **Etapa 2 — Condições novas, só se precisar.** Para cada uma: pra que serve, se tem acúmulos e/ou rank, o JSON (`"system.ativo": false`, `"flags": {"nauren": {"modelo": true}}`) dentro do `items` do mesmo Ator, e a conferência de que cada `self:Nome` bate com o `name` do modelo.
 
-**Etapa 3 — Checklist** da seção 8 do guia (e 4.10 numa conversão), item por item. Animações só se o usuário pedir: de preferência dentro de cada Ação, no campo `animacao` (guia 16.4a); o JSON separado do Automated Animations (`guia-animacoes-ia.md`) só se ele pedir esse arquivo.
+**Etapa 3 — Checklist** da seção 8 do guia (e 4.10 numa conversão), item por item. **Animação e som em toda Ação** (guia 16.4b e 16.4c): magias com conjuração + magia (+ impacto), golpes com 1–2 camadas, sequências grandes só nas 1–2 habilidades-assinatura do chefe; Condições novas visíveis com loop; Emanações com aura. O JSON separado do Automated Animations (`guia-animacoes-ia.md`) só se o usuário pedir esse arquivo.
 
 ### Saída B — Ficha do Códex no Docs
 

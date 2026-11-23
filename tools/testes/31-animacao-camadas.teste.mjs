@@ -171,4 +171,9 @@ export default async function (t) {
   t(magias.length >= 12 && padrao, "ficha de testes: magias no padrão conjuração + magia com som próprio");
   const espinhos = magias.find(i => i.name === "Campo de Espinhos")?.system.acoes[0].animacao;
   t(espinhos?.continuo?.[0]?.anim === "jb2a.entangle.02.loop.02.green", "Campo de Espinhos: espinhos em loop");
+
+  // Guia da IA: toda Ação animada, padrão das magias e orçamento de camadas, sem regra antiga contraditória
+  const guia = ler("../../docs/criacao-ia/guia-criacao-ia.md");
+  t(guia.includes("### 16.4c Regras de animação para toda ficha (OBRIGATÓRIO)") && guia.includes("Habilidade-assinatura de chefe") && guia.includes("Padrão das magias"), "guia: regras obrigatórias de animação");
+  t(!guia.includes("Só preencha quando o usuário pedir animações") && !guia.includes("**Nunca** coloque configuração de animação dentro do JSON"), "guia: sem a regra antiga que proibia animação na ficha");
 }

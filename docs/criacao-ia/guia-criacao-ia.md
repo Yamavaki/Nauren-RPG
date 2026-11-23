@@ -1622,7 +1622,11 @@ combate (os dois Gatilhos gastam do MESMO contador de 3, não 3 cada).
 ## 8. Checklist rápido pra auditar o JSON que a IA gerou
 
 - [ ] Toda Ação tem nome **específico** (não "Ataque", "Golpe", "Usar"), com a arma natural e o elemento no nome quando o livro permitir — é por ele que a animação é escolhida (seção 15).
-- [ ] Nenhuma configuração de animação (`flags.autoanimations`, caminhos de vídeo) dentro do JSON.
+- [ ] **Toda Ação tem `animacao` com `modo: "propria"`, camadas e som** (seção 16.4c), coerente com o elemento e a arma; caminhos do JB2A copiados de `jb2a-caminhos.txt` e sons de `sons-forge.txt`, letra por letra.
+- [ ] Magias no padrão: conjuração em quem usa (som de `Preparando/`) e, **depois**, a magia com outro som; projétil com impacto no atingido.
+- [ ] Sem poluição: ataques comuns com 1–2 camadas, magias com 2–3; sequências grandes (4+ camadas, tremor, espalhar) **só** nas 1–2 habilidades-assinatura de chefe.
+- [ ] Condições novas visíveis (fogo, veneno, raízes, gelo...) com `animacaoCondicao.continuo` (versão loop); Emanações com `emanacaoAnimacao.continuo`.
+- [ ] Nenhum `flags.autoanimations` dentro do JSON (o JSON do Automated Animations é outro arquivo, só se o usuário pedir).
 
 - [ ] Todo `formula`/`valor` que referencia atributo usa `@nomeExato`
       (sem acento: `poderAtaque`, não `poderataque` nem `Poder de Ataque`).
@@ -2298,7 +2302,9 @@ Regras para fichas de criatura:
 
 ## 15. Animações (Automated Animations) — nomes que se integram sozinhos
 
-O sistema funciona **igual** sem os módulos de animação (Automated Animations + Sequencer + JB2A): sem eles, nada é tocado e nada quebra. **Nunca** coloque configuração de animação dentro do JSON da ficha (sem `flags.autoanimations`, sem caminhos de vídeo): a integração é **só pelo nome**, então uma ficha bem nomeada já sai animada em qualquer mesa que tenha os módulos.
+> **Desde a 0.123/0.124 o jeito principal é a animação DENTRO de cada Ação** (campo `animacao`, seções 16.4a a 16.4c): toda ficha nova já sai com animação e som em todas as Ações. O que esta seção descreve (animação pelo **nome**, pelo menu do Automated Animations) continua valendo só para Ações com `animacao.modo: "auto"` e como reserva; os nomes específicos continuam obrigatórios porque aparecem no chat e na ficha.
+
+O sistema funciona **igual** sem os módulos de animação (Automated Animations + Sequencer + JB2A): sem eles, nada é tocado e nada quebra (os sons da animação própria tocam mesmo sem o Sequencer). Não coloque `flags.autoanimations` dentro do JSON da ficha.
 
 ### Como o sistema escolhe a animação
 
@@ -2354,7 +2360,7 @@ A busca é por **parte do nome**, sem diferenciar maiúsculas: uma entrada "Mord
 6. **Passivas** (habilidades sem Ação) animam uma vez quando o **gatilho** delas dá efeito ou quando são **ligadas pelo raio**; também precisam de nome específico.
 7. **Condições:** reaproveite as do sistema (seção 4.6), que já têm animação (contínua para Queimando, Congelando, Envenenado, Sangramento, Cego, Preso, Atordoado e Medo; aviso único para o resto, marcas incluídas). Condição nova com uma palavra da tabela no nome (ex.: "Queimadura Negra", "Preso nas Raízes") ganha a animação certa quando o menu for regerado.
 8. **Criatura nova com nomes novos** já anima pela reserva do tipo de Ação. Para ganhar animação própria pelo nome, o Mestre exporta a lista de itens e regera o menu (ver `docs/animacoes/animacoes.md`).
-9. **JSON de animações (opcional):** se o usuário pedir, gere também o arquivo de animações da criatura seguindo `docs/animacoes-ia/guia-animacoes-ia.md` (importado no Automated Animations com Merge). Sem pedido, não gere.
+9. **JSON de animações do Automated Animations (opcional):** só se o usuário pedir esse arquivo, siga `docs/animacoes-ia/guia-animacoes-ia.md` (importado com Merge). O normal é a animação dentro das Ações (16.4c), que não precisa dele.
 
 ---
 
@@ -2422,7 +2428,7 @@ Só visual, opcional, e o padrão já resolve: deixe `"auto"`.
 
 Desde a 0.123 cada Ação pode levar a própria animação e o próprio som no campo `animacao`. Fica dentro da ficha: importou a ficha, já vem animada. **Não precisa** do JSON do Automated Animations (guia `guia-animacoes-ia.md`), nem do Merge.
 
-Só preencha quando o usuário pedir animações. Sem pedido, deixe o campo de fora (vale o padrão `"auto"`).
+**Toda Ação leva animação e som** (regras na 16.4c). O bloco simples abaixo serve para golpes de 1–2 efeitos; para magias e chefes use as camadas (16.4b).
 
 ```json
 "animacao": {
@@ -2486,6 +2492,28 @@ Campos de cada camada (todos opcionais, menos `anim` ou `som`):
 **Emanação** (item com `usaEmanacao`): `system.emanacaoAnimacao` com `continuo` (aura presa ao token; `onde: "aura"` fica do tamanho do raio, `"token"` do tamanho do token) e `pulso` (a cada efeito; `"aura"`, `"token"`, `"alvo"` ou `"projetil"`).
 
 Andares: tudo respeita os andares do mapa sozinho (efeitos no token seguem o andar do token; efeitos na área nascem no piso da área).
+
+### 16.4c Regras de animação para toda ficha (OBRIGATÓRIO)
+
+1. **Toda Ação de toda Habilidade, Arma, Magia e Consumível leva `animacao`** com `"modo": "propria"`, camadas e **som**. Ações utilitárias (Dar Prioridade, Perjúrio, Categoria, ações narrativas) levam **uma camada leve** em quem usa (pequena, `escala` ≤ 1, `opacidade` ≤ 0.8) e um som curto. Passivas sem Ação não têm onde pôr animação: deixe como estão.
+2. **Coerente:** a cor e o tipo seguem o elemento e a arma (tabela da seção 5 do `guia-animacoes-ia.md`: fogo laranja, gelo azul, veneno verde, sombra roxo-escuro…); o som segue a tabela 5a do mesmo guia. Garra usa garra, mordida usa mordida, flecha usa flecha. Nada de animação "bonita mas aleatória".
+3. **Padrão das magias:** camada 1 conjuração em quem usa (`jb2a.cast_generic.<elemento>` ou `jb2a.magic_signs.circle.02.<escola>.complete.<cor>`) com som de `Preparando/`; camada 2 `quando: "depois"`, a magia (projétil, área ou no alvo) com **outro som**; projétil ganha camada 3 de impacto no atingido com som de impacto.
+4. **Sem poluição — orçamento de camadas:**
+
+   | Ação | Camadas | Extras |
+   |---|---|---|
+   | Ataque físico comum (garra, espada, mordida) | 1 (golpe) — 2 se for golpe pesado (+ impacto) | sem tremor |
+   | Ataque à distância (flecha, tiro, arremesso) | 2 (projétil + impacto) | sem tremor |
+   | Magia / habilidade elemental comum | 2–3 (conjuração + magia + impacto) | sem tremor |
+   | Buff, cura, utilidade | 2 (conjuração + efeito) ou 1 leve | sem tremor |
+   | **Habilidade-assinatura de chefe** (a mais forte, a de fase 2, o golpe final) | 4–6 | tremor, espalhar, repetir |
+
+   **Só 1 ou 2 habilidades por chefe** usam a linha de baixo, e só se fizer sentido para o que ela faz (um meteoro pode chover e tremer; um corte rápido não). Lacaios e monstros comuns nunca passam de 3 camadas.
+5. **Evite:** duas animações grandes no mesmo lugar ao mesmo tempo; camadas que não acrescentam nada; mais de 2 sons tocando juntos; `repetir` acima de 8; `tremer` acima de 25 fora do golpe final do chefe; animações enormes (`escala` > 3) fora de áreas.
+6. **Condições novas** com efeito visível (queimando, envenenado, preso em raízes, congelado, amaldiçoado) levam `animacaoCondicao.continuo` com a versão **loop** e opacidade moderada (0.6–0.9); `entrada` é opcional (só um flash curto). Condições invisíveis (bônus, marcas de regra) ficam sem.
+7. **Emanações** levam `emanacaoAnimacao.continuo` (`onde: "aura"`, `plano: "porBaixo"`, opacidade ≤ 0.75); `pulso` só se o efeito for algo que se vê (dano, cura).
+8. **Áreas persistentes** levam `animacao.continuo` (loop no tamanho da área) e, se causam efeito todo turno, um `pulso` leve em quem está dentro.
+9. **Só caminhos e sons que existem:** copie de `jb2a-caminhos.txt` e `sons-forge.txt`, letra por letra. Na dúvida entre dois, escolha o mais simples.
 
 ### 16.5 Regras que o motor aplica sozinho (não configure)
 
