@@ -429,7 +429,7 @@ export function naurenAparenciaHtml(item, prontas = []) {
   const trans = (k, rot, ic) => { const t = a[k], ruim = t.anim && !naurenAparenciaAnimValida(t.anim);
     return `<div class="ap-tcard nt-ch">
       <div class="ap-tcab"><i class="fas ${ic}"></i><b>${rot}</b>${t.anim || t.som ? `<button type="button" class="ap-testar nt-ch" data-ap-acao="testar" data-v="${k}" title="Toca no token deste personagem (se estiver no mapa)"><i class="fas fa-play"></i> Testar</button>` : ""}</div>
-      <div class="ap-tlinha"><span class="ap-trot">Animação</span><span class="ap-arq"><input type="text" class="ap-txt ${ruim ? "ap-ruim" : ""}" data-ap="${k}.anim" list="ap-anims-${item.id}" value="${esc(t.anim)}" placeholder="${seq ? "ex.: jb2a.misty_step.01.blue" : "precisa do Sequencer"}"><button type="button" class="ap-ic" data-ap-acao="arquivo" data-alvo="${k}.anim" data-tipo="imagevideo" title="Escolher arquivo de animação"><i class="fas fa-folder-open"></i></button></span></div>
+      <div class="ap-tlinha"><span class="ap-trot">Animação</span><span class="ap-arq"><input type="text" class="ap-txt ${ruim ? "ap-ruim" : ""}" data-ap="${k}.anim" list="ap-anims-${item.id}" value="${esc(t.anim)}" placeholder="${seq ? "ex.: jb2a.misty_step.01.blue" : "precisa do Sequencer"}">${seq ? `<button type="button" class="ap-ic" data-ap-acao="procurar" data-alvo="${k}.anim" title="Procurar entre todas as animações (com prévia)"><i class="fas fa-magnifying-glass"></i></button>` : ""}<button type="button" class="ap-ic" data-ap-acao="arquivo" data-alvo="${k}.anim" data-tipo="imagevideo" title="Escolher arquivo de animação"><i class="fas fa-folder-open"></i></button></span></div>
       ${ruim ? `<p class="ap-aviso ap-aviso-p"><i class="fas fa-circle-xmark"></i> Essa animação não existe nos módulos ativos.</p>` : ""}
       <div class="ap-tlinha"><span class="ap-trot">Som</span><span class="ap-arq"><input type="text" class="ap-txt" data-ap="${k}.som" value="${esc(t.som)}" placeholder="arquivo .ogg / .mp3"><button type="button" class="ap-ic" data-ap-acao="arquivo" data-alvo="${k}.som" data-tipo="audio" title="Escolher som"><i class="fas fa-folder-open"></i></button></span></div>
       ${t.anim ? `<div class="ap-ajustes">
@@ -528,6 +528,12 @@ export function naurenAparenciaLigar(sheet) {
       const FP = foundry.applications?.apps?.FilePicker?.implementation ?? globalThis.FilePicker;
       new FP({ type: bt.dataset.tipo, current: foundry.utils.getProperty(a, bt.dataset.alvo) || "", callback: async caminho => { const b = ler(); foundry.utils.setProperty(b, bt.dataset.alvo, caminho); await gravar(b); } }).render(true);
       return;
+    }
+    if (acao === "procurar") {
+      const { NaurenSeletorAnimacao } = await import("./animacao-acao.mjs");
+      const v = await NaurenSeletorAnimacao.escolher({ atual: foundry.utils.getProperty(a, bt.dataset.alvo) || "" });
+      if (v === null) return;
+      const b = ler(); foundry.utils.setProperty(b, bt.dataset.alvo, v); return gravar(b);
     }
     if (acao === "montarBorda") return naurenAparenciaMontarBorda(item);
     if (acao === "testar") {

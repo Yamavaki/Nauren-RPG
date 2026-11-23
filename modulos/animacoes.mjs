@@ -47,10 +47,30 @@ function naurenAANomeReserva(item, acao) {
 async function naurenAnimarAcao(actor, item, acao, resultadoAlvos, plano = null) {
   // Sem animação do módulo: o movimento dos tokens (plano) toca sozinho, sem esperar efeito nenhum.
   const semAnimacao = () => { naurenMotionEnviar(plano, false); };
+  const paraObjeto = td => td?.object ?? td;
+  // 0.123: animação/som guardados na própria Ação (vêm junto no JSON da ficha). Não precisa do Automated Animations.
+  const modoProprio = acao?.animacao?.modo;
+  if (modoProprio === "nenhuma") return semAnimacao();
+  if (modoProprio === "propria") {
+    if (!game.settings.get("nauren", "animacoesAcoes")) return semAnimacao();
+    const origem = canvas?.tokens?.controlled?.find(t => t.actor === actor) ?? actor.getActiveTokens?.(true)?.[0] ?? null;
+    if (!origem) return semAnimacao();
+    try {
+      const m = await import("./animacao-acao.mjs");
+      const cfg = m.naurenAnimacaoAcaoNormalizar(acao.animacao);
+      const vaiTerVisual = m.naurenSequencerAtivo() && ((cfg.anim && m.naurenAnimacaoExiste(cfg.anim)) || (cfg.impacto && m.naurenAnimacaoExiste(cfg.impacto)));
+      naurenMotionEnviar(plano, !!vaiTerVisual);
+      await m.naurenTocarAnimacaoDaAcao(origem, cfg, {
+        alvos: (resultadoAlvos?.tokensAfetados ?? []).map(paraObjeto).filter(Boolean),
+        atingidos: (resultadoAlvos?.atingidos ?? []).map(paraObjeto).filter(Boolean),
+        regiao: resultadoAlvos?.regiao ?? null
+      });
+    } catch (err) { console.warn("Nauren RPG | animação própria da Ação", err); semAnimacao(); }
+    return;
+  }
   if (!naurenAnimacoesDisponiveis() || !game.settings.get("nauren", "animacoesAcoes")) return semAnimacao();
   const tokenOrigem = canvas?.tokens?.controlled?.find(t => t.actor === actor) ?? actor.getActiveTokens?.(true)?.[0] ?? null;
   if (!tokenOrigem) return semAnimacao();
-  const paraObjeto = td => td?.object ?? td;
   const alvos = (resultadoAlvos?.tokensAfetados ?? []).map(paraObjeto).filter(Boolean);
   const atingidos = (resultadoAlvos?.atingidos ?? []).map(paraObjeto).filter(Boolean);
   // Ordem de busca: nome da Ação (mais específico: "Sopro Infernal" dentro do item do monstro), nome do item,

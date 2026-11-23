@@ -2418,6 +2418,35 @@ Só visual, opcional, e o padrão já resolve: deixe `"auto"`.
 - **Ação:** `motionUsuario` (`"auto"`, `"nenhum"`, `"bote"`, `"recuo"`, `"conjurar"`, `"pulo"`, `"girar"`, `"rebobinar"`, `"surgir"`, `"tremer"`, `"crescer"`) e `motionAlvo` (`"auto"`, `"nenhum"`, `"tremer"`, `"empurrar"`, `"girar"`, `"pulo"`). No automático: bote no corpo a corpo, recuo no tiro, o alvo treme e pisca vermelho ao sofrer dano, dá um passo para o lado ao esquivar, recua ao bloquear e fica verde ao ser curado.
 - **Condição:** `motion` (`"auto"` escolhe pelo nome; ou `"flutuar"`, `"deitado"`, `"cambalear"`, `"tremer"`, `"eletrico"`, `"gelo"`, `"brasa"`, `"transparente"`, `"crescer"`, `"encolher"`, `"preso"`, `"cor"`, `"nenhum"`) e `motionCor` (`"#rrggbb"`, com `"cor"`). Condição nova de voo: `"flutuar"`.
 
+### 16.4a Animação e som DENTRO da Ação (0.123) — sem JSON separado
+
+Desde a 0.123 cada Ação pode levar a própria animação e o próprio som no campo `animacao`. Fica dentro da ficha: importou a ficha, já vem animada. **Não precisa** do JSON do Automated Animations (guia `guia-animacoes-ia.md`), nem do Merge.
+
+Só preencha quando o usuário pedir animações. Sem pedido, deixe o campo de fora (vale o padrão `"auto"`).
+
+```json
+"animacao": {
+  "modo": "propria",
+  "tipo": "projetil",
+  "anim": "jb2a.fire_bolt.orange",
+  "impacto": "jb2a.impact.001.orange",
+  "escala": 1,
+  "noErro": true,
+  "porBaixo": false,
+  "som": "<endereço completo de sons-forge.txt>",
+  "somVolume": 0.8,
+  "somAtraso": 0,
+  "somImpacto": ""
+}
+```
+
+- `modo`: `"auto"` (padrão: Automated Animations pelo nome, como antes), `"propria"` (usa este bloco) ou `"nenhuma"` (a Ação não anima).
+- `tipo`: `"projetil"` (sai de quem usa até cada alvo: flecha, raio, bola de fogo), `"corpo"` (golpe no alvo: espada, garra, mordida), `"alvo"` (em cima de cada alvo: explosão no alvo, cura, maldição), `"usuario"` (em cima de quem usa: buff, aura, transformação), `"area"` (no centro da área criada, do tamanho dela; use em Ações com `usaTemplate`).
+- `anim` e `impacto`: caminhos do banco do Sequencer, copiados **letra por letra** de `docs/animacoes-ia/jb2a-caminhos.txt` (nunca invente). A tabela de cor por elemento está no `guia-animacoes-ia.md`, seção 5. `impacto` é opcional e toca só em quem foi atingido (não vale para `"usuario"` e `"area"`).
+- `escala`: tamanho em relação ao token (ou à área). `noErro`: no erro, o projétil/golpe passa do lado do alvo (`false` = só toca em quem foi atingido). `porBaixo`: desenha por baixo dos tokens (bom para círculos no chão).
+- `som` e `somImpacto`: endereços completos de `docs/animacoes/sons-forge.txt` (tabela de sons no `guia-animacoes-ia.md`, seção 5a). O som toca para todos **mesmo sem o Sequencer**. `somAtraso` em milissegundos.
+- Uma Habilidade com várias Ações (Golpe, Derrubar, Agarrar) leva um bloco em cada Ação.
+
 ### 16.5 Regras que o motor aplica sozinho (não configure)
 
 - Facilidade/Dificuldade acumuladas: +2/−2 por fonte além da primeira (seção 4).

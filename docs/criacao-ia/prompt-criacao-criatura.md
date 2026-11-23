@@ -245,7 +245,7 @@ Siga o `guia-criacao-ia.md` em 3 etapas separadas.
 
 **Etapa 2 — Condições novas, só se precisar.** Para cada uma: pra que serve, se tem acúmulos e/ou rank, o JSON (`"system.ativo": false`, `"flags": {"nauren": {"modelo": true}}`) dentro do `items` do mesmo Ator, e a conferência de que cada `self:Nome` bate com o `name` do modelo.
 
-**Etapa 3 — Checklist** da seção 8 do guia (e 4.10 numa conversão), item por item. O JSON de animações só se o usuário pedir (`guia-animacoes-ia.md`).
+**Etapa 3 — Checklist** da seção 8 do guia (e 4.10 numa conversão), item por item. Animações só se o usuário pedir: de preferência dentro de cada Ação, no campo `animacao` (guia 16.4a); o JSON separado do Automated Animations (`guia-animacoes-ia.md`) só se ele pedir esse arquivo.
 
 ### Saída B — Ficha do Códex no Docs
 

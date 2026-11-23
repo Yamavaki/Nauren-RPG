@@ -7,6 +7,7 @@ import { NAUREN_TORRE_LOJAS, NAUREN_TORRE_PIGMENTOS, NAUREN_TORRE_RARIDADES, NAU
 import "./ficha-ator.mjs";
 import { NAUREN_CONDICOES_TIPOS, NaurenTiersEditor, naurenCondicoesEmbutidas, naurenContextoCatalogo, naurenDadosParaEmbutir, naurenEditarCondicaoEmbutida, naurenGravarCondicoesEmbutidas, naurenHtmlAbaCondicoes, naurenLigarFichaItemExtras, naurenSeloDoItem, naurenTorreDoCatalogo } from "./itens-catalogo.mjs";
 import { naurenLigarSeletorIcones } from "./seletor-icones.mjs";
+import { NAUREN_ANIMACAO_TIPOS, naurenAnimacaoAcaoNormalizar, naurenAnimacaoExiste, naurenLigarBlocoAnimacaoAcao, naurenResumoAnimacaoAcao, naurenSequencerAtivo } from "./animacao-acao.mjs";
 import { NAUREN_APARENCIA_TIPOS, naurenAparenciaHtml, naurenAparenciaLigar } from "./aparencia.mjs";
 import { naurenEhEscrito, naurenEscritoAbaHtml, naurenEscritoLigarAba } from "./escritos.mjs";
 import { naurenProntasLista } from "./molduras-prontas.mjs";
@@ -1012,8 +1013,18 @@ class NaurenItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       }
       return saida;
     };
+    // 0.123: bloco "Animação e som" de cada Ação.
+    context.naaSequencer = naurenSequencerAtivo();
+    context.naaTipos = Object.entries(NAUREN_ANIMACAO_TIPOS).map(([id, t]) => ({ id, ...t }));
+    const naaView = acao => {
+      const c = naurenAnimacaoAcaoNormalizar(acao.animacao);
+      return { ...c, resumo: naurenResumoAnimacaoAcao(c), propria: c.modo === "propria", emUso: c.modo !== "auto",
+        animRuim: !!(c.anim && context.naaSequencer && !naurenAnimacaoExiste(c.anim)), impactoRuim: !!(c.impacto && context.naaSequencer && !naurenAnimacaoExiste(c.impacto)),
+        tipoDica: NAUREN_ANIMACAO_TIPOS[c.tipo].dica, temAlvos: c.tipo !== "usuario" && c.tipo !== "area", volumePct: Math.round(c.somVolume * 100) };
+    };
     context.acoesView = await Promise.all((item.system.acoes ?? []).map(async (acao, i) => ({
       ...acao,
+      _naa: naaView(acao),
       _ativa: i === (item.system.acaoAtivaIndex ?? 0),
       ...naurenResumoDaAcao(acao, item),
       _camposPoderosa: camposPoderosaDaAcao(i),
@@ -1532,6 +1543,7 @@ class NaurenItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     this.element.querySelectorAll("details").forEach(d => d.addEventListener("toggle", () => naurenAjustarListasLargas(this.element)));
     super._onRender(context, options);
     // 0.102: aba Condições, seletor de Condição, aba Script e botões de script.
+    try { naurenLigarBlocoAnimacaoAcao(this); } catch (err) { console.warn("Nauren RPG | Animação da Ação na ficha", err); }
     try { naurenAparenciaLigar(this); } catch (err) { console.warn("Nauren RPG | Aparência na ficha", err); }
     try { naurenEscritoLigarAba(this); } catch (err) { console.warn("Nauren RPG | Escrito na ficha", err); }
     try { naurenAprimorarLigar(this); } catch (err) { console.warn("Nauren RPG | Aprimorar na ficha", err); }
@@ -1685,7 +1697,7 @@ class NaurenItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
 
     let value;
     if (el.type === "checkbox") value = el.checked;
-    else if (el.type === "number") value = el.value === "" ? 0 : Number(el.value);
+    else if (el.type === "number" || el.type === "range") value = el.value === "" ? 0 : Number(el.value);
     else value = el.value;
 
     const campoRaiz = path.split(".")[0];

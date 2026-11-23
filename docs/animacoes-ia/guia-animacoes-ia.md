@@ -1,5 +1,7 @@
 # Guia da IA — JSON de animações (Automated Animations) para uma criatura
 
+> **0.123 — prefira a animação dentro da Ação.** Cada Ação aceita o campo `"animacao"` (seção 16.4a do `guia-criacao-ia.md`): a animação e o som ficam na própria ficha e chegam junto com ela, sem Merge. Use este guia (arquivo separado do Automated Animations) só quando o usuário pedir esse arquivo. As tabelas de cor (seção 5) e de som (seção 5a) valem para os dois jeitos.
+
 **Só faça isto quando o usuário pedir explicitamente** ("faz também o JSON das animações", "quero as animações automáticas dessa criatura"). Sem pedido, entregue só a ficha, com os nomes seguindo a seção 15 do `guia-criacao-ia.md`, e nada mais.
 
 O resultado é um **arquivo separado** (ex.: `balerion-animacoes.json`) que o Mestre importa no Automated Animations em **Menu Manager → Merge**. Ele **não** vai dentro da ficha.

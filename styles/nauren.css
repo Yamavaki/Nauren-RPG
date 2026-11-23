@@ -1,5 +1,5 @@
 /* Versão deste arquivo: o sistema confere no "ready" e, se o navegador/Forge tiver guardado um CSS antigo, carrega o novo. */
-:root { --nauren-css-versao: "0.122.3"; }
+:root { --nauren-css-versao: "0.123.0"; }
 /* 
 ===================================================
 1. FUNDO E FONTES GERAIS
@@ -9600,3 +9600,96 @@ li.directory-item.nauren-org-tem-dono > .entry-name > .nauren-org-nome { overflo
 .nauren-regras blockquote { margin: .6em 0; padding: 6px 12px; border-left: 3px solid #cca162; background: rgba(204,161,98,.08); font-style: italic; }
 .nauren-regras-fonte { font-size: .82em; color: #a89bc4; margin: -.2em 0 .8em !important; }
 .nauren-regras-nota { font-size: .9em; color: #a89bc4; }
+
+/* =====================================================================
+   0.123 — Animação e som da Ação (bloco na ficha do item) + seletor de animações
+   ===================================================================== */
+.naa-bloco .naa-resumo { margin-left: 8px; font-size: var(--n-t4, 11.5px); color: var(--n-suave, #a89bc4); font-weight: 400; }
+.naa-corpo { display: flex; flex-direction: column; gap: 12px; }
+.naa-modos, .naa-tipos { display: flex; flex-wrap: wrap; gap: 6px; }
+.naa-modo, .naa-tipo { position: relative; display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border: 1px solid var(--n-borda, #3b3154); border-radius: 6px; background: #17111f; color: var(--n-suave, #a89bc4); font-size: 12.5px; cursor: pointer; transition: border-color .15s, background .15s, color .15s; }
+.naa-modo input, .naa-tipo input { position: absolute; opacity: 0; pointer-events: none; width: 0; height: 0; margin: 0; }
+.naa-modo i, .naa-tipo i { color: var(--n-ouro, #cca162); font-size: 11px; }
+.naa-modo:hover, .naa-tipo:hover { color: var(--n-texto, #ece6f3); border-color: color-mix(in srgb, var(--n-ouro, #cca162) 50%, #3b3154); }
+.naa-modo.on, .naa-tipo.on { color: var(--n-texto, #ece6f3); background: color-mix(in srgb, var(--n-ouro, #cca162) 14%, #17111f); border-color: var(--n-ouro, #cca162); }
+.naa-tipo { height: 26px; padding: 0 10px; font-size: 12px; }
+.naa-sec { display: flex; flex-direction: column; gap: 10px; padding: 12px; border: 1px solid var(--n-borda, #3b3154); border-radius: 8px; background: var(--n-painel, #241e36); }
+.nauren-rpg.sheet.item .nauren-sheet h4.naa-rot { margin: 0; font: 600 11px var(--n-corpo, Signika), sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--n-ouro, #cca162); display: flex; align-items: center; gap: 6px; }
+.naa-rot .naa-sub { text-transform: none; letter-spacing: 0; font-weight: 400; }
+.naa-sub { font-size: var(--n-t4, 11.5px); color: var(--n-suave, #a89bc4); }
+.naa-sub em { font-style: normal; opacity: .75; }
+.naa-dica { margin: -4px 0 0; font-size: var(--n-t4, 11.5px); color: var(--n-suave, #a89bc4); }
+.naa-linha { display: flex; align-items: flex-end; gap: 10px; }
+.naa-campo { display: flex; flex-direction: column; gap: 4px; flex: 1 1 auto; min-width: 0; }
+.naa-arq { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.naa-arq > input { flex: 1 1 auto; min-width: 0; height: 30px; }
+.naa-arq > input.naa-ruim { border-color: var(--n-perigo, #c24b4b); }
+.naa-aviso { font-size: var(--n-t4, 11.5px); color: #ff9a9a; }
+.naa-aviso-bloco { margin: 0; padding: 10px 12px; border: 1px dashed var(--n-borda, #3b3154); border-radius: 8px; color: var(--n-suave, #a89bc4); }
+.naa-aviso-bloco i { color: var(--n-ouro, #cca162); }
+.naa-mini { position: relative; flex: 0 0 auto; width: 54px; height: 54px; border-radius: 8px; overflow: hidden; border: 1px solid var(--n-borda, #3b3154); background: radial-gradient(circle at 50% 45%, #2b2442, #0e0b15); display: grid; place-items: center; }
+.naa-mini > i { color: var(--n-borda, #3b3154); font-size: 18px; }
+.naa-mini video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; display: none; }
+.naa-mini.tem video { display: block; }
+.naa-mini.tem > i { display: none; }
+.naa-ajustes { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; }
+.naa-num { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--n-suave, #a89bc4); }
+.naa-num input { width: 70px; height: 28px; text-align: center; }
+.naa-num em { font-style: normal; font-size: var(--n-t4, 11.5px); }
+.naa-check { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--n-texto, #ece6f3); cursor: pointer; }
+.naa-check input { accent-color: var(--n-ouro, #cca162); margin: 0; }
+.naa-rodape { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.nauren-rpg.sheet.item .nauren-sheet button.naa-btn { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 30px; padding: 0 12px; flex: 0 0 auto; border: 1px solid var(--n-borda, #3b3154); border-radius: 6px; background: #17111f; color: var(--n-texto, #ece6f3); font: 12.5px var(--n-corpo, Signika), sans-serif; cursor: pointer; }
+.nauren-rpg.sheet.item .nauren-sheet button.naa-btn i { color: var(--n-ouro, #cca162); font-size: 11px; }
+.nauren-rpg.sheet.item .nauren-sheet button.naa-btn:hover { border-color: var(--n-ouro, #cca162); }
+.nauren-rpg.sheet.item .nauren-sheet button.naa-btn.naa-prim { background: color-mix(in srgb, var(--n-ouro, #cca162) 18%, #17111f); border-color: color-mix(in srgb, var(--n-ouro, #cca162) 60%, #3b3154); }
+.nauren-rpg.sheet.item .nauren-sheet button.naa-btn.naa-ic { width: 30px; padding: 0; }
+
+/* seletor */
+.nauren-seletor-anim { --s-tinta: #1b1729; --s-painel: #241e36; --s-borda: #3b3154; --s-texto: #ece6f3; --s-suave: #a89bc4; --s-ouro: #cca162; }
+.nauren-seletor-anim .window-content { padding: 0; background: var(--s-tinta); color: var(--s-texto); }
+.nsa { display: flex; flex-direction: column; height: 100%; min-height: 0; font-family: Signika, sans-serif; }
+.nsa-topo { display: flex; align-items: center; gap: 12px; padding: 12px 14px 8px; }
+.nsa-busca { flex: 1 1 auto; display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; border: 1px solid var(--s-borda); border-radius: 8px; background: #120e1a; }
+.nsa-busca:focus-within { border-color: var(--s-ouro); }
+.nsa-busca i { color: var(--s-ouro); }
+.nsa-busca input { all: unset; flex: 1 1 auto; font-size: 14px; color: var(--s-texto); }
+.nsa-conta { font-size: 12px; color: var(--s-suave); white-space: nowrap; }
+.nsa-chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 14px 10px; border-bottom: 1px solid var(--s-borda); }
+.nauren-seletor-anim button.nsa-chip { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px; border: 1px solid var(--s-borda); border-radius: 13px; font-size: 12px; color: var(--s-suave); cursor: pointer; }
+.nauren-seletor-anim button.nsa-chip i { color: var(--s-ouro); font-size: 10.5px; }
+.nauren-seletor-anim button.nsa-chip:hover { color: var(--s-texto); }
+.nauren-seletor-anim button.nsa-chip.on { color: var(--s-texto); border-color: var(--s-ouro); background: color-mix(in srgb, var(--s-ouro) 16%, transparent); }
+.nsa-corpo { flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: 1fr 300px; }
+.nsa-grade { overflow-y: auto; padding: 12px 14px; display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 10px; align-content: start; }
+.nauren-seletor-anim button.nsa-card { all: unset; box-sizing: border-box; display: flex; flex-direction: column; gap: 6px; padding: 6px; border: 1px solid var(--s-borda); border-radius: 8px; background: var(--s-painel); cursor: pointer; min-width: 0; transition: border-color .12s, transform .12s; }
+.nauren-seletor-anim button.nsa-card:hover { border-color: color-mix(in srgb, var(--s-ouro) 55%, var(--s-borda)); transform: translateY(-1px); }
+.nauren-seletor-anim button.nsa-card.on { border-color: var(--s-ouro); box-shadow: 0 0 0 1px var(--s-ouro) inset; }
+.nsa-mini { position: relative; aspect-ratio: 16 / 10; border-radius: 6px; overflow: hidden; background: radial-gradient(circle at 50% 45%, #2b2442, #0b0911); display: grid; place-items: center; }
+.nsa-mini > i { color: var(--s-borda); font-size: 18px; }
+.nsa-mini video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; opacity: 0; transition: opacity .2s; }
+.nsa-card.pronto .nsa-mini video { opacity: 1; }
+.nsa-card.pronto .nsa-mini > i { display: none; }
+.nsa-card.sem-previa .nsa-mini > i::before { content: "\f05e"; }
+.nsa-nome { font-size: 11.5px; line-height: 1.25; color: var(--s-texto); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; word-break: break-word; }
+.nsa-vazio { grid-column: 1 / -1; padding: 30px; text-align: center; color: var(--s-suave); }
+.nsa-vazio i { color: var(--s-ouro); }
+.nauren-seletor-anim button.nsa-mais { all: unset; grid-column: 1 / -1; justify-self: center; padding: 6px 14px; border: 1px solid var(--s-borda); border-radius: 6px; font-size: 12px; color: var(--s-suave); cursor: pointer; }
+.nsa-sentinela { grid-column: 1 / -1; height: 1px; }
+.nsa-lado { display: flex; flex-direction: column; gap: 10px; padding: 12px 14px; border-left: 1px solid var(--s-borda); background: #15111f; min-height: 0; }
+.nsa-previa { position: relative; aspect-ratio: 1; border-radius: 10px; overflow: hidden; border: 1px solid var(--s-borda); background: radial-gradient(circle at 50% 45%, #2d2546, #09070e); display: grid; place-items: center; }
+.nsa-previa video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; display: none; }
+.nsa-previa.tem video { display: block; }
+.nsa-previa.tem .nsa-previa-vazia { display: none; }
+.nsa-previa-vazia { text-align: center; color: var(--s-suave); font-size: 12px; line-height: 1.8; }
+.nsa-previa-vazia i { font-size: 26px; color: var(--s-borda); }
+.nsa-caminho { display: block; min-height: 18px; padding: 6px 8px; border-radius: 6px; background: #0f0c16; color: var(--s-ouro); font-size: 11.5px; word-break: break-all; }
+.nsa-caminho:empty { display: none; }
+.nsa-dica { margin: 0; font-size: 11.5px; color: var(--s-suave); line-height: 1.45; }
+.nsa-botoes { margin-top: auto; display: flex; flex-wrap: wrap; gap: 6px; }
+.nauren-seletor-anim .nsa-botoes button { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 32px; padding: 0 12px; border: 1px solid var(--s-borda); border-radius: 6px; font-size: 12.5px; color: var(--s-texto); cursor: pointer; flex: 1 1 auto; }
+.nauren-seletor-anim .nsa-botoes button i { color: var(--s-ouro); }
+.nauren-seletor-anim .nsa-botoes button:hover { border-color: var(--s-ouro); }
+.nauren-seletor-anim .nsa-botoes button.nsa-prim { flex-basis: 100%; background: color-mix(in srgb, var(--s-ouro) 22%, #17111f); border-color: var(--s-ouro); font-weight: 600; }
+.nauren-seletor-anim .nsa-botoes button:disabled { opacity: .45; cursor: default; }
+@media (max-width: 760px) { .nsa-corpo { grid-template-columns: 1fr; } .nsa-lado { border-left: none; border-top: 1px solid var(--s-borda); } .nsa-previa { aspect-ratio: 16/9; } }

@@ -1223,6 +1223,21 @@ function campoAcao() {
     escolherBeneficioMarca: new BooleanField({ initial: false }),  // Marca do Caçador: escolher Foco Mortal / Tiro Letal / Reflexos e gravar na marca
     rolarBrinde: new BooleanField({ initial: false }),             // Brinde ao Destino: rola 1d6 (1 = Estresse; Dança/Inundação)
     beberCabacaGhurua: new BooleanField({ initial: false }),       // 0.121: Aroma de Licor - bebe uma cabaça sua a até 1 casa (a cabaça some)
+    // 0.123: animação e som PRÓPRIOS desta Ação (Sequencer/JB2A), guardados na ficha (vão junto no JSON).
+    // modo: auto = como sempre (menu do Automated Animations pelo nome, ou a reserva) | propria = este bloco | nenhuma.
+    animacao: new SchemaField({
+      modo: new StringField({ initial: "auto" }),
+      tipo: new StringField({ initial: "projetil" }),   // projetil | corpo | alvo | usuario | area
+      anim: new StringField({ initial: "" }),            // caminho do banco do Sequencer (ex.: jb2a.fire_bolt.orange) ou arquivo .webm
+      impacto: new StringField({ initial: "" }),         // animação extra no alvo atingido
+      escala: new NumberField({ initial: 1, min: 0.1, max: 10 }),
+      noErro: new BooleanField({ initial: true }),        // toca mesmo quando erra (o projétil passa do alvo)
+      porBaixo: new BooleanField({ initial: false }),
+      som: new StringField({ initial: "" }),             // som ao usar
+      somVolume: new NumberField({ initial: 0.8, min: 0, max: 1 }),
+      somAtraso: new NumberField({ initial: 0, min: 0, integer: true }),  // ms
+      somImpacto: new StringField({ initial: "" })       // som no acerto (junto do impacto)
+    }),
     exigirCondicaoAlvo: new BooleanField({ initial: false }),      // com "Verificar Condição no Alvo": sem ela no alvo, não deixa usar
     exigirCondicaoAlvoMinimo: new NumberField({ initial: 1, min: 1, integer: true }),
     // Recupera um recurso por INIMIGO atingido por esta Ação (Gruhua, Senhor das Brumas: 1 Energia por inimigo,
@@ -7580,7 +7595,7 @@ Hooks.once("init", () => {
   });
   game.settings.register("nauren", "animacoesAcoes", {
     name: "Animações: Ações (Automated Animations)",
-    hint: "Com o módulo Automated Animations ativo, cada Ação usada (ataque, magia, habilidade) dispara a animação cadastrada no menu dele pelo nome do item. Sem o módulo, nada muda.",
+    hint: "Com o módulo Automated Animations ativo, cada Ação usada (ataque, magia, habilidade) dispara a animação cadastrada no menu dele pelo nome do item. Ações com \"Animação e som\" próprios (na ficha do item) usam o Sequencer e tocam o som mesmo sem ele. Desligado, nenhuma Ação anima.",
     scope: "world", config: true, type: Boolean, default: true
   });
   game.settings.register("nauren", "animacoesReserva", {
