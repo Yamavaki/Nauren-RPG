@@ -14,3 +14,6 @@ Cada Ação ganhou o bloco **Animação e som** (ficha do item → Ações, abai
 - A opção "Animações: Ações" das configurações continua desligando tudo.
 
 Para IA: formato do campo `animacao` na seção 16.4a do `docs/criacao-ia/guia-criacao-ia.md`.
+
+## 0.123.3
+- Animação própria de área em **linha** e **cone**: agora sai do ponto de origem da área e vai até a ponta, no comprimento dela (como o Automated Animations faz). Antes ela era desenhada como um quadrado do tamanho da área inteira e ficava enorme, fora da linha. Círculo e retângulo continuam no centro, do tamanho da área.

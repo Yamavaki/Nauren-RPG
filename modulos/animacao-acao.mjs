@@ -116,6 +116,23 @@ export function naurenResumoAnimacaoAcao(cfg) {
   return partes.join(" · ") || "Própria (vazia)";
 }
 
+/**
+ * Como desenhar a animação de área conforme a forma da Region (V14):
+ * linha e cone saem do ponto de origem e vão até a ponta (stretchTo, como o Automated Animations faz
+ * com templates de linha/cone); círculo e retângulo ficam no centro, do tamanho da área.
+ * O ângulo (rotation) das formas da V14 é em graus.
+ */
+export function naurenGeometriaDaArea(f) {
+  if (!f) return null;
+  const rad = (Number(f.rotation) || 0) * Math.PI / 180;
+  const ponta = len => ({ x: f.x + Math.cos(rad) * len, y: f.y + Math.sin(rad) * len });
+  if ((f.type === "line" || f.type === "ray") && Number(f.length) > 0) return { forma: "linha", de: { x: f.x, y: f.y }, ate: ponta(Number(f.length)), largura: Number(f.width) || 0 };
+  if (f.type === "cone" && Number(f.radius) > 0) return { forma: "linha", de: { x: f.x, y: f.y }, ate: ponta(Number(f.radius)), angulo: Number(f.angle) || 0 };
+  if (f.radius !== undefined && Number(f.radius) > 0) return { forma: "centro", x: f.x, y: f.y, tam: f.radius * 2 };
+  if (f.type === "rectangle" && f.width !== undefined) return { forma: "centro", x: f.x + f.width / 2, y: f.y + f.height / 2, tam: Math.max(f.width, f.height) };
+  return null;
+}
+
 /* =========================== daqui para baixo: Foundry =========================== */
 
 export function naurenSequencerAtivo() {
@@ -213,8 +230,14 @@ export async function naurenTocarAnimacaoDaAcao(origem, cfg, { alvos = [], ating
         else base(s.effect().file(c.anim).atLocation(origem).scaleToObject(c.escala)); // sem alvo: em quem usa
         houvePrincipal = true;
       } else if (c.tipo === "area" && regiao && !regiao.deleted) {
-        const r = centroDaRegiao(regiao);
-        if (r) { s.effect().file(c.anim).atLocation({ x: r.x, y: r.y }).size({ width: r.tam * c.escala, height: r.tam * c.escala }).belowTokens(c.porBaixo); houvePrincipal = true; }
+        const g = naurenGeometriaDaArea(regiao.shapes?.[0]);
+        if (g?.forma === "linha") {
+          // linha e cone: da origem até a ponta, no comprimento da área (sem esticar para os lados)
+          s.effect().file(c.anim).atLocation(g.de).stretchTo(g.ate).belowTokens(c.porBaixo); houvePrincipal = true;
+        } else {
+          const r = g ?? centroDaRegiao(regiao);
+          if (r) { s.effect().file(c.anim).atLocation({ x: r.x, y: r.y }).size({ width: r.tam * c.escala, height: r.tam * c.escala }).belowTokens(c.porBaixo); houvePrincipal = true; }
+        }
       }
       if (!houvePrincipal) { // usuário (e área sem área / projétil sem alvo)
         base(s.effect().file(c.anim).atLocation(origem).scaleToObject(c.escala)).waitUntilFinished(-500);

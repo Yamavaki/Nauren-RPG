@@ -76,6 +76,12 @@ export default async function (t) {
     await m.naurenTocarAnimacaoDaAcao(eu, { modo: "propria", tipo: "area", anim: "jb2a.a", porBaixo: true }, { regiao: { shapes: [{ type: "circle", x: 100, y: 200, radius: 50 }] } });
     t(log[0].de?.x === 100 && log[0].de?.y === 200 && log[0].tam?.width === 100 && log[0].porBaixo === true, "área: centro e tamanho da Region");
     log.length = 0;
+    await m.naurenTocarAnimacaoDaAcao(eu, { modo: "propria", tipo: "area", anim: "jb2a.a" }, { regiao: { shapes: [{ type: "line", x: 100, y: 200, length: 1200, width: 100, rotation: 0 }] } });
+    t(log[0].de?.x === 100 && log[0].ate?.x === 1300 && log[0].ate?.y === 200 && !log[0].tam, "linha: da origem até a ponta (stretchTo), sem esticar como quadrado");
+    log.length = 0;
+    await m.naurenTocarAnimacaoDaAcao(eu, { modo: "propria", tipo: "area", anim: "jb2a.a" }, { regiao: { shapes: [{ type: "cone", x: 0, y: 0, radius: 600, angle: 53, rotation: 90 }] } });
+    t(Math.abs(log[0].ate?.x) < 1e-6 && Math.abs(log[0].ate?.y - 600) < 1e-6, "cone virado 90°: vai da origem até a ponta, para baixo");
+    log.length = 0;
     vis = await m.naurenTocarAnimacaoDaAcao(eu, { modo: "propria", tipo: "projetil", anim: "inventada.x", som: "s.ogg" }, { alvos: [A], atingidos: [A] });
     t(vis === false && !log.length, "animação que não existe: não toca (só o som)");
     // Sem Sequencer: o som toca do mesmo jeito.
