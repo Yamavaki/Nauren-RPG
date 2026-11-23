@@ -12935,7 +12935,10 @@ class NaurenRegionHelper {
         resistirEstamina: acao.templatePersistenteResistirEstamina || "",
         empurrarAleatorio: acao.templatePersistenteEmpurrarAleatorio || "",
         centro: (() => { const sh = region.shapes?.[0]; return sh && Number.isFinite(sh.x) ? { x: sh.x, y: sh.y } : null; })(),
-        condicaoExtraUuid: acao._condicaoExtraArmadilha || ""
+        condicaoExtraUuid: acao._condicaoExtraArmadilha || "",
+        // 0.124: animação contínua (loop enquanto a área existir) e pulso (a cada efeito) - cópia das camadas da Ação
+        animacaoContinua: foundry.utils.deepClone(acao.animacao?.modo !== "nenhuma" ? (acao.animacao?.continuo ?? []) : []),
+        animacaoPulso: foundry.utils.deepClone(acao.animacao?.modo !== "nenhuma" ? (acao.animacao?.pulso ?? []) : [])
       });
       // Número Máximo de Áreas Simultâneas (ver campoAcao >
       // templatePersistenteLimiteSimultaneas) - checa e apaga a mais

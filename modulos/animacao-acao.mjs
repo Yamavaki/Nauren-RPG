@@ -10,6 +10,8 @@
  * As funções do começo do arquivo são puras (testadas em Node); o resto usa o Foundry.
  */
 
+import { naurenCamadasDaAcao } from "./animacao-camadas.mjs";
+
 export const NAUREN_ANIMACAO_MODOS = Object.freeze(["auto", "propria", "nenhuma"]);
 export const NAUREN_ANIMACAO_TIPOS = Object.freeze({
   projetil: { rotulo: "Projétil", icone: "fa-location-arrow", dica: "Sai de quem usa e vai até cada alvo (flechas, raios, bolas de fogo)." },
@@ -109,11 +111,12 @@ export function naurenResumoAnimacaoAcao(cfg) {
   const c = naurenAnimacaoAcaoNormalizar(cfg);
   if (c.modo === "nenhuma") return "Sem animação";
   if (c.modo === "auto") return "Automático (Automated Animations)";
-  const partes = [];
-  if (c.anim) partes.push(`${NAUREN_ANIMACAO_TIPOS[c.tipo].rotulo}: ${naurenNomeCurtoAnimacao(c.anim)}`);
-  if (c.impacto) partes.push(`impacto: ${naurenNomeCurtoAnimacao(c.impacto)}`);
-  if (c.som) partes.push("som");
-  return partes.join(" · ") || "Própria (vazia)";
+  const camadas = naurenCamadasDaAcao(cfg);
+  const extras = ["continuo", "pulso"].reduce((n, k) => n + (Array.isArray(cfg?.[k]) ? cfg[k].length : 0), 0);
+  if (!camadas.length && !extras) return "Própria (vazia)";
+  if (camadas.length === 1 && !extras) { const k = camadas[0]; return k.anim ? naurenNomeCurtoAnimacao(k.anim) + (k.som ? " · som" : "") : "só som"; }
+  const nomes = camadas.map(k => k.nome || (k.anim ? naurenNomeCurtoAnimacao(k.anim).split(" · ")[0] : "som")).slice(0, 3).join(", ");
+  return `${camadas.length} camada${camadas.length === 1 ? "" : "s"}${nomes ? `: ${nomes}${camadas.length > 3 ? "…" : ""}` : ""}${extras ? ` · área: ${extras}` : ""}`;
 }
 
 /**
@@ -179,80 +182,15 @@ function tocarSom(src, volume, atraso = 0) {
   if (atraso > 0) setTimeout(play, atraso); else play();
 }
 
-/** Centro e tamanho de uma Region (área) para a animação de área. */
-function centroDaRegiao(regiao) {
-  const f = regiao?.shapes?.[0];
-  if (!f) { const b = regiao?.object?.bounds; return b ? { x: b.x + b.width / 2, y: b.y + b.height / 2, tam: Math.max(b.width, b.height) } : null; }
-  if (f.radius !== undefined && f.type !== "cone") return { x: f.x, y: f.y, tam: f.radius * 2 };
-  if (f.type === "rectangle" && f.width !== undefined) return { x: f.x + f.width / 2, y: f.y + f.height / 2, tam: Math.max(f.width, f.height) };
-  const b = regiao.object?.bounds; return b ? { x: b.x + b.width / 2, y: b.y + b.height / 2, tam: Math.max(b.width, b.height) } : null;
-}
 
 /**
- * Toca a animação e o som de uma Ação. Visual só com o Sequencer; o som toca de qualquer jeito
- * (AudioHelper, para todas as telas). Devolve true se a parte visual foi tocada.
- * @param {Token} origem  token de quem usa (objeto do canvas)
- * @param {object} cfg    o bloco animacao da Ação
- * @param {{alvos?:Token[], atingidos?:Token[], regiao?:RegionDocument}} ctx
+ * Toca a animação e o som de uma Ação. 0.124: tudo passa pelas camadas (animacao-camadas.mjs); o bloco simples
+ * da 0.123 (anim + impacto + som) vira camadas equivalentes. Visual só com o Sequencer; os sons tocam de
+ * qualquer jeito. Devolve true se a parte visual foi tocada.
  */
 export async function naurenTocarAnimacaoDaAcao(origem, cfg, { alvos = [], atingidos = [], regiao = null } = {}) {
-  const c = naurenAnimacaoAcaoNormalizar(cfg);
-  const acertou = t => atingidos.includes(t);
-  const algumAcerto = atingidos.length > 0;
-  let visual = false;
-  const seq = naurenSequencerAtivo();
-  const animOk = seq && c.anim && naurenAnimacaoExiste(c.anim);
-  const impOk = seq && c.impacto && naurenAnimacaoExiste(c.impacto);
-  if (c.anim && seq && !animOk) console.warn(`Nauren RPG | animação "${c.anim}" não existe nos módulos ativos.`);
-  tocarSom(c.som, c.somVolume, c.somAtraso);
-  if (!seq || (!animOk && !impOk)) {
-    // sem Sequencer: o som do impacto vem logo depois do som principal
-    if (c.somImpacto && algumAcerto) tocarSom(c.somImpacto, c.somVolume, c.somAtraso + 500);
-    return false;
-  }
-  try {
-    const s = new globalThis.Sequence();
-    const base = ef => { if (c.porBaixo) ef.belowTokens(); return ef; };
-    const destinos = alvos.length ? alvos : [];
-    let houvePrincipal = false;
-    if (animOk) {
-      if (c.tipo === "projetil" || c.tipo === "corpo") {
-        const lista = destinos.filter(t => acertou(t) || c.noErro);
-        lista.forEach((t, i) => {
-          const ef = base(s.effect().file(c.anim).atLocation(origem).stretchTo(t));
-          if (!acertou(t)) ef.missed();
-          if (i === lista.length - 1) ef.waitUntilFinished(-500);
-        });
-        houvePrincipal = lista.length > 0;
-      } else if (c.tipo === "alvo") {
-        const lista = destinos.filter(t => acertou(t) || c.noErro);
-        if (lista.length) lista.forEach(t => base(s.effect().file(c.anim).atLocation(t).scaleToObject(c.escala)));
-        else base(s.effect().file(c.anim).atLocation(origem).scaleToObject(c.escala)); // sem alvo: em quem usa
-        houvePrincipal = true;
-      } else if (c.tipo === "area" && regiao && !regiao.deleted) {
-        const g = naurenGeometriaDaArea(regiao.shapes?.[0]);
-        if (g?.forma === "linha") {
-          // linha e cone: da origem até a ponta, no comprimento da área (sem esticar para os lados)
-          s.effect().file(c.anim).atLocation(g.de).stretchTo(g.ate).belowTokens(c.porBaixo); houvePrincipal = true;
-        } else {
-          const r = g ?? centroDaRegiao(regiao);
-          if (r) { s.effect().file(c.anim).atLocation({ x: r.x, y: r.y }).size({ width: r.tam * c.escala, height: r.tam * c.escala }).belowTokens(c.porBaixo); houvePrincipal = true; }
-        }
-      }
-      if (!houvePrincipal) { // usuário (e área sem área / projétil sem alvo)
-        base(s.effect().file(c.anim).atLocation(origem).scaleToObject(c.escala)).waitUntilFinished(-500);
-        houvePrincipal = true;
-      }
-    }
-    const atingidosAlvos = destinos.filter(acertou);
-    if (impOk && atingidosAlvos.length) for (const t of atingidosAlvos) s.effect().file(c.impacto).atLocation(t).scaleToObject(c.escala);
-    if (c.somImpacto && atingidosAlvos.length) s.sound().file(c.somImpacto).volume(c.somVolume);
-    visual = houvePrincipal || (impOk && atingidosAlvos.length > 0);
-    await s.play();
-  } catch (err) {
-    console.warn("Nauren RPG | animação da Ação", err);
-  }
-  return visual;
+  const { naurenCamadasDaAcao, naurenTocarCamadas } = await import("./animacao-camadas.mjs");
+  return naurenTocarCamadas(naurenCamadasDaAcao(cfg), { origem, alvos, atingidos, regiao }, "acao");
 }
 
 /* ============================== Seletor (JB2A) ============================== */

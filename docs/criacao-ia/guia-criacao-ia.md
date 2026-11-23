@@ -2447,6 +2447,41 @@ Só preencha quando o usuário pedir animações. Sem pedido, deixe o campo de f
 - `som` e `somImpacto`: endereços completos de `docs/animacoes/sons-forge.txt` (tabela de sons no `guia-animacoes-ia.md`, seção 5a). O som toca para todos **mesmo sem o Sequencer**. `somAtraso` em milissegundos.
 - Uma Habilidade com várias Ações (Golpe, Derrubar, Agarrar) leva um bloco em cada Ação.
 
+### 16.4b Animações em camadas (0.124) — chefes, combos, Condições, auras e áreas
+
+Desde a 0.124 a animação de uma Ação é uma **lista de camadas** (`animacao.camadas`). Cada camada é uma animação do Sequencer com onde, quando e ajustes próprios. Use quando a Ação pede mais de um efeito (chefe, magia especial). O bloco simples da 16.4a continua valendo (vira camadas sozinho).
+
+```json
+"animacao": {
+  "modo": "propria",
+  "camadas": [
+    { "nome": "Conjuração", "onde": "usuario", "anim": "jb2a.magic_signs.circle.02.evocation.complete.red", "escala": 2, "plano": "porBaixo" },
+    { "nome": "Meteoro", "onde": "projetil", "quando": "depois", "anim": "jb2a.fireball.beam.orange", "som": "<endereço>" },
+    { "nome": "Explosão", "onde": "area", "quando": "depois", "anim": "jb2a.fireball.explosion.orange", "tremer": 18, "tremerDuracao": 600, "som": "<endereço>" },
+    { "nome": "Rachaduras", "onde": "area", "anim": "jb2a.ground_cracks.01.orange", "plano": "porBaixo", "fadeOut": 800 }
+  ]
+}
+```
+
+Campos de cada camada (todos opcionais, menos `anim` ou `som`):
+- `onde`: `"usuario"` (em quem usa), `"alvo"` (em cada alvo), `"atingido"` (só nos atingidos), `"projetil"` (de quem usa até cada alvo; no erro passa do lado, `noErro: false` desliga), `"retorno"` (do atingido até quem usa: dreno, roubo), `"area"` (linha e cone esticam da origem até a ponta; círculo no centro, do tamanho da área).
+- `quando`: `"junto"` (padrão, começa com a anterior) ou `"depois"` (espera a anterior terminar). `atraso` em ms soma a isso.
+- Tempo: `duracao` (ms, 0 = a do vídeo), `repetir` (1 a 20) + `repetirIntervalo` (ms), `velocidade` (1 = normal), `fadeIn` / `fadeOut` (ms).
+- Forma: `escala` (do token, da área ou do raio), `opacidade` (0 a 1), `rotacao` (graus) ou `rotacaoAleatoria`, `espelhar` ou `espelharAleatorio`, `deslocAleatorio` (0 a 3: espalha a posição, bom para chuva de meteoros com `repetir`), `plano` (`"porBaixo"`, `"normal"`, `"acimaLuz"`).
+- Cor: troque a cor pelo **caminho** (`jb2a.fire_bolt.orange` → `.blue`; confira em `jb2a-caminhos.txt`). Ajustes extras: `matiz` (-180 a 180), `saturacao` (-1 a 1), `brilho` (1 = normal), `tingir` (`"#rrggbb"`).
+- Som e tela: `som` (endereço de `sons-forge.txt`), `somVolume`, `somAtraso` (ms, conta do começo da camada), `tremer` (força, 0 a 60) e `tremerDuracao` (ms).
+
+**Área persistente** (Ação com `usaTemplatePersistente`): `animacao.continuo` (camadas em loop enquanto a área existir, `onde: "area"`) e `animacao.pulso` (a cada vez que a área causa efeito, `onde` `"area"` ou `"alvo"`).
+
+**Condição** (item `condicao`, inclusive modelos `self:`): `system.animacaoCondicao` com `entrada` (ao receber), `continuo` (preso ao token enquanto durar), `saida` (ao sair) e `repetirAoAcumular` (padrão `true`). Nas camadas da Condição, `onde` é sempre `"token"`.
+```json
+"animacaoCondicao": { "entrada": [{ "anim": "jb2a.explosion.01.orange", "som": "<endereço>" }], "continuo": [{ "anim": "jb2a.flames.01.orange", "escala": 0.9, "opacidade": 0.85 }], "saida": [] }
+```
+
+**Emanação** (item com `usaEmanacao`): `system.emanacaoAnimacao` com `continuo` (aura presa ao token; `onde: "aura"` fica do tamanho do raio, `"token"` do tamanho do token) e `pulso` (a cada efeito; `"aura"`, `"token"`, `"alvo"` ou `"projetil"`).
+
+Andares: tudo respeita os andares do mapa sozinho (efeitos no token seguem o andar do token; efeitos na área nascem no piso da área).
+
 ### 16.5 Regras que o motor aplica sozinho (não configure)
 
 - Facilidade/Dificuldade acumuladas: +2/−2 por fonte além da primeira (seção 4).

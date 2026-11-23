@@ -29,6 +29,14 @@ def anim(tipo, a="", impacto="", s="", si="", escala=1, noErro=True, porBaixo=Fa
     return {"modo": "propria", "tipo": tipo, "anim": a, "impacto": impacto, "escala": escala, "noErro": noErro, "porBaixo": porBaixo,
             "som": som(s), "somVolume": volume, "somAtraso": atraso, "somImpacto": som(si)}
 
+def cam(onde, a="", **k):
+    """Uma camada (0.124). Confere o caminho do JB2A e troca o nome do som pelo endereço."""
+    if a and a not in JB2A: erros.append(f"jb2a: {a}")
+    c = {"onde": onde, "anim": a, **k}
+    if "som" in c: c["som"] = som(c["som"])
+    return c
+def camadas(*cs): return {"modo": "propria", "camadas": list(cs)}
+
 def acao(nome, **k):
     base = {"nome": nome, "custoEstamina": 0, "custoMana": 0, "alcance": "1m", "modoAlvo": "selecionado", "modoAlvoTravado": True, "danos": [], "curas": [], "condicoesAplicadas": []}
     base.update(k)
@@ -48,10 +56,14 @@ itens = [
     # ---------------- Condições modelo (self:) ----------------
     {"name": "Fúria de Teste", "type": "condicao", "img": ic("icons/magic/control/buff-strength-muscle-damage-orange.webp"),
      "system": {"ativo": False, "duracaoRodadas": 2, "modificadores": [{"campo": "poderAtaque", "valor": "2"}, {"campo": "danoBonus", "valor": "1"}],
+                "animacaoCondicao": {"entrada": [cam("token", "jb2a.divine_smite.caster.dark_red", escala=1.3, som="Buff 5 - Bless")],
+                                     "continuo": [cam("token", "jb2a.token_border.circle.spinning.blue.001", escala=1.4, opacidade=0.8, matiz=-150)],
+                                     "saida": [cam("token", "jb2a.smoke.puff.centered.dark_black", opacidade=0.6)], "repetirAoAcumular": True},
                 "descricao": "<p>+2 Poder de Ataque e +1 de dano por 2 rodadas.</p>"},
      "flags": {"nauren": {"modelo": True}}},
     {"name": "Enraizado de Teste", "type": "condicao", "img": ic("icons/magic/nature/root-vine-entangle-foot-green.webp"),
      "system": {"ativo": False, "duracaoRodadas": 1, "modificadores": [{"campo": "movimento", "valor": "=0"}],
+                "animacaoCondicao": {"entrada": [], "continuo": [cam("token", "jb2a.entangle.green", escala=1.1, plano="porBaixo", opacidade=0.85)], "saida": []},
                 "descricao": "<p>Movimento 0 por 1 rodada.</p>"},
      "flags": {"nauren": {"modelo": True}}},
 
@@ -105,7 +117,10 @@ itens = [
     item("Toque Vampírico", "magia", "icons/magic/unholy/beam-ringed-impact-purple.webp", "Dano necrótico e rouba 3 de Vida do alvo.", acoes=[
         acao("Toque Vampírico", custoMana=2, alcance="9m", ehAtaque=True, atributoAtaque="poderMagia", danos=dano("1d8+@poderMagia"),
              usaRoubarRecurso=True, roubarRecursoTipo="vida", roubarQuantidade="3",
-             animacao=anim("projetil", "jb2a.chain_lightning.primary.blue", impacto="jb2a.impact.001.orange", s="Necrótico 1", si="Necrótico 2")),
+             animacao=camadas(cam("projetil", "jb2a.eldritch_blast.dark_purple", nome="Rajada", som="Necrótico 1"),
+                              cam("atingido", "jb2a.impact.001.dark_purple", nome="Impacto", quando="depois", som="Necrótico 2"),
+                              cam("retorno", "jb2a.eldritch_blast.dark_purple", nome="Vida voltando", quando="depois", matiz=-120, opacidade=0.8),
+                              cam("usuario", "jb2a.healing_generic.burst.greenorange", nome="Cura em mim", quando="depois", escala=0.9))),
     ]),
     item("Cura de Teste", "magia", "icons/magic/life/heart-cross-green.webp", "Cura um alvo marcado (marque você mesmo para se curar).", acoes=[
         acao("Curar", custoMana=2, alcance="9m", curas=[{"formula": "2d6+@poderMagia", "aplicarNoAlvo": True}],
@@ -124,7 +139,9 @@ itens = [
              usaTemplatePersistente=True, templatePersistenteDuracaoRodadas="3", templatePersistenteEventoPeriodico="inicioTurno", templatePersistenteAoEntrar=True,
              templatePersistenteDisposicao="inimigos", templatePersistenteEfeito="dano", templatePersistenteQuantidade="1d6",
              templatePersistenteCondicaoUuid="self:Enraizado de Teste", templatePersistenteCondicaoAcumulos="1",
-             animacao=anim("area", "jb2a.entangle.green", s="Veneno 1", porBaixo=True)),
+             animacao={**anim("area", "jb2a.entangle.green", s="Veneno 1", porBaixo=True),
+                       "continuo": [cam("area", "jb2a.energy_field.02.above.green", nome="Campo", opacidade=0.45, plano="porBaixo")],
+                       "pulso": [cam("alvo", "jb2a.impact_themed.poison.greenyellow", nome="Espinhos", som="Veneno 1")]}),
     ]),
     item("Palavra do Medo", "magia", "icons/magic/control/fear-fright-monster-purple-blue.webp",
          "Sem dano: o alvo fica Amedrontado (pode gastar 2 Estamina para evitar).", acoes=[
@@ -168,6 +185,43 @@ itens = [
              animacao=anim("projetil", "jb2a.chain_lightning.primary.blue", impacto="jb2a.static_electricity.01.blue", s="Trovejante 1")),
     ]),
 
+    # ---------------- CHEFES (camadas, 0.124) ----------------
+    item("Chefe: Meteoro", "magia", "icons/magic/fire/explosion-fireball-large-orange.webp",
+         "Combo pronto Meteoro: círculo em quem usa, bola de fogo até cada alvo da área, explosão, rachaduras e tela tremendo. Área de 4 m, sem teste de ataque.", acoes=[
+        acao("Meteoro", custoMana=5, alcance="18m", modoAlvo="area", usaTemplate=True, templateTipo="circle", templateTamanho=4, templateCor="#e8742a", danos=dano("4d6+@poderMagia"),
+             animacao=camadas(cam("usuario", "jb2a.magic_signs.circle.02.evocation.complete.red", nome="Conjuração", escala=2, plano="porBaixo", som="Preparando/Buff 2"),
+                              cam("projetil", "jb2a.fireball.beam.orange", nome="Meteoro", quando="depois", som="Raio de Fogo 1"),
+                              cam("area", "jb2a.fireball.explosion.orange", nome="Explosão", quando="depois", escala=1.1, tremer=18, tremerDuracao=600, som="Bola de Fogo 1"),
+                              cam("area", "jb2a.ground_cracks.01.orange", nome="Rachaduras", plano="porBaixo", fadeOut=800))),
+    ]),
+    item("Chefe: Chuva de Meteoros", "magia", "icons/magic/fire/projectiles-salvo-trio-orange.webp",
+         "Uma camada repetida 6 vezes em posições aleatórias da área, com tremor. Área de 5 m, sem teste de ataque.", acoes=[
+        acao("Chuva de Meteoros", custoMana=6, alcance="24m", modoAlvo="area", usaTemplate=True, templateTipo="circle", templateTamanho=5, templateCor="#c0392b", danos=dano("5d6+@poderMagia"),
+             animacao=camadas(cam("area", "jb2a.fireball.explosion.orange", nome="Meteoros", escala=0.45, repetir=6, repetirIntervalo=280, deslocAleatorio=1.5, tremer=10, tremerDuracao=1800, som="Bola de Fogo 2"),
+                              cam("area", "jb2a.ground_cracks.01.orange", nome="Chão rachado", atraso=600, plano="porBaixo", fadeOut=1200),
+                              cam("area", "jb2a.smoke.puff.centered.dark_black", nome="Fumaça", quando="depois", opacidade=0.6, escala=0.9))),
+    ]),
+    item("Chefe: Raio Divino", "magia", "icons/magic/lightning/bolt-strike-blue.webp", "Combo pronto Raio divino em um alvo, com teste de ataque.", acoes=[
+        acao("Raio Divino", custoMana=3, alcance="18m", ehAtaque=True, atributoAtaque="poderMagia", danos=dano("3d8+@poderMagia"),
+             animacao=camadas(cam("usuario", "jb2a.divine_smite.caster.blueyellow", nome="Bênção", escala=1.4, som="Buff 3 - Guidance"),
+                              cam("atingido", "jb2a.lightning_strike.blue", nome="Raio", quando="depois", escala=1.5, tremer=8, som="Relâmpago"),
+                              cam("atingido", "jb2a.static_electricity.01.blue", nome="Faíscas", atraso=300))),
+    ]),
+    item("Chefe: Cor Trocada", "habilidade", "icons/magic/unholy/beam-ringed-impact-purple.webp",
+         "Mesmo raio de fogo com matiz, saturação, tinta e espelho: para conferir os ajustes de cor.", ativo=True, acoes=[
+        acao("Fogo Verde (matiz)", custoEstamina=1, alcance="18m", ehAtaque=True, atributoAtaque="poderMagia", danos=dano("1d6"),
+             animacao=camadas(cam("projetil", "jb2a.fire_bolt.orange", matiz=100, som="Raio de Fogo 1"))),
+        acao("Fogo Pálido (saturação -1)", custoEstamina=1, alcance="18m", ehAtaque=True, atributoAtaque="poderMagia", danos=dano("1d6"),
+             animacao=camadas(cam("projetil", "jb2a.fire_bolt.orange", saturacao=-1, brilho=1.3))),
+        acao("Fogo Rosa (tingir)", custoEstamina=1, alcance="18m", ehAtaque=True, atributoAtaque="poderMagia", danos=dano("1d6"),
+             animacao=camadas(cam("projetil", "jb2a.fire_bolt.orange", tingir="#ff4fd8", velocidade=0.6))),
+    ]),
+    {"name": "Aura de Fogo (Emanação)", "type": "habilidade", "img": ic("icons/magic/fire/orbs-silhouette-sun.webp"),
+     "system": {"ativo": True, "descricao": "<p>Emanação de 3 m: 1d4 de dano nos inimigos no início do seu turno. Aura de fogo em loop do tamanho do raio e chamas em quem sofre o dano.</p>",
+                "usaEmanacao": True, "emanacaoEvento": "inicioTurno", "emanacaoRaio": "3", "emanacaoDisposicao": "inimigos", "emanacaoEfeito": "dano", "emanacaoQuantidade": "1d4",
+                "emanacaoAnimacao": {"continuo": [cam("aura", "jb2a.fire_ring.500px.red", nome="Anel", opacidade=0.7, plano="porBaixo")],
+                                     "pulso": [cam("alvo", "jb2a.flames.01.orange", nome="Chamas", duracao=1500, fadeOut=500, som="Bola de Fogo 3")]}}},
+
     # ---------------- CONSUMÍVEL ----------------
     item("Poção de Cura de Teste", "consumivel", "icons/consumables/potions/potion-tube-corked-red.webp",
          "Bebe e cura 2d4+2 (marque você mesmo como alvo).", quantidade=5, quantidadeMax=5, efeito="Cura 2d4+2 PV", acoes=[
@@ -188,6 +242,7 @@ testador = {
         "notas": "<h2>Como testar</h2><p>Ponha esta ficha e 2 ou 3 Bonecos de Treino no mapa. Selecione o token desta ficha, marque alvos com T e use as Ações. "
                  "Cada Ação já vem com animação e som próprios (bloco <b>Animação e som</b> na ficha de cada item).</p>"
                  "<ul><li>Armas: corpo a corpo, à distância com munição, rajada, empurrão.</li><li>Magias: projétil, círculo, cone, linha, mísseis, roubo de Vida, cura (alvo e área), escudo, área persistente, medo, teleporte.</li>"
+                 "<li>Chefes (camadas): Meteoro, Chuva de Meteoros, Raio Divino, Cor Trocada; Toque Vampírico com dreno voltando.</li><li>Condições animadas: Fúria de Teste (ao receber, contínua e ao sair) e Enraizado de Teste; Aura de Fogo (Emanação com aura e pulso); Campo de Espinhos (área com loop e pulso).</li>"
                  "<li>Habilidades: buff em mim, garra com veneno e dreno, derrubar, golpes de comparação (auto / nenhuma / só som / some no erro) e vários alvos.</li><li>Consumível: poção.</li></ul>"
                  "<p>Recursos altos de propósito (Vida 200, Mana 100, Estamina 60) para repetir à vontade.</p>"
     },

@@ -254,7 +254,15 @@ function naurenEfeitosNoAndar() {
     try {
       const fonte = ef?.source ?? ef?.sourceDocument?.object ?? null;
       const tok = fonte?.document?.documentName === "Token" ? fonte : (fonte?.documentName === "Token" ? fonte.object : null);
-      if (!tok) continue;
+      if (!tok) {
+        // 0.124: efeito solto no mapa (área) com o andar no nome ("[nv:ID]"): só aparece no andar dele.
+        const nv = String(ef?.data?.name ?? "").match(/\[nv:([^\]]+)\]/)?.[1];
+        if (!nv) continue;
+        const mostrarPonto = !vendo || nv === vendo;
+        if (!mostrarPonto && ef.renderable !== false) { ef.renderable = false; ef._naurenOcultoAndar = true; }
+        else if (mostrarPonto && ef._naurenOcultoAndar) { ef.renderable = true; ef._naurenOcultoAndar = false; }
+        continue;
+      }
       const andar = tok.document?.level?.id ?? tok.document?.level;
       const outro = !!(vendo && andar && andar !== vendo && naurenCenaTemAndares(tok.document.parent));
       let mostrar = true;

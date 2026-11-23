@@ -57,8 +57,9 @@ async function naurenAnimarAcao(actor, item, acao, resultadoAlvos, plano = null)
     if (!origem) return semAnimacao();
     try {
       const m = await import("./animacao-acao.mjs");
-      const cfg = m.naurenAnimacaoAcaoNormalizar(acao.animacao);
-      const vaiTerVisual = m.naurenSequencerAtivo() && ((cfg.anim && m.naurenAnimacaoExiste(cfg.anim)) || (cfg.impacto && m.naurenAnimacaoExiste(cfg.impacto)));
+      const { naurenCamadasDaAcao } = await import("./animacao-camadas.mjs");
+      const cfg = acao.animacao;
+      const vaiTerVisual = m.naurenSequencerAtivo() && naurenCamadasDaAcao(cfg).some(c => c.anim && m.naurenAnimacaoExiste(c.anim));
       naurenMotionEnviar(plano, !!vaiTerVisual);
       await m.naurenTocarAnimacaoDaAcao(origem, cfg, {
         alvos: (resultadoAlvos?.tokensAfetados ?? []).map(paraObjeto).filter(Boolean),

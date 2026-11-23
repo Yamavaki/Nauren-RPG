@@ -43,6 +43,7 @@
     {{#if condicoesHtml}}<a class="nauren-aba-botao" data-aba="condicoes"><i class="fas fa-droplet"></i> Condições{{#if condicoesQtd}}<span class="nt-aba-badge">{{condicoesQtd}}</span>{{/if}}</a>{{/if}}
     {{#if scriptHtml}}<a class="nauren-aba-botao" data-aba="script" title="Só o Mestre vê"><i class="fas fa-code"></i> Script{{#if scriptsPendentes}}<span class="nt-aba-badge nt-aba-badge-pend" title="Precisa aprovar">{{scriptsPendentes}}</span>{{/if}}</a>{{/if}}
     {{#if aprimorarHtml}}<a class="nauren-aba-botao" data-aba="aprimorar"><i class="fas fa-wand-magic-sparkles"></i> {{aprimorarRotulo}}{{#if aprimorarQtd}}<span class="nt-aba-badge">{{aprimorarQtd}}</span>{{/if}}</a>{{/if}}
+    {{#if animacaoCondicaoAba}}<a class="nauren-aba-botao" data-aba="animacao"><i class="fas fa-film"></i> Animação{{#if animacaoCondicaoQtd}}<span class="nt-aba-badge">{{animacaoCondicaoQtd}}</span>{{/if}}</a>{{/if}}
     {{#if aparenciaHtml}}<a class="nauren-aba-botao" data-aba="aparencia"><i class="fas fa-masks-theater"></i> Aparência</a>{{/if}}
     <a class="nauren-aba-botao" data-aba="descricao"><i class="fas fa-feather"></i> Descrição</a>
   </nav>
@@ -1995,55 +1996,12 @@
           <label class="naa-modo {{#if (eq acao._naa.modo "nenhuma")}}on{{/if}}" title="Esta Ação não anima nem toca som."><input type="radio" data-field="acoes.{{acaoIndex}}.animacao.modo" value="nenhuma" {{#if (eq acao._naa.modo "nenhuma")}}checked{{/if}}><i class="fas fa-ban"></i> Nenhuma</label>
         </div>
         {{#if acao._naa.propria}}
-        {{#if @root.naaSequencer}}
-        <div class="naa-sec">
-          <h4 class="naa-rot"><i class="fas fa-film"></i> Animação <span class="naa-sub">Sequencer</span></h4>
-          <div class="naa-tipos">
-            {{#each @root.naaTipos as |t|}}<label class="naa-tipo {{#if (eq t.id acao._naa.tipo)}}on{{/if}}" title="{{t.dica}}"><input type="radio" data-field="acoes.{{acaoIndex}}.animacao.tipo" value="{{t.id}}" {{#if (eq t.id acao._naa.tipo)}}checked{{/if}}><i class="fas {{t.icone}}"></i> {{t.rotulo}}</label>{{/each}}
-          </div>
-          <p class="naa-dica">{{acao._naa.tipoDica}}</p>
-          <div class="naa-linha">
-            <span class="naa-mini"><video muted loop autoplay playsinline data-naa-previa="{{acao._naa.anim}}"></video><i class="fas fa-film"></i></span>
-            <div class="naa-campo"><span class="naa-sub">Animação principal</span>
-              <span class="naa-arq"><input type="text" class="{{#if acao._naa.animRuim}}naa-ruim{{/if}}" data-field="acoes.{{acaoIndex}}.animacao.anim" value="{{acao._naa.anim}}" placeholder="ex.: jb2a.fire_bolt.orange"><button type="button" class="naa-btn naa-prim" data-naa-acao="procurar" data-alvo="acoes.{{acaoIndex}}.animacao.anim" data-titulo="Animação principal"><i class="fas fa-magnifying-glass"></i> Procurar</button></span>
-              {{#if acao._naa.animRuim}}<span class="naa-aviso"><i class="fas fa-circle-xmark"></i> Não existe nos módulos ativos.</span>{{/if}}
-            </div>
-          </div>
-          {{#if acao._naa.temAlvos}}
-          <div class="naa-linha">
-            <span class="naa-mini"><video muted loop autoplay playsinline data-naa-previa="{{acao._naa.impacto}}"></video><i class="fas fa-burst"></i></span>
-            <div class="naa-campo"><span class="naa-sub">Impacto no alvo atingido <em>(opcional)</em></span>
-              <span class="naa-arq"><input type="text" class="{{#if acao._naa.impactoRuim}}naa-ruim{{/if}}" data-field="acoes.{{acaoIndex}}.animacao.impacto" value="{{acao._naa.impacto}}" placeholder="ex.: jb2a.impact.orange"><button type="button" class="naa-btn" data-naa-acao="procurar" data-alvo="acoes.{{acaoIndex}}.animacao.impacto" data-titulo="Impacto no alvo"><i class="fas fa-magnifying-glass"></i> Procurar</button></span>
-              {{#if acao._naa.impactoRuim}}<span class="naa-aviso"><i class="fas fa-circle-xmark"></i> Não existe nos módulos ativos.</span>{{/if}}
-            </div>
-          </div>
-          {{/if}}
-          <div class="naa-ajustes">
-            <label class="naa-num" title="Tamanho em relação ao token (no alvo, em quem usa e no impacto) ou à área."><span>Tamanho</span><input type="number" step="0.1" min="0.1" max="10" data-field="acoes.{{acaoIndex}}.animacao.escala" value="{{acao._naa.escala}}"><em>×</em></label>
-            {{#if acao._naa.temAlvos}}<label class="naa-check" title="Quando erra, o projétil/golpe passa do lado do alvo. Desmarcado: só toca em quem foi atingido."><input type="checkbox" data-field="acoes.{{acaoIndex}}.animacao.noErro" {{checked acao._naa.noErro}}> Tocar também quando erra</label>{{/if}}
-            <label class="naa-check"><input type="checkbox" data-field="acoes.{{acaoIndex}}.animacao.porBaixo" {{checked acao._naa.porBaixo}}> Por baixo dos tokens</label>
-          </div>
-        </div>
-        {{else}}
-        <p class="naa-aviso naa-aviso-bloco"><i class="fas fa-circle-info"></i> Ative o módulo <b>Sequencer</b> (e um pacote de animações, como o <b>JB2A</b>) para escolher animações. O som abaixo toca mesmo sem ele.</p>
+        <div class="nce-montar" data-nce-contexto="acao" data-acao-index="{{acaoIndex}}" data-nce-campo="camadas"></div>
+        {{#if acao.usaTemplatePersistente}}
+        <div class="nce-montar" data-nce-contexto="areaContinuo" data-acao-index="{{acaoIndex}}" data-nce-campo="continuo"></div>
+        <div class="nce-montar" data-nce-contexto="areaPulso" data-acao-index="{{acaoIndex}}" data-nce-campo="pulso"></div>
         {{/if}}
-        <div class="naa-sec">
-          <h4 class="naa-rot"><i class="fas fa-volume-high"></i> Som <span class="naa-sub">toca para todos, com ou sem Sequencer</span></h4>
-          <div class="naa-campo"><span class="naa-sub">Ao usar</span>
-            <span class="naa-arq"><input type="text" data-field="acoes.{{acaoIndex}}.animacao.som" value="{{acao._naa.som}}" placeholder="arquivo .ogg / .mp3 / .wav"><button type="button" class="naa-btn naa-ic" data-naa-acao="arquivo" data-tipo="audio" data-alvo="acoes.{{acaoIndex}}.animacao.som" title="Escolher arquivo"><i class="fas fa-folder-open"></i></button><button type="button" class="naa-btn naa-ic" data-naa-acao="ouvir" data-alvo="acoes.{{acaoIndex}}.animacao.som" title="Ouvir (só para você)"><i class="fas fa-play"></i></button></span>
-          </div>
-          <div class="naa-campo"><span class="naa-sub">No acerto <em>(opcional)</em></span>
-            <span class="naa-arq"><input type="text" data-field="acoes.{{acaoIndex}}.animacao.somImpacto" value="{{acao._naa.somImpacto}}" placeholder="toca junto do impacto"><button type="button" class="naa-btn naa-ic" data-naa-acao="arquivo" data-tipo="audio" data-alvo="acoes.{{acaoIndex}}.animacao.somImpacto" title="Escolher arquivo"><i class="fas fa-folder-open"></i></button><button type="button" class="naa-btn naa-ic" data-naa-acao="ouvir" data-alvo="acoes.{{acaoIndex}}.animacao.somImpacto" title="Ouvir (só para você)"><i class="fas fa-play"></i></button></span>
-          </div>
-          <div class="naa-ajustes">
-            <label class="naa-num"><span>Volume</span><input type="number" step="0.05" min="0" max="1" data-field="acoes.{{acaoIndex}}.animacao.somVolume" value="{{acao._naa.somVolume}}"><em>{{acao._naa.volumePct}}%</em></label>
-            <label class="naa-num" title="Espera antes de tocar o som (para combinar com a animação)."><span>Atraso</span><input type="number" step="50" min="0" max="10000" data-field="acoes.{{acaoIndex}}.animacao.somAtraso" value="{{acao._naa.somAtraso}}"><em>ms</em></label>
-          </div>
-        </div>
-        <div class="naa-rodape">
-          <span class="naa-dica"><i class="fas fa-file-code"></i> Fica guardado nesta Ação: exportar ou importar a ficha (JSON) leva junto.</span>
-          <button type="button" class="naa-btn naa-prim" data-naa-acao="testar" data-acao-index="{{acaoIndex}}" title="Toca a partir do token deste personagem (ou do token selecionado) nos alvos marcados"><i class="fas fa-play"></i> Testar</button>
-        </div>
+        <p class="naa-dica"><i class="fas fa-file-code"></i> Fica guardado nesta Ação: exportar ou importar a ficha (JSON) leva junto. <b>Testar</b> toca a partir do token do personagem (ou do selecionado) nos alvos marcados.</p>
         {{/if}}
       </div>
     </details>
@@ -3620,6 +3578,13 @@
       </label>
       {{#if system.usaEmanacao}}
       <div class="toggle-body">
+        <details class="nauren-bloco nauren-bloco-simples naa-bloco" style="margin: 0 0 10px;" data-persist="animacao-emanacao">
+          <summary class="toggle-header" style="cursor: pointer; list-style: none;"><i class="fas fa-film"></i> Animação da Emanação <span class="naa-resumo">{{#if emanacaoAnimResumo}}{{emanacaoAnimResumo}}{{else}}nenhuma{{/if}}</span></summary>
+          <div class="toggle-body naa-corpo">
+            <div class="nce-montar" data-nce-contexto="emanacaoContinuo" data-nce-campo="system.emanacaoAnimacao.continuo"></div>
+            <div class="nce-montar" data-nce-contexto="emanacaoPulso" data-nce-campo="system.emanacaoAnimacao.pulso"></div>
+          </div>
+        </details>
         <div class="field-grid cols-2">
           <div class="field">
             <label>Evento</label>
@@ -4342,6 +4307,13 @@
     </label>
     {{#if system.usaEmanacao}}
     <div class="toggle-body">
+        <details class="nauren-bloco nauren-bloco-simples naa-bloco" style="margin: 0 0 10px;" data-persist="animacao-emanacao">
+          <summary class="toggle-header" style="cursor: pointer; list-style: none;"><i class="fas fa-film"></i> Animação da Emanação <span class="naa-resumo">{{#if emanacaoAnimResumo}}{{emanacaoAnimResumo}}{{else}}nenhuma{{/if}}</span></summary>
+          <div class="toggle-body naa-corpo">
+            <div class="nce-montar" data-nce-contexto="emanacaoContinuo" data-nce-campo="system.emanacaoAnimacao.continuo"></div>
+            <div class="nce-montar" data-nce-contexto="emanacaoPulso" data-nce-campo="system.emanacaoAnimacao.pulso"></div>
+          </div>
+        </details>
       <div class="field-grid cols-2">
         <div class="field">
           <label>Evento</label>
@@ -4626,6 +4598,13 @@
   {{#if escritoHtml}}<div class="nauren-aba-painel" data-aba="escrito">{{{escritoHtml}}}</div>{{/if}}
   {{#if aprimorarHtml}}<div class="nauren-aba-painel" data-aba="aprimorar">{{{aprimorarHtml}}}</div>{{/if}}
   {{#if aparenciaHtml}}<div class="nauren-aba-painel" data-aba="aparencia">{{{aparenciaHtml}}}</div>{{/if}}
+  {{#if animacaoCondicaoAba}}<div class="nauren-aba-painel" data-aba="animacao">
+    <p class="nauren-descricao-dica nca-dica"><i class="fas fa-circle-info"></i> Animações próprias desta Condição (Sequencer). Vão junto quando ela é aplicada em alguém. Os sons tocam mesmo sem o Sequencer.</p>
+    <div class="nce-montar" data-nce-contexto="condicao" data-nce-campo="system.animacaoCondicao.entrada"></div>
+    <label class="naa-check nca-acumular"><input type="checkbox" name="system.animacaoCondicao.repetirAoAcumular" {{checked system.animacaoCondicao.repetirAoAcumular}}> Tocar "Ao receber" de novo a cada acúmulo novo</label>
+    <div class="nce-montar" data-nce-contexto="condicaoContinuo" data-nce-campo="system.animacaoCondicao.continuo"></div>
+    <div class="nce-montar" data-nce-contexto="condicao" data-nce-campo="system.animacaoCondicao.saida" data-nce-titulo="Ao sair"></div>
+  </div>{{/if}}
   <div class="nauren-aba-painel" data-aba="descricao">
   {{#if isGrupo}}
   <div class="nauren-grupo-tab-painel" data-tab-grupo="membros">

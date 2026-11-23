@@ -1,5 +1,5 @@
 /* Versão deste arquivo: o sistema confere no "ready" e, se o navegador/Forge tiver guardado um CSS antigo, carrega o novo. */
-:root { --nauren-css-versao: "0.123.3"; }
+:root { --nauren-css-versao: "0.124.0"; }
 /* 
 ===================================================
 1. FUNDO E FONTES GERAIS
@@ -9693,3 +9693,86 @@ li.directory-item.nauren-org-tem-dono > .entry-name > .nauren-org-nome { overflo
 .nauren-seletor-anim .nsa-botoes button.nsa-prim { flex-basis: 100%; background: color-mix(in srgb, var(--s-ouro) 22%, #17111f); border-color: var(--s-ouro); font-weight: 600; }
 .nauren-seletor-anim .nsa-botoes button:disabled { opacity: .45; cursor: default; }
 @media (max-width: 760px) { .nsa-corpo { grid-template-columns: 1fr; } .nsa-lado { border-left: none; border-top: 1px solid var(--s-borda); } .nsa-previa { aspect-ratio: 16/9; } }
+
+/* =====================================================================
+   0.124 — Editor de camadas de animação (Ações, Condições, Emanações)
+   ===================================================================== */
+.nce-montar + .nce-montar { margin-top: 12px; }
+.nce { --e-tinta: #17111f; --e-painel: var(--n-painel, #241e36); --e-borda: var(--n-borda, #3b3154); --e-texto: var(--n-texto, #ece6f3); --e-suave: var(--n-suave, #a89bc4); --e-ouro: var(--n-ouro, #cca162);
+  position: relative; display: flex; flex-direction: column; gap: 8px; padding: 10px; border: 1px solid var(--e-borda); border-radius: 10px; background: color-mix(in srgb, var(--e-painel) 70%, #0d0a14); }
+.nce-topo { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.nce-tit { font: 600 11px var(--n-corpo, Signika), sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--e-ouro); display: inline-flex; align-items: center; gap: 6px; }
+.nce-conta { font-size: 11.5px; color: var(--e-suave); }
+.nce-topo-bts { margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap; }
+.nauren-rpg .nce.nce.nce button { all: unset; box-sizing: border-box; cursor: pointer; }
+.nauren-rpg .nce.nce.nce button.nce-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 28px; padding: 0 10px; border: 1px solid var(--e-borda); border-radius: 6px; background: var(--e-tinta); color: var(--e-texto); font: 12px var(--n-corpo, Signika), sans-serif; white-space: nowrap; }
+.nauren-rpg .nce.nce.nce button.nce-btn i { color: var(--e-ouro); font-size: 10.5px; }
+.nauren-rpg .nce.nce.nce button.nce-btn:hover { border-color: var(--e-ouro); }
+.nauren-rpg .nce.nce.nce button.nce-btn.nce-prim { background: color-mix(in srgb, var(--e-ouro) 18%, var(--e-tinta)); border-color: color-mix(in srgb, var(--e-ouro) 60%, var(--e-borda)); }
+.nauren-rpg .nce.nce.nce button.nce-btn.nce-ic { width: 30px; padding: 0; }
+.nauren-rpg .nce.nce.nce button.nce-perigo:hover, .nauren-rpg .nce.nce.nce button.nce-perigo:hover i { color: #ff8a8a !important; border-color: #a84545; }
+.nce-aviso { margin: 0; font-size: 11.5px; color: var(--e-suave); }
+.nce-aviso i { color: var(--e-ouro); }
+.nce-vazio { margin: 0; padding: 12px; text-align: center; font-size: 12px; color: var(--e-suave); border: 1px dashed var(--e-borda); border-radius: 8px; }
+.nce-lista { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; counter-reset: none; }
+.nce-camada { border: 1px solid var(--e-borda); border-radius: 8px; background: var(--e-painel); overflow: hidden; transition: border-color .15s; }
+.nce-camada.aberta { border-color: color-mix(in srgb, var(--e-ouro) 55%, var(--e-borda)); }
+.nce-camada.off { opacity: .5; }
+.nce-cab { display: flex; align-items: center; gap: 8px; padding: 6px 8px; min-height: 52px; }
+.nce-n { flex: 0 0 auto; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 600; color: var(--e-tinta); background: var(--e-ouro); }
+.nce-mini { position: relative; flex: 0 0 auto; width: 44px; height: 40px; border-radius: 6px; overflow: hidden; border: 1px solid var(--e-borda); background: radial-gradient(circle at 50% 45%, #2b2442, #0e0b15); display: grid; place-items: center; }
+.nce-mini > i { color: var(--e-borda); font-size: 14px; }
+.nce-mini video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; display: none; }
+.nce-mini.tem video { display: block; }
+.nce-mini.tem > i { display: none; }
+.nce-info { flex: 1 1 140px; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.nauren-rpg .nce.nce.nce input.nce-nome { all: unset; box-sizing: border-box; width: 100%; font: 600 13px var(--n-corpo, Signika), sans-serif; color: var(--e-texto); border-bottom: 1px dashed transparent; }
+.nauren-rpg .nce.nce.nce input.nce-nome:hover, .nauren-rpg .nce.nce.nce input.nce-nome:focus { border-bottom-color: var(--e-borda); }
+.nce-res { font-size: 11px; color: var(--e-suave); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nce-cab select { flex: 0 1 auto; width: auto; max-width: 170px; height: 28px; font-size: 12px; }
+.nce-bts { flex: 0 0 auto; display: inline-flex; gap: 2px; }
+.nauren-rpg .nce.nce.nce .nce-bts button { width: 26px; height: 26px; display: grid; place-items: center; border-radius: 5px; color: var(--e-suave); font-size: 11px; }
+.nauren-rpg .nce.nce.nce .nce-bts button:hover:not([disabled]) { background: var(--e-tinta); color: var(--e-texto); }
+.nauren-rpg .nce.nce.nce .nce-bts button[disabled] { opacity: .3; cursor: default; }
+.nauren-rpg .nce.nce.nce .nce-bts button.nce-abrir { color: var(--e-ouro); }
+.nce-corpo { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; padding: 10px; border-top: 1px solid var(--e-borda); background: color-mix(in srgb, var(--e-painel) 60%, #0d0a14); }
+.nce-sec { display: flex; flex-direction: column; gap: 8px; padding: 10px; border: 1px solid var(--e-borda); border-radius: 8px; background: var(--e-painel); min-width: 0; }
+.nce-sec-anim { grid-column: 1 / -1; }
+.nauren-rpg .nce.nce.nce h5 { margin: 0; font: 600 10.5px var(--n-corpo, Signika), sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--e-ouro); display: flex; align-items: center; gap: 6px; border: none; }
+.nce-arq { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.nce-arq > input { flex: 1 1 auto; min-width: 0; height: 30px; }
+.nce-cores { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
+.nce-cores:empty { display: none; }
+.nce-sub { font-size: 11px; color: var(--e-suave); margin-right: 2px; }
+.nauren-rpg .nce.nce.nce button.nce-cor { width: 20px; height: 20px; border-radius: 50%; background: var(--cor); border: 2px solid #0d0a14; box-shadow: 0 0 0 1px var(--e-borda); }
+.nauren-rpg .nce.nce.nce button.nce-cor:hover { transform: scale(1.15); }
+.nauren-rpg .nce.nce.nce button.nce-cor.on { box-shadow: 0 0 0 2px var(--e-ouro); }
+.nce-grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; }
+label.nce-num { display: flex; flex-direction: column; gap: 3px; font-size: 11px; color: var(--e-suave); }
+.nce-num-in { display: flex; align-items: center; gap: 4px; }
+.nce-num-in input { width: 100%; min-width: 0; height: 26px; text-align: center; }
+.nce-num-in em { font-style: normal; font-size: 10.5px; }
+.nce-faixa { display: flex; flex-direction: column; gap: 3px; font-size: 11.5px; color: var(--e-suave); }
+.nce-faixa > span { display: flex; justify-content: space-between; gap: 8px; }
+.nce-faixa b { font-weight: 500; color: var(--e-texto); }
+.nce-faixa input[type=range] { width: 100%; accent-color: var(--e-ouro); margin: 0; }
+.nce-linha { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+.nce-sel { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--e-suave); }
+.nce-sel select { width: auto; height: 26px; font-size: 12px; }
+.nce-sel input[type=color] { width: 34px; height: 24px; padding: 0; border: 1px solid var(--e-borda); background: none; }
+.nce-check { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--e-texto); cursor: pointer; }
+.nce-check input { accent-color: var(--e-ouro); margin: 0; }
+.nce-dica { font-size: 11px; color: var(--e-suave); }
+.nce-menu { position: absolute; z-index: 20; top: 44px; right: 10px; width: min(420px, calc(100% - 20px)); max-height: 360px; overflow-y: auto; padding: 8px; border: 1px solid var(--e-ouro); border-radius: 10px; background: #15111f; box-shadow: 0 10px 30px rgba(0,0,0,.55); display: flex; flex-direction: column; gap: 6px; }
+.nce-menu[hidden] { display: none; }
+.nce-menu-tit { font: 600 11px var(--n-corpo, Signika), sans-serif; text-transform: uppercase; letter-spacing: .06em; color: var(--e-ouro); }
+.nce-menu-tit span { text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--e-suave); margin-left: 6px; }
+.nce-combo { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px; border: 1px solid var(--e-borda); border-radius: 8px; background: var(--e-painel); }
+.nce-combo > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.nce-combo b { font-size: 12.5px; color: var(--e-texto); }
+.nce-combo small { font-size: 11px; color: var(--e-suave); }
+.nce-combo > span { display: flex; gap: 4px; flex: 0 0 auto; }
+.nce-tag { margin-left: 6px; padding: 1px 6px; border-radius: 8px; font-size: 10px; color: var(--e-tinta); background: var(--e-ouro); }
+.nce-tag-m { background: #7aa7e0; }
+.nca-dica { margin: 0 0 10px; }
+.nca-acumular { display: flex; margin: 8px 0 12px; }

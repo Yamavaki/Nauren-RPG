@@ -2951,6 +2951,11 @@ async function naurenProcessarEmanacoes(tipoEvento, atorFonte) {
       alvos.push(t.actor);
     }
     if (!alvos.length) continue;
+    // 0.124: pulso da Emanação (animação a cada vez que ela causa efeito)
+    if (item.system.emanacaoAnimacao?.pulso?.length) {
+      const alvosTok = canvas.tokens.placeables.filter(t => t !== tokenFonte && alvos.includes(t.actor));
+      import("./animacao-camadas.mjs").then(m => m.naurenPulsoEmanacao(item, tokenFonte, alvosTok)).catch(err => console.warn("Nauren RPG | pulso da Emanação", err));
+    }
 
     const ehCondicao = item.system.emanacaoEfeito === "condicao";
     if (ehCondicao && !condicaoEmanacaoUuid) continue; // sem Condição configurada - nada a fazer
@@ -3705,6 +3710,7 @@ async function naurenProcessarTemplatesPersistentes(tipoEvento, atorDoTurno = nu
         const mesmaDisposicao = tokenDoc.disposition === config.disposicaoOrigem;
         return !(disposicaoFiltro === "aliados" && !mesmaDisposicao) && !(disposicaoFiltro === "inimigos" && mesmaDisposicao);
       });
+      if (config.animacaoPulso?.length) import("./animacao-camadas.mjs").then(m => m.naurenPulsoArea(regiao, config, alvosPeriodico)).catch(err => console.warn("Nauren RPG | pulso da área", err)); // 0.124
       await naurenAplicarAreaEmTokens(config, alvosPeriodico, valoresPeriodico, regiao.name, config.icone || "icons/magic/acid/projectile-glowing-bubbles.webp");
     }
 

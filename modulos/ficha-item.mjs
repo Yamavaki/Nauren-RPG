@@ -1013,6 +1013,10 @@ class NaurenItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       }
       return saida;
     };
+    // 0.124: aba Animação das Condições e resumo da animação da Emanação.
+    context.animacaoCondicaoAba = item.type === "condicao";
+    if (context.animacaoCondicaoAba) { const ac = item.system.animacaoCondicao ?? {}; context.animacaoCondicaoQtd = ["entrada", "continuo", "saida"].reduce((n, k) => n + (ac[k]?.length ?? 0), 0) || ""; }
+    { const ea = item.system.emanacaoAnimacao; const n = (ea?.continuo?.length ?? 0) + (ea?.pulso?.length ?? 0); context.emanacaoAnimResumo = n ? `${n} camada${n > 1 ? "s" : ""}` : ""; }
     // 0.123: bloco "Animação e som" de cada Ação.
     context.naaSequencer = naurenSequencerAtivo();
     context.naaTipos = Object.entries(NAUREN_ANIMACAO_TIPOS).map(([id, t]) => ({ id, ...t }));
@@ -1544,6 +1548,7 @@ class NaurenItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     super._onRender(context, options);
     // 0.102: aba Condições, seletor de Condição, aba Script e botões de script.
     try { naurenLigarBlocoAnimacaoAcao(this); } catch (err) { console.warn("Nauren RPG | Animação da Ação na ficha", err); }
+    this._ligarEditoresCamadas().catch(err => console.warn("Nauren RPG | editor de camadas", err));
     try { naurenAparenciaLigar(this); } catch (err) { console.warn("Nauren RPG | Aparência na ficha", err); }
     try { naurenEscritoLigarAba(this); } catch (err) { console.warn("Nauren RPG | Escrito na ficha", err); }
     try { naurenAprimorarLigar(this); } catch (err) { console.warn("Nauren RPG | Aprimorar na ficha", err); }
@@ -1686,6 +1691,54 @@ class NaurenItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       return `⚠ "${nome}" não existe na ficha nem nas Condições do sistema`;
     }
     return naurenNomeParaUuid(uuid);
+  }
+
+  /** 0.124: monta os editores de camadas de animação (Ações, Condição, Emanação). */
+  async _ligarEditoresCamadas() {
+    const montagens = [...(this.element?.querySelectorAll(".nce-montar") ?? [])];
+    if (!montagens.length) return;
+    const { naurenLigarEditorCamadas } = await import("./editor-camadas.mjs");
+    const { naurenCamadasDoBlocoSimples } = await import("./animacao-camadas.mjs");
+    for (const m of montagens) {
+      const contexto = m.dataset.nceContexto, campo = m.dataset.nceCampo, idx = m.dataset.acaoIndex;
+      let ler, gravar;
+      if (idx !== undefined) {
+        const i = Number(idx);
+        ler = () => { const an = this.item.system.acoes?.[i]?.animacao ?? {}; const v = an[campo] ?? []; return campo === "camadas" && !v.length ? naurenCamadasDoBlocoSimples(an) : v; };
+        gravar = lista => this._enfileirarArray("acoes", arr => {
+          if (!arr[i]) return;
+          arr[i].animacao = { ...(arr[i].animacao ?? {}), [campo]: lista };
+          if (campo === "camadas") Object.assign(arr[i].animacao, { anim: "", impacto: "", som: "", somImpacto: "" }); // o bloco simples virou camadas
+        });
+      } else {
+        ler = () => foundry.utils.getProperty(this.item, campo) ?? [];
+        gravar = lista => this.item.update({ [campo]: lista });
+      }
+      if (!this.isEditable) gravar = async () => ui.notifications.warn("Você não pode editar este item.");
+      naurenLigarEditorCamadas(m, { contexto, idBase: `${this.item.uuid}|${idx ?? ""}|${campo}`, ler, gravar, titulo: m.dataset.nceTitulo || null, testar: lista => this._testarCamadas(lista, contexto) })
+        .catch(err => console.warn("Nauren RPG | editor de camadas", err));
+    }
+  }
+
+  /** 0.124: botão Testar dos editores de camadas (do token do personagem, ou do selecionado, nos alvos marcados). */
+  async _testarCamadas(lista, contexto) {
+    const cam = await import("./animacao-camadas.mjs");
+    const ator = this.item.parent?.documentName === "Actor" ? this.item.parent : null;
+    const origem = (ator && (canvas?.tokens?.controlled?.find(t => t.actor === ator) ?? ator.getActiveTokens?.(true)?.[0])) ?? canvas?.tokens?.controlled?.[0] ?? null;
+    const alvos = [...(game.user?.targets ?? [])].filter(t => t !== origem);
+    if (!origem) {
+      lista.forEach(c => { if (c.som) foundry.audio.AudioHelper.play({ src: c.som, volume: c.somVolume ?? 0.8, autoplay: true, loop: false }, false); });
+      return ui.notifications.info("Para ver a animação, ponha o personagem no mapa (ou selecione um token) e marque alvos com T.");
+    }
+    const raio = parseFloat(this.item.system?.emanacaoRaio) || 3, dist = Number(canvas.scene?.grid?.distance) || 1.5;
+    const diametroAura = Math.max(origem.document.width, origem.document.height) + 2 * raio / dist;
+    if (cam.NAUREN_CONTEXTOS_LOOP.includes(contexto)) {
+      const nome = `nauren-teste-${foundry.utils.randomID(6)}`;
+      await cam.naurenLigarPersistente(nome, lista, { origem, diametroAura }, contexto);
+      setTimeout(() => cam.naurenDesligarPersistente(nome), 4000);
+      return ui.notifications.info("Mostrando a animação contínua por 4 segundos.");
+    }
+    return cam.naurenTocarCamadas(lista, { origem, alvos, atingidos: alvos, diametroAura }, contexto);
   }
 
   /** Salva um campo isolado de dentro de "acoes" ou "efeitosVinculados", sempre pela fila daquele campo. */

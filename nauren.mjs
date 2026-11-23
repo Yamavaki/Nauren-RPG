@@ -34,6 +34,7 @@ import { __naurenIniciar_discord_resumo, naurenConcederPrioridadePeloCard } from
 import { __naurenIniciar_descer_nivel } from "./modulos/descer-nivel.mjs";
 import { __naurenIniciar_ataqueDesarmado } from "./modulos/ataque-desarmado.mjs";
 import { __naurenIniciar_poesiaGhurua } from "./modulos/poesia-ghurua.mjs";
+import { __naurenIniciar_animacaoCamadas } from "./modulos/animacao-camadas.mjs";
 import { NAUREN_QUERY_MANTIS, naurenHandleQueryMantis } from "./modulos/cacador-espirito.mjs";
 import { __naurenIniciar_movimento, naurenCardMovimento, naurenDepoisDoMovimento, naurenGastarRecursoSimples, naurenJanelaMovimento, naurenModoMovimento, naurenMoverSemMovimento, naurenMovimentoSaldo, naurenRecursosCustomConhecidos } from "./modulos/movimento.mjs";
 import { __naurenIniciar_monstros_regras, naurenCasasLivresEmVolta, naurenCompensacoesContraOrigem, naurenCondicoesAtivas, naurenCondicoesLigadasA, naurenCriarInvocacoes, naurenMovSemPrioridadeUsado, naurenTravaDaAcao, naurenTravaPrioridade, naurenUuidEhEsteToken } from "./modulos/monstros-regras.mjs";
@@ -109,6 +110,50 @@ function campoDanoBloco() {
     verdadeiro: new BooleanField({ initial: false })
   };
 }
+/**
+ * 0.124: uma CAMADA de animação (Sequencer). Várias camadas formam uma animação composta (chefes, efeitos especiais).
+ * Usada nas Ações (animacao.camadas / continuo / pulso), nas Condições (animacaoCondicao) e nas Emanações
+ * (emanacaoAnimacao). Ver modulos/animacao-camadas.mjs.
+ */
+function campoCamadaAnimacao() {
+  const { StringField, NumberField, BooleanField } = foundry.data.fields;
+  return {
+    nome: new StringField({ initial: "" }),
+    ativo: new BooleanField({ initial: true }),
+    onde: new StringField({ initial: "alvo" }),        // usuario | alvo | atingido | projetil | retorno | area | token | aura
+    quando: new StringField({ initial: "junto" }),     // junto (com a anterior) | depois (quando a anterior termina)
+    atraso: new NumberField({ initial: 0, min: 0, integer: true }),
+    anim: new StringField({ initial: "" }),
+    escala: new NumberField({ initial: 1, min: 0.05, max: 20 }),
+    opacidade: new NumberField({ initial: 1, min: 0, max: 1 }),
+    velocidade: new NumberField({ initial: 1, min: 0.1, max: 5 }),
+    repetir: new NumberField({ initial: 1, min: 1, max: 20, integer: true }),
+    repetirIntervalo: new NumberField({ initial: 250, min: 0, integer: true }),
+    duracao: new NumberField({ initial: 0, min: 0, integer: true }),
+    fadeIn: new NumberField({ initial: 0, min: 0, integer: true }),
+    fadeOut: new NumberField({ initial: 0, min: 0, integer: true }),
+    rotacao: new NumberField({ initial: 0, min: -360, max: 360 }),
+    rotacaoAleatoria: new BooleanField({ initial: false }),
+    espelhar: new BooleanField({ initial: false }),
+    espelharAleatorio: new BooleanField({ initial: false }),
+    deslocAleatorio: new NumberField({ initial: 0, min: 0, max: 3 }),
+    plano: new StringField({ initial: "normal" }),     // porBaixo | normal | acimaLuz
+    noErro: new BooleanField({ initial: true }),
+    matiz: new NumberField({ initial: 0, min: -180, max: 180 }),
+    saturacao: new NumberField({ initial: 0, min: -1, max: 1 }),
+    brilho: new NumberField({ initial: 1, min: 0, max: 3 }),
+    tingir: new StringField({ initial: "" }),
+    som: new StringField({ initial: "" }),
+    somVolume: new NumberField({ initial: 0.8, min: 0, max: 1 }),
+    somAtraso: new NumberField({ initial: 0, min: 0, integer: true }),
+    tremer: new NumberField({ initial: 0, min: 0, max: 100 }),
+    tremerDuracao: new NumberField({ initial: 400, min: 50, max: 5000, integer: true })
+  };
+}
+function campoListaCamadas() {
+  return new foundry.data.fields.ArrayField(new foundry.data.fields.SchemaField(campoCamadaAnimacao()));
+}
+
 function campoCuraBloco() {
   return {
     formula: new StringField({ initial: "1d6+@poderMagia" }),
@@ -1236,7 +1281,11 @@ function campoAcao() {
       som: new StringField({ initial: "" }),             // som ao usar
       somVolume: new NumberField({ initial: 0.8, min: 0, max: 1 }),
       somAtraso: new NumberField({ initial: 0, min: 0, integer: true }),  // ms
-      somImpacto: new StringField({ initial: "" })       // som no acerto (junto do impacto)
+      somImpacto: new StringField({ initial: "" }),      // som no acerto (junto do impacto)
+      // 0.124: camadas (várias animações juntas ou em sequência). Com camadas, anim/impacto acima ficam de lado.
+      camadas: campoListaCamadas(),
+      continuo: campoListaCamadas(),  // área persistente: em loop enquanto a área existir
+      pulso: campoListaCamadas()      // área persistente: a cada vez que a área causa efeito
     }),
     exigirCondicaoAlvo: new BooleanField({ initial: false }),      // com "Verificar Condição no Alvo": sem ela no alvo, não deixa usar
     exigirCondicaoAlvoMinimo: new NumberField({ initial: 1, min: 1, integer: true }),
@@ -2297,6 +2346,7 @@ class NaurenHabilidadeData extends foundry.abstract.TypeDataModel {
       // distância é sempre recalculada na hora, a partir da posição ATUAL
       // do token, então segue o personagem automaticamente sem esforço.
       usaEmanacao: new BooleanField({ initial: false }),
+      emanacaoAnimacao: new SchemaField({ continuo: campoListaCamadas(), pulso: campoListaCamadas() }), // 0.124: aura (loop) e pulso a cada efeito
       emanacaoEvento: new StringField({ initial: "inicioTurno" }), // inicioTurno|fimTurno|inicioRodada|fimRodada
       emanacaoRaio: new StringField({ initial: "3" }),
       // Troca "emanacaoRaio" a partir do rank indicado (mesmo mecanismo
@@ -2549,6 +2599,7 @@ class NaurenMagiaData extends foundry.abstract.TypeDataModel {
       dividirDanoCondicaoUuid: new StringField({ initial: "" }),
       gatilhos: new ArrayField(new SchemaField(campoGatilho())),
       usaEmanacao: new BooleanField({ initial: false }),
+      emanacaoAnimacao: new SchemaField({ continuo: campoListaCamadas(), pulso: campoListaCamadas() }), // 0.124: aura (loop) e pulso a cada efeito
       emanacaoEvento: new StringField({ initial: "inicioTurno" }),
       emanacaoRaio: new StringField({ initial: "3" }),
       emanacaoDisposicao: new StringField({ initial: "inimigos" }), // aliados|inimigos|todos|todosComVoce
@@ -3003,6 +3054,7 @@ class NaurenEfeitoData extends foundry.abstract.TypeDataModel {
       // vigor - a distância é sempre recalculada a partir da posição ATUAL
       // do token, então acompanha o personagem automaticamente.
       usaEmanacao: new BooleanField({ initial: false }),
+      emanacaoAnimacao: new SchemaField({ continuo: campoListaCamadas(), pulso: campoListaCamadas() }), // 0.124: aura (loop) e pulso a cada efeito
       emanacaoEvento: new StringField({ initial: "inicioTurno" }), // inicioTurno|fimTurno|inicioRodada|fimRodada
       emanacaoRaio: new StringField({ initial: "3" }),
       emanacaoDisposicao: new StringField({ initial: "inimigos" }), // aliados|inimigos|todos|todosComVoce
@@ -3228,6 +3280,13 @@ class NaurenCondicaoData extends foundry.abstract.TypeDataModel {
       // 0.94.16: aparência do token enquanto a Condição durar (Sequencer Motion) - ver NAUREN_MOTION_CONDICAO_OPCOES.
       motion: new StringField({ initial: "auto" }),
       motionCor: new StringField({ initial: "#ffffff" }),
+      // 0.124: animações próprias da Condição (Sequencer): ao receber, enquanto durar (preso ao token) e ao sair.
+      animacaoCondicao: new SchemaField({
+        entrada: campoListaCamadas(),
+        continuo: campoListaCamadas(),
+        saida: campoListaCamadas(),
+        repetirAoAcumular: new BooleanField({ initial: true })
+      }),
       molduraCor: new StringField({ initial: "" }),
       // 0.105: onde o ícone desta Condição aparece: "sempre" (token, HUD e ficha) ou "ficha" (só na ficha; útil para Condições só de aparência)
       iconeVisivel: new StringField({ initial: "sempre", choices: ["sempre", "ficha"] }), // 0.103: enquanto a Condição durar, a aura da moldura do token fica nesta cor ("" = não muda)
@@ -8185,6 +8244,7 @@ __naurenIniciar_descer_nivel();
 __naurenIniciar_movimento();
 __naurenIniciar_poesiaGhurua();
 __naurenIniciar_ataqueDesarmado();
+__naurenIniciar_animacaoCamadas();
 
 
 /* ===== 0.92.46: Espada Lunar Leve pode ser arremessada (fichas e itens que já existiam) ===== */
