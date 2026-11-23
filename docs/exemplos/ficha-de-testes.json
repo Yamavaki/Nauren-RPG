@@ -1,0 +1,1281 @@
+{
+  "pasta": "Testes de Animação",
+  "documentos": [
+    {
+      "name": "Ficha de Testes (Animações)",
+      "type": "npc",
+      "img": "icons/svg/mystery-man.svg",
+      "pasta": "Testes",
+      "system": {
+        "nivel": 5,
+        "categoriaMonstro": 1,
+        "atributos": {
+          "forca": {
+            "value": 5
+          },
+          "agilidade": {
+            "value": 5
+          },
+          "estamina": {
+            "value": 5
+          },
+          "inteligencia": {
+            "value": 5
+          },
+          "destino": {
+            "value": 3
+          }
+        },
+        "defesa": 12,
+        "movimento": 6,
+        "calculoVida": "customizado",
+        "vidaFormula": "200",
+        "calculoMana": "customizado",
+        "manaFormula": "100",
+        "calculoEstaminaCombate": "customizado",
+        "estaminaCombateFormula": "60",
+        "calculoDadosDestino": "customizado",
+        "dadosDestinoFormula": "5",
+        "vida": {
+          "value": 200,
+          "max": 200
+        },
+        "mana": {
+          "value": 100,
+          "max": 100
+        },
+        "estaminaCombate": {
+          "value": 60,
+          "max": 60
+        },
+        "dadosDestino": {
+          "value": 5,
+          "max": 5
+        },
+        "notas": "<h2>Como testar</h2><p>Ponha esta ficha e 2 ou 3 Bonecos de Treino no mapa. Selecione o token desta ficha, marque alvos com T e use as Ações. Cada Ação já vem com animação e som próprios (bloco <b>Animação e som</b> na ficha de cada item).</p><ul><li>Armas: corpo a corpo, à distância com munição, rajada, empurrão.</li><li>Magias: projétil, círculo, cone, linha, mísseis, roubo de Vida, cura (alvo e área), escudo, área persistente, medo, teleporte.</li><li>Habilidades: buff em mim, garra com veneno e dreno, derrubar, golpes de comparação (auto / nenhuma / só som / some no erro) e vários alvos.</li><li>Consumível: poção.</li></ul><p>Recursos altos de propósito (Vida 200, Mana 100, Estamina 60) para repetir à vontade.</p>"
+      },
+      "items": [
+        {
+          "name": "Pigmento Vermelho",
+          "type": "cor",
+          "img": "icons/svg/ice-aura.svg",
+          "system": {
+            "corHex": "#c24b4b",
+            "descricao": "<p>Pigmento de teste.</p>"
+          }
+        },
+        {
+          "name": "Pigmento Azul",
+          "type": "cor",
+          "img": "icons/svg/ice-aura.svg",
+          "system": {
+            "corHex": "#3f6fd1",
+            "descricao": "<p>Pigmento de teste.</p>"
+          }
+        },
+        {
+          "name": "Fúria de Teste",
+          "type": "condicao",
+          "img": "icons/magic/control/buff-strength-muscle-damage-orange.webp",
+          "system": {
+            "ativo": false,
+            "duracaoRodadas": 2,
+            "modificadores": [
+              {
+                "campo": "poderAtaque",
+                "valor": "2"
+              },
+              {
+                "campo": "danoBonus",
+                "valor": "1"
+              }
+            ],
+            "descricao": "<p>+2 Poder de Ataque e +1 de dano por 2 rodadas.</p>"
+          },
+          "flags": {
+            "nauren": {
+              "modelo": true
+            }
+          }
+        },
+        {
+          "name": "Enraizado de Teste",
+          "type": "condicao",
+          "img": "icons/magic/nature/root-vine-entangle-foot-green.webp",
+          "system": {
+            "ativo": false,
+            "duracaoRodadas": 1,
+            "modificadores": [
+              {
+                "campo": "movimento",
+                "valor": "=0"
+              }
+            ],
+            "descricao": "<p>Movimento 0 por 1 rodada.</p>"
+          },
+          "flags": {
+            "nauren": {
+              "modelo": true
+            }
+          }
+        },
+        {
+          "name": "Espada Longa de Teste",
+          "type": "arma",
+          "img": "icons/weapons/swords/sword-guard-steel-green.webp",
+          "system": {
+            "descricao": "<p>Corpo a corpo: golpe simples, golpe pesado com crítico mais fácil, e corte que faz sangrar.</p>",
+            "equipado": true,
+            "acoes": [
+              {
+                "nome": "Golpe",
+                "custoEstamina": 1,
+                "custoMana": 0,
+                "alcance": "1m",
+                "modoAlvo": "selecionado",
+                "modoAlvoTravado": true,
+                "danos": [
+                  {
+                    "formula": "1d8+@poderAtaque",
+                    "aplicarNoAlvo": true
+                  }
+                ],
+                "curas": [],
+                "condicoesAplicadas": [],
+                "ehAtaque": true,
+                "atributoAtaque": "poderAtaque",
+                "tipoAlcance": "corpoACorpo",
+                "animacao": {
+                  "modo": "propria",
+                  "tipo": "corpo",
+                  "anim": "jb2a.melee_generic.slash.02.001.orange",
+                  "impacto": "",
+                  "escala": 1,
+                  "noErro": true,
+                  "porBaixo": false,
+                  "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Cortante%201.ogg",
+                  "somVolume": 0.8,
+                  "somAtraso": 0,
+                  "somImpacto": ""
+                }
+              },
+              {
+                "nome": "Golpe Pesado (crítico 18+)",
+                "custoEstamina": 2,
+                "custoMana": 0,
+                "alcance": "1m",
+                "modoAlvo": "selecionado",
+                "modoAlvoTravado": true,
+                "danos": [
+                  {
+                    "formula": "2d8+@poderAtaque",
+                    "aplicarNoAlvo": true
+                  }
+                ],
+                "curas": [],
+                "condicoesAplicadas": [],
+                "ehAtaque": true,
+                "atributoAtaque": "poderAtaque",
+                "tipoAlcance": "corpoACorpo",
+                "critMinAjuste": "-2",
+                "animacao": {
+                  "modo": "propria",
+                  "tipo": "corpo",
+                  "anim": "jb2a.greatsword.melee.standard.white",
+                  "impacto": "jb2a.impact.ground_crack.orange.01",
+                  "escala": 1.5,
+                  "noErro": true,
+                  "porBaixo": false,
+                  "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Contundente%202.ogg",
+                  "somVolume": 0.8,
+                  "somAtraso": 0,
+                  "somImpacto": ""
+                }
+              },
+              {
+                "nome": "Corte Sangrento",
+                "custoEstamina": 2,
+                "custoMana": 0,
+                "alcance": "1m",
+                "modoAlvo": "selecionado",
+                "modoAlvoTravado": true,
+                "danos": [
+                  {
+                    "formula": "1d6+@poderAtaque",
+                    "aplicarNoAlvo": true
+                  }
+                ],
+                "curas": [],
+                "condicoesAplicadas": [
+                  {
+                    "uuid": "self:Sangramento",
+                    "acumulos": 2,
+                    "ativo": true,
+                    "soSeAcertar": true
+                  }
+                ],
+                "ehAtaque": true,
+                "atributoAtaque": "poderAtaque",
+                "tipoAlcance": "corpoACorpo",
+                "animacao": {
+                  "modo": "propria",
+                  "tipo": "corpo",
+                  "anim": "jb2a.sword.melee.fire.orange",
+                  "impacto": "",
+                  "escala": 1,
+                  "noErro": true,
+                  "porBaixo": false,
+                  "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Cortante%202.ogg",
+                  "somVolume": 0.8,
+                  "somAtraso": 0,
+                  "somImpacto": ""
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "Arco Longo de Teste",
+          "type": "arma",
+          "img": "icons/weapons/bows/longbow-recurve-leather-brown.webp",
+          "system": {
+            "descricao": "<p>À distância: tiro com munição própria (10), rajada de 3 tiros e flecha que empurra 2 m.</p>",
+            "equipado": true,
+            "acoes": [
+              {
+                "nome": "Tiro",
+                "custoEstamina": 1,
+                "custoMana": 0,
+                "alcance": "20m",
+                "modoAlvo": "selecionado",
+                "modoAlvoTravado": true,
+                "danos": [
+                  {
+                    "formula": "1d8+@poderAtaque",
+                    "aplicarNoAlvo": true
+                  }
+                ],
+                "curas": [],
+                "condicoesAplicadas": [],
+                "ehAtaque": true,
+                "atributoAtaque": "poderAtaque",
+                "tipoAlcance": "distancia",
+                "usaCargas": true,
+                "cargasAtual": 10,
+                "cargasMax": 10,
+                "consumirCargaAoUsar": true,
+                "animacao": {
+                  "modo": "propria",
+                  "tipo": "projetil",
+                  "anim": "jb2a.arrow.physical.white.02",
+                  "impacto": "",
+                  "escala": 1,
+                  "noErro": true,
+                  "porBaixo": false,
+                  "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Perfurante%201.ogg",
+                  "somVolume": 0.8,
+                  "somAtraso": 0,
+                  "somImpacto": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Perfurante%202.ogg"
+                }
+              },
+              {
+                "nome": "Rajada (3 ataques)",
+                "custoEstamina": 3,
+                "custoMana": 0,
+                "alcance": "20m",
+                "modoAlvo": "selecionado",
+                "modoAlvoTravado": true,
+                "danos": [
+                  {
+                    "formula": "1d6+@poderAtaque",
+                    "aplicarNoAlvo": true
+                  }
+                ],
+                "curas": [],
+                "condicoesAplicadas": [],
+                "ehAtaque": true,
+                "atributoAtaque": "poderAtaque",
+                "tipoAlcance": "distancia",
+                "usaMultiplosAtaques": true,
+                "quantidadeAtaques": "3",
+                "animacao": {
+                  "modo": "propria",
+                  "tipo": "projetil",
+                  "anim": "jb2a.arrow.physical.white.02",
+                  "impacto": "",
+                  "escala": 1,
+                  "noErro": true,
+                  "porBaixo": false,
+                  "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Perfurante%202.ogg",
+                  "somVolume": 0.8,
+                  "somAtraso": 0,
+                  "somImpacto": ""
+                }
+              },
+              {
+                "nome": "Flecha de Impacto (empurra 2 m)",
+                "custoEstamina": 2,
+                "custoMana": 0,
+                "alcance": "20m",
+                "modoAlvo": "selecionado",
+                "modoAlvoTravado": true,
+                "danos": [
+                  {
+                    "formula": "1d6+@poderAtaque",
+                    "aplicarNoAlvo": true
+                  }
+                ],
+                "curas": [],
+                "condicoesAplicadas": [],
+                "ehAtaque": true,
+                "atributoAtaque": "poderAtaque",
+                "tipoAlcance": "distancia",
+                "usaEmpurrar": true,
+                "empurrarMetros": "2",
+                "animacao": {
+                  "modo": "propria",
+                  "tipo": "projetil",
+                  "anim": "jb2a.arrow.physical.white.02",
+                  "impacto": "jb2a.impact.001.orange",
+                  "escala": 1,
+                  "noErro": true,
+                  "porBaixo": false,
+                  "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Perfurante%201.ogg",
+                  "somVolume": 0.8,
+                  "somAtraso": 0,
+                  "somImpacto": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Contundente%201.ogg"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "Raio de Fogo",
+          "type": "magia",
+          "img": "icons/magic/fire/projectile-fireball-smoke-orange.webp",
+          "system": {
+            "descricao": "<p>Projétil de fogo: dano e Queimando no acerto.</p>",
+            "acoes": [
+              {
+                "nome": "Raio de Fogo",
+                "custoEstamina": 0,
+                "custoMana": 2,
+                "alcance": "18m",
+                "modoAlvo": "selecionado",
+                "modoAlvoTravado": true,
+                "danos": [
+                  {
+                    "formula": "2d6+@poderMagia",
+                    "aplicarNoAlvo": true
+                  }
+                ],
+                "curas": [],
+                "condicoesAplicadas": [
+                  {
+                    "uuid": "self:Queimando",
+                    "acumulos": 1,
+                    "ativo": true,
+                    "soSeAcertar": true
+                  }
+                ],
+                "ehAtaque": true,
+                "atributoAtaque": "poderMagia",
+                "animacao": {
+                  "modo": "propria",
+                  "tipo": "projetil",
+                  "anim": "jb2a.fire_bolt.orange",
+                  "impacto": "jb2a.impact.001.orange",
+                  "escala": 1,
+                  "noErro": true,
+                  "porBaixo": false,
+                  "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Raio%20de%20Fogo%201.ogg",
+                  "somVolume": 0.8,
+                  "somAtraso": 0,
+                  "somImpacto": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Bola%20de%20Fogo%202.ogg"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "Bola de Fogo",
+          "type": "magia",
+          "img": "icons/magic/fire/explosion-fireball-large-orange.webp",
+          "system": {
+            "descricao": "<p>Área circular de 3 m: todos dentro sofrem dano (um dado para todos).</p>",
+            "acoes": [
+              {
+                "nome": "Bola de Fogo",
+                "custoEstamina": 0,
+                "custoMana": 4,
+                "alcance": "18m",
+                "modoAlvo": "area",
+                "modoAlvoTravado": true,
+                "danos": [
+                  {
+                    "formula": "3d6+@poderMagia",
+                    "aplicarNoAlvo": true
+                  }
+                ],
+                "curas": [],
+                "condicoesAplicadas": [],
+                "usaTemplate": true,
+                "templateTipo": "circle",
+                "templateTamanho": 3,
+                "templateCor": "#e8742a",
+                "ehAtaque": true,
+                "atributoAtaque": "poderMagia",
+                "animacao": {
+                  "modo": "propria",
+                  "tipo": "area",
+                  "anim": "jb2a.fireball.explosion.orange",
+                  "impacto": "",
+                  "escala": 1,
+                  "noErro": true,
+                  "porBaixo": false,
+                  "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Bola%20de%20Fogo%201.ogg",
+                  "somVolume": 0.8,
+                  "somAtraso": 0,
+                  "somImpacto": ""
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "Cone de Gelo",
+          "type": "magia",
+          "img": "icons/magic/air/wind-weather-snow-gusts.webp",
+          "system": {
+            "descricao": "<p>Cone de 6 m: dano e 1 acúmulo de Congelando.</p>",
+            "acoes": [
+              {
+                "nome": "Cone de Gelo",
+                "custoEstamina": 0,
+                "custoMana": 3,
+                "alcance": "0m",
+                "modoAlvo": "area",
+                "modoAlvoTravado": true,
+                "danos": [
+                  {
+                    "formula": "2d6+@poderMagia",
+                    "aplicarNoAlvo": true
+                  }
+                ],
+                "curas": [],
+                "condicoesAplicadas": [
+                  {
+                    "uuid": "self:Congelando",
+                    "acumulos": 1,
+                    "ativo": true,
+                    "soSeAcertar": true
+                  }
+                ],
+                "usaTemplate": true,
+                "templateTipo": "cone",
+                "templateTamanho": 6,
+                "templateCor": "#7fc8ff",
+                "ehAtaque": true,
+                "atributoAtaque": "poderMagia",
+                "animacao": {
+                  "modo": "propria",
+                  "tipo": "area",
+                  "anim": "jb2a.cone_of_cold.blue",
+                  "impacto": "",
+                  "escala": 1,
+                  "noErro": true,
+                  "porBaixo": false,
+                  "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Gelo%201.ogg",
+                  "somVolume": 0.8,
+                  "somAtraso": 0,
+                  "somImpacto": ""
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "Relâmpago em Linha",
+          "type": "magia",
+          "img": "icons/magic/lightning/bolt-strike-blue.webp",
+          "system": {
+            "descricao": "<p>Linha de 12 m: dano em todos na linha.</p>",
+            "acoes": [
+              {
+                "nome": "Relâmpago",
+                "custoEstamina": 0,
+                "custoMana": 3,
+                "alcance": "0m",
+                "modoAlvo": "area",
+                "modoAlvoTravado": true,
+                "danos": [
+                  {
+                    "formula": "2d8+@poderMagia",
+                    "aplicarNoAlvo": true
+                  }
+                ],
+                "curas": [],
+                "condicoesAplicadas": [],
+                "usaTemplate": true,
+                "templateTipo": "ray",
+                "templateTamanho": 12,
+                "templateCor": "#9ad0ff",
+                "ehAtaque": true,
+                "atributoAtaque": "poderMagia",
+                "animacao": {
+                  "modo": "propria",
+                  "tipo": "area",
+                  "anim": "jb2a.breath_weapons.lightning.line.blue",
+                  "impacto": "",
+                  "escala": 1,
+                  "noErro": true,
+                  "porBaixo": false,
+                  "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Rel%C3%A2mpago.ogg",
+                  "somVolume": 0.8,
+                  "somAtraso": 0,
+                  "somImpacto": ""
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "Mísseis Arcanos",
+          "type": "magia",
+          "img": "icons/magic/fire/projectiles-salvo-trio-orange.webp",
+          "system": {
+            "descricao": "<p>3 projéteis, cada um com o próprio teste de ataque.</p>",
+            "acoes": [
+              {
+                "nome": "Mísseis Arcanos",
+                "custoEstamina": 0,
+                "custoMana": 2,
+                "alcance": "18m",
+                "modoAlvo": "selecionado",
+                "modoAlvoTravado": true,
+                "danos": [
+                  {
+                    "formula": "1d4+1",
+                    "aplicarNoAlvo": true
+                  }
+                ],
+                "curas": [],
+                "condicoesAplicadas": [],
+                "ehAtaque": true,
+                "atributoAtaque": "poderMagia",
+                "usaMultiplosAtaques": true,
+                "quantidadeAtaques": "3",
+                "animacao": {
+                  "modo": "propria",
+                  "tipo": "projetil",
+                  "anim": "jb2a.magic_missile.purple",
+                  "impacto": "",
+                  "escala": 1,
+                  "noErro": true,
+                  "porBaixo": false,
+                  "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/For%C3%A7a%20-%20M%C3%ADsseis%20M%C3%A1gicos%201.ogg",
+                  "somVolume": 0.8,
+                  "somAtraso": 0,
+                  "somImpacto": ""
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "Toque Vampírico",
+          "type": "magia",
+          "img": "icons/magic/unholy/beam-ringed-impact-purple.webp",
+          "system": {
+            "descricao": "<p>Dano necrótico e rouba 3 de Vida do alvo.</p>",
+            "acoes": [
+              {
+                "nome": "Toque Vampírico",
+                "custoEstamina": 0,
+                "custoMana": 2,
+                "alcance": "9m",
+                "modoAlvo": "selecionado",
+                "modoAlvoTravado": true,
+                "danos": [
+                  {
+                    "formula": "1d8+@poderMagia",
+                    "aplicarNoAlvo": true
+                  }
+                ],
+                "curas": [],
+                "condicoesAplicadas": [],
+                "ehAtaque": true,
+                "atributoAtaque": "poderMagia",
+                "usaRoubarRecurso": true,
+                "roubarRecursoTipo": "vida",
+                "roubarQuantidade": "3",
+                "animacao": {
+                  "modo": "propria",
+                  "tipo": "projetil",
+                  "anim": "jb2a.chain_lightning.primary.blue",
+                  "impacto": "jb2a.impact.001.orange",
+                  "escala": 1,
+                  "noErro": true,
+                  "porBaixo": false,
+                  "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Necr%C3%B3tico%201.ogg",
+                  "somVolume": 0.8,
+                  "somAtraso": 0,
+                  "somImpacto": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Necr%C3%B3tico%202.ogg"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "Cura de Teste",
+          "type": "magia",
+          "img": "icons/magic/life/heart-cross-green.webp",
+          "system": {
+            "descricao": "<p>Cura um alvo marcado (marque você mesmo para se curar).</p>",
+            "acoes": [
+              {
+                "nome": "Curar",
+                "custoEstamina": 0,
+                "custoMana": 2,
+                "alcance": "9m",
+                "modoAlvo": "selecionado",
+                "modoAlvoTravado": true,
+                "danos": [],
+                "curas": [
+                  {
+                    "formula": "2d6+@poderMagia",
+                    "aplicarNoAlvo": true
+                  }
+                ],
+                "condicoesAplicadas": [],
+                "animacao": {
+                  "modo": "propria",
+                  "tipo": "alvo",
+                  "anim": "jb2a.healing_generic.burst.greenorange",
+                  "impacto": "",
+                  "escala": 1,
+                  "noErro": true,
+                  "porBaixo": false,
+                  "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Cura%201.ogg",
+                  "somVolume": 0.8,
+                  "somAtraso": 0,
+                  "somImpacto": ""
+                }
+              },
+              {
+                "nome": "Cura em Área (3 m)",
+                "custoEstamina": 0,
+                "custoMana": 4,
+                "alcance": "9m",
+                "modoAlvo": "area",
+                "modoAlvoTravado": true,
+                "danos": [],
+                "curas": [
+                  {
+                    "formula": "1d8+@poderMagia",
+                    "aplicarNoAlvo": true
+                  }
+                ],
+                "condicoesAplicadas": [],
+                "usaTemplate": true,
+                "templateTipo": "circle",
+                "templateTamanho": 3,
+                "templateCor": "#6fd18a",
+                "areaDisposicao": "aliados",
+                "animacao": {
+                  "modo": "propria",
+                  "tipo": "area",
+                  "anim": "jb2a.cure_wounds.400px.blue",
+                  "impacto": "",
+                  "escala": 1,
+                  "noErro": true,
+                  "porBaixo": true,
+                  "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Cura%202.ogg",
+                  "somVolume": 0.8,
+                  "somAtraso": 0,
+                  "somImpacto": ""
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "Escudo Arcano",
+          "type": "magia",
+          "img": "icons/magic/defensive/shield-barrier-blue.webp",
+          "system": {
+            "descricao": "<p>Ganha um Escudo de 10 até o próximo turno.</p>",
+            "acoes": [
+              {
+                "nome": "Escudo Arcano",
+                "custoEstamina": 0,
+                "custoMana": 2,
+                "alcance": "0m",
+                "modoAlvo": "nenhum",
+                "modoAlvoTravado": true,
+                "danos": [],
+                "curas": [],
+                "condicoesAplicadas": [],
+                "usaEscudo": true,
+                "escudoFormula": "10",
+                "escudoDuracao": "proximoTurno",
+                "animacao": {
+                  "modo": "propria",
+                  "tipo": "usuario",
+                  "anim": "jb2a.shield.01.complete.01.blue",
+                  "impacto": "",
+                  "escala": 1.6,
+                  "noErro": true,
+                  "porBaixo": false,
+                  "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Buff%202%20-%20Escudo%20da%20F%C3%A9.ogg",
+                  "somVolume": 0.8,
+                  "somAtraso": 0,
+                  "somImpacto": ""
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "Campo de Espinhos",
+          "type": "magia",
+          "img": "icons/magic/nature/root-vine-entangle-foot-green.webp",
+          "system": {
+            "descricao": "<p>Área persistente de 2 m por 3 rodadas: 1d6 no início do turno de quem estiver dentro e Enraizado ao entrar.</p>",
+            "acoes": [
+              {
+                "nome": "Campo de Espinhos",
+                "custoEstamina": 0,
+                "custoMana": 3,
+                "alcance": "12m",
+                "modoAlvo": "area",
+                "modoAlvoTravado": true,
+                "danos": [],
+                "curas": [],
+                "condicoesAplicadas": [],
+                "usaTemplate": true,
+                "templateTipo": "circle",
+                "templateTamanho": 2,
+                "templateCor": "#3f8f3a",
+                "usaTemplatePersistente": true,
+                "templatePersistenteDuracaoRodadas": "3",
+                "templatePersistenteEventoPeriodico": "inicioTurno",
+                "templatePersistenteAoEntrar": true,
+                "templatePersistenteDisposicao": "inimigos",
+                "templatePersistenteEfeito": "dano",
+                "templatePersistenteQuantidade": "1d6",
+                "templatePersistenteCondicaoUuid": "self:Enraizado de Teste",
+                "templatePersistenteCondicaoAcumulos": "1",
+                "animacao": {
+                  "modo": "propria",
+                  "tipo": "area",
+                  "anim": "jb2a.entangle.green",
+                  "impacto": "",
+                  "escala": 1,
+                  "noErro": true,
+                  "porBaixo": true,
+                  "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Veneno%201.ogg",
+                  "somVolume": 0.8,
+                  "somAtraso": 0,
+                  "somImpacto": ""
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "Palavra do Medo",
+          "type": "magia",
+          "img": "icons/magic/control/fear-fright-monster-purple-blue.webp",
+          "system": {
+            "descricao": "<p>Sem dano: o alvo fica Amedrontado (pode gastar 2 Estamina para evitar).</p>",
+            "acoes": [
+              {
+                "nome": "Palavra do Medo",
+                "custoEstamina": 0,
+                "custoMana": 1,
+                "alcance": "9m",
+                "modoAlvo": "selecionado",
+                "modoAlvoTravado": true,
+                "danos": [],
+                "curas": [],
+                "condicoesAplicadas": [
+                  {
+                    "uuid": "self:Amedrontado",
+                    "acumulos": 1,
+                    "ativo": true,
+                    "soSeAcertar": false,
+                    "perguntarParaEvitar": true,
+                    "custoParaEvitarRecurso": "estamina",
+                    "custoParaEvitarQuantidade": "2"
+                  }
+                ],
+                "animacao": {
+                  "modo": "propria",
+                  "tipo": "alvo",
+                  "anim": "jb2a.icon.fear.dark_purple",
+                  "impacto": "",
+                  "escala": 1.2,
+                  "noErro": true,
+                  "porBaixo": false,
+                  "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Ps%C3%ADquico%201.ogg",
+                  "somVolume": 0.8,
+                  "somAtraso": 0,
+                  "somImpacto": ""
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "Passo Nebuloso",
+          "type": "magia",
+          "img": "icons/magic/movement/portal-vortex-orange.webp",
+          "system": {
+            "descricao": "<p>Teleporta você até 6 m.</p>",
+            "acoes": [
+              {
+                "nome": "Passo Nebuloso",
+                "custoEstamina": 0,
+                "custoMana": 1,
+                "alcance": "0m",
+                "modoAlvo": "nenhum",
+                "modoAlvoTravado": true,
+                "danos": [],
+                "curas": [],
+                "condicoesAplicadas": [],
+                "usaMoverEscolhendo": true,
+                "moverQuem": "eu",
+                "moverMetros": "6",
+                "moverTeleporte": true,
+                "moverMomento": "depois",
+                "animacao": {
+                  "modo": "propria",
+                  "tipo": "usuario",
+                  "anim": "jb2a.misty_step.01.blue",
+                  "impacto": "",
+                  "escala": 1.5,
+                  "noErro": true,
+                  "porBaixo": false,
+                  "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Impact_Utility_DimensionDoor%201.ogg",
+                  "somVolume": 0.8,
+                  "somAtraso": 0,
+                  "somImpacto": ""
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "Fúria (buff em mim)",
+          "type": "habilidade",
+          "img": "icons/magic/control/buff-strength-muscle-damage-orange.webp",
+          "system": {
+            "descricao": "<p>Aplica Fúria de Teste em você.</p>",
+            "ativo": true,
+            "acoes": [
+              {
+                "nome": "Entrar em Fúria",
+                "custoEstamina": 1,
+                "custoMana": 0,
+                "alcance": "0m",
+                "modoAlvo": "nenhum",
+                "modoAlvoTravado": true,
+                "danos": [],
+                "curas": [],
+                "condicoesAplicadas": [],
+                "condicaoEmMimUuid": "self:Fúria de Teste",
+                "condicaoEmMimAcumulos": "1",
+                "animacao": {
+                  "modo": "propria",
+                  "tipo": "usuario",
+                  "anim": "jb2a.bless.400px.intro.yellow",
+                  "impacto": "",
+                  "escala": 1.4,
+                  "noErro": true,
+                  "porBaixo": false,
+                  "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Buff%205%20-%20Bless.ogg",
+                  "somVolume": 0.8,
+                  "somAtraso": 0,
+                  "somImpacto": ""
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "Garra Venenosa",
+          "type": "habilidade",
+          "img": "icons/creatures/claws/claw-hooked-curved.webp",
+          "system": {
+            "descricao": "<p>Ataque de monstro: dano, Envenenamento (2) e drena 1 Estamina do alvo. No erro ainda causa 2.</p>",
+            "ativo": true,
+            "acoes": [
+              {
+                "nome": "Garra Venenosa",
+                "custoEstamina": 2,
+                "custoMana": 0,
+                "alcance": "1m",
+                "modoAlvo": "selecionado",
+                "modoAlvoTravado": true,
+                "danos": [
+                  {
+                    "formula": "1d10+@poderAtaque",
+                    "aplicarNoAlvo": true
+                  }
+                ],
+                "curas": [],
+                "condicoesAplicadas": [
+                  {
+                    "uuid": "self:Envenenamento",
+                    "acumulos": 2,
+                    "ativo": true,
+                    "soSeAcertar": true
+                  }
+                ],
+                "ehAtaque": true,
+                "atributoAtaque": "poderAtaque",
+                "tipoAlcance": "corpoACorpo",
+                "danoNoErroFormula": "2",
+                "gastosRecurso": [
+                  {
+                    "recurso": "estamina",
+                    "quantidade": "1",
+                    "ativo": true,
+                    "soSeAcertar": true
+                  }
+                ],
+                "animacao": {
+                  "modo": "propria",
+                  "tipo": "corpo",
+                  "anim": "jb2a.melee_generic.creature_attack.claw.001.red",
+                  "impacto": "jb2a.impact_themed.poison.greenyellow",
+                  "escala": 1,
+                  "noErro": true,
+                  "porBaixo": false,
+                  "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Cortante%201.ogg",
+                  "somVolume": 0.8,
+                  "somAtraso": 0,
+                  "somImpacto": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Veneno%201.ogg"
+                }
+              },
+              {
+                "nome": "Derrubada Brutal",
+                "custoEstamina": 2,
+                "custoMana": 0,
+                "alcance": "1m",
+                "modoAlvo": "selecionado",
+                "modoAlvoTravado": true,
+                "danos": [
+                  {
+                    "formula": "1d6+@poderAtaque",
+                    "aplicarNoAlvo": true
+                  }
+                ],
+                "curas": [],
+                "condicoesAplicadas": [
+                  {
+                    "uuid": "self:Caído",
+                    "acumulos": 1,
+                    "ativo": true,
+                    "soSeAcertar": true
+                  }
+                ],
+                "ehAtaque": true,
+                "atributoAtaque": "poderAtaque",
+                "tipoAlcance": "corpoACorpo",
+                "animacao": {
+                  "modo": "propria",
+                  "tipo": "corpo",
+                  "anim": "jb2a.melee_generic.creature_attack.claw.001.red",
+                  "impacto": "jb2a.impact.ground_crack.orange.01",
+                  "escala": 1,
+                  "noErro": true,
+                  "porBaixo": false,
+                  "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Contundente%201.ogg",
+                  "somVolume": 0.8,
+                  "somAtraso": 0,
+                  "somImpacto": ""
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "Golpes de Comparação",
+          "type": "habilidade",
+          "img": "icons/skills/melee/strike-sword-steel-yellow.webp",
+          "system": {
+            "descricao": "<p>Mesmo golpe três vezes, para comparar: Automático (Automated Animations pelo nome), Nenhuma e Própria.</p>",
+            "ativo": true,
+            "acoes": [
+              {
+                "nome": "Golpe Automático",
+                "custoEstamina": 1,
+                "custoMana": 0,
+                "alcance": "1m",
+                "modoAlvo": "selecionado",
+                "modoAlvoTravado": true,
+                "danos": [
+                  {
+                    "formula": "1d6+@poderAtaque",
+                    "aplicarNoAlvo": true
+                  }
+                ],
+                "curas": [],
+                "condicoesAplicadas": [],
+                "ehAtaque": true,
+                "atributoAtaque": "poderAtaque",
+                "tipoAlcance": "corpoACorpo",
+                "animacao": {
+                  "modo": "auto"
+                }
+              },
+              {
+                "nome": "Golpe Sem Animação",
+                "custoEstamina": 1,
+                "custoMana": 0,
+                "alcance": "1m",
+                "modoAlvo": "selecionado",
+                "modoAlvoTravado": true,
+                "danos": [
+                  {
+                    "formula": "1d6+@poderAtaque",
+                    "aplicarNoAlvo": true
+                  }
+                ],
+                "curas": [],
+                "condicoesAplicadas": [],
+                "ehAtaque": true,
+                "atributoAtaque": "poderAtaque",
+                "tipoAlcance": "corpoACorpo",
+                "animacao": {
+                  "modo": "nenhuma"
+                }
+              },
+              {
+                "nome": "Golpe Só Som (sem animação)",
+                "custoEstamina": 1,
+                "custoMana": 0,
+                "alcance": "1m",
+                "modoAlvo": "selecionado",
+                "modoAlvoTravado": true,
+                "danos": [
+                  {
+                    "formula": "1d6+@poderAtaque",
+                    "aplicarNoAlvo": true
+                  }
+                ],
+                "curas": [],
+                "condicoesAplicadas": [],
+                "ehAtaque": true,
+                "atributoAtaque": "poderAtaque",
+                "tipoAlcance": "corpoACorpo",
+                "animacao": {
+                  "modo": "propria",
+                  "tipo": "corpo",
+                  "anim": "",
+                  "impacto": "",
+                  "escala": 1,
+                  "noErro": true,
+                  "porBaixo": false,
+                  "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Impacto%20Gen%C3%A9rico.ogg",
+                  "somVolume": 0.8,
+                  "somAtraso": 0,
+                  "somImpacto": ""
+                }
+              },
+              {
+                "nome": "Golpe Que Some no Erro",
+                "custoEstamina": 1,
+                "custoMana": 0,
+                "alcance": "1m",
+                "modoAlvo": "selecionado",
+                "modoAlvoTravado": true,
+                "danos": [
+                  {
+                    "formula": "1d6+@poderAtaque",
+                    "aplicarNoAlvo": true
+                  }
+                ],
+                "curas": [],
+                "condicoesAplicadas": [],
+                "ehAtaque": true,
+                "atributoAtaque": "poderAtaque",
+                "tipoAlcance": "corpoACorpo",
+                "animacao": {
+                  "modo": "propria",
+                  "tipo": "corpo",
+                  "anim": "jb2a.melee_generic.slash.02.001.orange",
+                  "impacto": "jb2a.impact.001.orange",
+                  "escala": 1,
+                  "noErro": false,
+                  "porBaixo": false,
+                  "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Cortante%202.ogg",
+                  "somVolume": 0.8,
+                  "somAtraso": 0,
+                  "somImpacto": ""
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "Ataque em Vários Alvos",
+          "type": "habilidade",
+          "img": "icons/skills/ranged/arrows-flying-salvo-blue.webp",
+          "system": {
+            "descricao": "<p>Até 3 alvos marcados, um teste para cada: veja o projétil acertar uns e passar do lado de outros.</p>",
+            "ativo": true,
+            "acoes": [
+              {
+                "nome": "Chuva de Raios (3 alvos)",
+                "custoEstamina": 2,
+                "custoMana": 0,
+                "alcance": "18m",
+                "modoAlvo": "selecionado",
+                "modoAlvoTravado": true,
+                "danos": [
+                  {
+                    "formula": "1d6+@poderMagia",
+                    "aplicarNoAlvo": true
+                  }
+                ],
+                "curas": [],
+                "condicoesAplicadas": [],
+                "ehAtaque": true,
+                "atributoAtaque": "poderMagia",
+                "numeroAlvos": 3,
+                "animacao": {
+                  "modo": "propria",
+                  "tipo": "projetil",
+                  "anim": "jb2a.chain_lightning.primary.blue",
+                  "impacto": "jb2a.static_electricity.01.blue",
+                  "escala": 1,
+                  "noErro": true,
+                  "porBaixo": false,
+                  "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Trovejante%201.ogg",
+                  "somVolume": 0.8,
+                  "somAtraso": 0,
+                  "somImpacto": ""
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "Poção de Cura de Teste",
+          "type": "consumivel",
+          "img": "icons/consumables/potions/potion-tube-corked-red.webp",
+          "system": {
+            "descricao": "<p>Bebe e cura 2d4+2 (marque você mesmo como alvo).</p>",
+            "quantidade": 5,
+            "quantidadeMax": 5,
+            "efeito": "Cura 2d4+2 PV",
+            "acoes": [
+              {
+                "nome": "Beber",
+                "custoEstamina": 0,
+                "custoMana": 0,
+                "alcance": "1m",
+                "modoAlvo": "selecionado",
+                "modoAlvoTravado": true,
+                "danos": [],
+                "curas": [
+                  {
+                    "formula": "2d4+2",
+                    "aplicarNoAlvo": true
+                  }
+                ],
+                "condicoesAplicadas": [],
+                "animacao": {
+                  "modo": "propria",
+                  "tipo": "alvo",
+                  "anim": "jb2a.healing_generic.200px.green",
+                  "impacto": "",
+                  "escala": 1,
+                  "noErro": true,
+                  "porBaixo": false,
+                  "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Cura%202.ogg",
+                  "somVolume": 0.8,
+                  "somAtraso": 0,
+                  "somImpacto": ""
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Boneco de Treino",
+      "type": "npc",
+      "img": "icons/svg/target.svg",
+      "pasta": "Testes",
+      "system": {
+        "nivel": 1,
+        "categoriaMonstro": 1,
+        "atributos": {
+          "forca": {
+            "value": 1
+          },
+          "agilidade": {
+            "value": 1
+          },
+          "estamina": {
+            "value": 3
+          },
+          "inteligencia": {
+            "value": 1
+          },
+          "destino": {
+            "value": 1
+          }
+        },
+        "defesa": 10,
+        "movimento": 6,
+        "calculoVida": "customizado",
+        "vidaFormula": "999",
+        "calculoEstaminaCombate": "customizado",
+        "estaminaCombateFormula": "30",
+        "vida": {
+          "value": 999,
+          "max": 999
+        },
+        "mana": {
+          "value": 2,
+          "max": 2
+        },
+        "estaminaCombate": {
+          "value": 30,
+          "max": 30
+        },
+        "dadosDestino": {
+          "value": 1,
+          "max": 1
+        },
+        "notas": "<p>Alvo de treino: Defesa 10 (alguns ataques erram, para ver a animação de erro), Vida 999.</p>"
+      },
+      "items": [
+        {
+          "name": "Pigmento Cinza",
+          "type": "cor",
+          "img": "icons/svg/ice-aura.svg",
+          "system": {
+            "corHex": "#888888",
+            "descricao": "<p>Pigmento de teste.</p>"
+          }
+        },
+        {
+          "name": "Pigmento Branco",
+          "type": "cor",
+          "img": "icons/svg/ice-aura.svg",
+          "system": {
+            "corHex": "#eeeeee",
+            "descricao": "<p>Pigmento de teste.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}

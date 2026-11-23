@@ -97,4 +97,16 @@ export default async function (t) {
   t(tpl.includes('data-field="acoes.{{acaoIndex}}.animacao.anim"') && tpl.includes('data-naa-acao="procurar"') && tpl.includes("{{#if @root.naaSequencer}}"), "ficha: bloco Animação e som, Procurar e campos só com Sequencer");
   t(ler("../../modulos/ficha-item.mjs").includes('el.type === "range"'), "ficha: campos de faixa gravam número");
   t(ler("../../docs/criacao-ia/guia-criacao-ia.md").includes("### 16.4a Animação e som DENTRO da Ação"), "guia da IA: formato do campo animacao");
+
+  // Ficha de testes (docs/exemplos/ficha-de-testes.json): formato válido e referências que existem.
+  const lote = JSON.parse(ler("../../docs/exemplos/ficha-de-testes.json"));
+  const fichaT = lote.documentos.find(d => d.name.startsWith("Ficha de Testes"));
+  const acoesT = fichaT.items.flatMap(i => i.system.acoes ?? []);
+  t(acoesT.length >= 25 && acoesT.every(ac => ac.animacao && m.naurenAnimacaoAcaoNormalizar(ac.animacao).modo === (ac.animacao.modo ?? "auto")), "ficha de testes: toda Ação tem bloco de animação válido");
+  const tiposT = new Set(acoesT.map(ac => ac.animacao.modo === "propria" ? ac.animacao.tipo : ac.animacao.modo));
+  t(["projetil", "corpo", "alvo", "usuario", "area", "auto", "nenhuma"].every(x => tiposT.has(x)), "ficha de testes: todos os tipos e modos aparecem");
+  const nomesT = new Set(fichaT.items.map(i => i.name.toLowerCase()));
+  const sistemaT = ["sangramento", "queimando", "congelando", "amedrontado", "envenenamento", "caído"];
+  const refs = JSON.stringify(fichaT).match(/self:[^"]+/g) ?? [];
+  t(refs.length && refs.every(r => nomesT.has(r.slice(5).toLowerCase()) || sistemaT.includes(r.slice(5).toLowerCase())), "ficha de testes: todo self: aponta para um modelo da ficha ou Condição do sistema");
 }
