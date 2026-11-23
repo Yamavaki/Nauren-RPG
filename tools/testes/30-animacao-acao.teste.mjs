@@ -105,6 +105,7 @@ export default async function (t) {
   t(acoesT.length >= 25 && acoesT.every(ac => ac.animacao && m.naurenAnimacaoAcaoNormalizar(ac.animacao).modo === (ac.animacao.modo ?? "auto")), "ficha de testes: toda Ação tem bloco de animação válido");
   const tiposT = new Set(acoesT.map(ac => ac.animacao.modo === "propria" ? ac.animacao.tipo : ac.animacao.modo));
   t(["projetil", "corpo", "alvo", "usuario", "area", "auto", "nenhuma"].every(x => tiposT.has(x)), "ficha de testes: todos os tipos e modos aparecem");
+  t(acoesT.filter(ac => ac.modoAlvo === "area").every(ac => !ac.ehAtaque), "ficha de testes: áreas sem teste de ataque (como a Bola de Fogo do livro)");
   const nomesT = new Set(fichaT.items.map(i => i.name.toLowerCase()));
   const sistemaT = ["sangramento", "queimando", "congelando", "amedrontado", "envenenamento", "caído"];
   const refs = JSON.stringify(fichaT).match(/self:[^"]+/g) ?? [];

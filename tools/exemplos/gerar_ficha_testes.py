@@ -83,19 +83,19 @@ itens = [
         acao("Raio de Fogo", custoMana=2, alcance="18m", ehAtaque=True, atributoAtaque="poderMagia", danos=dano("2d6+@poderMagia"), condicoesAplicadas=[cond("Queimando")],
              animacao=anim("projetil", "jb2a.fire_bolt.orange", impacto="jb2a.impact.001.orange", s="Raio de Fogo 1", si="Bola de Fogo 2")),
     ]),
-    item("Bola de Fogo", "magia", "icons/magic/fire/explosion-fireball-large-orange.webp", "Área circular de 3 m: todos dentro sofrem dano (um dado para todos).", acoes=[
+    item("Bola de Fogo", "magia", "icons/magic/fire/explosion-fireball-large-orange.webp", "Área circular de 3 m, sem teste de ataque (como no livro): todos dentro sofrem o dano, um dado para todos. Quem está na área pode usar a Prioridade e agir antes.", acoes=[
         acao("Bola de Fogo", custoMana=4, alcance="18m", modoAlvo="area", usaTemplate=True, templateTipo="circle", templateTamanho=3, templateCor="#e8742a",
-             ehAtaque=True, atributoAtaque="poderMagia", danos=dano("3d6+@poderMagia"),
+             danos=dano("3d6+@poderMagia"),
              animacao=anim("area", "jb2a.fireball.explosion.orange", s="Bola de Fogo 1")),
     ]),
     item("Cone de Gelo", "magia", "icons/magic/air/wind-weather-snow-gusts.webp", "Cone de 6 m: dano e 1 acúmulo de Congelando.", acoes=[
         acao("Cone de Gelo", custoMana=3, alcance="0m", modoAlvo="area", usaTemplate=True, templateTipo="cone", templateTamanho=6, templateCor="#7fc8ff",
-             ehAtaque=True, atributoAtaque="poderMagia", danos=dano("2d6+@poderMagia"), condicoesAplicadas=[cond("Congelando")],
+             danos=dano("2d6+@poderMagia"), condicoesAplicadas=[cond("Congelando", soSeAcertar=False)],
              animacao=anim("area", "jb2a.cone_of_cold.blue", s="Gelo 1")),
     ]),
     item("Relâmpago em Linha", "magia", "icons/magic/lightning/bolt-strike-blue.webp", "Linha de 12 m: dano em todos na linha.", acoes=[
         acao("Relâmpago", custoMana=3, alcance="0m", modoAlvo="area", usaTemplate=True, templateTipo="ray", templateTamanho=12, templateCor="#9ad0ff",
-             ehAtaque=True, atributoAtaque="poderMagia", danos=dano("2d8+@poderMagia"),
+             danos=dano("2d8+@poderMagia"),
              animacao=anim("area", "jb2a.breath_weapons.lightning.line.blue", s="Relâmpago")),
     ]),
     item("Mísseis Arcanos", "magia", "icons/magic/fire/projectiles-salvo-trio-orange.webp", "3 projéteis, cada um com o próprio teste de ataque.", acoes=[
