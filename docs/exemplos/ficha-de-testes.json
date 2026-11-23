@@ -422,16 +422,29 @@
                 "atributoAtaque": "poderMagia",
                 "animacao": {
                   "modo": "propria",
-                  "tipo": "projetil",
-                  "anim": "jb2a.fire_bolt.orange",
-                  "impacto": "jb2a.impact.001.orange",
-                  "escala": 1,
-                  "noErro": true,
-                  "porBaixo": false,
-                  "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Raio%20de%20Fogo%201.ogg",
-                  "somVolume": 0.8,
-                  "somAtraso": 0,
-                  "somImpacto": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Bola%20de%20Fogo%202.ogg"
+                  "camadas": [
+                    {
+                      "onde": "usuario",
+                      "anim": "jb2a.cast_generic.fire.01.orange",
+                      "nome": "Conjuração",
+                      "escala": 1.2,
+                      "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Fogo%201.ogg"
+                    },
+                    {
+                      "onde": "projetil",
+                      "anim": "jb2a.fire_bolt.orange",
+                      "nome": "Raio",
+                      "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Raio%20de%20Fogo%201.ogg",
+                      "quando": "depois"
+                    },
+                    {
+                      "onde": "atingido",
+                      "anim": "jb2a.impact.001.orange",
+                      "nome": "Explosão no alvo",
+                      "quando": "depois",
+                      "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Bola%20de%20Fogo%202.ogg"
+                    }
+                  ]
                 }
               }
             ]
@@ -465,16 +478,23 @@
                 "templateCor": "#e8742a",
                 "animacao": {
                   "modo": "propria",
-                  "tipo": "area",
-                  "anim": "jb2a.fireball.explosion.orange",
-                  "impacto": "",
-                  "escala": 1,
-                  "noErro": true,
-                  "porBaixo": false,
-                  "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Bola%20de%20Fogo%201.ogg",
-                  "somVolume": 0.8,
-                  "somAtraso": 0,
-                  "somImpacto": ""
+                  "camadas": [
+                    {
+                      "onde": "usuario",
+                      "anim": "jb2a.cast_generic.fire.01.orange",
+                      "nome": "Conjuração",
+                      "escala": 1.2,
+                      "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Fogo%201.ogg"
+                    },
+                    {
+                      "onde": "area",
+                      "anim": "jb2a.fireball.explosion.orange",
+                      "nome": "Explosão",
+                      "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Bola%20de%20Fogo%201.ogg",
+                      "tremer": 8,
+                      "quando": "depois"
+                    }
+                  ]
                 }
               }
             ]
@@ -515,16 +535,22 @@
                 "templateCor": "#7fc8ff",
                 "animacao": {
                   "modo": "propria",
-                  "tipo": "area",
-                  "anim": "jb2a.cone_of_cold.blue",
-                  "impacto": "",
-                  "escala": 1,
-                  "noErro": true,
-                  "porBaixo": false,
-                  "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Gelo%201.ogg",
-                  "somVolume": 0.8,
-                  "somAtraso": 0,
-                  "somImpacto": ""
+                  "camadas": [
+                    {
+                      "onde": "usuario",
+                      "anim": "jb2a.cast_generic.ice.01.blue",
+                      "nome": "Conjuração",
+                      "escala": 1.2,
+                      "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Gelo%201.ogg"
+                    },
+                    {
+                      "onde": "area",
+                      "anim": "jb2a.cone_of_cold.blue",
+                      "nome": "Cone",
+                      "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Cone%20de%20Gelo%201.ogg",
+                      "quando": "depois"
+                    }
+                  ]
                 }
               }
             ]
@@ -558,16 +584,22 @@
                 "templateCor": "#9ad0ff",
                 "animacao": {
                   "modo": "propria",
-                  "tipo": "area",
-                  "anim": "jb2a.breath_weapons.lightning.line.blue",
-                  "impacto": "",
-                  "escala": 1,
-                  "noErro": true,
-                  "porBaixo": false,
-                  "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Rel%C3%A2mpago.ogg",
-                  "somVolume": 0.8,
-                  "somAtraso": 0,
-                  "somImpacto": ""
+                  "camadas": [
+                    {
+                      "onde": "usuario",
+                      "anim": "jb2a.cast_generic.01.blue",
+                      "nome": "Conjuração",
+                      "escala": 1.2,
+                      "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/El%C3%A9trico.ogg"
+                    },
+                    {
+                      "onde": "area",
+                      "anim": "jb2a.breath_weapons.lightning.line.blue",
+                      "nome": "Relâmpago",
+                      "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Rel%C3%A2mpago.ogg",
+                      "quando": "depois"
+                    }
+                  ]
                 }
               }
             ]
@@ -601,16 +633,29 @@
                 "quantidadeAtaques": "3",
                 "animacao": {
                   "modo": "propria",
-                  "tipo": "projetil",
-                  "anim": "jb2a.magic_missile.purple",
-                  "impacto": "",
-                  "escala": 1,
-                  "noErro": true,
-                  "porBaixo": false,
-                  "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/For%C3%A7a%20-%20M%C3%ADsseis%20M%C3%A1gicos%201.ogg",
-                  "somVolume": 0.8,
-                  "somAtraso": 0,
-                  "somImpacto": ""
+                  "camadas": [
+                    {
+                      "onde": "usuario",
+                      "anim": "jb2a.cast_generic.03.bluepurple",
+                      "nome": "Conjuração",
+                      "escala": 1.2,
+                      "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Feiti%C3%A7aria.ogg"
+                    },
+                    {
+                      "onde": "projetil",
+                      "anim": "jb2a.magic_missile.purple",
+                      "nome": "Mísseis",
+                      "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/For%C3%A7a%20-%20M%C3%ADsseis%20M%C3%A1gicos%201.ogg",
+                      "quando": "depois"
+                    },
+                    {
+                      "onde": "atingido",
+                      "anim": "jb2a.impact.001.dark_purple",
+                      "nome": "Impacto",
+                      "quando": "depois",
+                      "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/For%C3%A7a%20-%20M%C3%ADsseis%20M%C3%A1gicos%202.ogg"
+                    }
+                  ]
                 }
               }
             ]
@@ -647,17 +692,25 @@
                   "modo": "propria",
                   "camadas": [
                     {
+                      "onde": "usuario",
+                      "anim": "jb2a.cast_generic.dark.01.red",
+                      "nome": "Conjuração",
+                      "escala": 1.2,
+                      "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Necr%C3%B3tico%201.ogg"
+                    },
+                    {
                       "onde": "projetil",
                       "anim": "jb2a.eldritch_blast.dark_purple",
                       "nome": "Rajada",
-                      "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Necr%C3%B3tico%201.ogg"
+                      "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Necr%C3%B3tico%201.ogg",
+                      "quando": "depois"
                     },
                     {
                       "onde": "atingido",
                       "anim": "jb2a.impact.001.dark_purple",
                       "nome": "Impacto",
                       "quando": "depois",
-                      "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Necr%C3%B3tico%202.ogg"
+                      "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Necrotic/Impact%20Vampiric%20Touch.ogg"
                     },
                     {
                       "onde": "retorno",
@@ -704,16 +757,22 @@
                 "condicoesAplicadas": [],
                 "animacao": {
                   "modo": "propria",
-                  "tipo": "alvo",
-                  "anim": "jb2a.healing_generic.burst.greenorange",
-                  "impacto": "",
-                  "escala": 1,
-                  "noErro": true,
-                  "porBaixo": false,
-                  "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Cura%201.ogg",
-                  "somVolume": 0.8,
-                  "somAtraso": 0,
-                  "somImpacto": ""
+                  "camadas": [
+                    {
+                      "onde": "usuario",
+                      "anim": "jb2a.cast_generic.01.yellow",
+                      "nome": "Conjuração",
+                      "escala": 1.2,
+                      "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Cura%201.ogg"
+                    },
+                    {
+                      "onde": "alvo",
+                      "anim": "jb2a.healing_generic.burst.greenorange",
+                      "nome": "Cura",
+                      "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Cura%201.ogg",
+                      "quando": "depois"
+                    }
+                  ]
                 }
               },
               {
@@ -738,16 +797,23 @@
                 "areaDisposicao": "aliados",
                 "animacao": {
                   "modo": "propria",
-                  "tipo": "area",
-                  "anim": "jb2a.cure_wounds.400px.blue",
-                  "impacto": "",
-                  "escala": 1,
-                  "noErro": true,
-                  "porBaixo": true,
-                  "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Cura%202.ogg",
-                  "somVolume": 0.8,
-                  "somAtraso": 0,
-                  "somImpacto": ""
+                  "camadas": [
+                    {
+                      "onde": "usuario",
+                      "anim": "jb2a.cast_generic.01.yellow",
+                      "nome": "Conjuração",
+                      "escala": 1.2,
+                      "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Cura%201%20-%20Aura%20de%20vitalidade.ogg"
+                    },
+                    {
+                      "onde": "area",
+                      "anim": "jb2a.cure_wounds.400px.blue",
+                      "nome": "Cura na área",
+                      "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Cura%202.ogg",
+                      "plano": "porBaixo",
+                      "quando": "depois"
+                    }
+                  ]
                 }
               }
             ]
@@ -775,16 +841,23 @@
                 "escudoDuracao": "proximoTurno",
                 "animacao": {
                   "modo": "propria",
-                  "tipo": "usuario",
-                  "anim": "jb2a.shield.01.complete.01.blue",
-                  "impacto": "",
-                  "escala": 1.6,
-                  "noErro": true,
-                  "porBaixo": false,
-                  "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Buff%202%20-%20Escudo%20da%20F%C3%A9.ogg",
-                  "somVolume": 0.8,
-                  "somAtraso": 0,
-                  "somImpacto": ""
+                  "camadas": [
+                    {
+                      "onde": "usuario",
+                      "anim": "jb2a.cast_generic.02.blue",
+                      "nome": "Conjuração",
+                      "escala": 1.2,
+                      "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/For%C3%A7a%201.ogg"
+                    },
+                    {
+                      "onde": "usuario",
+                      "anim": "jb2a.shield.01.complete.01.blue",
+                      "nome": "Escudo",
+                      "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Buff%202%20-%20Escudo%20da%20F%C3%A9.ogg",
+                      "escala": 1.6,
+                      "quando": "depois"
+                    }
+                  ]
                 }
               }
             ]
@@ -822,22 +895,28 @@
                 "templatePersistenteCondicaoAcumulos": "1",
                 "animacao": {
                   "modo": "propria",
-                  "tipo": "area",
-                  "anim": "jb2a.entangle.green",
-                  "impacto": "",
-                  "escala": 1,
-                  "noErro": true,
-                  "porBaixo": true,
-                  "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Veneno%201.ogg",
-                  "somVolume": 0.8,
-                  "somAtraso": 0,
-                  "somImpacto": "",
+                  "camadas": [
+                    {
+                      "onde": "usuario",
+                      "anim": "jb2a.cast_generic.earth.01.browngreen",
+                      "nome": "Conjuração",
+                      "escala": 1.2,
+                      "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Veneno%201.ogg"
+                    },
+                    {
+                      "onde": "area",
+                      "anim": "jb2a.entangle.02.complete.02.green",
+                      "nome": "Espinhos brotando",
+                      "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Veneno%201.ogg",
+                      "plano": "porBaixo",
+                      "quando": "depois"
+                    }
+                  ],
                   "continuo": [
                     {
                       "onde": "area",
-                      "anim": "jb2a.energy_field.02.above.green",
-                      "nome": "Campo",
-                      "opacidade": 0.45,
+                      "anim": "jb2a.entangle.02.loop.02.green",
+                      "nome": "Espinhos (loop)",
                       "plano": "porBaixo"
                     }
                   ],
@@ -883,16 +962,23 @@
                 ],
                 "animacao": {
                   "modo": "propria",
-                  "tipo": "alvo",
-                  "anim": "jb2a.icon.fear.dark_purple",
-                  "impacto": "",
-                  "escala": 1.2,
-                  "noErro": true,
-                  "porBaixo": false,
-                  "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Ps%C3%ADquico%201.ogg",
-                  "somVolume": 0.8,
-                  "somAtraso": 0,
-                  "somImpacto": ""
+                  "camadas": [
+                    {
+                      "onde": "usuario",
+                      "anim": "jb2a.cast_generic.02.dark_purple",
+                      "nome": "Conjuração",
+                      "escala": 1.2,
+                      "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Ps%C3%ADquico%202.ogg"
+                    },
+                    {
+                      "onde": "alvo",
+                      "anim": "jb2a.icon.fear.dark_purple",
+                      "nome": "Medo",
+                      "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Ps%C3%ADquico%201.ogg",
+                      "escala": 1.2,
+                      "quando": "depois"
+                    }
+                  ]
                 }
               }
             ]
@@ -922,16 +1008,23 @@
                 "moverMomento": "depois",
                 "animacao": {
                   "modo": "propria",
-                  "tipo": "usuario",
-                  "anim": "jb2a.misty_step.01.blue",
-                  "impacto": "",
-                  "escala": 1.5,
-                  "noErro": true,
-                  "porBaixo": false,
-                  "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Impact_Utility_DimensionDoor%201.ogg",
-                  "somVolume": 0.8,
-                  "somAtraso": 0,
-                  "somImpacto": ""
+                  "camadas": [
+                    {
+                      "onde": "usuario",
+                      "anim": "jb2a.cast_generic.03.blueteal",
+                      "nome": "Conjuração",
+                      "escala": 1.2,
+                      "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Utilidade%201.ogg"
+                    },
+                    {
+                      "onde": "usuario",
+                      "anim": "jb2a.misty_step.01.blue",
+                      "nome": "Passo",
+                      "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Spells/Spell_Impact_Utility_DimensionDoor%201.ogg",
+                      "escala": 1.5,
+                      "quando": "depois"
+                    }
+                  ]
                 }
               }
             ]
@@ -1269,7 +1362,7 @@
                       "nome": "Conjuração",
                       "escala": 2,
                       "plano": "porBaixo",
-                      "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Buff%202.ogg"
+                      "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Fogo%201.ogg"
                     },
                     {
                       "onde": "projetil",
@@ -1306,7 +1399,7 @@
           "type": "magia",
           "img": "icons/magic/fire/projectiles-salvo-trio-orange.webp",
           "system": {
-            "descricao": "<p>Uma camada repetida 6 vezes em posições aleatórias da área, com tremor. Área de 5 m, sem teste de ataque.</p>",
+            "descricao": "<p>Conjuração e depois 8 meteoros caindo em pontos diferentes DENTRO da área (Espalhar pela área), cada um com o som da explosão, e a tela tremendo. Área de 5 m, sem teste de ataque.</p>",
             "acoes": [
               {
                 "nome": "Chuva de Meteoros",
@@ -1331,16 +1424,25 @@
                   "modo": "propria",
                   "camadas": [
                     {
+                      "onde": "usuario",
+                      "anim": "jb2a.magic_signs.circle.02.evocation.complete.red",
+                      "nome": "Conjuração",
+                      "escala": 1.2,
+                      "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Fogo%201.ogg"
+                    },
+                    {
                       "onde": "area",
                       "anim": "jb2a.fireball.explosion.orange",
                       "nome": "Meteoros",
-                      "escala": 0.45,
-                      "repetir": 6,
-                      "repetirIntervalo": 280,
-                      "deslocAleatorio": 1.5,
+                      "escala": 0.35,
+                      "repetir": 8,
+                      "repetirIntervalo": 320,
+                      "deslocAleatorio": 0.85,
                       "tremer": 10,
-                      "tremerDuracao": 1800,
-                      "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Bola%20de%20Fogo%202.ogg"
+                      "tremerDuracao": 2600,
+                      "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Bola%20de%20Fogo%202.ogg",
+                      "somRepetir": true,
+                      "quando": "depois"
                     },
                     {
                       "onde": "area",
@@ -1394,9 +1496,9 @@
                     {
                       "onde": "usuario",
                       "anim": "jb2a.divine_smite.caster.blueyellow",
-                      "nome": "Bênção",
+                      "nome": "Conjuração",
                       "escala": 1.4,
-                      "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Buff%203%20-%20Guidance.ogg"
+                      "som": "https://assets.forge-vtt.com/6a8ca50e5954213ac3ac51d7/Efeitos%20Sonoros%20(convertidos)/Preparando/Radiante%201.ogg"
                     },
                     {
                       "onde": "atingido",

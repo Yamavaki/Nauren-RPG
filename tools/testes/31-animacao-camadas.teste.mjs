@@ -125,4 +125,50 @@ export default async function (t) {
   const fichaT = lote.documentos[0];
   t(fichaT.items.some(i => i.system.animacaoCondicao?.continuo?.length) && fichaT.items.some(i => i.system.emanacaoAnimacao?.continuo?.length) && fichaT.items.some(i => (i.system.acoes ?? []).some(a => a.animacao?.pulso?.length)), "ficha de testes: Condição, aura e área animadas");
   t(fichaT.items.some(i => (i.system.acoes ?? []).some(a => (a.animacao?.camadas ?? []).length >= 4)), "ficha de testes: chefe com 4 camadas");
+
+  // 0.124.1: espalhar pela área, som em cada repetição, fases (loop)
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const circ = { type: "circle", x: 500, y: 500, radius: 300 };
+  let pp = m.naurenPontosNaForma(circ, 50, 1, rnd);
+  t(pp.pontos.length === 50 && pp.pontos.every(p => Math.hypot(p.x - 500, p.y - 500) <= 300 + 1e-6) && pp.tam === 600, "espalhar: 50 pontos dentro do círculo");
+  t(new Set(pp.pontos.map(p => Math.round(p.x / 30))).size > 5, "espalhar: pontos em lugares diferentes (não só no centro)");
+  pp = m.naurenPontosNaForma(circ, 30, 0.5, rnd);
+  t(pp.pontos.every(p => Math.hypot(p.x - 500, p.y - 500) <= 150 + 1e-6), "espalhar 50%: só na metade de dentro");
+  const cone = { type: "cone", x: 0, y: 0, radius: 600, angle: 60, rotation: 0 };
+  pp = m.naurenPontosNaForma(cone, 40, 1, rnd);
+  t(pp.pontos.every(p => Math.hypot(p.x, p.y) <= 600 + 1e-6 && Math.abs(Math.atan2(p.y, p.x)) <= Math.PI / 6 + 1e-6), "espalhar no cone: dentro do ângulo e do raio");
+  const linha = { type: "line", x: 0, y: 0, length: 1000, width: 100, rotation: 90 };
+  pp = m.naurenPontosNaForma(linha, 40, 1, rnd);
+  t(pp.pontos.every(p => p.y >= -1e-6 && p.y <= 1000 + 1e-6 && Math.abs(p.x) <= 50 + 1e-6), "espalhar na linha virada 90°: dentro da faixa");
+  const fases = m.naurenVariacoesDeFase("jb2a.entangle.02.complete.02.green", ["jb2a.entangle.02.complete.02.green", "jb2a.entangle.02.loop.02.green", "jb2a.entangle.02.loop.03.dark_blue", "jb2a.entangle.green"]);
+  t(fases.map(f => f.fase).join() === "complete,loop" && fases[1].caminho === "jb2a.entangle.02.loop.02.green", "fases: complete e loop da mesma animação");
+  t(jb2a.has("jb2a.entangle.02.loop.02.green"), "espinhos em loop existem no JB2A da mesa");
+  {
+    const velhos2 = { game: globalThis.game, Sequence: globalThis.Sequence, Sequencer: globalThis.Sequencer };
+    const log2 = [];
+    try {
+      globalThis.game = { modules: { get: id => ({ active: id === "sequencer" }) } };
+      globalThis.Sequence = naurenSequencerFalso(log2);
+      globalThis.Sequencer = { Database: { entryExists: x => x.startsWith("jb2a.") } };
+      const met = m.naurenCamadaNormalizar({ onde: "area", anim: "jb2a.a", repetir: 5, repetirIntervalo: 300, deslocAleatorio: 1, escala: 0.4, atraso: 100, som: "boom.ogg" });
+      m.naurenMontarCamadas(new globalThis.Sequence(), [met], { regiao: { shapes: [circ] }, aleatorio: rnd });
+      const efs = log2.filter(x => x.tipo === "efeito"), sons = log2.filter(x => x.tipo === "som");
+      t(efs.length === 5 && efs.every(e => !e.repeats && Math.hypot(e.atLocation.x - 500, e.atLocation.y - 500) <= 300 && e.size.width === 240), "meteoros: 5 efeitos separados, dentro da área, no tamanho pedido");
+      t(efs.map(e => e.delay).join() === "100,400,700,1000,1300", "meteoros: um depois do outro no intervalo");
+      t(sons.length === 5 && sons.map(x => x.delay).join() === "100,400,700,1000,1300", "som da explosão em cada meteoro");
+      log2.length = 0;
+      m.naurenMontarCamadas(new globalThis.Sequence(), [{ ...met, somRepetir: false }], { regiao: { shapes: [circ] }, aleatorio: rnd });
+      t(log2.filter(x => x.tipo === "som").length === 1, "som uma vez só, se desmarcar");
+    } finally { Object.assign(globalThis, velhos2); }
+  }
+  const ed2 = await import("../../modulos/editor-camadas.mjs");
+  ed2.naurenEditorCamadasAbrir("t9", 0);
+  const h9 = ed2.naurenEditorCamadasHtml([{ onde: "area", anim: "jb2a.a", repetir: 4, deslocAleatorio: 0.8 }], { contexto: "acao", idBase: "t9" });
+  t(h9.includes("Espalhar pela área") && h9.includes('data-c="somRepetir"') && h9.includes("data-nce-fases"), "editor: espalhar pela área, som em cada repetição, versões");
+  // Ficha de testes no padrão: toda magia começa com conjuração (com som) e a magia vem depois com outro som
+  const magias = fichaT.items.filter(i => i.type === "magia");
+  const padrao = magias.every(i => (i.system.acoes ?? []).every(a => { const c = a.animacao?.camadas ?? []; return c.length >= 2 && c[0].onde === "usuario" && c[0].som && c[1].quando === "depois" && c[1].som && c[1].som !== c[0].som; }));
+  t(magias.length >= 12 && padrao, "ficha de testes: magias no padrão conjuração + magia com som próprio");
+  const espinhos = magias.find(i => i.name === "Campo de Espinhos")?.system.acoes[0].animacao;
+  t(espinhos?.continuo?.[0]?.anim === "jb2a.entangle.02.loop.02.green", "Campo de Espinhos: espinhos em loop");
 }

@@ -50,7 +50,7 @@ export function naurenCamadaPadrao(onde = "alvo") {
     escala: 1, opacidade: 1, velocidade: 1, repetir: 1, repetirIntervalo: 250, duracao: 0, fadeIn: 0, fadeOut: 0,
     rotacao: 0, rotacaoAleatoria: false, espelhar: false, espelharAleatorio: false, deslocAleatorio: 0,
     plano: "normal", noErro: true, matiz: 0, saturacao: 0, brilho: 1, tingir: "",
-    som: "", somVolume: 0.8, somAtraso: 0, tremer: 0, tremerDuracao: 400
+    som: "", somVolume: 0.8, somAtraso: 0, somRepetir: true, tremer: 0, tremerDuracao: 400
   };
 }
 
@@ -79,6 +79,7 @@ export function naurenCamadaNormalizar(c, contexto = "acao") {
     matiz: num(c.matiz, -180, 180, 0), saturacao: num(c.saturacao, -1, 1, 0), brilho: num(c.brilho, 0, 3, 1),
     tingir: /^#[0-9a-f]{6}$/i.test(txt(c.tingir)) ? txt(c.tingir) : "",
     som: txt(c.som), somVolume: num(c.somVolume, 0, 1, 0.8), somAtraso: inteiro(c.somAtraso, 0, 60000, 0),
+    somRepetir: c.somRepetir === undefined ? true : !!c.somRepetir,
     tremer: num(c.tremer, 0, 100, 0), tremerDuracao: inteiro(c.tremerDuracao, 50, 5000, 400)
   };
 }
@@ -224,6 +225,55 @@ export function naurenGeometriaDaForma(f) {
   return null;
 }
 
+/**
+ * Pontos aleatórios DENTRO da forma da área (para espalhar uma camada: chuva de meteoros, espinhos...).
+ * fator 0..1: quanto da área usar (1 = até a borda). Devolve [{x, y}] e o tamanho sugerido de cada efeito (px).
+ */
+export function naurenPontosNaForma(f, n, fator = 1, rnd = Math.random) {
+  const pts = [];
+  if (!f || !(n > 0)) return { pontos: pts, tam: 0 };
+  fator = Math.min(1, Math.max(0, Number(fator) || 0));
+  const rot = (Number(f.rotation) || 0) * Math.PI / 180;
+  const girar = (dx, dy) => ({ x: f.x + dx * Math.cos(rot) - dy * Math.sin(rot), y: f.y + dx * Math.sin(rot) + dy * Math.cos(rot) });
+  let tam = 0;
+  for (let i = 0; i < n; i++) {
+    const u = rnd(), v = rnd();
+    if (f.type === "cone" && f.radius > 0) {
+      const meio = (Number(f.angle) || 53) * Math.PI / 360;
+      const t = 0.2 + 0.8 * Math.sqrt(u) * (0.25 + 0.75 * fator), a = (v * 2 - 1) * meio * fator;
+      pts.push({ x: f.x + Math.cos(rot + a) * f.radius * t, y: f.y + Math.sin(rot + a) * f.radius * t });
+      tam = f.radius * 0.45;
+    } else if ((f.type === "line" || f.type === "ray") && f.length > 0) {
+      const larg = Number(f.width) || f.length * 0.1;
+      pts.push(girar(f.length * (0.5 + (u - 0.5) * fator), (v - 0.5) * larg * fator));
+      tam = Math.max(larg * 1.5, f.length * 0.15);
+    } else if (f.radius > 0) {
+      const r = f.radius * fator * Math.sqrt(u), a = v * Math.PI * 2;
+      pts.push({ x: f.x + Math.cos(a) * r, y: f.y + Math.sin(a) * r });
+      tam = f.radius * 2;
+    } else if (f.type === "rectangle" && f.width > 0) {
+      pts.push({ x: f.x + f.width * (0.5 + (u - 0.5) * fator), y: f.y + f.height * (0.5 + (v - 0.5) * fator) });
+      tam = Math.max(f.width, f.height);
+    }
+  }
+  return { pontos: pts, tam };
+}
+
+/* ---- Fases do JB2A (intro / loop / complete...): a mesma animação em outra fase ---- */
+const RE_FASE = /^(loop|complete|intro|outro|pulse|burst|start|end|idle|top|bottom|above|below)$/i;
+export function naurenVariacoesDeFase(caminho, lista) {
+  const partes = String(caminho ?? "").split(".");
+  const idx = partes.findIndex((p, i) => i > 0 && RE_FASE.test(p));
+  if (idx < 0) return [];
+  const out = [];
+  for (const e of lista ?? []) {
+    const q = String(e).split(".");
+    if (q.length !== partes.length || !RE_FASE.test(q[idx])) continue;
+    if (q.every((x, i) => i === idx || x === partes[i])) out.push({ caminho: e, fase: q[idx] });
+  }
+  return out.sort((a, b) => a.fase.localeCompare(b.fase));
+}
+
 /** Nome de efeito com o andar marcado (andares.mjs lê "[nv:ID]"). */
 export function naurenNomeComAndar(base, nivelId) { return nivelId ? `${base} [nv:${nivelId}]` : base; }
 export function naurenAndarDoNomeEfeito(nome) { return String(nome ?? "").match(/\[nv:([^\]]+)\]/)?.[1] ?? null; }
@@ -332,14 +382,29 @@ export function naurenMontarCamadas(s, camadas, ctx = {}) {
         case "retorno":
           if (origem) for (const t of alvos.filter(acertou)) criados.push(finalizar(ajustes(s.effect().file(anim).atLocation(t).stretchTo(origem), c)));
           break;
-        case "area":
+        case "area": {
+          const forma = ctx.regiao && !ctx.regiao.deleted ? ctx.regiao.shapes?.[0] : null;
+          if (forma && c.deslocAleatorio > 0) {
+            // espalhar: cada repetição cai num ponto diferente DENTRO da área (o "repetir" vira quantidade)
+            const { pontos, tam } = naurenPontosNaForma(forma, c.repetir, c.deslocAleatorio, ctx.aleatorio ?? Math.random);
+            pontos.forEach((pt, k) => {
+              const ck = { ...c, repetir: 1, atraso: c.atraso + k * c.repetirIntervalo };
+              criados.push(finalizar(ajustes(s.effect().file(anim).atLocation(pt).size({ width: tam * c.escala, height: tam * c.escala }), ck), true));
+            });
+            break;
+          }
           if (geo?.forma === "linha") criados.push(finalizar(ajustes(s.effect().file(anim).atLocation(geo.de).stretchTo(geo.ate), c), true));
           else if (geo) criados.push(finalizar(ajustes(s.effect().file(anim).atLocation({ x: geo.x, y: geo.y }, off).size({ width: geo.tam * c.escala, height: geo.tam * c.escala }), c), true));
           else if (origem) criados.push(finalizar(ajustes(noToken(origem).scaleToObject(c.escala), c))); // sem área: em quem usa
           break;
+        }
       }
     }
-    if (c.som && !persistir) s.sound().file(c.som).volume(c.somVolume).delay(c.atraso + c.somAtraso);
+    if (c.som && !persistir) {
+      // som em cada repetição (meteoros caindo um a um) ou uma vez só
+      const vezes = c.somRepetir && c.repetir > 1 ? c.repetir : 1;
+      for (let k = 0; k < vezes; k++) s.sound().file(c.som).volume(c.somVolume).delay(c.atraso + c.somAtraso + k * c.repetirIntervalo);
+    }
     if (c.tremer > 0 && !persistir && typeof s.canvasPan === "function") {
       try { const p = s.canvasPan(); if (c.atraso) p.delay?.(c.atraso); p.shake?.({ duration: c.tremerDuracao, strength: c.tremer, rotation: false }); } catch (err) { /* sem tremor */ }
     }
@@ -362,7 +427,7 @@ export async function naurenTocarCamadas(camadas, ctx = {}, contexto = "acao") {
   if (!lista.length) return false;
   if (!naurenSequencerOk()) {
     const tempos = naurenTemposDasCamadas(lista);
-    lista.forEach((c, i) => tocarSomSolto(c.som, c.somVolume, tempos[i] + c.somAtraso));
+    lista.forEach((c, i) => { const vezes = c.somRepetir && c.repetir > 1 ? c.repetir : 1; for (let k = 0; k < vezes; k++) tocarSomSolto(c.som, c.somVolume, tempos[i] + c.somAtraso + k * c.repetirIntervalo); });
     return false;
   }
   const andar = await andarDaRegiao(ctx.regiao, ctx.origem);

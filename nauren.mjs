@@ -146,6 +146,7 @@ function campoCamadaAnimacao() {
     som: new StringField({ initial: "" }),
     somVolume: new NumberField({ initial: 0.8, min: 0, max: 1 }),
     somAtraso: new NumberField({ initial: 0, min: 0, integer: true }),
+    somRepetir: new BooleanField({ initial: true }),   // com "repetir", o som toca em cada repetição
     tremer: new NumberField({ initial: 0, min: 0, max: 100 }),
     tremerDuracao: new NumberField({ initial: 400, min: 50, max: 5000, integer: true })
   };

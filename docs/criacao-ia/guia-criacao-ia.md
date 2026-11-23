@@ -2463,13 +2463,18 @@ Desde a 0.124 a animação de uma Ação é uma **lista de camadas** (`animacao.
 }
 ```
 
+**Padrão do Nauren para magias (siga sempre):** camada 1 = **conjuração** em quem usa (`onde: "usuario"`, uma animação `jb2a.cast_generic.<elemento>` ou um círculo `jb2a.magic_signs.circle.02.<escola>.complete.<cor>`) com um som da pasta `Preparando/` do elemento; camada 2 = **a magia** com `quando: "depois"` (projétil, área ou no alvo) com **outro som próprio**; em projéteis, camada 3 = **impacto/explosão** nos atingidos (`onde: "atingido"`, `quando: "depois"`) com som de impacto. Ataques físicos e habilidades sem magia podem ir direto ao golpe.
+
 Campos de cada camada (todos opcionais, menos `anim` ou `som`):
 - `onde`: `"usuario"` (em quem usa), `"alvo"` (em cada alvo), `"atingido"` (só nos atingidos), `"projetil"` (de quem usa até cada alvo; no erro passa do lado, `noErro: false` desliga), `"retorno"` (do atingido até quem usa: dreno, roubo), `"area"` (linha e cone esticam da origem até a ponta; círculo no centro, do tamanho da área).
 - `quando`: `"junto"` (padrão, começa com a anterior) ou `"depois"` (espera a anterior terminar). `atraso` em ms soma a isso.
 - Tempo: `duracao` (ms, 0 = a do vídeo), `repetir` (1 a 20) + `repetirIntervalo` (ms), `velocidade` (1 = normal), `fadeIn` / `fadeOut` (ms).
-- Forma: `escala` (do token, da área ou do raio), `opacidade` (0 a 1), `rotacao` (graus) ou `rotacaoAleatoria`, `espelhar` ou `espelharAleatorio`, `deslocAleatorio` (0 a 3: espalha a posição, bom para chuva de meteoros com `repetir`), `plano` (`"porBaixo"`, `"normal"`, `"acimaLuz"`).
+- Forma: `escala` (do token, da área ou do raio), `opacidade` (0 a 1), `rotacao` (graus) ou `rotacaoAleatoria`, `espelhar` ou `espelharAleatorio`, `deslocAleatorio`, `plano` (`"porBaixo"`, `"normal"`, `"acimaLuz"`).
+- **Espalhar pela área** (`onde: "area"` + `deslocAleatorio` de 0 a 1 = quanto da área usar): cada repetição (`repetir`) cai num ponto diferente **dentro** da área, uma depois da outra no `repetirIntervalo`. Ex.: chuva de meteoros = `"repetir": 8, "repetirIntervalo": 320, "deslocAleatorio": 0.85, "escala": 0.35`. Em outros `onde`, `deslocAleatorio` (0 a 3) só desloca um pouco em volta do token.
 - Cor: troque a cor pelo **caminho** (`jb2a.fire_bolt.orange` → `.blue`; confira em `jb2a-caminhos.txt`). Ajustes extras: `matiz` (-180 a 180), `saturacao` (-1 a 1), `brilho` (1 = normal), `tingir` (`"#rrggbb"`).
 - Som e tela: `som` (endereço de `sons-forge.txt`), `somVolume`, `somAtraso` (ms, conta do começo da camada), `tremer` (força, 0 a 60) e `tremerDuracao` (ms).
+- `somRepetir` (padrão `true`): com `repetir`, o som toca de novo a cada repetição (cada meteoro com sua explosão). `false` = uma vez só.
+- **Loop** (contínuo de Condição, aura e área): use a versão **loop** da animação quando ela existir (`jb2a.entangle.02.loop.02.green` em vez de `...complete...`); o editor mostra as versões lado a lado.
 
 **Área persistente** (Ação com `usaTemplatePersistente`): `animacao.continuo` (camadas em loop enquanto a área existir, `onde: "area"`) e `animacao.pulso` (a cada vez que a área causa efeito, `onde` `"area"` ou `"alvo"`).
 

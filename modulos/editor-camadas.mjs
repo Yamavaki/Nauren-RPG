@@ -1,6 +1,6 @@
 /* Nauren RPG — Editor de camadas de animação (0.124). Usado nas Ações, Condições e Emanações.
  * naurenEditorCamadasHtml(...) é puro (testado/visto em Node); naurenLigarEditorCamadas(...) liga os botões. */
-import { NAUREN_CONTEXTOS_CAMADA, NAUREN_CONTEXTOS_LOOP, NAUREN_ONDE_CAMADA, NAUREN_PLANOS_CAMADA, naurenAdaptarCamadas, naurenCamadaNormalizar, naurenCamadaPadrao, naurenCssDaCor, naurenVariacoesDeCor } from "./animacao-camadas.mjs";
+import { NAUREN_CONTEXTOS_CAMADA, NAUREN_CONTEXTOS_LOOP, NAUREN_ONDE_CAMADA, NAUREN_PLANOS_CAMADA, naurenAdaptarCamadas, naurenCamadaNormalizar, naurenCamadaPadrao, naurenCssDaCor, naurenVariacoesDeCor, naurenVariacoesDeFase } from "./animacao-camadas.mjs";
 
 const esc = s => String(s ?? "").replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
 const curto = a => { let s = String(a ?? ""); if (s.includes("/")) s = s.split("/").pop().replace(/\.[a-z0-9]+$/i, ""); const p = s.split(".").filter(Boolean); if (p[0] === "jb2a") p.shift(); return p.map(x => x.replace(/_/g, " ")).join(" · "); };
@@ -20,7 +20,7 @@ export const NAUREN_FMT_CAMADA = {
   escala: v => `${Number(v).toFixed(2)}×`, opacidade: v => `${Math.round(v * 100)}%`, velocidade: v => `${Number(v).toFixed(2)}×`,
   matiz: v => Number(v) ? `${v}°` : "original", saturacao: v => Number(v) ? `${Number(v) > 0 ? "+" : ""}${Math.round(v * 100)}%` : "original",
   brilho: v => Number(v) === 1 ? "original" : `${Math.round(v * 100)}%`, somVolume: v => `${Math.round(v * 100)}%`,
-  deslocAleatorio: v => Number(v) ? `${Number(v).toFixed(1)} token` : "nenhum", rotacao: v => `${v}°`, tremer: v => Number(v) ? `${v}` : "sem tremor"
+  deslocAleatorio: v => Number(v) ? `${Number(v).toFixed(1)} token` : "nenhum", espalhar: v => Number(v) ? `${Math.round(v * 100)}% da área` : "no centro", rotacao: v => `${v}°`, tremer: v => Number(v) ? `${v}` : "sem tremor"
 };
 const numero = (i, campo, rot, valor, { min = 0, max = 99999, passo = 1, un = "", dica = "" } = {}) =>
   `<label class="nce-num" ${dica ? `title="${esc(dica)}"` : ""}><span>${rot}</span><span class="nce-num-in"><input type="number" data-i="${i}" data-c="${campo}" min="${min}" max="${max}" step="${passo}" value="${valor}">${un ? `<em>${un}</em>` : ""}</span></label>`;
@@ -41,6 +41,7 @@ export function naurenEditorCamadasHtml(camadas, { contexto = "acao", idBase = "
         <h5><i class="fas fa-film"></i> Animação</h5>
         <div class="nce-arq"><input type="text" data-i="${i}" data-c="anim" value="${esc(c.anim)}" placeholder="${sequencer ? "ex.: jb2a.fireball.explosion.orange" : "precisa do Sequencer"}"><button type="button" class="nce-btn nce-prim" data-nce-acao="procurar" data-i="${i}"><i class="fas fa-magnifying-glass"></i> Procurar</button><button type="button" class="nce-btn nce-ic" data-nce-acao="arquivoAnim" data-i="${i}" title="Arquivo .webm"><i class="fas fa-folder-open"></i></button></div>
         <div class="nce-cores" data-nce-cores="${i}" data-anim="${esc(c.anim)}"></div>
+        <div class="nce-cores nce-fases" data-nce-fases="${i}" data-anim="${esc(c.anim)}" data-loop="${loop ? 1 : 0}"></div>
       </section>
       <section class="nce-sec">
         <h5><i class="fas fa-clock"></i> Tempo</h5>
@@ -59,7 +60,8 @@ export function naurenEditorCamadasHtml(camadas, { contexto = "acao", idBase = "
         ${faixa(i, "escala", c.onde === "aura" ? "Tamanho (do raio)" : c.onde === "area" ? "Tamanho (da área)" : "Tamanho (do token)", 0.1, 6, 0.05, c.escala, NAUREN_FMT_CAMADA.escala)}
         ${faixa(i, "opacidade", "Opacidade", 0, 1, 0.05, c.opacidade, NAUREN_FMT_CAMADA.opacidade)}
         ${faixa(i, "rotacao", "Girar", -180, 180, 5, c.rotacao, NAUREN_FMT_CAMADA.rotacao)}
-        ${faixa(i, "deslocAleatorio", "Posição aleatória", 0, 3, 0.1, c.deslocAleatorio, NAUREN_FMT_CAMADA.deslocAleatorio)}
+        ${c.onde === "area" ? faixa(i, "deslocAleatorio", "Espalhar pela área", 0, 1, 0.05, Math.min(1, c.deslocAleatorio), NAUREN_FMT_CAMADA.espalhar) : faixa(i, "deslocAleatorio", "Posição aleatória", 0, 3, 0.1, c.deslocAleatorio, NAUREN_FMT_CAMADA.deslocAleatorio)}
+        ${c.onde === "area" && c.deslocAleatorio > 0 ? `<p class="nce-dica">Espalhando: cada repetição (Tempo → Repetir) cai num ponto diferente dentro da área, no intervalo escolhido.</p>` : ""}
         <div class="nce-linha">
           <label class="nce-sel"><span>Plano</span><select data-i="${i}" data-c="plano">${Object.entries(NAUREN_PLANOS_CAMADA).map(([k, v]) => `<option value="${k}" ${k === c.plano ? "selected" : ""}>${v}</option>`).join("")}</select></label>
           ${marca(i, "rotacaoAleatoria", "Giro aleatório", c.rotacaoAleatoria)}
@@ -80,6 +82,7 @@ export function naurenEditorCamadasHtml(camadas, { contexto = "acao", idBase = "
         <div class="nce-arq"><input type="text" data-i="${i}" data-c="som" value="${esc(c.som)}" placeholder="arquivo .ogg / .mp3"><button type="button" class="nce-btn nce-ic" data-nce-acao="arquivoSom" data-i="${i}" title="Escolher som"><i class="fas fa-folder-open"></i></button><button type="button" class="nce-btn nce-ic" data-nce-acao="ouvir" data-i="${i}" title="Ouvir (só você)"><i class="fas fa-play"></i></button></div>
         <div class="nce-grade">${numero(i, "somAtraso", "Atraso do som", c.somAtraso, { passo: 50, un: "ms" })}${numero(i, "tremerDuracao", "Tremor (duração)", c.tremerDuracao, { min: 50, max: 5000, passo: 50, un: "ms" })}</div>
         ${faixa(i, "somVolume", "Volume", 0, 1, 0.05, c.somVolume, NAUREN_FMT_CAMADA.somVolume)}
+        ${c.repetir > 1 ? `<div class="nce-linha">${marca(i, "somRepetir", "Som em cada repetição", c.somRepetir, "Com Repetir, o som toca de novo a cada vez (meteoros caindo um a um).")}</div>` : ""}
         ${faixa(i, "tremer", "Tremer a tela", 0, 60, 1, c.tremer, NAUREN_FMT_CAMADA.tremer)}
       </section>`}
     </div>`;
@@ -142,6 +145,16 @@ export async function naurenLigarEditorCamadas(alvo, { contexto, idBase, ler, gr
       const vars = naurenVariacoesDeCor(div.dataset.anim, todas);
       if (vars.length < 2) { div.innerHTML = ""; return; }
       div.innerHTML = `<span class="nce-sub">Cores:</span>` + vars.slice(0, 30).map(v => `<button type="button" class="nce-cor ${v.caminho === div.dataset.anim ? "on" : ""}" data-nce-acao="cor" data-i="${div.dataset.nceCores}" data-v="${esc(v.caminho)}" title="${esc(v.cor)}" style="--cor:${naurenCssDaCor(v.cor)}"></button>`).join("");
+      div.querySelectorAll("[data-nce-acao=cor]").forEach(b => b.addEventListener("click", ev => acao(ev, b)));
+    });
+    // fases da mesma animação (complete / loop / intro...): em loop, sugere a versão "loop"
+    raiz.querySelectorAll("[data-nce-fases]").forEach(div => {
+      const fases = naurenVariacoesDeFase(div.dataset.anim, todas);
+      if (fases.length < 2) { div.innerHTML = ""; return; }
+      const atual = fases.find(f => f.caminho === div.dataset.anim);
+      const temLoop = fases.find(f => f.fase === "loop");
+      const dica = div.dataset.loop === "1" && temLoop && atual?.fase !== "loop" ? `<span class="nce-dica nce-dica-loop"><i class="fas fa-rotate"></i> esta animação tem versão <b>loop</b>, melhor para ficar repetindo</span>` : "";
+      div.innerHTML = `<span class="nce-sub">Versão:</span>` + fases.map(f => `<button type="button" class="nce-btn nce-fase ${f.caminho === div.dataset.anim ? "on" : ""}" data-nce-acao="cor" data-i="${div.dataset.nceFases}" data-v="${esc(f.caminho)}">${esc(f.fase)}</button>`).join("") + dica;
       div.querySelectorAll("[data-nce-acao=cor]").forEach(b => b.addEventListener("click", ev => acao(ev, b)));
     });
     // campos

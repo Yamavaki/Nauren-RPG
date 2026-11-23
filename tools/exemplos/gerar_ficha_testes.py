@@ -36,6 +36,11 @@ def cam(onde, a="", **k):
     if "som" in c: c["som"] = som(c["som"])
     return c
 def camadas(*cs): return {"modo": "propria", "camadas": list(cs)}
+def magia(cast, som_cast, *efeitos, escala_cast=1.2):
+    """Padrão do Nauren: conjuração em quem usa (com som de Preparando/), DEPOIS a magia com som próprio."""
+    efs = list(efeitos)
+    if efs: efs[0] = {**efs[0], "quando": "depois"}
+    return camadas(cam("usuario", cast, nome="Conjuração", escala=escala_cast, som=som_cast), *efs)
 
 def acao(nome, **k):
     base = {"nome": nome, "custoEstamina": 0, "custoMana": 0, "alcance": "1m", "modoAlvo": "selecionado", "modoAlvoTravado": True, "danos": [], "curas": [], "condicoesAplicadas": []}
@@ -93,45 +98,56 @@ itens = [
     # ---------------- MAGIAS ----------------
     item("Raio de Fogo", "magia", "icons/magic/fire/projectile-fireball-smoke-orange.webp", "Projétil de fogo: dano e Queimando no acerto.", acoes=[
         acao("Raio de Fogo", custoMana=2, alcance="18m", ehAtaque=True, atributoAtaque="poderMagia", danos=dano("2d6+@poderMagia"), condicoesAplicadas=[cond("Queimando")],
-             animacao=anim("projetil", "jb2a.fire_bolt.orange", impacto="jb2a.impact.001.orange", s="Raio de Fogo 1", si="Bola de Fogo 2")),
+             animacao=magia("jb2a.cast_generic.fire.01.orange", "Preparando/Fogo 1",
+                             cam("projetil", "jb2a.fire_bolt.orange", nome="Raio", som="Raio de Fogo 1"),
+                             cam("atingido", "jb2a.impact.001.orange", nome="Explosão no alvo", quando="depois", som="Bola de Fogo 2"))),
     ]),
     item("Bola de Fogo", "magia", "icons/magic/fire/explosion-fireball-large-orange.webp", "Área circular de 3 m, sem teste de ataque (como no livro): todos dentro sofrem o dano, um dado para todos. Quem está na área pode usar a Prioridade e agir antes.", acoes=[
         acao("Bola de Fogo", custoMana=4, alcance="18m", modoAlvo="area", usaTemplate=True, templateTipo="circle", templateTamanho=3, templateCor="#e8742a",
              danos=dano("3d6+@poderMagia"),
-             animacao=anim("area", "jb2a.fireball.explosion.orange", s="Bola de Fogo 1")),
+             animacao=magia("jb2a.cast_generic.fire.01.orange", "Preparando/Fogo 1",
+                             cam("area", "jb2a.fireball.explosion.orange", nome="Explosão", som="Bola de Fogo 1", tremer=8))),
     ]),
     item("Cone de Gelo", "magia", "icons/magic/air/wind-weather-snow-gusts.webp", "Cone de 6 m: dano e 1 acúmulo de Congelando.", acoes=[
         acao("Cone de Gelo", custoMana=3, alcance="0m", modoAlvo="area", usaTemplate=True, templateTipo="cone", templateTamanho=6, templateCor="#7fc8ff",
              danos=dano("2d6+@poderMagia"), condicoesAplicadas=[cond("Congelando", soSeAcertar=False)],
-             animacao=anim("area", "jb2a.cone_of_cold.blue", s="Gelo 1")),
+             animacao=magia("jb2a.cast_generic.ice.01.blue", "Preparando/Gelo 1",
+                             cam("area", "jb2a.cone_of_cold.blue", nome="Cone", som="Cone de Gelo 1"))),
     ]),
     item("Relâmpago em Linha", "magia", "icons/magic/lightning/bolt-strike-blue.webp", "Linha de 12 m: dano em todos na linha.", acoes=[
         acao("Relâmpago", custoMana=3, alcance="0m", modoAlvo="area", usaTemplate=True, templateTipo="ray", templateTamanho=12, templateCor="#9ad0ff",
              danos=dano("2d8+@poderMagia"),
-             animacao=anim("area", "jb2a.breath_weapons.lightning.line.blue", s="Relâmpago")),
+             animacao=magia("jb2a.cast_generic.01.blue", "Preparando/Elétrico",
+                             cam("area", "jb2a.breath_weapons.lightning.line.blue", nome="Relâmpago", som="Relâmpago"))),
     ]),
     item("Mísseis Arcanos", "magia", "icons/magic/fire/projectiles-salvo-trio-orange.webp", "3 projéteis, cada um com o próprio teste de ataque.", acoes=[
         acao("Mísseis Arcanos", custoMana=2, alcance="18m", ehAtaque=True, atributoAtaque="poderMagia", usaMultiplosAtaques=True, quantidadeAtaques="3",
-             danos=dano("1d4+1"), animacao=anim("projetil", "jb2a.magic_missile.purple", s="Força - Mísseis Mágicos 1")),
+             danos=dano("1d4+1"), animacao=magia("jb2a.cast_generic.03.bluepurple", "Preparando/Feitiçaria",
+                             cam("projetil", "jb2a.magic_missile.purple", nome="Mísseis", som="Força - Mísseis Mágicos 1"),
+                             cam("atingido", "jb2a.impact.001.dark_purple", nome="Impacto", quando="depois", som="Força - Mísseis Mágicos 2"))),
     ]),
     item("Toque Vampírico", "magia", "icons/magic/unholy/beam-ringed-impact-purple.webp", "Dano necrótico e rouba 3 de Vida do alvo.", acoes=[
         acao("Toque Vampírico", custoMana=2, alcance="9m", ehAtaque=True, atributoAtaque="poderMagia", danos=dano("1d8+@poderMagia"),
              usaRoubarRecurso=True, roubarRecursoTipo="vida", roubarQuantidade="3",
-             animacao=camadas(cam("projetil", "jb2a.eldritch_blast.dark_purple", nome="Rajada", som="Necrótico 1"),
-                              cam("atingido", "jb2a.impact.001.dark_purple", nome="Impacto", quando="depois", som="Necrótico 2"),
+             animacao=magia("jb2a.cast_generic.dark.01.red", "Preparando/Necrótico 1",
+                              cam("projetil", "jb2a.eldritch_blast.dark_purple", nome="Rajada", som="Necrótico 1"),
+                              cam("atingido", "jb2a.impact.001.dark_purple", nome="Impacto", quando="depois", som="Spells/Necrotic/Impact Vampiric Touch"),
                               cam("retorno", "jb2a.eldritch_blast.dark_purple", nome="Vida voltando", quando="depois", matiz=-120, opacidade=0.8),
                               cam("usuario", "jb2a.healing_generic.burst.greenorange", nome="Cura em mim", quando="depois", escala=0.9))),
     ]),
     item("Cura de Teste", "magia", "icons/magic/life/heart-cross-green.webp", "Cura um alvo marcado (marque você mesmo para se curar).", acoes=[
         acao("Curar", custoMana=2, alcance="9m", curas=[{"formula": "2d6+@poderMagia", "aplicarNoAlvo": True}],
-             animacao=anim("alvo", "jb2a.healing_generic.burst.greenorange", s="Cura 1")),
+             animacao=magia("jb2a.cast_generic.01.yellow", "Preparando/Cura 1",
+                             cam("alvo", "jb2a.healing_generic.burst.greenorange", nome="Cura", som="Cura 1"))),
         acao("Cura em Área (3 m)", custoMana=4, alcance="9m", modoAlvo="area", usaTemplate=True, templateTipo="circle", templateTamanho=3, templateCor="#6fd18a",
              areaDisposicao="aliados", curas=[{"formula": "1d8+@poderMagia", "aplicarNoAlvo": True}],
-             animacao=anim("area", "jb2a.cure_wounds.400px.blue", s="Cura 2", porBaixo=True)),
+             animacao=magia("jb2a.cast_generic.01.yellow", "Preparando/Cura 1 - Aura de vitalidade",
+                             cam("area", "jb2a.cure_wounds.400px.blue", nome="Cura na área", som="Cura 2", plano="porBaixo"))),
     ]),
     item("Escudo Arcano", "magia", "icons/magic/defensive/shield-barrier-blue.webp", "Ganha um Escudo de 10 até o próximo turno.", acoes=[
         acao("Escudo Arcano", custoMana=2, alcance="0m", modoAlvo="nenhum", usaEscudo=True, escudoFormula="10", escudoDuracao="proximoTurno",
-             animacao=anim("usuario", "jb2a.shield.01.complete.01.blue", s="Buff 2 - Escudo da Fé", escala=1.6)),
+             animacao=magia("jb2a.cast_generic.02.blue", "Preparando/Força 1",
+                             cam("usuario", "jb2a.shield.01.complete.01.blue", nome="Escudo", som="Buff 2 - Escudo da Fé", escala=1.6))),
     ]),
     item("Campo de Espinhos", "magia", "icons/magic/nature/root-vine-entangle-foot-green.webp",
          "Área persistente de 2 m por 3 rodadas: 1d6 no início do turno de quem estiver dentro e Enraizado ao entrar.", acoes=[
@@ -139,19 +155,22 @@ itens = [
              usaTemplatePersistente=True, templatePersistenteDuracaoRodadas="3", templatePersistenteEventoPeriodico="inicioTurno", templatePersistenteAoEntrar=True,
              templatePersistenteDisposicao="inimigos", templatePersistenteEfeito="dano", templatePersistenteQuantidade="1d6",
              templatePersistenteCondicaoUuid="self:Enraizado de Teste", templatePersistenteCondicaoAcumulos="1",
-             animacao={**anim("area", "jb2a.entangle.green", s="Veneno 1", porBaixo=True),
-                       "continuo": [cam("area", "jb2a.energy_field.02.above.green", nome="Campo", opacidade=0.45, plano="porBaixo")],
+             animacao={**magia("jb2a.cast_generic.earth.01.browngreen", "Preparando/Veneno 1",
+                               cam("area", "jb2a.entangle.02.complete.02.green", nome="Espinhos brotando", som="Veneno 1", plano="porBaixo")),
+                       "continuo": [cam("area", "jb2a.entangle.02.loop.02.green", nome="Espinhos (loop)", plano="porBaixo")],
                        "pulso": [cam("alvo", "jb2a.impact_themed.poison.greenyellow", nome="Espinhos", som="Veneno 1")]}),
     ]),
     item("Palavra do Medo", "magia", "icons/magic/control/fear-fright-monster-purple-blue.webp",
          "Sem dano: o alvo fica Amedrontado (pode gastar 2 Estamina para evitar).", acoes=[
         acao("Palavra do Medo", custoMana=1, alcance="9m",
              condicoesAplicadas=[cond("Amedrontado", soSeAcertar=False, perguntarParaEvitar=True, custoParaEvitarRecurso="estamina", custoParaEvitarQuantidade="2")],
-             animacao=anim("alvo", "jb2a.icon.fear.dark_purple", s="Psíquico 1", escala=1.2)),
+             animacao=magia("jb2a.cast_generic.02.dark_purple", "Preparando/Psíquico 2",
+                             cam("alvo", "jb2a.icon.fear.dark_purple", nome="Medo", som="Psíquico 1", escala=1.2))),
     ]),
     item("Passo Nebuloso", "magia", "icons/magic/movement/portal-vortex-orange.webp", "Teleporta você até 6 m.", acoes=[
         acao("Passo Nebuloso", custoMana=1, alcance="0m", modoAlvo="nenhum", usaMoverEscolhendo=True, moverQuem="eu", moverMetros="6", moverTeleporte=True, moverMomento="depois",
-             animacao=anim("usuario", "jb2a.misty_step.01.blue", s="Spells/Spell_Impact_Utility_DimensionDoor 1", escala=1.5)),
+             animacao=magia("jb2a.cast_generic.03.blueteal", "Preparando/Utilidade 1",
+                             cam("usuario", "jb2a.misty_step.01.blue", nome="Passo", som="Spells/Spell_Impact_Utility_DimensionDoor 1", escala=1.5))),
     ]),
 
     # ---------------- HABILIDADES ----------------
@@ -189,21 +208,22 @@ itens = [
     item("Chefe: Meteoro", "magia", "icons/magic/fire/explosion-fireball-large-orange.webp",
          "Combo pronto Meteoro: círculo em quem usa, bola de fogo até cada alvo da área, explosão, rachaduras e tela tremendo. Área de 4 m, sem teste de ataque.", acoes=[
         acao("Meteoro", custoMana=5, alcance="18m", modoAlvo="area", usaTemplate=True, templateTipo="circle", templateTamanho=4, templateCor="#e8742a", danos=dano("4d6+@poderMagia"),
-             animacao=camadas(cam("usuario", "jb2a.magic_signs.circle.02.evocation.complete.red", nome="Conjuração", escala=2, plano="porBaixo", som="Preparando/Buff 2"),
+             animacao=camadas(cam("usuario", "jb2a.magic_signs.circle.02.evocation.complete.red", nome="Conjuração", escala=2, plano="porBaixo", som="Preparando/Fogo 1"),
                               cam("projetil", "jb2a.fireball.beam.orange", nome="Meteoro", quando="depois", som="Raio de Fogo 1"),
                               cam("area", "jb2a.fireball.explosion.orange", nome="Explosão", quando="depois", escala=1.1, tremer=18, tremerDuracao=600, som="Bola de Fogo 1"),
                               cam("area", "jb2a.ground_cracks.01.orange", nome="Rachaduras", plano="porBaixo", fadeOut=800))),
     ]),
     item("Chefe: Chuva de Meteoros", "magia", "icons/magic/fire/projectiles-salvo-trio-orange.webp",
-         "Uma camada repetida 6 vezes em posições aleatórias da área, com tremor. Área de 5 m, sem teste de ataque.", acoes=[
+         "Conjuração e depois 8 meteoros caindo em pontos diferentes DENTRO da área (Espalhar pela área), cada um com o som da explosão, e a tela tremendo. Área de 5 m, sem teste de ataque.", acoes=[
         acao("Chuva de Meteoros", custoMana=6, alcance="24m", modoAlvo="area", usaTemplate=True, templateTipo="circle", templateTamanho=5, templateCor="#c0392b", danos=dano("5d6+@poderMagia"),
-             animacao=camadas(cam("area", "jb2a.fireball.explosion.orange", nome="Meteoros", escala=0.45, repetir=6, repetirIntervalo=280, deslocAleatorio=1.5, tremer=10, tremerDuracao=1800, som="Bola de Fogo 2"),
+             animacao=magia("jb2a.magic_signs.circle.02.evocation.complete.red", "Preparando/Fogo 1",
+                              cam("area", "jb2a.fireball.explosion.orange", nome="Meteoros", escala=0.35, repetir=8, repetirIntervalo=320, deslocAleatorio=0.85, tremer=10, tremerDuracao=2600, som="Bola de Fogo 2", somRepetir=True),
                               cam("area", "jb2a.ground_cracks.01.orange", nome="Chão rachado", atraso=600, plano="porBaixo", fadeOut=1200),
                               cam("area", "jb2a.smoke.puff.centered.dark_black", nome="Fumaça", quando="depois", opacidade=0.6, escala=0.9))),
     ]),
     item("Chefe: Raio Divino", "magia", "icons/magic/lightning/bolt-strike-blue.webp", "Combo pronto Raio divino em um alvo, com teste de ataque.", acoes=[
         acao("Raio Divino", custoMana=3, alcance="18m", ehAtaque=True, atributoAtaque="poderMagia", danos=dano("3d8+@poderMagia"),
-             animacao=camadas(cam("usuario", "jb2a.divine_smite.caster.blueyellow", nome="Bênção", escala=1.4, som="Buff 3 - Guidance"),
+             animacao=camadas(cam("usuario", "jb2a.divine_smite.caster.blueyellow", nome="Conjuração", escala=1.4, som="Preparando/Radiante 1"),
                               cam("atingido", "jb2a.lightning_strike.blue", nome="Raio", quando="depois", escala=1.5, tremer=8, som="Relâmpago"),
                               cam("atingido", "jb2a.static_electricity.01.blue", nome="Faíscas", atraso=300))),
     ]),

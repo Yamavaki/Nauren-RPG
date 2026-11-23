@@ -1,5 +1,5 @@
 /* Versão deste arquivo: o sistema confere no "ready" e, se o navegador/Forge tiver guardado um CSS antigo, carrega o novo. */
-:root { --nauren-css-versao: "0.124.0"; }
+:root { --nauren-css-versao: "0.124.1"; }
 /* 
 ===================================================
 1. FUNDO E FONTES GERAIS
@@ -9776,3 +9776,7 @@ label.nce-num { display: flex; flex-direction: column; gap: 3px; font-size: 11px
 .nce-tag-m { background: #7aa7e0; }
 .nca-dica { margin: 0 0 10px; }
 .nca-acumular { display: flex; margin: 8px 0 12px; }
+.nauren-rpg .nce.nce.nce button.nce-btn.nce-fase { height: 22px; padding: 0 8px; font-size: 11px; border-radius: 11px; }
+.nauren-rpg .nce.nce.nce button.nce-btn.nce-fase.on { border-color: var(--e-ouro); background: color-mix(in srgb, var(--e-ouro) 20%, var(--e-tinta)); }
+.nce-dica-loop { margin-left: 4px; color: #e6c27a; }
+.nce-dica-loop i { color: var(--e-ouro); }
