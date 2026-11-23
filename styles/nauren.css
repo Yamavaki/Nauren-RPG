@@ -1,5 +1,5 @@
 /* Versão deste arquivo: o sistema confere no "ready" e, se o navegador/Forge tiver guardado um CSS antigo, carrega o novo. */
-:root { --nauren-css-versao: "0.122.1"; }
+:root { --nauren-css-versao: "0.122.2"; }
 /* 
 ===================================================
 1. FUNDO E FONTES GERAIS
@@ -9593,3 +9593,10 @@ li.directory-item.nauren-org-tem-dono > .entry-name > .nauren-org-nome { overflo
 .nauren-poesias .nauren-poesia-op:hover:not(:disabled) { background: color-mix(in srgb, var(--np) 12%, var(--n-painel, #241e36)); }
 .application.nauren-kit.nc2 .nauren-poesias .nauren-poesia-op:hover:not(:disabled) { --cbd: var(--np); }
 .application.nauren-kit.nc2 .nauren-poesias .nauren-poesia-op > i { color: var(--np); }
+
+/* 0.122.2 — "Regras do Livro" com o texto inteiro do livro */
+.nauren-regras h4 { font-size: 1.02em; color: #cca162; margin: .9em 0 .35em; border: none; }
+.nauren-regras h5, .nauren-regras h6 { font-size: .98em; color: #b894e6; margin: .8em 0 .3em; border: none; }
+.nauren-regras blockquote { margin: .6em 0; padding: 6px 12px; border-left: 3px solid #cca162; background: rgba(204,161,98,.08); font-style: italic; }
+.nauren-regras-fonte { font-size: .82em; color: #a89bc4; margin: -.2em 0 .8em !important; }
+.nauren-regras-nota { font-size: .9em; color: #a89bc4; }
