@@ -3560,7 +3560,12 @@ class NaurenActorSheet extends foundry.applications.api.HandlebarsApplicationMix
   static async onDescansar(event, target) {
     // 0.94.39: descansar fecha a cena: usos por dia, por cena e por turno voltam (ex.: Os Frascos, 1 por cena).
     for (const escopo of ["dia", "cena", "turno"]) await naurenRecarregarUsos(this.actor, escopo);
-    ui.notifications.info(`${this.actor.name} descansou — usos por dia e por cena recarregados.`);
+    // 0.124.4: o descanso também recupera toda a Mana.
+    const mana = this.actor.system?.mana ?? {};
+    const manaMax = Number(mana.max) || 0, manaAntes = Number(mana.value) || 0;
+    if (manaMax > 0 && manaAntes < manaMax) await this.actor.update({ "system.mana.value": manaMax });
+    const manaTxt = manaMax > 0 ? ` Mana ${manaMax}/${manaMax}${manaAntes < manaMax ? ` (+${manaMax - manaAntes})` : ""}.` : "";
+    ui.notifications.info(`${this.actor.name} descansou — usos por dia e por cena recarregados.${manaTxt}`);
     // 0.102.4: momento "Descansei" para Gatilhos e scripts dos itens.
     await naurenProcessarGatilhos("aoDescansar", this.actor, {}).catch(err => console.warn("Nauren RPG | gatilhos ao descansar", err));
   }

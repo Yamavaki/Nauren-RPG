@@ -246,7 +246,7 @@ Clique para abrir">
 
       {{#if editable}}
       <div class="ns-coluna-botoes">
-        <a class="btn-modo-ficha btn-descanso-lateral ns-descansar" data-action="descansar" title="Descansar: recarrega para o máximo as Ações com usos &quot;por dia&quot; (de qualquer item). Vida, Mana, Estamina e Estresse ficam a critério do Mestre.">
+        <a class="btn-modo-ficha btn-descanso-lateral ns-descansar" data-action="descansar" title="Descansar: recupera toda a Mana e recarrega para o máximo as Ações com usos &quot;por dia&quot; e &quot;por cena&quot; (de qualquer item). Vida, Estamina e Estresse ficam a critério do Mestre.">
           <i class="fas fa-moon"></i> Descansar
         </a>
         <a class="btn-modo-ficha ns-editar" data-action="toggleModoFicha" title="{{#if modoFichaEdicao}}Voltar a mostrar só os valores finais{{else}}Mostrar os campos editáveis e o detalhamento de bônus{{/if}}">
@@ -1321,9 +1321,9 @@ Clique para abrir">
           </section>
 
           <section class="ns-card {{#if isNpc}}ns-card-largo{{/if}}">
-            <header class="ns-card-cab"><span class="ns-card-icone"><i class="fas fa-moon"></i></span><div><b>Descanso</b><small>recarrega usos "por dia"</small></div></header>
+            <header class="ns-card-cab"><span class="ns-card-icone"><i class="fas fa-moon"></i></span><div><b>Descanso</b><small>Mana e usos "por dia"</small></div></header>
             <a class="ns-btn-principal btn-descansar" data-action="descansar"><i class="fas fa-moon"></i> Descansar</a>
-            <p class="ns-dica">Recarrega os usos "por dia". Vida, Mana, Estamina e Estresse ficam com o Mestre.</p>
+            <p class="ns-dica">Recupera toda a Mana e recarrega os usos "por dia" e "por cena". Vida, Estamina e Estresse ficam com o Mestre.</p>
             <a class="ns-btn-secundario" data-action="ressincronizarRecursosCustom" title="Atualiza cada item da ficha (vindo de Classe/Subclasse/Nível) pra versão mais atual do compêndio. Preserva rank investido, ativo/inativo, usos gastos, equipado e quantidade. Atualiza descrição, Gatilhos, Efeitos Vinculados, Ações e fórmulas. Também corrige barras de recurso próprio que não apareceram."><i class="fas fa-sync"></i> Ressincronizar com o Compêndio</a>
             <p class="ns-dica">Depois de atualizar o sistema: traz a versão nova das habilidades da classe.</p>
           </section>
